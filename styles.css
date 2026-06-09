@@ -100,6 +100,26 @@ body {
     transform: scale(1.5);
 }
 
+/* ==========================================
+   LOSER PAGE
+   ========================================== */
+
+#loser {
+
+    padding-top: 120px;
+
+    padding-bottom: 200px;
+}
+
+#loser img {
+
+    width: min(80vw, 1400px);
+}
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
 @media (max-width: 768px) {
 
     .panel {
@@ -116,6 +136,11 @@ body {
         box-shadow: none;
 
         border-radius: 0;
+    }
+
+    #loser img {
+
+        width: 100vw;
     }
 
     #progress-nav {
