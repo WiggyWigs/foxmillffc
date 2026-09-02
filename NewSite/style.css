@@ -57,6 +57,21 @@ h1, h2, h3, .display {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
+/* Landing page only: nav floats fixed over the full-bleed hero image
+   instead of pushing it down in normal document flow, and the whole
+   body is locked to exactly one viewport with nothing to scroll. */
+body.landing-page .site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+body.landing-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .site-nav .league-name {
   font-family: 'Archivo', sans-serif;
   font-weight: 900;
@@ -112,22 +127,30 @@ main {
   border: 1px solid var(--hairline);
 }
 
-/* --- Landing hero --- */
+/* --- Landing hero: full-bleed image, no cropping ---
+   Real <img>, not a CSS background — matches the golf site's
+   hero-logo-img pattern (width/height auto, never cropped) rather
+   than its hero-bg pattern (background-size: cover), because this
+   image has no disposable ambient layer to sacrifice to cropping;
+   the whole file is meaningful content. */
 .hero {
-  text-align: center;
-  padding: 4rem 1.5rem 3rem;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy);
+  overflow: hidden;
 }
 
-.hero h1 {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  color: var(--navy);
-}
-
-.hero p {
-  color: var(--ink-soft);
-  font-size: 1.15rem;
-  max-width: 46ch;
-  margin: 0.75rem auto 0;
+.hero picture,
+.hero img {
+  max-width: 100%;
+  max-height: 100vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .card-grid {
