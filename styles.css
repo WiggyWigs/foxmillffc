@@ -1,150 +1,253 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap');
+
+:root {
+  --ink: #2A2420;
+  --ink-soft: #5B5148;
+  --panel: rgba(255, 252, 246, 0.88);
+  --panel-solid: #FFFCF6;
+  --navy: #1C2B3A;
+  --navy-light: #2E4359;
+  --rust: #B8501F;
+  --hairline: rgba(42, 36, 32, 0.14);
+  --radius: 3px;
 }
 
-html {
-    scroll-behavior: smooth;
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
 }
 
 body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.55;
+  background-image: url('images/background_h.jpg');
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
 
-    background: #efe6d4;
+@media (orientation: portrait) {
+  body {
+    background-image: url('images/background_v.jpg');
+  }
+}
 
-    overflow-x: hidden;
+h1, h2, h3, .display {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: var(--navy);
+  margin: 0 0 0.4em 0;
+}
 
-    font-family: serif;
+/* --- Top nav --- */
+.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--navy);
+  padding: 0.9rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Landing page only: nav floats fixed over the full-bleed hero image
+   instead of pushing it down in normal document flow, and the whole
+   body is locked to exactly one viewport with nothing to scroll. */
+body.landing-page .site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+body.landing-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.site-nav .league-name {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  color: #FFFCF6;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav a {
+  color: #D8DEE6;
+  text-decoration: none;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.3rem 0;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: #FFFCF6;
+  border-bottom-color: var(--rust);
+}
+
+.site-nav .coming-soon {
+  color: #6D7A88;
+  font-size: 0.95rem;
+  font-family: 'Archivo', sans-serif;
+}
+
+/* --- Page shell --- */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
 }
 
 .panel {
-
-    position: relative;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: flex-start;
-
-    padding-top: 60px;
-
-    padding-bottom: 100px;
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid var(--hairline);
 }
 
-.panel img {
-
-    width: min(95vw, 1900px);
-
-    height: auto;
-
-    display: block;
-
-    box-shadow:
-        0 30px 60px rgba(0,0,0,.25);
-
-    border-radius: 4px;
-
-    opacity: 0;
-
-    transform: translateY(40px);
-
-    transition:
-        opacity 1s ease,
-        transform 1s ease;
+/* --- Landing hero: full-bleed image, no cropping ---
+   Real <img>, not a CSS background — matches the golf site's
+   hero-logo-img pattern (width/height auto, never cropped) rather
+   than its hero-bg pattern (background-size: cover), because this
+   image has no disposable ambient layer to sacrifice to cropping;
+   the whole file is meaningful content. */
+.hero {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy);
+  overflow: hidden;
 }
 
-.panel.visible img {
-
-    opacity: 1;
-
-    transform: translateY(0);
+.hero picture,
+.hero img {
+  max-width: 100%;
+  max-height: 100vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
-#progress-nav {
-
-    position: fixed;
-
-    right: 20px;
-
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    z-index: 9999;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
 }
 
-.dot {
-
-    width: 12px;
-
-    height: 12px;
-
-    border-radius: 50%;
-
-    background: rgba(255,106,0,.35);
-
-    transition: all .3s ease;
+.card {
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-decoration: none;
+  color: var(--ink);
+  display: block;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
-.dot.active {
-
-    background: #ff6a00;
-
-    transform: scale(1.5);
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(28,43,58,0.12);
 }
 
-/* ==========================================
-   LOSER PAGE
-   ========================================== */
-
-#loser {
-
-    padding-top: 120px;
-
-    padding-bottom: 200px;
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.35rem;
 }
 
-#loser img {
-
-    width: min(80vw, 1400px);
+.card .card-meta {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
 }
 
-/* ==========================================
-   MOBILE
-   ========================================== */
+.card.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
 
-@media (max-width: 768px) {
+/* --- Manager Score Index table --- */
+.msi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Archivo', sans-serif;
+  font-size: 0.92rem;
+}
 
-    .panel {
+.msi-table th {
+  text-align: left;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 0.6rem 0.6rem;
+  border-bottom: 2px solid var(--navy);
+  white-space: nowrap;
+}
 
-        padding-top: 20px;
+.msi-table td {
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid var(--hairline);
+}
 
-        padding-bottom: 40px;
-    }
+.msi-table tr:nth-child(1) td { font-weight: 700; }
 
-    .panel img {
+.msi-table .rank-cell {
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  width: 2.2rem;
+}
 
-        width: 100vw;
+.msi-table .msi-score {
+  font-weight: 700;
+  color: var(--rust);
+  font-variant-numeric: tabular-nums;
+}
 
-        box-shadow: none;
+.msi-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
 
-        border-radius: 0;
-    }
+.msi-meta {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
 
-    #loser img {
+.load-state {
+  color: var(--ink-soft);
+  font-style: italic;
+}
 
-        width: 100vw;
-    }
-
-    #progress-nav {
-
-        right: 10px;
-    }
+@media (max-width: 640px) {
+  .site-nav { flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+  .site-nav ul { gap: 1.1rem; flex-wrap: wrap; }
+  main { padding: 2rem 1rem 3rem; }
+  .panel { padding: 1.25rem; }
+  .msi-table { font-size: 0.8rem; }
+  .msi-table th, .msi-table td { padding: 0.5rem 0.35rem; }
 }
