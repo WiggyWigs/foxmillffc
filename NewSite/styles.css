@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap');
 
 :root {
   --ink: #2A2420;
@@ -21,7 +21,7 @@ html, body {
 }
 
 body {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'Oswald', system-ui, sans-serif;
   color: var(--ink);
   font-size: 17px;
   line-height: 1.55;
@@ -37,9 +37,9 @@ body {
 }
 
 h1, h2, h3, .display {
-  font-family: 'Archivo', system-ui, sans-serif;
-  font-weight: 900;
-  letter-spacing: -0.01em;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   color: var(--navy);
   margin: 0 0 0.4em 0;
 }
@@ -49,12 +49,32 @@ h1, h2, h3, .display {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--navy);
+  background: #000;
   padding: 0.9rem 1.5rem;
   position: sticky;
   top: 0;
   z-index: 10;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.nav-home {
+  display: flex;
+  align-items: center;
+  color: #FFFCF6;
+  flex-shrink: 0;
+  opacity: 0.9;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.nav-home:hover {
+  opacity: 1;
+  color: var(--rust);
+}
+
+.nav-home svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 /* Landing page only: nav floats fixed over the full-bleed hero image
@@ -72,15 +92,6 @@ body.landing-page {
   overflow: hidden;
 }
 
-.site-nav .league-name {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 900;
-  font-size: 1.15rem;
-  color: #FFFCF6;
-  text-decoration: none;
-  letter-spacing: -0.01em;
-}
-
 .site-nav ul {
   list-style: none;
   display: flex;
@@ -92,7 +103,7 @@ body.landing-page {
 .site-nav a {
   color: #D8DEE6;
   text-decoration: none;
-  font-family: 'Archivo', sans-serif;
+  font-family: 'Oswald', sans-serif;
   font-weight: 500;
   font-size: 0.95rem;
   padding: 0.3rem 0;
@@ -109,7 +120,7 @@ body.landing-page {
 .site-nav .coming-soon {
   color: #6D7A88;
   font-size: 0.95rem;
-  font-family: 'Archivo', sans-serif;
+  font-family: 'Oswald', sans-serif;
 }
 
 /* --- Page shell --- */
@@ -160,7 +171,7 @@ main {
   top: 33.333%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(180px, min(24vw, 34vh), 420px);
+  width: clamp(270px, min(36vw, 51vh), 630px);
   height: auto;
   z-index: 7;
 }
@@ -170,7 +181,7 @@ main {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(130px, min(21vw, 20vh), 340px);
+  width: clamp(195px, min(31.5vw, 30vh), 510px);
   height: auto;
   z-index: 6;
 }
@@ -217,7 +228,7 @@ main {
 .msi-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Archivo', sans-serif;
+  font-family: 'Oswald', sans-serif;
   font-size: 0.92rem;
 }
 
