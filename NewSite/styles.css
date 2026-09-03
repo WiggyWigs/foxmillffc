@@ -228,6 +228,16 @@ main {
   .hero-bg {
     background-image: url('images/hero-bg-mobile.jpg');
   }
+
+  .hero-crest {
+    /* Mobile-only: base offset (33.333% + 20px) plus an additional 15% down */
+    top: calc(48.333% + 20px);
+  }
+
+  .hero-players {
+    /* Mobile-only: base offset (8px) plus an additional 5% up from the bottom */
+    bottom: calc(8px + 5%);
+  }
 }
 
 .hero-crest {
