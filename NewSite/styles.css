@@ -171,14 +171,14 @@ main {
   top: 33.333%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(203px, min(27vw, 38vh), 473px);
+  width: clamp(274px, min(36.5vw, 51vh), 639px);
   height: auto;
   z-index: 7;
 }
 
 .hero-players {
   position: absolute;
-  bottom: 10px;
+  bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
   width: clamp(293px, min(47vw, 45vh), 765px);
