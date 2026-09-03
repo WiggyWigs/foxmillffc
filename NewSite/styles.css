@@ -171,7 +171,7 @@ main {
   top: 33.333%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(270px, min(36vw, 51vh), 630px);
+  width: clamp(203px, min(27vw, 38vh), 473px);
   height: auto;
   z-index: 7;
 }
@@ -181,7 +181,7 @@ main {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(195px, min(31.5vw, 30vh), 510px);
+  width: clamp(293px, min(47vw, 45vh), 765px);
   height: auto;
   z-index: 6;
 }
