@@ -8,13 +8,24 @@
 </head>
 <body class="landing-page">
 
-<nav class="site-nav">
-  <a href="index.html" class="league-name">Fox Mill Fantasy Football Club</a>
-  <ul>
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="manager-score-index.html">Manager Score Index</a></li>
-  </ul>
-  <span class="coming-soon">More pages coming soon</span>
+<nav class="site-nav" id="site-nav">
+  <a href="index.html" class="nav-home" aria-label="Fox Mill Fantasy Football Club home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5.5 9.5V20a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1V9.5" />
+    </svg>
+  </a>
+  <div class="site-nav-links" id="site-nav-links">
+    <a href="manager-score-index.html">Manager Index</a>
+    <span class="nav-disabled">Hall of Champions (Coming Soon)</span>
+    <span class="nav-disabled">Record Books (Coming Soon)</span>
+    <span class="nav-disabled">Portrait Gallery (Coming Soon)</span>
+  </div>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </nav>
 
 <section class="hero">
@@ -22,6 +33,24 @@
   <img class="hero-crest" src="images/crest.png" alt="Fox Mill Fantasy Football Club crest, established 2023">
   <img class="hero-players" src="images/players.png" alt="Three Fox Mill football players charging forward">
 </section>
+
+<script>
+  // Mobile hamburger menu — same mechanics as the golf site's nav toggle.
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('site-nav-links');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
 
 </body>
 </html>
