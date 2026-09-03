@@ -145,7 +145,7 @@ main {
   inset: 0;
   background-image: url('images/hero-bg-desktop.jpg');
   background-size: cover;
-  background-position: center center;
+  background-position: center 75%;
   background-repeat: no-repeat;
 }
 
@@ -160,19 +160,19 @@ main {
   top: 33.333%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(180px, 24vw, 420px);
+  width: clamp(180px, min(24vw, 34vh), 420px);
   height: auto;
-  z-index: 6;
+  z-index: 7;
 }
 
 .hero-players {
   position: absolute;
-  bottom: 50px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(260px, 42vw, 680px);
+  width: clamp(130px, min(21vw, 20vh), 340px);
   height: auto;
-  z-index: 7;
+  z-index: 6;
 }
 
 .card-grid {
