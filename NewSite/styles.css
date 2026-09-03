@@ -133,6 +133,7 @@ body.landing-page {
   flex-direction: column;
   justify-content: center;
   gap: 5px;
+  margin-left: auto;
   background: none;
   border: none;
   cursor: pointer;
