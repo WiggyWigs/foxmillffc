@@ -178,7 +178,7 @@ main {
 
 .hero-players {
   position: absolute;
-  bottom: 8px;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
   width: clamp(293px, min(47vw, 45vh), 765px);
