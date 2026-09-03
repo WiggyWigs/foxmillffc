@@ -178,9 +178,17 @@ main {
 
 .hero-players {
   position: absolute;
-  bottom: 2px;
+  bottom: 8px;
   left: 50%;
-  transform: translateX(-50%);
+  /* translateY(15%) compensates for ~14.9% of transparent padding baked
+     into the bottom of players.png itself — see conversation: the file's
+     own canvas has empty space below the players' feet, so without this
+     the visible artwork sits ~15% of the image's height above where
+     "bottom: 8px" alone would suggest. Percentage in transform scales
+     with the element's own rendered size, so this stays correct as the
+     clamp()-driven width changes across screen sizes — a fixed px
+     compensation would only be right at one specific size. */
+  transform: translate(-50%, 15%);
   width: clamp(293px, min(47vw, 45vh), 765px);
   height: auto;
   z-index: 6;
