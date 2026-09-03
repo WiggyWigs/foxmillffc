@@ -168,17 +168,17 @@ main {
 
 .hero-crest {
   position: absolute;
-  top: 33.333%;
+  top: calc(33.333% + 20px);
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(274px, min(36.5vw, 51vh), 639px);
+  width: clamp(247px, min(33vw, 46vh), 575px);
   height: auto;
   z-index: 7;
 }
 
 .hero-players {
   position: absolute;
-  bottom: 5%;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   width: clamp(293px, min(47vw, 45vh), 765px);
