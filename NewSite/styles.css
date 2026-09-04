@@ -740,36 +740,10 @@ main {
   border-bottom: 3px solid #B8231F;
 }
 
-/* --- Mobile: collapse to Rank / Name / MSI, tap name to expand --- */
+/* --- Mobile: collapse to Rank / Name / MSI, tap name for stat modal --- */
 @media (max-width: 640px) {
   .msi-table .col-extra {
     display: none;
-  }
-
-  .msi-table tr.row-expanded {
-    display: block;
-    border-bottom: 1px solid var(--hairline);
-    padding: 0.4rem 0;
-  }
-
-  .msi-table tr.row-expanded .col-rank,
-  .msi-table tr.row-expanded .col-name,
-  .msi-table tr.row-expanded .col-msi {
-    display: inline-block;
-    border-bottom: none;
-  }
-
-  .msi-table tr.row-expanded .col-extra {
-    display: block;
-    text-align: left;
-    padding-left: 2.5rem;
-    border-bottom: none;
-  }
-
-  .msi-table tr.row-expanded .col-extra::before {
-    content: attr(data-label) ": ";
-    color: var(--ink-soft);
-    font-weight: 600;
   }
 
   .msi-name-cell {
