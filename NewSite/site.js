@@ -72,7 +72,7 @@ async function loadManagerScoreIndex() {
     html += `
         <tr>
           <td class="rank-cell col-rank">${i + 1}</td>
-          <td class="col-name msi-name-cell" tabindex="0" role="button" aria-expanded="false">${m.name}</td>
+          <td class="col-name msi-name-cell" tabindex="0" role="button" aria-haspopup="dialog">${m.name}</td>
           <td class="msi-score col-msi">${m.manager_score_index.toFixed(3)}</td>
           <td class="num col-extra" data-label="Seasons">${m.seasons_played}</td>
           <td class="num col-extra" data-label="Reg. Win%">${fmtPct(m.regular_season_win_pct)}</td>
@@ -88,22 +88,59 @@ async function loadManagerScoreIndex() {
   html += `</tbody></table>`;
   wrap.innerHTML = html;
 
-  // Mobile: tapping/clicking a manager's name reveals their remaining
-  // stats (hidden by default at narrow widths via CSS). No effect on
-  // desktop, where col-extra cells are already visible.
-  wrap.querySelectorAll(".msi-name-cell").forEach((cell) => {
-    const toggle = () => {
-      const row = cell.closest("tr");
-      const isOpen = row.classList.toggle("row-expanded");
-      cell.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    };
-    cell.addEventListener("click", toggle);
+  setupStatModal(rows, fmtPct);
+}
+
+// Manager stat modal — same open/close mechanics as the Hall of
+// Champions modal (overlay fade, focus trap to close button, Escape
+// to close, click-outside to close).
+function setupStatModal(rows, fmtPct) {
+  const overlay = document.getElementById("statModal");
+  const closeBtn = document.getElementById("modalClose");
+  let lastFocused = null;
+
+  function openModal(rank, m) {
+    document.getElementById("modalMgrName").textContent = m.name;
+    document.getElementById("modalMgrRank").textContent = `Rank #${rank}`;
+    document.getElementById("modalMsi").textContent = m.manager_score_index.toFixed(3);
+    document.getElementById("modalSeasons").textContent = m.seasons_played;
+    document.getElementById("modalRegWin").textContent = fmtPct(m.regular_season_win_pct);
+    document.getElementById("modalPoWin").textContent = fmtPct(m.playoff_win_pct);
+    document.getElementById("modalPoApps").textContent = m.playoff_appearances;
+    document.getElementById("modalChamps").textContent = m.championships;
+    document.getElementById("modalRunnerUps").textContent = m.runner_ups;
+    document.getElementById("modalPtsTitles").textContent = m.points_titles;
+    lastFocused = document.activeElement;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+    closeBtn.focus();
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll(".msi-name-cell").forEach((cell, i) => {
+    const openThis = () => openModal(i + 1, rows[i]);
+    cell.addEventListener("click", openThis);
     cell.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        toggle();
+        openThis();
       }
     });
+  });
+
+  closeBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeModal();
   });
 }
 
