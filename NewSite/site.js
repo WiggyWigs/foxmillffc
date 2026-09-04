@@ -33,45 +33,78 @@ async function loadManagerScoreIndex() {
     .sort((a, b) => b.manager_score_index - a.manager_score_index);
 
   const fmtPct = (v) => (v * 100).toFixed(1) + "%";
+  const AVERAGE_JOE_LINE = 2.383;
 
   let html = `
     <table class="msi-table">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Manager</th>
-          <th>MSI</th>
-          <th class="num">Seasons</th>
-          <th class="num">Reg. Win%</th>
-          <th class="num">Playoff Win%</th>
-          <th class="num">Playoff Apps</th>
-          <th class="num">Champs</th>
-          <th class="num">Runner-ups</th>
-          <th class="num">Pts Titles</th>
+          <th class="col-rank">#</th>
+          <th class="col-name">Manager</th>
+          <th class="col-msi">MSI</th>
+          <th class="num col-extra">Seasons</th>
+          <th class="num col-extra">Reg. Win%</th>
+          <th class="num col-extra">Playoff Win%</th>
+          <th class="num col-extra">Playoff Apps</th>
+          <th class="num col-extra">Champs</th>
+          <th class="num col-extra">Runner-ups</th>
+          <th class="num col-extra">Pts Titles</th>
         </tr>
       </thead>
       <tbody>
   `;
 
+  // Insert the Average Joe Line divider row at the point where MSI scores
+  // cross below the threshold — computed fresh each load since rankings
+  // shift week to week, never hardcoded to a row index.
+  let joeLineInserted = false;
+
   rows.forEach((m, i) => {
+    if (!joeLineInserted && m.manager_score_index < AVERAGE_JOE_LINE) {
+      html += `
+        <tr class="average-joe-row">
+          <td colspan="10">Average Joe Line &mdash; ${AVERAGE_JOE_LINE}</td>
+        </tr>
+      `;
+      joeLineInserted = true;
+    }
+
     html += `
         <tr>
-          <td class="rank-cell">${i + 1}</td>
-          <td>${m.name}</td>
-          <td class="msi-score">${m.manager_score_index.toFixed(3)}</td>
-          <td class="num">${m.seasons_played}</td>
-          <td class="num">${fmtPct(m.regular_season_win_pct)}</td>
-          <td class="num">${fmtPct(m.playoff_win_pct)}</td>
-          <td class="num">${m.playoff_appearances}</td>
-          <td class="num">${m.championships}</td>
-          <td class="num">${m.runner_ups}</td>
-          <td class="num">${m.points_titles}</td>
+          <td class="rank-cell col-rank">${i + 1}</td>
+          <td class="col-name msi-name-cell" tabindex="0" role="button" aria-expanded="false">${m.name}</td>
+          <td class="msi-score col-msi">${m.manager_score_index.toFixed(3)}</td>
+          <td class="num col-extra" data-label="Seasons">${m.seasons_played}</td>
+          <td class="num col-extra" data-label="Reg. Win%">${fmtPct(m.regular_season_win_pct)}</td>
+          <td class="num col-extra" data-label="Playoff Win%">${fmtPct(m.playoff_win_pct)}</td>
+          <td class="num col-extra" data-label="Playoff Apps">${m.playoff_appearances}</td>
+          <td class="num col-extra" data-label="Champs">${m.championships}</td>
+          <td class="num col-extra" data-label="Runner-ups">${m.runner_ups}</td>
+          <td class="num col-extra" data-label="Pts Titles">${m.points_titles}</td>
         </tr>
     `;
   });
 
   html += `</tbody></table>`;
   wrap.innerHTML = html;
+
+  // Mobile: tapping/clicking a manager's name reveals their remaining
+  // stats (hidden by default at narrow widths via CSS). No effect on
+  // desktop, where col-extra cells are already visible.
+  wrap.querySelectorAll(".msi-name-cell").forEach((cell) => {
+    const toggle = () => {
+      const row = cell.closest("tr");
+      const isOpen = row.classList.toggle("row-expanded");
+      cell.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
+    cell.addEventListener("click", toggle);
+    cell.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", loadManagerScoreIndex);
