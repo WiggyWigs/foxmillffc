@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hall of Champions — Fox Mill Fantasy Football Club</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="site-nav" id="site-nav">
+  <a href="index.html" class="nav-home" aria-label="Fox Mill Fantasy Football Club home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5.5 9.5V20a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1V9.5" />
+    </svg>
+  </a>
+  <div class="site-nav-links" id="site-nav-links">
+    <a href="manager-score-index.html">Manager Index</a>
+    <a href="hall-of-champions.html" class="active">Hall of Champions</a>
+    <span class="nav-disabled">Record Books (Coming Soon)</span>
+    <span class="nav-disabled">Portrait Gallery (Coming Soon)</span>
+  </div>
+  <div class="nav-toggle" id="nav-toggle" role="button" tabindex="0" aria-label="Open menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</nav>
+
+<main>
+  <div class="champ-header">
+    <div class="champ-eyebrow">Fox Mill Fantasy Football Club</div>
+    <div class="champ-title">Hall of Champions</div>
+    <div class="champ-subtitle">Every ring, every season, every legend.</div>
+    <div class="champ-hint">Click a portrait for season stats</div>
+  </div>
+
+  <!-- ============= REIGNING CHAMPION (2025) ============= -->
+  <div class="reigning">
+    <div class="reigning-badge">Reigning Champion</div>
+    <button class="portrait-frame" data-year="2025" aria-label="View 2025 champion stats">
+      <img src="images/2025.png" alt="2025 Fox Mill champion">
+    </button>
+  </div>
+
+  <!-- ============= PAST CHAMPIONS ============= -->
+  <div class="past-heading">Past Champions</div>
+  <div class="past-grid">
+    <div class="past-card">
+      <button class="portrait-frame" data-year="2024" aria-label="View 2024 champion stats">
+        <img src="images/2024.png" alt="2024 Fox Mill champion">
+      </button>
+    </div>
+    <div class="past-card">
+      <button class="portrait-frame" data-year="2023" aria-label="View 2023 champion stats">
+        <img src="images/2023.png" alt="2023 Fox Mill champion">
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- ============= STAT MODAL ============= -->
+<div class="modal-overlay" id="statModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Season Champion</div>
+    <div class="modal-name" id="modalName"></div>
+    <div class="modal-year" id="modalYear"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">Average R/S Score</span>
+        <span class="modal-stat-value" id="modalAvg"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Overall Record</span>
+        <span class="modal-stat-value" id="modalRecord"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Total Earnings</span>
+        <span class="modal-stat-value" id="modalEarnings"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Championship Game</span>
+        <span class="modal-stat-value" id="modalChampGame"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="champions.js"></script>
+<script>
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('site-nav-links');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navToggle.click();
+    }
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
+</body>
+</html>
