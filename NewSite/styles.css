@@ -754,16 +754,26 @@ main {
 }
 
 /* --- Record Books --- */
-.record-section {
+.record-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 2rem;
   margin-top: 2.5rem;
 }
 
-.record-section:first-child {
+.record-row:first-child {
   margin-top: 1.5rem;
 }
 
+.record-row.single {
+  grid-template-columns: 1fr;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .record-section h3 {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   text-align: center;
   margin-bottom: 0.9rem;
   padding-bottom: 0.5rem;
@@ -774,20 +784,20 @@ main {
   width: 100%;
   border-collapse: collapse;
   font-family: 'EB Garamond', serif;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
 }
 
 .record-table th {
   text-align: left;
   font-weight: 700;
   color: var(--navy);
-  padding: 0.5rem 0.6rem;
+  padding: 0.4rem 0.35rem;
   border-bottom: 2px solid var(--navy);
   white-space: nowrap;
 }
 
 .record-table td {
-  padding: 0.5rem 0.6rem;
+  padding: 0.4rem 0.35rem;
   border-bottom: 1px solid var(--hairline);
 }
 
@@ -795,7 +805,28 @@ main {
   font-weight: 700;
 }
 
+/* Rank column stays tight — it's a single short number, not prose */
+.record-table th:first-child,
+.record-table td:first-child {
+  padding-right: 0.15rem;
+  width: 1.6em;
+  color: var(--ink-soft);
+}
+
+/* Mobile: back to one column per row, fully linear */
+@media (max-width: 640px) {
+  .record-row,
+  .record-row.single {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
+
+  .record-section + .record-section {
+    margin-top: 2rem;
+  }
+}
+
 @media (max-width: 480px) {
-  .record-table { font-size: 0.85rem; }
-  .record-table th, .record-table td { padding: 0.4rem 0.4rem; }
+  .record-table { font-size: 0.82rem; }
+  .record-table th, .record-table td { padding: 0.35rem 0.3rem; }
 }
