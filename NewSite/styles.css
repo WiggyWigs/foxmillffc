@@ -752,3 +752,50 @@ main {
     text-underline-offset: 3px;
   }
 }
+
+/* --- Record Books --- */
+.record-section {
+  margin-top: 2.5rem;
+}
+
+.record-section:first-child {
+  margin-top: 1.5rem;
+}
+
+.record-section h3 {
+  font-size: 1.15rem;
+  text-align: center;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--hairline);
+}
+
+.record-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.95rem;
+}
+
+.record-table th {
+  text-align: left;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 2px solid var(--navy);
+  white-space: nowrap;
+}
+
+.record-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.record-table tr:first-child td {
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .record-table { font-size: 0.85rem; }
+  .record-table th, .record-table td { padding: 0.4rem 0.4rem; }
+}
