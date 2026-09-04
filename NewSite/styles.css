@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:wght@400;500;600;700&display=swap');
 
 :root {
   --ink: #2A2420;
@@ -21,7 +21,7 @@ html, body {
 }
 
 body {
-  font-family: 'Oswald', system-ui, sans-serif;
+  font-family: 'EB Garamond', system-ui, serif;
   color: var(--ink);
   font-size: 17px;
   line-height: 1.55;
@@ -38,8 +38,8 @@ body {
 }
 
 h1, h2, h3, .display {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-weight: 400;
+  font-family: 'Cinzel Decorative', system-ui, serif;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--navy);
   margin: 0 0 0.4em 0;
@@ -104,7 +104,7 @@ body.landing-page {
 .site-nav a {
   color: #D8DEE6;
   text-decoration: none;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-weight: 500;
   font-size: 0.95rem;
   padding: 0.3rem 0;
@@ -120,7 +120,7 @@ body.landing-page {
 }
 
 .site-nav .nav-disabled {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-weight: 500;
   font-size: 0.95rem;
   color: #6D7A88;
@@ -318,7 +318,7 @@ main {
 .msi-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.92rem;
 }
 
@@ -384,13 +384,13 @@ main {
 ============================================ */
 .champ-header {
   text-align: center;
-  padding: 6rem 1.5rem 2rem;
+  padding: 2rem 1.5rem 2rem;
   border-bottom: 1px solid var(--hairline);
   margin-bottom: 2.5rem;
 }
 
 .champ-eyebrow {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.25em;
@@ -400,14 +400,15 @@ main {
 }
 
 .champ-title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Cinzel Decorative', serif;
   font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--navy);
 }
 
 .champ-subtitle {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-style: italic;
   font-size: 1.05rem;
   color: var(--ink-soft);
@@ -415,7 +416,7 @@ main {
 }
 
 .champ-hint {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -432,7 +433,7 @@ main {
 }
 
 .reigning-badge {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -443,7 +444,7 @@ main {
 
 .portrait-frame {
   box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-  aspect-ratio: 1085 / 1450;
+  aspect-ratio: 4 / 5;
   overflow: visible;
   cursor: pointer;
   background: none;
@@ -477,7 +478,7 @@ main {
 }
 
 .past-heading {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 1.3rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -565,7 +566,7 @@ main {
   border: none;
   background: transparent;
   color: var(--ink-soft);
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -581,7 +582,7 @@ main {
 }
 
 .modal-badge {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -591,13 +592,14 @@ main {
 }
 
 .modal-name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Cinzel Decorative', serif;
   font-size: 1.6rem;
+  font-weight: 700;
   color: var(--navy);
 }
 
 .modal-year {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   color: var(--ink-soft);
@@ -624,8 +626,12 @@ main {
   grid-column: 1 / -1;
 }
 
+.modal-stat-full {
+  grid-column: 1 / -1;
+}
+
 .modal-stat-label {
-  font-family: 'Oswald', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -633,8 +639,9 @@ main {
 }
 
 .modal-stat-value {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Cinzel Decorative', serif;
   font-size: 1.15rem;
+  font-weight: 700;
   color: var(--ink);
   line-height: 1.35;
 }
