@@ -38,24 +38,30 @@ async function loadChampions() {
       ? `${totalWins}-${totalLosses}-${totalTies}`
       : `${totalWins}-${totalLosses}`;
 
-    // Championship Game line: pulled from the raw game log, using TEAM
-    // names (not manager names) for the "X defeats Y" line, since team
-    // names are what appear on the scoreboard for that specific game.
+    // Championship Game data: pulled from the raw game log, using TEAM
+    // names (not manager names), split into structured fields so the
+    // template can lay out winner/vs/loser as separate elements rather
+    // than one combined text string.
     const champGame = data.games.find(
       (g) => g.year.toString() === year && g.game_type === "Championship"
     );
-    let champGameLine = "—";
+    let champGameData = null;
     if (champGame) {
       if (champGame.tie) {
-        champGameLine = `${champGame.away_team} tie ${champGame.home_team}<br>` +
-          `${champGame.away_score}-${champGame.home_score}`;
+        champGameData = {
+          winTeam: champGame.away_team, winScore: champGame.away_score,
+          loseTeam: champGame.home_team, loseScore: champGame.home_score,
+          isTie: true,
+        };
       } else {
         const winnerIsAway = champGame.winner === champGame.away_manager;
-        const winTeam = winnerIsAway ? champGame.away_team : champGame.home_team;
-        const loseTeam = winnerIsAway ? champGame.home_team : champGame.away_team;
-        const winScore = Math.max(champGame.away_score, champGame.home_score);
-        const loseScore = Math.min(champGame.away_score, champGame.home_score);
-        champGameLine = `${winTeam} defeats ${loseTeam}<br>${winScore}-${loseScore}`;
+        champGameData = {
+          winTeam: winnerIsAway ? champGame.away_team : champGame.home_team,
+          winScore: Math.max(champGame.away_score, champGame.home_score),
+          loseTeam: winnerIsAway ? champGame.home_team : champGame.away_team,
+          loseScore: Math.min(champGame.away_score, champGame.home_score),
+          isTie: false,
+        };
       }
     }
 
@@ -63,9 +69,7 @@ async function loadChampions() {
       name,
       avg: avgScore,
       record,
-      // Earnings formula not yet defined — placeholder until provided.
-      earnings: "Coming Soon",
-      champGameLine,
+      champGame: champGameData,
     };
   });
 
@@ -91,8 +95,12 @@ async function loadChampions() {
     document.getElementById("modalYear").textContent = year;
     document.getElementById("modalAvg").textContent = c.avg;
     document.getElementById("modalRecord").textContent = c.record;
-    document.getElementById("modalEarnings").textContent = c.earnings;
-    document.getElementById("modalChampGame").innerHTML = c.champGameLine;
+    if (c.champGame) {
+      document.getElementById("modalWinTeam").textContent = c.champGame.winTeam;
+      document.getElementById("modalWinScore").textContent = c.champGame.winScore;
+      document.getElementById("modalLoseTeam").textContent = c.champGame.loseTeam;
+      document.getElementById("modalLoseScore").textContent = c.champGame.loseScore;
+    }
     lastFocused = document.activeElement;
     overlay.classList.add("active");
     overlay.setAttribute("aria-hidden", "false");
