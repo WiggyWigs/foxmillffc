@@ -775,6 +775,10 @@ main {
 .record-section h3 {
   font-size: 1.05rem;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.6em;
   margin-bottom: 0.9rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--hairline);
@@ -788,7 +792,7 @@ main {
 }
 
 .record-table th {
-  text-align: left;
+  text-align: center;
   font-weight: 700;
   color: var(--navy);
   padding: 0.4rem 0.35rem;
@@ -797,6 +801,7 @@ main {
 }
 
 .record-table td {
+  text-align: center;
   padding: 0.4rem 0.35rem;
   border-bottom: 1px solid var(--hairline);
 }
