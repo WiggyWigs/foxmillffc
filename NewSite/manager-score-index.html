@@ -17,15 +17,15 @@
   </a>
   <div class="site-nav-links" id="site-nav-links">
     <a href="manager-score-index.html" class="active">Manager Index</a>
-    <span class="nav-disabled">Hall of Champions (Coming Soon)</span>
+    <a href="hall-of-champions.html">Hall of Champions</a>
     <span class="nav-disabled">Record Books (Coming Soon)</span>
     <span class="nav-disabled">Portrait Gallery (Coming Soon)</span>
   </div>
-  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+  <div class="nav-toggle" id="nav-toggle" role="button" tabindex="0" aria-label="Open menu" aria-expanded="false">
     <span></span>
     <span></span>
     <span></span>
-  </button>
+  </div>
 </nav>
 
 <main>
@@ -52,6 +52,14 @@
     const isOpen = navLinks.classList.toggle('open');
     navToggle.classList.toggle('open', isOpen);
     navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  // nav-toggle is a <div role="button">, not a real <button>, so keyboard
+  // activation (Enter/Space) has to be wired up manually.
+  navToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navToggle.click();
+    }
   });
   navLinks.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
