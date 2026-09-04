@@ -385,7 +385,7 @@ main {
 .champ-header {
   text-align: center;
   padding: 2rem 1.5rem 2rem;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 2px solid var(--hairline);
   margin-bottom: 2.5rem;
 }
 
@@ -486,7 +486,7 @@ main {
   text-align: center;
   margin-bottom: 1.75rem;
   padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 2px solid var(--hairline);
 }
 
 .past-grid {
