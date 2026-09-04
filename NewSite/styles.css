@@ -695,3 +695,86 @@ main {
   .champ-game-team { max-width: 90px; font-size: 0.78rem; }
   .champ-game-score-val { font-size: 1.1rem; }
 }
+
+/* --- Manager Score Index: title centering + criteria list --- */
+.panel > h2 {
+  text-align: center;
+}
+
+.msi-meta {
+  text-align: center;
+}
+
+.msi-criteria {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.msi-criteria h3 {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.msi-criteria ol {
+  max-width: 360px;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  color: var(--ink-soft);
+  font-family: 'EB Garamond', serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+/* --- Average Joe Line divider row --- */
+.average-joe-row td {
+  padding: 0.5rem 0.6rem;
+  text-align: center;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #B8231F;
+  background: rgba(184, 35, 31, 0.06);
+  border-top: 3px solid #B8231F;
+  border-bottom: 3px solid #B8231F;
+}
+
+/* --- Mobile: collapse to Rank / Name / MSI, tap name to expand --- */
+@media (max-width: 640px) {
+  .msi-table .col-extra {
+    display: none;
+  }
+
+  .msi-table tr.row-expanded {
+    display: block;
+    border-bottom: 1px solid var(--hairline);
+    padding: 0.4rem 0;
+  }
+
+  .msi-table tr.row-expanded .col-rank,
+  .msi-table tr.row-expanded .col-name,
+  .msi-table tr.row-expanded .col-msi {
+    display: inline-block;
+    border-bottom: none;
+  }
+
+  .msi-table tr.row-expanded .col-extra {
+    display: block;
+    text-align: left;
+    padding-left: 2.5rem;
+    border-bottom: none;
+  }
+
+  .msi-table tr.row-expanded .col-extra::before {
+    content: attr(data-label) ": ";
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .msi-name-cell {
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+  }
+}
