@@ -54,6 +54,50 @@
   </div>
 </main>
 
+<!-- ============= MANAGER STAT MODAL ============= -->
+<div class="modal-overlay" id="statModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalMgrName">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Manager Profile</div>
+    <div class="modal-name" id="modalMgrName"></div>
+    <div class="modal-year" id="modalMgrRank"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">MSI Score</span>
+        <span class="modal-stat-value" id="modalMsi"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Seasons Played</span>
+        <span class="modal-stat-value" id="modalSeasons"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Reg. Season Win%</span>
+        <span class="modal-stat-value" id="modalRegWin"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Playoff Win%</span>
+        <span class="modal-stat-value" id="modalPoWin"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Playoff Appearances</span>
+        <span class="modal-stat-value" id="modalPoApps"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Championships</span>
+        <span class="modal-stat-value" id="modalChamps"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Runner-ups</span>
+        <span class="modal-stat-value" id="modalRunnerUps"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points Titles</span>
+        <span class="modal-stat-value" id="modalPtsTitles"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="site.js"></script>
 <script>
   // Mobile hamburger menu — same mechanics as the golf site's nav toggle.
