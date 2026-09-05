@@ -774,11 +774,12 @@ main {
 
 .record-section h3 {
   font-size: 1.05rem;
+  line-height: 1.3;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.6em;
+  min-height: 2.8rem;
   margin-bottom: 0.9rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--hairline);
@@ -834,4 +835,17 @@ main {
 @media (max-width: 480px) {
   .record-table { font-size: 0.82rem; }
   .record-table th, .record-table td { padding: 0.35rem 0.3rem; }
+}
+
+.record-table tr.incomplete-seasons td {
+  font-style: italic;
+}
+
+.record-footnote {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 0.6rem;
 }
