@@ -803,7 +803,7 @@ main {
   border-bottom: 1px solid var(--hairline);
 }
 
-.record-table tr:first-child td {
+.record-table tr.rank-first td {
   font-weight: 700;
 }
 
@@ -813,6 +813,12 @@ main {
   padding-right: 0.15rem;
   width: 1.6em;
   color: var(--ink-soft);
+}
+
+/* Manager names should never wrap — other columns can compress instead */
+.record-table th:nth-child(2),
+.record-table td:nth-child(2) {
+  white-space: nowrap;
 }
 
 /* Mobile: back to one column per row, fully linear */
@@ -831,10 +837,6 @@ main {
 @media (max-width: 480px) {
   .record-table { font-size: 0.82rem; }
   .record-table th, .record-table td { padding: 0.35rem 0.3rem; }
-}
-
-.record-table tr.incomplete-seasons td {
-  font-style: italic;
 }
 
 .record-footnote {
