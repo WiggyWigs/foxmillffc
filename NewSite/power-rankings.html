@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Power Rankings — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<nav class="site-nav" id="site-nav">
+  <a href="index.html" class="nav-home" aria-label="Fox Mill Fantasy Football Club home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5.5 9.5V20a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1V9.5" />
+    </svg>
+  </a>
+  <div class="site-nav-links" id="site-nav-links">
+    <a href="manager-score-index.html">Manager Index</a>
+    <a href="hall-of-champions.html">Hall of Champions</a>
+    <a href="record-books.html">Record Books</a>
+    <a href="power-rankings.html" class="active">Power Rankings</a>
+  </div>
+  <div class="nav-toggle" id="nav-toggle" role="button" tabindex="0" aria-label="Open menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</nav>
+
+<main>
+  <div class="panel">
+    <h2>Power Rankings</h2>
+    <p class="msi-meta" id="power-season-label">Current season strength, based on three factors weighed equally.</p>
+
+    <div id="power-wrap">
+      <p class="load-state">Loading power rankings&hellip;</p>
+    </div>
+
+    <div class="msi-criteria">
+      <h3>How it's scored</h3>
+      <p class="power-explainer">
+        Each manager is ranked 1st-to-last among all active managers in each of three factors,
+        earning points equal to their rank position (best = most points, worst = 1 point).
+        Power Score is the sum of all three.
+      </p>
+      <ol>
+        <li>Current Season Win %</li>
+        <li>Points Scored</li>
+        <li>Schedule Difficulty</li>
+      </ol>
+      <p class="power-explainer">
+        Schedule Difficulty compares each manager's actual record to their "break-down" record —
+        the record they'd have if they'd played every other manager's score each week instead of
+        just their real opponent. A large negative gap means the real schedule was harder than the
+        scoring alone suggests, and that manager earns the most points for this factor.
+      </p>
+    </div>
+  </div>
+</main>
+
+<!-- ============= MANAGER DETAIL MODAL ============= -->
+<div class="modal-overlay" id="statModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalMgrName">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Power Ranking Breakdown</div>
+    <div class="modal-name" id="modalMgrName"></div>
+    <div class="modal-year" id="modalMgrRank"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">Win %</span>
+        <span class="modal-stat-value" id="modalWinPct"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Win % Points</span>
+        <span class="modal-stat-value" id="modalWinPctPts"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points Scored</span>
+        <span class="modal-stat-value" id="modalPtsScored"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points Scored Pts</span>
+        <span class="modal-stat-value" id="modalPtsScoredPts"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Schedule Difficulty</span>
+        <span class="modal-stat-value" id="modalSchedDiff"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Sched. Difficulty Pts</span>
+        <span class="modal-stat-value" id="modalSchedPts"></span>
+      </div>
+      <div class="modal-stat modal-stat-full">
+        <span class="modal-stat-label">Power Score</span>
+        <span class="modal-stat-value" id="modalPowerScore"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="power.js"></script>
+<script>
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('site-nav-links');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navToggle.click();
+    }
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
+</body>
+</html>
