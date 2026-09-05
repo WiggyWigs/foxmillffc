@@ -323,7 +323,7 @@ main {
 }
 
 .msi-table th {
-  text-align: left;
+  text-align: center;
   font-weight: 700;
   color: var(--navy);
   padding: 0.6rem 0.6rem;
@@ -332,8 +332,13 @@ main {
 }
 
 .msi-table td {
+  text-align: center;
   padding: 0.65rem 0.6rem;
   border-bottom: 1px solid var(--hairline);
+}
+
+.msi-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .msi-table tr:nth-child(1) td { font-weight: 700; }
@@ -351,7 +356,7 @@ main {
 }
 
 .msi-table td.num {
-  text-align: right;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
@@ -708,19 +713,25 @@ main {
 }
 
 .msi-criteria h3 {
-  font-size: 1rem;
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--ink-soft);
   text-align: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .msi-criteria ol {
-  max-width: 360px;
+  max-width: 320px;
   margin: 0 auto;
-  padding-left: 1.5rem;
+  padding-left: 0;
+  list-style-position: inside;
+  text-align: center;
   color: var(--ink-soft);
   font-family: 'EB Garamond', serif;
-  font-size: 0.95rem;
-  line-height: 1.8;
+  font-style: italic;
+  font-size: 0.75rem;
+  line-height: 1.6;
 }
 
 /* --- Average Joe Line divider row --- */
