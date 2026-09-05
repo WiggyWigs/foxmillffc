@@ -41,30 +41,47 @@ async function loadRecords() {
     return labels;
   }
 
+  // Every row tied for 1st place gets bolded, not just the physically
+  // first row — index 0 plus any immediately-following rows whose rank
+  // label came back blank (meaning "tied with the row above").
+  function firstPlaceIndices(ranks) {
+    const result = [0];
+    for (let i = 1; i < ranks.length; i++) {
+      if (ranks[i] === "") result.push(i);
+      else break;
+    }
+    return result;
+  }
+
   // Renders one record section: heading + table. `cols` is an array of
   // [label, fieldNameOrFn] pairs; a function receives (row, index).
-  // `rankValueFn`, if given, drives tie-aware ranking on the first
-  // column instead of plain row position. Every row is checked against
-  // the manager's career seasons_played — under 3 gets italicized, and
-  // a footnote appears once per table if any row qualifies.
-  function section(title, rows, cols, rankValueFn) {
+  // `rankValueFn`, if given, drives tie-aware ranking AND first-place
+  // bolding. `flagIncomplete`, only true for the three average-based
+  // tables (where a small sample genuinely skews the number), marks
+  // under-3-season managers as "*Name" in italics — individual-game
+  // and fastest-to-N tables don't get this, since a single game score
+  // or a milestone reached isn't distorted by career length the way
+  // an average is.
+  function section(title, rows, cols, rankValueFn, flagIncomplete) {
     if (!rows || rows.length === 0) {
       return `<div class="record-section"><h3>${title}</h3><p class="load-state">No qualifying games yet.</p></div>`;
     }
 
     const ranks = rankValueFn ? tieAwareRanks(rows, rankValueFn) : rows.map((_, i) => String(i + 1));
+    const boldRows = new Set(rankValueFn ? firstPlaceIndices(ranks) : [0]);
     const head = cols.map(([label]) => `<th>${label}</th>`).join("");
 
     const body = rows.map((row, i) => {
       const seasons = data.managers[row.manager]?.career?.seasons_played ?? null;
-      const incomplete = seasons !== null && seasons < 3;
+      const incomplete = flagIncomplete && seasons !== null && seasons < 3;
 
       const cells = cols.map(([label, get], colIdx) => {
         if (colIdx === 0) return `<td>${ranks[i]}</td>`; // rank column
+        if (colIdx === 1 && incomplete) return `<td><em>*${row.manager}</em></td>`; // manager column
         return `<td>${typeof get === "function" ? get(row, i) : row[get]}</td>`;
       }).join("");
 
-      return `<tr class="${incomplete ? "incomplete-seasons" : ""}">${cells}</tr>`;
+      return `<tr class="${boldRows.has(i) ? "rank-first" : ""}">${cells}</tr>`;
     }).join("");
 
     return `
@@ -97,9 +114,17 @@ async function loadRecords() {
     ["Manager", "manager"],
     ["Games", "games"],
   ];
+  const streakCols = [
+    rankCol,
+    ["Manager", "manager"],
+    ["Streak", (row) => `${row.streak} games`],
+    ["Span", "span"],
+  ];
 
-  // "Most games above 125" gets an extra derived Average column
-  // (count ÷ seasons played), then re-sorted by that average.
+  // "Most games above 125" / "Most games below 100" both get an extra
+  // derived Average column (count ÷ seasons played), then re-sorted
+  // by that average — this is the one pairing where a small sample
+  // genuinely skews the number, so flagIncomplete is true for both.
   const games125WithAvg = (r.games_above_125 || [])
     .map((e) => {
       const seasons = data.managers[e.manager]?.career?.seasons_played || 0;
@@ -107,7 +132,14 @@ async function loadRecords() {
     })
     .sort((a, b) => b.avgRaw - a.avgRaw)
     .map((e) => ({ ...e, avg: e.seasons ? e.avgRaw.toFixed(2) : "—" }));
-  const games125Cols = [
+  const games100WithAvg = (r.games_below_100 || [])
+    .map((e) => {
+      const seasons = data.managers[e.manager]?.career?.seasons_played || 0;
+      return { ...e, seasons, avgRaw: seasons ? e.count / seasons : -1 };
+    })
+    .sort((a, b) => b.avgRaw - a.avgRaw)
+    .map((e) => ({ ...e, avg: e.seasons ? e.avgRaw.toFixed(2) : "—" }));
+  const gamesThresholdCols = [
     rankCol,
     ["Manager", "manager"],
     ["Number of Games", "count"],
@@ -116,25 +148,32 @@ async function loadRecords() {
 
   // Sections, built individually, then grouped into rows per the
   // requested a/b pairing. Item 4 (125+ games) has no partner and
-  // sits alone on its own row. Each call's last argument is the value
-  // tie-aware ranking should compare on.
-  const s1a = section("Top 10 Average Regular Season Score", r.top_avg_regular_season, managerYearAvgCols, (row) => row.avg_score);
-  const s1b = section("Bottom 10 Average Regular Season Score", r.bottom_avg_regular_season, managerYearAvgCols, (row) => row.avg_score);
-  const s2a = section("Top 15 Highest Regular Season Game Scores", r.top_regular_season_games, managerYearScoreCols, (row) => row.score);
-  const s2b = section("Bottom 15 Lowest Regular Season Game Scores", r.bottom_regular_season_games, managerYearScoreCols, (row) => row.score);
-  const s3a = section("Top 5 Highest Playoff Game Scores", r.top_playoff_games, managerYearScoreCols, (row) => row.score);
-  const s3b = section("Bottom 5 Lowest Playoff Game Scores", r.bottom_playoff_games, managerYearScoreCols, (row) => row.score);
-  const s4 = section("Most Games Scored Above 125 Points", games125WithAvg, games125Cols, (row) => row.avgRaw);
-  const s5a = section("Fastest Manager to 25 Wins", r.fastest_to_25_wins, managerGamesCols, (row) => row.games);
-  const s5b = section("Fastest Manager to 50 Wins", r.fastest_to_50_wins, managerGamesCols, (row) => row.games);
-  const s6a = section("Fastest Manager to 25 Losses", r.fastest_to_25_losses, managerGamesCols, (row) => row.games);
-  const s6b = section("Fastest Manager to 50 Losses", r.fastest_to_50_losses, managerGamesCols, (row) => row.games);
+  // sits alone on its own row. Args: title, rows, cols, rank-value fn,
+  // flagIncomplete (only true for the 3 average-based tables).
+  const s1a = section("Top 10 Average Regular Season Score", r.top_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
+  const s1b = section("Bottom 10 Average Regular Season Score", r.bottom_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
+  const s2a = section("Top 15 Highest Regular Season Game Scores", r.top_regular_season_games, managerYearScoreCols, (row) => row.score, false);
+  const s2b = section("Bottom 15 Lowest Regular Season Game Scores", r.bottom_regular_season_games, managerYearScoreCols, (row) => row.score, false);
+  const s3a = section("Top 5 Highest Playoff Game Scores", r.top_playoff_games, managerYearScoreCols, (row) => row.score, false);
+  const s3b = section("Bottom 5 Lowest Playoff Game Scores", r.bottom_playoff_games, managerYearScoreCols, (row) => row.score, false);
+  const s4a = section("Most Games Scored Above 125 Points", games125WithAvg, gamesThresholdCols, (row) => row.avgRaw, true);
+  const s4b = section("Most Games Scored Below 100 Points", games100WithAvg, gamesThresholdCols, (row) => row.avgRaw, true);
+  const s5a = section("Fastest Manager to 25 Wins", r.fastest_to_25_wins, managerGamesCols, (row) => row.games, false);
+  const s5b = section("Fastest Manager to 50 Wins", r.fastest_to_50_wins, managerGamesCols, (row) => row.games, false);
+  const s6a = section("Fastest Manager to 25 Losses", r.fastest_to_25_losses, managerGamesCols, (row) => row.games, false);
+  const s6b = section("Fastest Manager to 50 Losses", r.fastest_to_50_losses, managerGamesCols, (row) => row.games, false);
+
+  // Streaks — inserted between the games-threshold pair and the
+  // fastest-to-N pairs, per the requested ordering.
+  const s5streak_a = section("Top 5 Longest Regular Season Winning Streaks", r.top_winning_streaks, streakCols, (row) => row.streak, false);
+  const s5streak_b = section("Top 5 Longest Regular Season Losing Streaks", r.top_losing_streaks, streakCols, (row) => row.streak, false);
 
   const rowGroups = [
     [s1a, s1b],
     [s2a, s2b],
     [s3a, s3b],
-    [s4],
+    [s4a, s4b],
+    [s5streak_a, s5streak_b],
     [s5a, s5b],
     [s6a, s6b],
   ];
