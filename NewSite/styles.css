@@ -622,10 +622,6 @@ main {
   gap: 0.3rem;
 }
 
-.modal-stat:last-child {
-  grid-column: 1 / -1;
-}
-
 .modal-stat-full {
   grid-column: 1 / -1;
 }
