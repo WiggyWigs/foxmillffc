@@ -858,3 +858,14 @@ main {
   text-align: center;
   margin-top: 0.6rem;
 }
+
+.power-explainer {
+  max-width: 480px;
+  margin: 0.75rem auto;
+  text-align: center;
+  color: var(--ink-soft);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
