@@ -54,24 +54,23 @@ async function loadPowerRankings() {
           <th class="col-rank">#</th>
           <th class="col-name">Manager</th>
           <th class="col-msi">Power</th>
-          <th class="num col-extra">Win% Rank</th>
-          <th class="num col-extra">Points Rank</th>
-          <th class="num col-extra">Sched Diff Rank</th>
+          <th class="num col-extra">Win% Pts</th>
+          <th class="num col-extra">Scoring Pts</th>
+          <th class="num col-extra">Sched Pts</th>
         </tr>
       </thead>
       <tbody>
   `;
 
-  const n = rows.length;
   rows.forEach((row, i) => {
     html += `
         <tr class="${boldRows.has(i) ? "rank-first" : ""}">
           <td class="rank-cell col-rank">${ranks[i]}</td>
           <td class="col-name msi-name-cell" tabindex="0" role="button" aria-haspopup="dialog">${row.manager}</td>
           <td class="msi-score col-msi">${row.power_score}</td>
-          <td class="num col-extra">${n + 1 - row.win_pct_points}</td>
-          <td class="num col-extra">${n + 1 - row.points_scored_points}</td>
-          <td class="num col-extra">${n + 1 - row.schedule_difficulty_points}</td>
+          <td class="num col-extra">${row.win_pct_points}</td>
+          <td class="num col-extra">${row.points_scored_points}</td>
+          <td class="num col-extra">${row.schedule_difficulty_points}</td>
         </tr>
     `;
   });
