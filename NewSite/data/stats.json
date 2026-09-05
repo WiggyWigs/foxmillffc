@@ -4275,77 +4275,60 @@
     }
   ],
   "managers": {
-    "John Schauder": {
+    "Josh Davis": {
       "seasons": {
         "2023": {
-          "regular_wins": 5,
-          "regular_losses": 8,
-          "regular_ties": 1,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1458.88,
-          "points_for_total": 1458.88,
-          "points_against": 1443.52,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 1
-        },
-        "2024": {
-          "regular_wins": 3,
-          "regular_losses": 11,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1475.94,
-          "points_for_total": 1475.94,
-          "points_against": 1602.26,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 1
-        },
-        "2025": {
           "regular_wins": 6,
           "regular_losses": 8,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1494.1999999999998,
-          "points_for_total": 1494.1999999999998,
-          "points_against": 1535.54,
+          "points_for_regular": 1457.24,
+          "points_for_total": 1457.24,
+          "points_against": 1560.7999999999997,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 0,
-          "weekly_low_scores": 1
+          "weekly_low_scores": 2
+        },
+        "2024": {
+          "regular_wins": 1,
+          "regular_losses": 13,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1076.58,
+          "points_for_total": 1076.58,
+          "points_against": 1566.5000000000002,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 8
         }
       },
       "career": {
-        "regular_wins": 14,
-        "regular_losses": 27,
-        "regular_ties": 1,
+        "regular_wins": 7,
+        "regular_losses": 21,
+        "regular_ties": 0,
         "playoff_wins": 0,
         "playoff_losses": 0,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.3333,
+        "regular_season_win_pct": 0.25,
         "playoff_win_pct": 0.0,
-        "seasons_played": 3,
+        "seasons_played": 2,
         "championships": 0,
         "playoff_appearances": 0,
         "points_titles": 0,
         "runner_ups": 0,
-        "weekly_high_scores": 1,
-        "weekly_low_scores": 3,
-        "manager_score_index": 0.5
+        "weekly_high_scores": 0,
+        "weekly_low_scores": 10,
+        "manager_score_index": 0.375
       }
     },
     "Brian Kleinhenz": {
@@ -4421,18 +4404,35 @@
         "manager_score_index": 1.4881
       }
     },
-    "Josh Davis": {
+    "Daniel Bahamonde": {
       "seasons": {
         "2023": {
-          "regular_wins": 6,
-          "regular_losses": 8,
+          "regular_wins": 4,
+          "regular_losses": 10,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1457.24,
-          "points_for_total": 1457.24,
-          "points_against": 1560.7999999999997,
+          "points_for_regular": 1346.36,
+          "points_for_total": 1346.36,
+          "points_against": 1594.1999999999996,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 2
+        },
+        "2024": {
+          "regular_wins": 8,
+          "regular_losses": 6,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1448.12,
+          "points_for_total": 1448.12,
+          "points_against": 1527.7,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
@@ -4440,114 +4440,41 @@
           "weekly_high_scores": 0,
           "weekly_low_scores": 2
         },
-        "2024": {
-          "regular_wins": 1,
-          "regular_losses": 13,
+        "2025": {
+          "regular_wins": 3,
+          "regular_losses": 11,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1076.58,
-          "points_for_total": 1076.58,
-          "points_against": 1566.5000000000002,
+          "points_for_regular": 1313.74,
+          "points_for_total": 1313.74,
+          "points_against": 1469.2800000000002,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 0,
-          "weekly_low_scores": 8
+          "weekly_low_scores": 2
         }
       },
       "career": {
-        "regular_wins": 7,
-        "regular_losses": 21,
+        "regular_wins": 15,
+        "regular_losses": 27,
         "regular_ties": 0,
         "playoff_wins": 0,
         "playoff_losses": 0,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.25,
+        "regular_season_win_pct": 0.3571,
         "playoff_win_pct": 0.0,
-        "seasons_played": 2,
+        "seasons_played": 3,
         "championships": 0,
         "playoff_appearances": 0,
         "points_titles": 0,
         "runner_ups": 0,
-        "weekly_high_scores": 0,
-        "weekly_low_scores": 10,
-        "manager_score_index": 0.375
-      }
-    },
-    "Carl Bruce": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 9,
-          "regular_losses": 5,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1627.4600000000003,
-          "points_for_total": 1729.6200000000003,
-          "points_against": 1647.0800000000002,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 2,
-          "weekly_low_scores": 0
-        },
-        "2024": {
-          "regular_wins": 9,
-          "regular_losses": 5,
-          "regular_ties": 0,
-          "playoff_wins": 3,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1699.6,
-          "points_for_total": 2164.2200000000003,
-          "points_against": 1888.6800000000003,
-          "made_playoffs": true,
-          "playoff_finish": "Champion",
-          "champion": true,
-          "points_title": true,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 4,
-          "regular_losses": 10,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1324.9,
-          "points_for_total": 1324.9,
-          "points_against": 1455.34,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 4
-        }
-      },
-      "career": {
-        "regular_wins": 22,
-        "regular_losses": 20,
-        "regular_ties": 0,
-        "playoff_wins": 3,
-        "playoff_losses": 1,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.5238,
-        "playoff_win_pct": 0.75,
-        "seasons_played": 3,
-        "championships": 1,
-        "playoff_appearances": 2,
-        "points_titles": 1,
-        "runner_ups": 0,
-        "weekly_high_scores": 6,
-        "weekly_low_scores": 4,
-        "manager_score_index": 3.4857
+        "weekly_high_scores": 1,
+        "weekly_low_scores": 6,
+        "manager_score_index": 0.5356
       }
     },
     "Blake Pratt": {
@@ -4679,45 +4606,6 @@
         "manager_score_index": 3.0179
       }
     },
-    "Andrew Williams": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 4,
-          "regular_losses": 10,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1324.7399999999998,
-          "points_for_total": 1324.7399999999998,
-          "points_against": 1590.04,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 4
-        }
-      },
-      "career": {
-        "regular_wins": 4,
-        "regular_losses": 10,
-        "regular_ties": 0,
-        "playoff_wins": 0,
-        "playoff_losses": 0,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.2857,
-        "playoff_win_pct": 0.0,
-        "seasons_played": 1,
-        "championships": 0,
-        "playoff_appearances": 0,
-        "points_titles": 0,
-        "runner_ups": 0,
-        "weekly_high_scores": 1,
-        "weekly_low_scores": 4,
-        "manager_score_index": 0.4285
-      }
-    },
     "Brian Harris": {
       "seasons": {
         "2023": {
@@ -4791,80 +4679,7 @@
         "manager_score_index": 1.3453
       }
     },
-    "Erik Servinsky": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 9,
-          "regular_losses": 5,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1457.62,
-          "points_for_total": 1729.4399999999998,
-          "points_against": 1689.2800000000002,
-          "made_playoffs": true,
-          "playoff_finish": "Runner-up",
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 2
-        },
-        "2024": {
-          "regular_wins": 4,
-          "regular_losses": 10,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1438.0200000000002,
-          "points_for_total": 1438.0200000000002,
-          "points_against": 1500.46,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 8,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1618.16,
-          "points_for_total": 1836.68,
-          "points_against": 1602.5999999999997,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 4,
-          "weekly_low_scores": 1
-        }
-      },
-      "career": {
-        "regular_wins": 21,
-        "regular_losses": 21,
-        "regular_ties": 0,
-        "playoff_wins": 2,
-        "playoff_losses": 2,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.5,
-        "playoff_win_pct": 0.5,
-        "seasons_played": 3,
-        "championships": 0,
-        "playoff_appearances": 2,
-        "points_titles": 0,
-        "runner_ups": 1,
-        "weekly_high_scores": 4,
-        "weekly_low_scores": 3,
-        "manager_score_index": 2.65
-      }
-    },
-    "Daniel Bahamonde": {
+    "Andrew Williams": {
       "seasons": {
         "2023": {
           "regular_wins": 4,
@@ -4873,141 +4688,34 @@
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1346.36,
-          "points_for_total": 1346.36,
-          "points_against": 1594.1999999999996,
+          "points_for_regular": 1324.7399999999998,
+          "points_for_total": 1324.7399999999998,
+          "points_against": 1590.04,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 1,
-          "weekly_low_scores": 2
-        },
-        "2024": {
-          "regular_wins": 8,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1448.12,
-          "points_for_total": 1448.12,
-          "points_against": 1527.7,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 2
-        },
-        "2025": {
-          "regular_wins": 3,
-          "regular_losses": 11,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1313.74,
-          "points_for_total": 1313.74,
-          "points_against": 1469.2800000000002,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 2
+          "weekly_low_scores": 4
         }
       },
       "career": {
-        "regular_wins": 15,
-        "regular_losses": 27,
+        "regular_wins": 4,
+        "regular_losses": 10,
         "regular_ties": 0,
         "playoff_wins": 0,
         "playoff_losses": 0,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.3571,
+        "regular_season_win_pct": 0.2857,
         "playoff_win_pct": 0.0,
-        "seasons_played": 3,
+        "seasons_played": 1,
         "championships": 0,
         "playoff_appearances": 0,
         "points_titles": 0,
         "runner_ups": 0,
         "weekly_high_scores": 1,
-        "weekly_low_scores": 6,
-        "manager_score_index": 0.5356
-      }
-    },
-    "Greg Wigton": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 11,
-          "regular_losses": 3,
-          "regular_ties": 0,
-          "playoff_wins": 2,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1730.1799999999998,
-          "points_for_total": 2017.1999999999998,
-          "points_against": 1595.4400000000003,
-          "made_playoffs": true,
-          "playoff_finish": "Champion",
-          "champion": true,
-          "points_title": true,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        },
-        "2024": {
-          "regular_wins": 5,
-          "regular_losses": 9,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1641.7599999999998,
-          "points_for_total": 1641.7599999999998,
-          "points_against": 1612.14,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 2,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 10,
-          "regular_losses": 4,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1680.82,
-          "points_for_total": 1916.92,
-          "points_against": 1702.68,
-          "made_playoffs": true,
-          "playoff_finish": "Runner-up",
-          "champion": false,
-          "points_title": true,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        }
-      },
-      "career": {
-        "regular_wins": 26,
-        "regular_losses": 16,
-        "regular_ties": 0,
-        "playoff_wins": 3,
-        "playoff_losses": 1,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.619,
-        "playoff_win_pct": 0.75,
-        "seasons_played": 3,
-        "championships": 1,
-        "playoff_appearances": 2,
-        "points_titles": 2,
-        "runner_ups": 1,
-        "weekly_high_scores": 8,
-        "weekly_low_scores": 0,
-        "manager_score_index": 4.1285
+        "weekly_low_scores": 4,
+        "manager_score_index": 0.4285
       }
     },
     "Eddie McCumiskey": {
@@ -5083,43 +4791,150 @@
         "manager_score_index": 2.7657
       }
     },
-    "Kevin Mallon": {
+    "Carl Bruce": {
       "seasons": {
-        "2025": {
-          "regular_wins": 7,
-          "regular_losses": 7,
+        "2023": {
+          "regular_wins": 9,
+          "regular_losses": 5,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 1,
           "playoff_ties": 0,
-          "points_for_regular": 1594.04,
-          "points_for_total": 1720.96,
-          "points_against": 1724.0399999999997,
+          "points_for_regular": 1627.4600000000003,
+          "points_for_total": 1729.6200000000003,
+          "points_against": 1647.0800000000002,
           "made_playoffs": true,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 2,
           "weekly_low_scores": 0
+        },
+        "2024": {
+          "regular_wins": 9,
+          "regular_losses": 5,
+          "regular_ties": 0,
+          "playoff_wins": 3,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1699.6,
+          "points_for_total": 2164.2200000000003,
+          "points_against": 1888.6800000000003,
+          "made_playoffs": true,
+          "playoff_finish": "Champion",
+          "champion": true,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 4,
+          "regular_losses": 10,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1324.9,
+          "points_for_total": 1324.9,
+          "points_against": 1455.34,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 4
         }
       },
       "career": {
-        "regular_wins": 7,
-        "regular_losses": 7,
+        "regular_wins": 22,
+        "regular_losses": 20,
         "regular_ties": 0,
-        "playoff_wins": 0,
+        "playoff_wins": 3,
         "playoff_losses": 1,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.5,
-        "playoff_win_pct": 0.0,
-        "seasons_played": 1,
-        "championships": 0,
-        "playoff_appearances": 1,
-        "points_titles": 0,
+        "regular_season_win_pct": 0.5238,
+        "playoff_win_pct": 0.75,
+        "seasons_played": 3,
+        "championships": 1,
+        "playoff_appearances": 2,
+        "points_titles": 1,
         "runner_ups": 0,
-        "weekly_high_scores": 2,
-        "weekly_low_scores": 0,
-        "manager_score_index": 2.75
+        "weekly_high_scores": 6,
+        "weekly_low_scores": 4,
+        "manager_score_index": 3.4857
+      }
+    },
+    "Erik Servinsky": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 9,
+          "regular_losses": 5,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1457.62,
+          "points_for_total": 1729.4399999999998,
+          "points_against": 1689.2800000000002,
+          "made_playoffs": true,
+          "playoff_finish": "Runner-up",
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 2
+        },
+        "2024": {
+          "regular_wins": 4,
+          "regular_losses": 10,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1438.0200000000002,
+          "points_for_total": 1438.0200000000002,
+          "points_against": 1500.46,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 8,
+          "regular_losses": 6,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1618.16,
+          "points_for_total": 1836.68,
+          "points_against": 1602.5999999999997,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 4,
+          "weekly_low_scores": 1
+        }
+      },
+      "career": {
+        "regular_wins": 21,
+        "regular_losses": 21,
+        "regular_ties": 0,
+        "playoff_wins": 2,
+        "playoff_losses": 2,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.5,
+        "playoff_win_pct": 0.5,
+        "seasons_played": 3,
+        "championships": 0,
+        "playoff_appearances": 2,
+        "points_titles": 0,
+        "runner_ups": 1,
+        "weekly_high_scores": 4,
+        "weekly_low_scores": 3,
+        "manager_score_index": 2.65
       }
     },
     "Jay Nelson": {
@@ -5193,6 +5008,191 @@
         "weekly_high_scores": 1,
         "weekly_low_scores": 0,
         "manager_score_index": 3.2485
+      }
+    },
+    "Kevin Mallon": {
+      "seasons": {
+        "2025": {
+          "regular_wins": 7,
+          "regular_losses": 7,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1594.04,
+          "points_for_total": 1720.96,
+          "points_against": 1724.0399999999997,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 0
+        }
+      },
+      "career": {
+        "regular_wins": 7,
+        "regular_losses": 7,
+        "regular_ties": 0,
+        "playoff_wins": 0,
+        "playoff_losses": 1,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.5,
+        "playoff_win_pct": 0.0,
+        "seasons_played": 1,
+        "championships": 0,
+        "playoff_appearances": 1,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 2,
+        "weekly_low_scores": 0,
+        "manager_score_index": 2.75
+      }
+    },
+    "Greg Wigton": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 11,
+          "regular_losses": 3,
+          "regular_ties": 0,
+          "playoff_wins": 2,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1730.1799999999998,
+          "points_for_total": 2017.1999999999998,
+          "points_against": 1595.4400000000003,
+          "made_playoffs": true,
+          "playoff_finish": "Champion",
+          "champion": true,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2024": {
+          "regular_wins": 5,
+          "regular_losses": 9,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1641.7599999999998,
+          "points_for_total": 1641.7599999999998,
+          "points_against": 1612.14,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 10,
+          "regular_losses": 4,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1680.82,
+          "points_for_total": 1916.92,
+          "points_against": 1702.68,
+          "made_playoffs": true,
+          "playoff_finish": "Runner-up",
+          "champion": false,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        }
+      },
+      "career": {
+        "regular_wins": 26,
+        "regular_losses": 16,
+        "regular_ties": 0,
+        "playoff_wins": 3,
+        "playoff_losses": 1,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.619,
+        "playoff_win_pct": 0.75,
+        "seasons_played": 3,
+        "championships": 1,
+        "playoff_appearances": 2,
+        "points_titles": 2,
+        "runner_ups": 1,
+        "weekly_high_scores": 8,
+        "weekly_low_scores": 0,
+        "manager_score_index": 4.1285
+      }
+    },
+    "John Schauder": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 5,
+          "regular_losses": 8,
+          "regular_ties": 1,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1458.88,
+          "points_for_total": 1458.88,
+          "points_against": 1443.52,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 1
+        },
+        "2024": {
+          "regular_wins": 3,
+          "regular_losses": 11,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1475.94,
+          "points_for_total": 1475.94,
+          "points_against": 1602.26,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 1
+        },
+        "2025": {
+          "regular_wins": 6,
+          "regular_losses": 8,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1494.1999999999998,
+          "points_for_total": 1494.1999999999998,
+          "points_against": 1535.54,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 1
+        }
+      },
+      "career": {
+        "regular_wins": 14,
+        "regular_losses": 27,
+        "regular_ties": 1,
+        "playoff_wins": 0,
+        "playoff_losses": 0,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.3333,
+        "playoff_win_pct": 0.0,
+        "seasons_played": 3,
+        "championships": 0,
+        "playoff_appearances": 0,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 1,
+        "weekly_low_scores": 3,
+        "manager_score_index": 0.5
       }
     }
   },
@@ -5769,10 +5769,10 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.6429,
         "schedule_difficulty": 0.0714,
-        "win_pct_points": 11,
-        "points_scored_points": 12,
-        "schedule_difficulty_points": 5,
-        "power_score": 28
+        "win_pct_points": 10.5,
+        "points_scored_points": 12.0,
+        "schedule_difficulty_points": 5.0,
+        "power_score": 27.5
       },
       {
         "manager": "Blake Pratt",
@@ -5786,10 +5786,10 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.6623,
         "schedule_difficulty": 0.1948,
-        "win_pct_points": 12,
-        "points_scored_points": 11,
-        "schedule_difficulty_points": 3,
-        "power_score": 26
+        "win_pct_points": 12.0,
+        "points_scored_points": 11.0,
+        "schedule_difficulty_points": 2.5,
+        "power_score": 25.5
       },
       {
         "manager": "Erik Servinsky",
@@ -5803,27 +5803,10 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.5519,
         "schedule_difficulty": 0.0195,
-        "win_pct_points": 8,
-        "points_scored_points": 10,
-        "schedule_difficulty_points": 6,
-        "power_score": 24
-      },
-      {
-        "manager": "Kevin Mallon",
-        "wins": 7,
-        "losses": 7,
-        "ties": 0,
-        "win_pct": 0.5,
-        "points_scored": 1594.04,
-        "breakdown_wins": 96,
-        "breakdown_losses": 58,
-        "breakdown_ties": 0,
-        "breakdown_win_pct": 0.6234,
-        "schedule_difficulty": -0.1234,
-        "win_pct_points": 7,
-        "points_scored_points": 8,
-        "schedule_difficulty_points": 9,
-        "power_score": 24
+        "win_pct_points": 8.0,
+        "points_scored_points": 10.0,
+        "schedule_difficulty_points": 6.0,
+        "power_score": 24.0
       },
       {
         "manager": "Jay Nelson",
@@ -5837,10 +5820,27 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.6104,
         "schedule_difficulty": 0.1039,
-        "win_pct_points": 11,
-        "points_scored_points": 9,
-        "schedule_difficulty_points": 4,
-        "power_score": 24
+        "win_pct_points": 10.5,
+        "points_scored_points": 9.0,
+        "schedule_difficulty_points": 4.0,
+        "power_score": 23.5
+      },
+      {
+        "manager": "Kevin Mallon",
+        "wins": 7,
+        "losses": 7,
+        "ties": 0,
+        "win_pct": 0.5,
+        "points_scored": 1594.04,
+        "breakdown_wins": 96,
+        "breakdown_losses": 58,
+        "breakdown_ties": 0,
+        "breakdown_win_pct": 0.6234,
+        "schedule_difficulty": -0.1234,
+        "win_pct_points": 6.5,
+        "points_scored_points": 8.0,
+        "schedule_difficulty_points": 9.0,
+        "power_score": 23.5
       },
       {
         "manager": "Eddie McCumiskey",
@@ -5854,10 +5854,10 @@
         "breakdown_ties": 1,
         "breakdown_win_pct": 0.4967,
         "schedule_difficulty": -0.211,
-        "win_pct_points": 4,
-        "points_scored_points": 6,
-        "schedule_difficulty_points": 12,
-        "power_score": 22
+        "win_pct_points": 3.0,
+        "points_scored_points": 6.0,
+        "schedule_difficulty_points": 12.0,
+        "power_score": 21.0
       },
       {
         "manager": "Brian Harris",
@@ -5871,10 +5871,10 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.4351,
         "schedule_difficulty": -0.1494,
-        "win_pct_points": 4,
-        "points_scored_points": 5,
-        "schedule_difficulty_points": 11,
-        "power_score": 20
+        "win_pct_points": 3.0,
+        "points_scored_points": 5.0,
+        "schedule_difficulty_points": 11.0,
+        "power_score": 19.0
       },
       {
         "manager": "John Schauder",
@@ -5888,27 +5888,10 @@
         "breakdown_ties": 1,
         "breakdown_win_pct": 0.5098,
         "schedule_difficulty": -0.0812,
-        "win_pct_points": 5,
-        "points_scored_points": 7,
-        "schedule_difficulty_points": 7,
-        "power_score": 19
-      },
-      {
-        "manager": "Carl Bruce",
-        "wins": 4,
-        "losses": 10,
-        "ties": 0,
-        "win_pct": 0.2857,
-        "points_scored": 1324.9,
-        "breakdown_wins": 57,
-        "breakdown_losses": 97,
-        "breakdown_ties": 0,
-        "breakdown_win_pct": 0.3701,
-        "schedule_difficulty": -0.0844,
-        "win_pct_points": 4,
-        "points_scored_points": 3,
-        "schedule_difficulty_points": 8,
-        "power_score": 15
+        "win_pct_points": 5.0,
+        "points_scored_points": 7.0,
+        "schedule_difficulty_points": 7.0,
+        "power_score": 19.0
       },
       {
         "manager": "Jason Carlton",
@@ -5922,10 +5905,27 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.4416,
         "schedule_difficulty": 0.2013,
-        "win_pct_points": 9,
-        "points_scored_points": 4,
-        "schedule_difficulty_points": 1,
-        "power_score": 14
+        "win_pct_points": 9.0,
+        "points_scored_points": 4.0,
+        "schedule_difficulty_points": 1.0,
+        "power_score": 14.0
+      },
+      {
+        "manager": "Carl Bruce",
+        "wins": 4,
+        "losses": 10,
+        "ties": 0,
+        "win_pct": 0.2857,
+        "points_scored": 1324.9,
+        "breakdown_wins": 57,
+        "breakdown_losses": 97,
+        "breakdown_ties": 0,
+        "breakdown_win_pct": 0.3701,
+        "schedule_difficulty": -0.0844,
+        "win_pct_points": 3.0,
+        "points_scored_points": 3.0,
+        "schedule_difficulty_points": 8.0,
+        "power_score": 14.0
       },
       {
         "manager": "Daniel Bahamonde",
@@ -5939,10 +5939,10 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.3506,
         "schedule_difficulty": -0.1364,
-        "win_pct_points": 1,
-        "points_scored_points": 2,
-        "schedule_difficulty_points": 10,
-        "power_score": 13
+        "win_pct_points": 1.0,
+        "points_scored_points": 2.0,
+        "schedule_difficulty_points": 10.0,
+        "power_score": 13.0
       },
       {
         "manager": "Brian Kleinhenz",
@@ -5956,10 +5956,10 @@
         "breakdown_ties": 0,
         "breakdown_win_pct": 0.3052,
         "schedule_difficulty": 0.1948,
-        "win_pct_points": 7,
-        "points_scored_points": 1,
-        "schedule_difficulty_points": 3,
-        "power_score": 11
+        "win_pct_points": 6.5,
+        "points_scored_points": 1.0,
+        "schedule_difficulty_points": 2.5,
+        "power_score": 10.0
       }
     ]
   }
