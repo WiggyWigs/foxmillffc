@@ -143,7 +143,7 @@ async function loadRecords() {
     rankCol,
     ["Manager", "manager"],
     ["Number of Games", "count"],
-    ["Average (Games/Seasons)", "avg"],
+    ["Average<br>(per season)", "avg"],
   ];
 
   // Sections, built individually, then grouped into rows per the
