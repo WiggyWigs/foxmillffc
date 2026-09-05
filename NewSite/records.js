@@ -54,12 +54,10 @@ async function loadRecords() {
 
     const ranks = rankValueFn ? tieAwareRanks(rows, rankValueFn) : rows.map((_, i) => String(i + 1));
     const head = cols.map(([label]) => `<th>${label}</th>`).join("");
-    let anyIncomplete = false;
 
     const body = rows.map((row, i) => {
       const seasons = data.managers[row.manager]?.career?.seasons_played ?? null;
       const incomplete = seasons !== null && seasons < 3;
-      if (incomplete) anyIncomplete = true;
 
       const cells = cols.map(([label, get], colIdx) => {
         if (colIdx === 0) return `<td>${ranks[i]}</td>`; // rank column
@@ -69,10 +67,6 @@ async function loadRecords() {
       return `<tr class="${incomplete ? "incomplete-seasons" : ""}">${cells}</tr>`;
     }).join("");
 
-    const footnote = anyIncomplete
-      ? `<p class="record-footnote">*has not completed minimum 3 seasons</p>`
-      : "";
-
     return `
       <div class="record-section">
         <h3>${title}</h3>
@@ -80,7 +74,6 @@ async function loadRecords() {
           <thead><tr>${head}</tr></thead>
           <tbody>${body}</tbody>
         </table>
-        ${footnote}
       </div>
     `;
   }
