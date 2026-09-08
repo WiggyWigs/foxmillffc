@@ -892,3 +892,7 @@ main {
   width: 13.33%;
   white-space: nowrap;
 }
+
+.col-name {
+  white-space: nowrap;
+}
