@@ -1,148 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="images/favicon.png">
-<link rel="stylesheet" href="styles.css">
-<title>Current Season — Fox Mill Fantasy Football Club</title>
-</head>
-<body>
+// Current Season page — three sections (streaks, power rankings,
+// standings), all reading from the same stats.json fetch. Power
+// rankings and standings are fully precomputed in ingest_csv.py;
+// streaks rendering does light client-side formatting only.
 
-<nav class="site-nav" id="site-nav">
-  <a href="index.html" class="nav-home" aria-label="Fox Mill Fantasy Football Club home">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 11.5 12 4l9 7.5" />
-      <path d="M5.5 9.5V20a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1V9.5" />
-    </svg>
-  </a>
-  <div class="site-nav-links" id="site-nav-links">
-    <a href="manager-score-index.html">Manager Index</a>
-    <a href="hall-of-champions.html">Hall of Champions</a>
-    <a href="record-books.html">Record Books</a>
-    <a href="current-season.html" class="active">Current Season</a>
-  </div>
-  <div class="nav-toggle" id="nav-toggle" role="button" tabindex="0" aria-label="Open menu" aria-expanded="false">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</nav>
+document.addEventListener("DOMContentLoaded", async () => {
+  let data;
+  try {
+    const res = await fetch("data/stats.json");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch (err) {
+    document.getElementById("streaks-wrap").innerHTML =
+      `<p class="load-state">Couldn't load stats.json (${err.message}).</p>`;
+    document.getElementById("power-wrap").innerHTML = "";
+    document.getElementById("standings-wrap").innerHTML = "";
+    return;
+  }
 
-<main>
-  <div class="panel">
-    <h2>Current Season</h2>
-    <p class="msi-meta" id="season-year-label">Fox Mill Fantasy Football Club</p>
+  const seasonLabel = document.getElementById("season-year-label");
+  const season = data.power_rankings?.season || data.current_streaks?.season
+    || data.current_standings?.season;
+  if (season && seasonLabel) {
+    seasonLabel.textContent = `Fox Mill Fantasy Football Club — ${season} Season`;
+  }
 
-    <div class="record-section">
-      <h3>Current Streaks</h3>
-      <div id="streaks-wrap">
-        <p class="load-state">Loading streaks&hellip;</p>
-      </div>
-      <p class="record-footnote">*Regular season games only</p>
-    </div>
+  renderStreaks(data);
+  renderPowerRankings(data);
+  renderStandings(data);
+});
 
-    <div class="record-section">
-      <h3>Standings</h3>
-      <p class="msi-meta">Sorted by win %. Ties break by head-to-head record, then total points scored.</p>
-      <div id="standings-wrap">
-        <p class="load-state">Loading standings&hellip;</p>
-      </div>
-    </div>
+function renderStreaks(data) {
+  const wrap = document.getElementById("streaks-wrap");
+  const cs = data.current_streaks;
+  if (!cs) {
+    wrap.innerHTML = `<p class="load-state">No streak data found yet.</p>`;
+    return;
+  }
 
-    <div class="record-section">
-      <h3>Power Rankings</h3>
-      <p class="msi-meta" id="power-season-label">Current season strength, based on three factors weighed equally.</p>
+  function streakTable(title, rows, key) {
+    if (!rows || rows.length === 0) {
+      return `<div class="record-section"><h3>${title}</h3><p class="load-state">No active streaks.</p></div>`;
+    }
+    const body = rows.map((row) => `
+      <tr>
+        <td class="col-name">${row.manager}</td>
+        <td>${row[key]} games</td>
+      </tr>
+    `).join("");
+    return `
+      <div class="record-section">
+        <h3>${title}</h3>
+        <table class="record-table">
+          <thead><tr><th class="col-name">Manager</th><th>Streak</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>
+    `;
+  }
 
-      <div id="power-wrap">
-        <p class="load-state">Loading power rankings&hellip;</p>
-      </div>
-    </div>
+  const winTable = streakTable("Current Winning Streak Leaders", cs.top_current_winning_streaks, "win_streak");
+  const loseTable = streakTable("Current Losing Streak Leaders", cs.top_current_losing_streaks, "loss_streak");
 
-    <div class="msi-criteria">
-      <h3>How Power Rankings are scored</h3>
-      <p class="power-explainer">
-        Each manager is ranked 1st-to-last among all active managers in each of three factors,
-        earning points equal to their rank position (best = most points, worst = 1 point).
-        Ties split the points evenly. Power Score is the sum of all three.
-      </p>
-      <ol>
-        <li>Current Season Win %</li>
-        <li>Points Scored</li>
-        <li>Schedule Difficulty</li>
-      </ol>
-      <p class="power-explainer">
-        Schedule Difficulty compares each manager's actual record to their "break-down" record —
-        the record they'd have if they'd played every other manager's score each week instead of
-        just their real opponent. A large negative gap means the real schedule was harder than the
-        scoring alone suggests, and that manager earns the most points for this factor.
-      </p>
-    </div>
-  </div>
-</main>
+  wrap.innerHTML = `<div class="record-row">${winTable}${loseTable}</div>`;
+}
 
-<!-- ============= MANAGER DETAIL MODAL ============= -->
-<div class="modal-overlay" id="statModal" aria-hidden="true">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalMgrName">
-    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
-    <div class="modal-badge">Power Ranking Breakdown</div>
-    <div class="modal-name" id="modalMgrName"></div>
-    <div class="modal-year" id="modalMgrRank"></div>
-    <div class="modal-stats">
-      <div class="modal-stat">
-        <span class="modal-stat-label">Win %</span>
-        <span class="modal-stat-value" id="modalWinPct"></span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Win % Points</span>
-        <span class="modal-stat-value" id="modalWinPctPts"></span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Points Scored</span>
-        <span class="modal-stat-value" id="modalPtsScored"></span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Points Scored Pts</span>
-        <span class="modal-stat-value" id="modalPtsScoredPts"></span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Schedule Difficulty</span>
-        <span class="modal-stat-value" id="modalSchedDiff"></span>
-      </div>
-      <div class="modal-stat">
-        <span class="modal-stat-label">Sched. Difficulty Pts</span>
-        <span class="modal-stat-value" id="modalSchedPts"></span>
-      </div>
-      <div class="modal-stat modal-stat-full">
-        <span class="modal-stat-label">Power Score</span>
-        <span class="modal-stat-value" id="modalPowerScore"></span>
-      </div>
-    </div>
-  </div>
-</div>
+function renderPowerRankings(data) {
+  const wrap = document.getElementById("power-wrap");
+  const pr = data.power_rankings;
+  if (!pr || !pr.rankings || pr.rankings.length === 0) {
+    wrap.innerHTML = `<p class="load-state">No power rankings data found yet.</p>`;
+    return;
+  }
 
-<script src="current-season.js"></script>
-<script>
-  const navToggle = document.getElementById('nav-toggle');
-  const navLinks  = document.getElementById('site-nav-links');
-  navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.classList.toggle('open', isOpen);
-    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  });
-  navToggle.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      navToggle.click();
+  const rows = pr.rankings; // already sorted by power_score descending
+
+  const ranks = [];
+  let lastValue = null;
+  rows.forEach((row, i) => {
+    if (lastValue !== null && row.power_score === lastValue) {
+      ranks.push("");
+    } else {
+      ranks.push(String(i + 1));
+      lastValue = row.power_score;
     }
   });
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      navToggle.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
+  const boldRows = new Set([0]);
+  for (let i = 1; i < ranks.length; i++) {
+    if (ranks[i] === "") boldRows.add(i);
+    else break;
+  }
+
+  const fmtPct = (v) => (v * 100).toFixed(1) + "%";
+  const fmtDiff = (v) => (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
+
+  let html = `
+    <table class="msi-table">
+      <thead>
+        <tr>
+          <th class="col-rank">#</th>
+          <th class="col-name">Manager</th>
+          <th class="col-msi">Power</th>
+          <th class="num col-extra">Win% Pts</th>
+          <th class="num col-extra">Scoring Pts</th>
+          <th class="num col-extra">Sched Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  rows.forEach((row, i) => {
+    html += `
+        <tr class="${boldRows.has(i) ? "rank-first" : ""}">
+          <td class="rank-cell col-rank">${ranks[i]}</td>
+          <td class="col-name msi-name-cell" tabindex="0" role="button" aria-haspopup="dialog">${row.manager}</td>
+          <td class="msi-score col-msi">${row.power_score}</td>
+          <td class="num col-extra">${row.win_pct_points}</td>
+          <td class="num col-extra">${row.points_scored_points}</td>
+          <td class="num col-extra">${row.schedule_difficulty_points}</td>
+        </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  wrap.innerHTML = html;
+
+  setupModal(rows, fmtPct, fmtDiff);
+}
+
+function setupModal(rows, fmtPct, fmtDiff) {
+  const overlay = document.getElementById("statModal");
+  const closeBtn = document.getElementById("modalClose");
+  let lastFocused = null;
+
+  function openModal(rank, m) {
+    document.getElementById("modalMgrName").textContent = m.manager;
+    document.getElementById("modalMgrRank").textContent = `Rank #${rank}`;
+    document.getElementById("modalWinPct").textContent = fmtPct(m.win_pct);
+    document.getElementById("modalWinPctPts").textContent = m.win_pct_points;
+    document.getElementById("modalPtsScored").textContent = m.points_scored.toFixed(2);
+    document.getElementById("modalPtsScoredPts").textContent = m.points_scored_points;
+    document.getElementById("modalSchedDiff").textContent = fmtDiff(m.schedule_difficulty);
+    document.getElementById("modalSchedPts").textContent = m.schedule_difficulty_points;
+    document.getElementById("modalPowerScore").textContent = m.power_score;
+    lastFocused = document.activeElement;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+    closeBtn.focus();
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll(".msi-name-cell").forEach((cell, i) => {
+    const openThis = () => openModal(i + 1, rows[i]);
+    cell.addEventListener("click", openThis);
+    cell.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openThis();
+      }
     });
   });
-</script>
-</body>
-</html>
+
+  closeBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeModal();
+  });
+}
+
+function renderStandings(data) {
+  const wrap = document.getElementById("standings-wrap");
+  const st = data.current_standings;
+  if (!st || !st.standings || st.standings.length === 0) {
+    wrap.innerHTML = `<p class="load-state">No standings data found yet.</p>`;
+    return;
+  }
+
+  const rows = st.standings; // already sorted with H2H/points tiebreak applied
+
+  const body = rows.map((row) => {
+    const record = row.ties > 0 ? `${row.wins}-${row.losses}-${row.ties}` : `${row.wins}-${row.losses}`;
+    return `
+      <tr>
+        <td class="col-name">${row.team_name}</td>
+        <td class="col-name">${row.manager}</td>
+        <td>${record}</td>
+        <td>${row.points_for.toFixed(2)}</td>
+        <td>${row.points_against.toFixed(2)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  wrap.innerHTML = `
+    <table class="record-table standings-table">
+      <thead>
+        <tr>
+          <th class="col-name">Team Name</th>
+          <th class="col-name">Manager</th>
+          <th>Record</th>
+          <th>Points For</th>
+          <th>Points Against</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
+}
