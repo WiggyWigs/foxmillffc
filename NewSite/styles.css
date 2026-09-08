@@ -869,3 +869,26 @@ main {
   font-size: 0.78rem;
   line-height: 1.6;
 }
+
+/* --- Current Season: standings table column widths ---
+   Team Name and Manager get most of the space; Record/Points For/
+   Points Against are short values that don't need much room. */
+.standings-table th:nth-child(1),
+.standings-table td:nth-child(1) {
+  width: 32%;
+}
+
+.standings-table th:nth-child(2),
+.standings-table td:nth-child(2) {
+  width: 28%;
+}
+
+.standings-table th:nth-child(3),
+.standings-table td:nth-child(3),
+.standings-table th:nth-child(4),
+.standings-table td:nth-child(4),
+.standings-table th:nth-child(5),
+.standings-table td:nth-child(5) {
+  width: 13.33%;
+  white-space: nowrap;
+}
