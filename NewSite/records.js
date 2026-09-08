@@ -69,7 +69,9 @@ async function loadRecords() {
 
     const ranks = rankValueFn ? tieAwareRanks(rows, rankValueFn) : rows.map((_, i) => String(i + 1));
     const boldRows = new Set(rankValueFn ? firstPlaceIndices(ranks) : [0]);
-    const head = cols.map(([label]) => `<th>${label}</th>`).join("");
+    const head = cols.map(([label]) =>
+      `<th${label === "Manager" ? ' class="col-name"' : ""}>${label}</th>`
+    ).join("");
 
     const body = rows.map((row, i) => {
       const seasons = data.managers[row.manager]?.career?.seasons_played ?? null;
@@ -77,8 +79,9 @@ async function loadRecords() {
 
       const cells = cols.map(([label, get], colIdx) => {
         if (colIdx === 0) return `<td>${ranks[i]}</td>`; // rank column
-        if (colIdx === 1 && incomplete) return `<td><em>*${row.manager}</em></td>`; // manager column
-        return `<td>${typeof get === "function" ? get(row, i) : row[get]}</td>`;
+        const nowrapClass = label === "Manager" ? ' class="col-name"' : "";
+        if (colIdx === 1 && incomplete) return `<td${nowrapClass}><em>*${row.manager}</em></td>`; // manager column
+        return `<td${nowrapClass}>${typeof get === "function" ? get(row, i) : row[get]}</td>`;
       }).join("");
 
       return `<tr class="${boldRows.has(i) ? "rank-first" : ""}">${cells}</tr>`;
