@@ -207,9 +207,7 @@ async function loadRecords() {
   const s5streak_b = section("Longest R/S Losing Streaks", r.top_losing_streaks, streakCols, (row) => row.streak, false);
 
   const s5over_a = section("Longest R/S Streak Over 100 Points", r.top_over100_streaks, streakCols, (row) => row.streak, false);
-  const s5over_b = section("Shortest R/S Streak Over 100 Points", r.bottom_over100_streaks, streakCols, (row) => row.streak, false);
   const s5under_a = section("Longest R/S Streak Under 100 Points", r.top_under100_streaks, streakCols, (row) => row.streak, false);
-  const s5under_b = section("Shortest R/S Streak Under 100 Points", r.bottom_under100_streaks, streakCols, (row) => row.streak, false);
 
   const rowGroups = [
     { group: [s1a, s1b] },
@@ -217,8 +215,7 @@ async function loadRecords() {
     { group: [s3a, s3b] },
     { group: [s4a, s4b], footnote: "*Current in-progress season not included in Games Above 125 / Below 100 counts." },
     { group: [s5streak_a, s5streak_b] },
-    { group: [s5over_a, s5over_b] },
-    { group: [s5under_a, s5under_b] },
+    { group: [s5over_a, s5under_a] },
     { group: [s5a, s5b] },
     { group: [s6a, s6b] },
   ];
