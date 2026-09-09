@@ -43,23 +43,23 @@ function renderStreaks(data) {
     }
     const body = rows.map((row) => `
       <tr>
-        <td>${row.manager}</td>
+        <td class="col-name">${row.manager}</td>
         <td>${row[key]} games</td>
       </tr>
     `).join("");
     return `
       <div class="record-section">
         <h3>${title}</h3>
-        <table class="record-table">
-          <thead><tr><th>Manager</th><th>Streak</th></tr></thead>
+        <table class="record-table streak-table">
+          <thead><tr><th class="col-name">Manager</th><th>Streak</th></tr></thead>
           <tbody>${body}</tbody>
         </table>
       </div>
     `;
   }
 
-  const winTable = streakTable("Current Winning Streak Leaders", cs.top_current_winning_streaks, "win_streak");
-  const loseTable = streakTable("Current Losing Streak Leaders", cs.top_current_losing_streaks, "loss_streak");
+  const winTable = streakTable("Winning Streak Leaders", cs.top_current_winning_streaks, "win_streak");
+  const loseTable = streakTable("Losing Streak Leaders", cs.top_current_losing_streaks, "loss_streak");
 
   wrap.innerHTML = `<div class="record-row">${winTable}${loseTable}</div>`;
 }
@@ -97,12 +97,12 @@ function renderPowerRankings(data) {
     <table class="msi-table">
       <thead>
         <tr>
-          <th class="col-rank">#</th>
+          <th class="col-rank">Rank</th>
           <th class="col-name">Manager</th>
-          <th class="col-msi">Power</th>
-          <th class="num col-extra">Win% Pts</th>
-          <th class="num col-extra">Scoring Pts</th>
-          <th class="num col-extra">Sched Pts</th>
+          <th class="col-msi">Tot Points</th>
+          <th class="num col-extra">Win %</th>
+          <th class="num col-extra">Scoring</th>
+          <th class="num col-extra">Sched Diff</th>
         </tr>
       </thead>
       <tbody>
@@ -190,8 +190,8 @@ function renderStandings(data) {
     const record = row.ties > 0 ? `${row.wins}-${row.losses}-${row.ties}` : `${row.wins}-${row.losses}`;
     return `
       <tr>
-        <td>${row.team_name}</td>
-        <td>${row.manager}</td>
+        <td class="col-name">${row.team_name}</td>
+        <td class="col-name">${row.manager}</td>
         <td>${record}</td>
         <td>${row.points_for.toFixed(2)}</td>
         <td>${row.points_against.toFixed(2)}</td>
@@ -200,11 +200,11 @@ function renderStandings(data) {
   }).join("");
 
   wrap.innerHTML = `
-    <table class="record-table">
+    <table class="record-table standings-table">
       <thead>
         <tr>
-          <th>Team Name</th>
-          <th>Manager</th>
+          <th class="col-name">Team Name</th>
+          <th class="col-name">Manager</th>
           <th>Record</th>
           <th>Points For</th>
           <th>Points Against</th>
