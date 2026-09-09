@@ -860,13 +860,13 @@ main {
 }
 
 .power-explainer {
-  max-width: 480px;
+  max-width: 680px;
   margin: 0.75rem auto;
   text-align: center;
   color: var(--ink-soft);
   font-family: 'EB Garamond', serif;
   font-style: italic;
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   line-height: 1.6;
 }
 
@@ -875,7 +875,7 @@ main {
    Points Against are short values that don't need much room. */
 .standings-table th:nth-child(1),
 .standings-table td:nth-child(1) {
-  width: 32%;
+  width: 42%;
 }
 
 .standings-table th:nth-child(2),
@@ -884,15 +884,32 @@ main {
 }
 
 .standings-table th:nth-child(3),
-.standings-table td:nth-child(3),
+.standings-table td:nth-child(3) {
+  width: 12%;
+  white-space: nowrap;
+}
+
 .standings-table th:nth-child(4),
 .standings-table td:nth-child(4),
 .standings-table th:nth-child(5),
 .standings-table td:nth-child(5) {
-  width: 13.33%;
+  width: 9%;
   white-space: nowrap;
 }
 
 .col-name {
   white-space: nowrap;
+}
+
+/* Streak tables: widen Manager column so names never wrap */
+.streak-table th:first-child,
+.streak-table td:first-child {
+  width: 65%;
+}
+
+/* --- Thick section divider between major stat sections --- */
+.section-divider {
+  border: none;
+  border-top: 5px solid var(--navy);
+  margin: 2.5rem 0;
 }
