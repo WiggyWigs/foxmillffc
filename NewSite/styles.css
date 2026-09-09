@@ -937,3 +937,8 @@ main {
 .record-section h3.season-subhead {
   font-size: 1.5rem;
 }
+
+/* Current in-progress season's data entries, highlighted burnt orange */
+.record-table tr.current-season-entry td {
+  color: var(--rust);
+}
