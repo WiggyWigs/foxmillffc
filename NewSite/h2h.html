@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Head-to-Head — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<nav class="site-nav" id="site-nav">
+  <a href="index.html" class="nav-home" aria-label="Fox Mill Fantasy Football Club home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5.5 9.5V20a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1V9.5" />
+    </svg>
+  </a>
+  <div class="site-nav-links" id="site-nav-links">
+    <a href="manager-score-index.html">Manager Index</a>
+    <a href="hall-of-champions.html">Hall of Champions</a>
+    <a href="record-books.html">Record Books</a>
+    <a href="current-season.html">Current Season</a>
+    <a href="h2h.html" class="active">Head-to-Head</a>
+  </div>
+  <div class="nav-toggle" id="nav-toggle" role="button" tabindex="0" aria-label="Open menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</nav>
+
+<main>
+  <div class="panel">
+    <h2>Head-to-Head</h2>
+    <p class="msi-meta">Pick any two managers to compare their careers and their history against each other.</p>
+
+    <div class="h2h-picker">
+      <select id="mgrA" class="h2h-select"><option value="">Select a manager…</option></select>
+      <span class="h2h-vs-label">vs</span>
+      <select id="mgrB" class="h2h-select"><option value="">Select a manager…</option></select>
+    </div>
+
+    <div id="h2h-output"></div>
+  </div>
+</main>
+
+<script src="h2h.js"></script>
+<script>
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('site-nav-links');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navToggle.click();
+    }
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
+</body>
+</html>
