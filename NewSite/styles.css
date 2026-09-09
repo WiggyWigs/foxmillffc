@@ -722,8 +722,8 @@ main {
 }
 
 .msi-criteria ol {
-  max-width: 320px;
-  margin: 0 auto;
+  max-width: 720px;
+  margin: 0.4rem auto;
   padding-left: 0;
   list-style-position: inside;
   text-align: center;
@@ -731,7 +731,7 @@ main {
   font-family: 'EB Garamond', serif;
   font-style: italic;
   font-size: 0.75rem;
-  line-height: 1.6;
+  line-height: 1.3;
 }
 
 .criteria-inline {
@@ -878,27 +878,24 @@ main {
 }
 
 .power-explainer {
-  max-width: 680px;
-  margin: 0.75rem auto;
+  max-width: 720px;
+  margin: 0.4rem auto;
   text-align: center;
   color: var(--ink-soft);
   font-family: 'EB Garamond', serif;
   font-style: italic;
   font-size: 0.68rem;
-  line-height: 1.6;
+  line-height: 1.3;
 }
 
 /* --- Current Season: standings table column widths ---
    Team Name and Manager get most of the space; Record/Points For/
    Points Against are short values that don't need much room. */
 .standings-table th:nth-child(1),
-.standings-table td:nth-child(1) {
-  width: 42%;
-}
-
+.standings-table td:nth-child(1),
 .standings-table th:nth-child(2),
 .standings-table td:nth-child(2) {
-  width: 28%;
+  width: 35%;
 }
 
 .standings-table th:nth-child(3),
@@ -930,4 +927,13 @@ main {
   border: none;
   border-top: 5px solid var(--navy);
   margin: 2.5rem 0;
+}
+
+/* Current Season page: bigger page title and bigger subsection headers */
+#page-season-header {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+.record-section h3.season-subhead {
+  font-size: 1.5rem;
 }
