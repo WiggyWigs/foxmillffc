@@ -1010,3 +1010,28 @@ main {
   font-weight: 700;
   color: var(--rust);
 }
+
+/* Mobile: Standings table drops Points For / Points Against — the
+   two widest columns forced horizontal stretch on narrow screens. */
+@media (max-width: 640px) {
+  .standings-table th:nth-child(4),
+  .standings-table td:nth-child(4),
+  .standings-table th:nth-child(5),
+  .standings-table td:nth-child(5) {
+    display: none;
+  }
+}
+
+/* Mobile: H2H picker stacks cleanly (dropdown / vs / dropdown)
+   instead of wrapping mid-row, which could leave "vs" stranded next
+   to one dropdown awkwardly. */
+@media (max-width: 640px) {
+  .h2h-picker {
+    flex-direction: column;
+  }
+
+  .h2h-select {
+    width: 100%;
+    max-width: 280px;
+  }
+}
