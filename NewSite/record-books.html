@@ -9,26 +9,8 @@
 </head>
 <body>
 
-<nav class="site-nav" id="site-nav">
-  <a href="index.html" class="nav-home" aria-label="Fox Mill Fantasy Football Club home">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 11.5 12 4l9 7.5" />
-      <path d="M5.5 9.5V20a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1V9.5" />
-    </svg>
-  </a>
-  <div class="site-nav-links" id="site-nav-links">
-    <a href="manager-score-index.html">Manager Index</a>
-    <a href="hall-of-champions.html">Hall of Champions</a>
-    <a href="record-books.html" class="active">Record Books</a>
-    <a href="current-season.html">Current Season</a>
-    <a href="h2h.html">Head-to-Head</a>
-  </div>
-  <div class="nav-toggle" id="nav-toggle" role="button" tabindex="0" aria-label="Open menu" aria-expanded="false">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</nav>
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
 
 <main>
   <div class="panel">
@@ -43,27 +25,6 @@
 </main>
 
 <script src="records.js"></script>
-<script>
-  const navToggle = document.getElementById('nav-toggle');
-  const navLinks  = document.getElementById('site-nav-links');
-  navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.classList.toggle('open', isOpen);
-    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  });
-  navToggle.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      navToggle.click();
-    }
-  });
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      navToggle.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    });
-  });
-</script>
+
 </body>
 </html>
