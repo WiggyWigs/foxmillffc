@@ -54,8 +54,10 @@ function renderComparison() {
 
   const rows = [
     ["Seasons Played", a.seasons_played, b.seasons_played],
-    ["Record", `${a.wins}-${a.losses}${a.ties ? "-" + a.ties : ""}`, `${b.wins}-${b.losses}${b.ties ? "-" + b.ties : ""}`],
-    ["Winning %", (a.win_pct * 100).toFixed(1) + "%", (b.win_pct * 100).toFixed(1) + "%"],
+    ["R/S Record", `${a.rs_wins}-${a.rs_losses}${a.rs_ties ? "-" + a.rs_ties : ""}`, `${b.rs_wins}-${b.rs_losses}${b.rs_ties ? "-" + b.rs_ties : ""}`],
+    ["R/S W%", (a.rs_win_pct * 100).toFixed(1) + "%", (b.rs_win_pct * 100).toFixed(1) + "%"],
+    ["Playoff Record", `${a.po_wins}-${a.po_losses}${a.po_ties ? "-" + a.po_ties : ""}`, `${b.po_wins}-${b.po_losses}${b.po_ties ? "-" + b.po_ties : ""}`],
+    ["Playoff W%", (a.po_win_pct * 100).toFixed(1) + "%", (b.po_win_pct * 100).toFixed(1) + "%"],
     ["R/S Average Score", a.rs_avg_score.toFixed(2), b.rs_avg_score.toFixed(2)],
     ["Longest Winning Streak", `${a.longest_win_streak} games`, `${b.longest_win_streak} games`],
     ["Playoffs Made", a.playoff_appearances, b.playoff_appearances],
