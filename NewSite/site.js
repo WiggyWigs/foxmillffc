@@ -25,7 +25,9 @@ async function loadManagerScoreIndex() {
   }
 
   if (updatedEl) {
-    updatedEl.textContent = data.last_updated ? `updated ${data.last_updated}` : "";
+    updatedEl.textContent = data.msi_last_complete_season
+      ? `Scores official as of ${data.msi_last_complete_season} season`
+      : "";
   }
 
   const rows = Object.entries(data.managers)
