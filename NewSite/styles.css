@@ -439,11 +439,10 @@ main {
 
 .reigning-badge {
   font-family: 'EB Garamond', serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--rust);
+  color: var(--ink-soft);
   margin-bottom: 0.9rem;
 }
 
@@ -489,9 +488,10 @@ main {
   text-transform: uppercase;
   color: var(--ink-soft);
   text-align: center;
+  margin-top: 1.75rem;
   margin-bottom: 1.75rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 2px solid var(--hairline);
+  padding-top: 0.6rem;
+  border-top: 2px solid var(--hairline);
 }
 
 .past-grid {
