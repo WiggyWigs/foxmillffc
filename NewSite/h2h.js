@@ -102,11 +102,6 @@ function renderComparison() {
       <td>${bWins}</td>
     </tr>
     <tr>
-      <td>${bWins}</td>
-      <td class="h2h-stat-label">Losses</td>
-      <td>${aWins}</td>
-    </tr>
-    <tr>
       <td>${aAvg}</td>
       <td class="h2h-stat-label">Average Score</td>
       <td>${bAvg}</td>
