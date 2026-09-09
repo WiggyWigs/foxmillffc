@@ -18,10 +18,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const seasonLabel = document.getElementById("season-year-label");
+  const pageHeader = document.getElementById("page-season-header");
   const season = data.power_rankings?.season || data.current_streaks?.season
     || data.current_standings?.season;
   if (season && seasonLabel) {
     seasonLabel.textContent = `Fox Mill Fantasy Football Club — ${season} Season`;
+  }
+  if (season && pageHeader) {
+    pageHeader.textContent = `${season} Season`;
   }
 
   renderStreaks(data);
@@ -190,8 +194,8 @@ function renderStandings(data) {
     const record = row.ties > 0 ? `${row.wins}-${row.losses}-${row.ties}` : `${row.wins}-${row.losses}`;
     return `
       <tr>
-        <td class="col-name">${row.team_name}</td>
         <td class="col-name">${row.manager}</td>
+        <td class="col-name">${row.team_name}</td>
         <td>${record}</td>
         <td>${row.points_for.toFixed(2)}</td>
         <td>${row.points_against.toFixed(2)}</td>
@@ -203,8 +207,8 @@ function renderStandings(data) {
     <table class="record-table standings-table">
       <thead>
         <tr>
-          <th class="col-name">Team Name</th>
           <th class="col-name">Manager</th>
+          <th class="col-name">Team Name</th>
           <th>Record</th>
           <th>Points For</th>
           <th>Points Against</th>
