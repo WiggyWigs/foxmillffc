@@ -29,8 +29,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderStreaks(data);
-  renderPowerRankings(data);
   renderStandings(data);
+  renderPlayoffProbability(data);
+  renderPowerRankings(data);
 });
 
 function renderStreaks(data) {
@@ -66,6 +67,63 @@ function renderStreaks(data) {
   const loseTable = streakTable("Losing Streak Leaders", cs.top_current_losing_streaks, "loss_streak");
 
   wrap.innerHTML = `<div class="record-row">${winTable}${loseTable}</div>`;
+}
+
+function renderPlayoffProbability(data) {
+  const section = document.getElementById("playoff-prob-wrap").closest(".record-section");
+  const meta = document.getElementById("playoff-prob-meta");
+  const wrap = document.getElementById("playoff-prob-wrap");
+  const divider = section.previousElementSibling; // the <hr> right before this section
+
+  const pp = data.playoff_probabilities;
+
+  if (!pp || !pp.visible) {
+    // Season not far enough along, or already fully decided — hide
+    // the whole section (and its leading divider) rather than show
+    // an empty box.
+    if (pp && pp.reason === "too_early") {
+      section.style.display = "";
+      if (divider) divider.style.display = "";
+      meta.textContent = "";
+      wrap.innerHTML = `<p class="load-state">Coming after Week 3.</p>`;
+    } else {
+      section.style.display = "none";
+      if (divider) divider.style.display = "none";
+    }
+    return;
+  }
+
+  section.style.display = "";
+  if (divider) divider.style.display = "";
+  const seasonCount = data.playoff_probability_model?.seasons_used?.length || 0;
+  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and schedule difficulty.`;
+
+  const rows = pp.managers; // already sorted by probability descending
+
+  const body = rows.map((row) => `
+    <tr>
+      <td class="col-name">${row.manager}</td>
+      <td>${row.wins}-${row.losses}</td>
+      <td class="msi-score">${row.probability}%</td>
+      <td class="num col-extra">${row.points_scored.toFixed(1)}</td>
+      <td class="num col-extra">${row.schedule_difficulty >= 0 ? "+" : ""}${(row.schedule_difficulty * 100).toFixed(1)}%</td>
+    </tr>
+  `).join("");
+
+  wrap.innerHTML = `
+    <table class="msi-table">
+      <thead>
+        <tr>
+          <th class="col-name">Manager</th>
+          <th>Record</th>
+          <th class="col-msi">Probability</th>
+          <th class="num col-extra">Points</th>
+          <th class="num col-extra">Sched Diff</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
 }
 
 function renderPowerRankings(data) {
