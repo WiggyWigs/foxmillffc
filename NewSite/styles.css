@@ -1040,3 +1040,25 @@ main {
   height: auto;
   margin: 0 auto 0.5rem;
 }
+
+.record-banner-image {
+  display: block;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.rafters-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.rafters-banner {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+}
