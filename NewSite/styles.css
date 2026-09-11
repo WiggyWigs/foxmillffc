@@ -1062,3 +1062,7 @@ main {
   width: 100%;
   height: auto;
 }
+
+.rafters-panel {
+  padding-bottom: 0.75rem;
+}
