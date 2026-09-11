@@ -1,0 +1,44 @@
+name: Weekly stats update
+
+on:
+  schedule:
+    # 5:00 AM Eastern. GitHub Actions cron runs in UTC and does NOT
+    # adjust for daylight saving automatically — this is 10:00 UTC,
+    # which is 5:00 AM EST (winter) but 6:00 AM EDT (summer/early
+    # season). See the note below the workflow for how to handle this.
+    - cron: '0 10 * * 2'
+  workflow_dispatch: {}  # lets you also trigger this manually from the Actions tab
+
+permissions:
+  contents: write  # needed so the workflow can commit stats.json back
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install espn_api
+
+      - name: Run ESPN pull + ingest pipeline
+        env:
+          ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+        run: python NewSite/scripts/espn_pull.py
+
+      - name: Commit and push updated stats
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add NewSite/data/stats.json NewSite/data/fastest-to-25-wins-banner.png NewSite/scripts/team_mapping.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Automated weekly stats update"
+          git push
