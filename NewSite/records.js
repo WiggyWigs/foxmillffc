@@ -145,11 +145,6 @@ async function loadRecords() {
     ["Year", "year"],
     ["Average Score", (row) => row.avg_score.toFixed(2)],
   ];
-  const managerGamesCols = [
-    rankCol,
-    ["Manager", "manager"],
-    ["Games", "games"],
-  ];
   const streakCols = [
     rankCol,
     ["Manager", "manager"],
@@ -196,10 +191,6 @@ async function loadRecords() {
   const s3b = section("Lowest Playoff Game Scores", r.bottom_playoff_games, managerYearScoreCols, (row) => row.score, false);
   const s4a = section("Games Scored Above 125 Points", games125WithAvg, gamesThresholdCols, (row) => row.avgRaw, true);
   const s4b = section("Games Scored Below 100 Points", games100WithAvg, gamesThresholdCols, (row) => row.avgRaw, true);
-  const s5a = section("Fastest Manager to 25 Wins", r.fastest_to_25_wins, managerGamesCols, (row) => row.games, false);
-  const s5b = section("Fastest Manager to 50 Wins", r.fastest_to_50_wins, managerGamesCols, (row) => row.games, false);
-  const s6a = section("Fastest Manager to 25 Losses", r.fastest_to_25_losses, managerGamesCols, (row) => row.games, false);
-  const s6b = section("Fastest Manager to 50 Losses", r.fastest_to_50_losses, managerGamesCols, (row) => row.games, false);
 
   // Streaks — inserted between the games-threshold pair and the
   // fastest-to-N pairs, per the requested ordering.
@@ -216,8 +207,6 @@ async function loadRecords() {
     { group: [s4a, s4b], footnote: "*Current in-progress season not included in Games Above 125 / Below 100 counts." },
     { group: [s5streak_a, s5streak_b] },
     { group: [s5over_a, s5under_a] },
-    { group: [s5a, s5b] },
-    { group: [s6a, s6b] },
   ];
 
   wrap.innerHTML = rowGroups
