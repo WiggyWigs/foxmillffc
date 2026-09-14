@@ -40,8 +40,23 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
-CSV_OUTPUT_PATH = SCRIPT_DIR / "espn_pull_latest.csv"
-UPCOMING_MATCHUPS_PATH = SCRIPT_DIR.parent / "data" / "upcoming_matchups.json"
+CSV_OUTPUT_PATH = SCRIPT_DIR / os.environ.get("CSV_OUTPUT_FILENAME", "espn_pull_latest.csv")
+UPCOMING_MATCHUPS_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("UPCOMING_MATCHUPS_FILENAME", "upcoming_matchups.json")
+
+# Test-cutoff mode: when both are set, the pull pretends the season only
+# progressed through this year/week — everything after is excluded, and
+# the "upcoming matchups" file is built from the real schedule for the
+# week right after the cutoff (using ESPN's own real historical data,
+# just ignoring its scores). This is what lets a full pipeline test run
+# safely in GitHub Actions against real past data without ever touching
+# live current-season files, by pointing every *_FILENAME env var above
+# at test-only names.
+TEST_CUTOFF_YEAR = os.environ.get("TEST_CUTOFF_YEAR")
+TEST_CUTOFF_WEEK = os.environ.get("TEST_CUTOFF_WEEK")
+if TEST_CUTOFF_YEAR:
+    TEST_CUTOFF_YEAR = int(TEST_CUTOFF_YEAR)
+if TEST_CUTOFF_WEEK:
+    TEST_CUTOFF_WEEK = int(TEST_CUTOFF_WEEK)
 INGEST_SCRIPT_PATH = SCRIPT_DIR / "ingest_csv.py"
 
 LEAGUE_ID = 1222412013
@@ -123,6 +138,9 @@ def pull_all_scores(league_id, swid, espn_s2):
     any_new_resolutions = False
 
     for year in YEARS:
+        if TEST_CUTOFF_YEAR and year > TEST_CUTOFF_YEAR:
+            continue  # test-cutoff mode: pretend later years haven't happened
+
         year_str = str(year)
         league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
         regular_season_weeks = league.settings.reg_season_count
@@ -133,6 +151,9 @@ def pull_all_scores(league_id, swid, espn_s2):
         year_roster = {mgr for (y, _), mgr in resolved.items() if y == year_str}
 
         for week in range(1, total_weeks + 1):
+            if TEST_CUTOFF_YEAR and year == TEST_CUTOFF_YEAR and TEST_CUTOFF_WEEK and week > TEST_CUTOFF_WEEK:
+                break  # test-cutoff mode: pretend later weeks haven't happened
+
             try:
                 matchups = league.scoreboard(week=week)
             except Exception:
@@ -201,7 +222,7 @@ def pull_all_scores(league_id, swid, espn_s2):
     return rows, unmapped
 
 
-PLAYER_LINEUPS_PATH = SCRIPT_DIR.parent / "data" / "player_lineups.json"
+PLAYER_LINEUPS_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
 
 
 def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
@@ -212,8 +233,11 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
     de-duplication approach as the score data itself. Historical
     seasons are NOT backfilled by this; it only ever adds the newest
     week going forward from whenever this is first run.
+
+    In test-cutoff mode, "most recently completed" means TEST_CUTOFF_WEEK
+    specifically, not whatever the real season's actual final week was.
     """
-    year = max(YEARS)
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
     year_str = str(year)
     league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
     regular_season_weeks = league.settings.reg_season_count
@@ -224,20 +248,23 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
             existing = json.load(f)
     existing_keys = {(e["year"], e["week"], e["manager"]) for e in existing}
 
-    # Find the most recently completed week (last one with real scores).
-    latest_completed_week = None
-    for week in range(1, regular_season_weeks + 5):
-        try:
-            matchups = league.scoreboard(week=week)
-        except Exception:
-            break
-        real = [m for m in matchups if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
-        if not real:
-            break
-        if any(m.away_score != 0 or m.home_score != 0 for m in real):
-            latest_completed_week = week
-        else:
-            break  # first unplayed week — stop, we found the latest completed one already
+    if TEST_CUTOFF_WEEK:
+        latest_completed_week = TEST_CUTOFF_WEEK
+    else:
+        # Find the most recently completed week (last one with real scores).
+        latest_completed_week = None
+        for week in range(1, regular_season_weeks + 5):
+            try:
+                matchups = league.scoreboard(week=week)
+            except Exception:
+                break
+            real = [m for m in matchups if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
+            if not real:
+                break
+            if any(m.away_score != 0 or m.home_score != 0 for m in real):
+                latest_completed_week = week
+            else:
+                break  # first unplayed week — stop, we found the latest completed one already
 
     if latest_completed_week is None:
         print("No completed weeks found — skipping lineup capture.")
@@ -293,13 +320,23 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
     yet) to upcoming_matchups.json. This is the schedule data that gets
     thrown away by the 0-0 filter in pull_all_scores, but the "Game of
     the Week" preview needs to know who's playing whom next week.
+
+    In test-cutoff mode, "next week" means TEST_CUTOFF_WEEK + 1 —
+    grabbing that week's real pairings from ESPN's history and
+    deliberately ignoring that it already has a real score, since
+    we're pretending the season only got as far as the cutoff.
     """
-    year = max(YEARS)
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
     year_str = str(year)
     league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
     regular_season_weeks = league.settings.reg_season_count
 
-    for week in range(1, regular_season_weeks + 5):
+    if TEST_CUTOFF_WEEK:
+        target_weeks = [TEST_CUTOFF_WEEK + 1]
+    else:
+        target_weeks = range(1, regular_season_weeks + 5)
+
+    for week in target_weeks:
         try:
             matchups = league.scoreboard(week=week)
         except Exception:
@@ -307,15 +344,17 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
         if not matchups:
             break
 
-        # An unplayed week: every real matchup shows 0-0.
         real_matchups = [
             m for m in matchups
             if getattr(m, "away_team", None) and getattr(m, "home_team", None)
         ]
         if not real_matchups:
             continue
-        if any(m.away_score != 0 or m.home_score != 0 for m in real_matchups):
-            continue  # this week has already been played, keep looking
+
+        # Outside test mode, an unplayed week is identified by every
+        # game showing 0-0 — skip weeks that have already happened.
+        if not TEST_CUTOFF_WEEK and any(m.away_score != 0 or m.home_score != 0 for m in real_matchups):
+            continue
 
         pairings = []
         for m in real_matchups:
@@ -359,8 +398,8 @@ def main():
     # Snapshot the current stats.json BEFORE ingest_csv.py overwrites it —
     # this is what lets generate_recap.py detect "new record set this
     # week" by comparing before/after. Scratch file, not committed.
-    stats_path = SCRIPT_DIR.parent / "data" / "stats.json"
-    stats_snapshot_path = SCRIPT_DIR.parent / "data" / "stats_previous_run.json"
+    stats_path = SCRIPT_DIR.parent / "data" / os.environ.get("STATS_FILENAME", "stats.json")
+    stats_snapshot_path = SCRIPT_DIR.parent / "data" / os.environ.get("STATS_SNAPSHOT_FILENAME", "stats_previous_run.json")
     if stats_path.exists():
         import shutil
         shutil.copy(stats_path, stats_snapshot_path)
