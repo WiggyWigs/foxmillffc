@@ -1,5 +1,6 @@
 {
   "Brian Kleinhenz": "Loves making absurd, lopsided trade proposals and trying to shake up the league's rosters.",
+  "John Schauder": "Always the bridesmaid, good teams, tough schedules.",
 
   "_readme": "Add a line for any manager you want the AI to have material on — running jokes, reputations, whatever's true and fair game. Managers without an entry here just won't get any personal flavor added; that's fine, not every recap needs it. Keep entries short (one sentence) since this gets fed into the prompt every time that manager appears."
 }
