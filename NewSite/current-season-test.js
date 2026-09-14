@@ -38,11 +38,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 function renderRecap(data) {
   const recap = data.weekly_recap || {};
 
+  const prevHeading = document.getElementById("recap-previous-heading");
+  if (recap.previous_weekend_week != null) {
+    prevHeading.textContent = `Week ${recap.previous_weekend_week} Impact Game`;
+  }
+
   const prevWrap = document.getElementById("recap-previous-wrap");
   if (recap.previous_weekend) {
     prevWrap.innerHTML = `<p class="recap-text">${recap.previous_weekend}</p>`;
   } else {
     prevWrap.innerHTML = `<p class="load-state">No recap yet — check back after this week's games.</p>`;
+  }
+
+  const gotwHeading = document.getElementById("recap-gotw-heading");
+  if (recap.game_of_the_week_week != null) {
+    gotwHeading.textContent = `Week ${recap.game_of_the_week_week} - Game of the Week`;
   }
 
   const gotwWrap = document.getElementById("recap-gotw-wrap");
@@ -60,15 +70,15 @@ function renderCallouts(callouts) {
   const grid = document.getElementById("callout-grid");
 
   const items = [];
-  if (callouts.last_gotw_result) items.push({ text: callouts.last_gotw_result });
+  if (callouts.last_gotw_result) items.push(callouts.last_gotw_result);
   if (Array.isArray(callouts.new_records)) {
-    callouts.new_records.forEach((text) => items.push({ text, record: true }));
+    callouts.new_records.forEach((item) => items.push(item));
   }
-  if (callouts.longest_win_streak) items.push({ text: callouts.longest_win_streak });
-  if (callouts.longest_loss_streak) items.push({ text: callouts.longest_loss_streak });
-  if (callouts.biggest_margin) items.push({ text: callouts.biggest_margin });
-  if (callouts.lowest_scoring_team) items.push({ text: callouts.lowest_scoring_team });
-  if (callouts.highest_scoring_player) items.push({ text: callouts.highest_scoring_player });
+  if (callouts.longest_win_streak) items.push(callouts.longest_win_streak);
+  if (callouts.longest_loss_streak) items.push(callouts.longest_loss_streak);
+  if (callouts.biggest_margin) items.push(callouts.biggest_margin);
+  if (callouts.lowest_scoring_team) items.push(callouts.lowest_scoring_team);
+  if (callouts.highest_scoring_player) items.push(callouts.highest_scoring_player);
 
   if (items.length === 0) {
     section.style.display = "none";
@@ -76,9 +86,39 @@ function renderCallouts(callouts) {
   }
 
   section.style.display = "";
-  grid.innerHTML = items
-    .map((item) => `<div class="callout-item${item.record ? " callout-record" : ""}">${item.text}</div>`)
-    .join("");
+  grid.innerHTML = items.map(renderCalloutCard).join("");
+}
+
+function renderCalloutCard(item) {
+  if (item.style === "sentence") {
+    return `
+      <div class="callout-item callout-sentence">
+        <div class="callout-item-text">
+          <span class="callout-label">${item.label}</span>
+          <span class="callout-headline">${item.text}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Default: the name + big number "impact" card.
+  const valueDisplay = typeof item.value === "number"
+    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
+    : item.value;
+
+  return `
+    <div class="callout-item">
+      <div class="callout-item-text">
+        <span class="callout-label">${item.label}</span>
+        <span class="callout-headline">${item.headline}</span>
+        ${item.subtitle ? `<span class="callout-subtitle">${item.subtitle}</span>` : ""}
+      </div>
+      <div class="callout-value-wrap">
+        <span class="callout-value">${valueDisplay}</span>
+        ${item.unit ? `<span class="callout-unit">${item.unit}</span>` : ""}
+      </div>
+    </div>
+  `;
 }
 
 function renderStreaks(data) {
