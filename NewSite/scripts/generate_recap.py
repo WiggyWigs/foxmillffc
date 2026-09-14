@@ -115,20 +115,37 @@ def get_manager_flavor(manager, stats, lore):
 
 
 def get_playoff_probability_trend(manager, old_stats, new_stats):
-    """This manager's playoff probability last week vs. this week, if
-    both are available — the ONLY acceptable way to reference playoff
-    chances in a narrative (never a vague qualitative claim)."""
-    def lookup(s):
-        pp = (s or {}).get("playoff_probabilities")
-        if not pp or not pp.get("visible"):
-            return None
+    """This manager's playoff probability last week vs. this week —
+    the ONLY acceptable way to reference playoff chances in a
+    narrative (never a vague qualitative claim). Returns None unless
+    the "previous" snapshot is verifiably from an earlier week than
+    the current one — without this check, two test runs that aren't
+    genuinely sequential (e.g. the same cutoff week run twice) would
+    silently report a manager's probability as "unchanged" just
+    because it's literally the same computation compared to itself,
+    not a real week-over-week trend."""
+    old_pp = (old_stats or {}).get("playoff_probabilities")
+    new_pp = (new_stats or {}).get("playoff_probabilities")
+    if not old_pp or not new_pp or not old_pp.get("visible") or not new_pp.get("visible"):
+        return None
+
+    old_season, old_week = old_pp.get("season"), old_pp.get("current_week")
+    new_season, new_week = new_pp.get("season"), new_pp.get("current_week")
+    if old_season is None or new_season is None or old_week is None or new_week is None:
+        return None
+    if (old_season, old_week) >= (new_season, new_week):
+        # Not genuinely "previous" — same week, or somehow later.
+        # Reporting a trend here would be actively misleading.
+        return None
+
+    def lookup(pp):
         for row in pp.get("managers", []):
             if row["manager"] == manager:
                 return row["probability"]
         return None
 
-    previous = lookup(old_stats)
-    current = lookup(new_stats)
+    previous = lookup(old_pp)
+    current = lookup(new_pp)
     if previous is None and current is None:
         return None
     return {"previous_week_pct": previous, "current_week_pct": current}
@@ -369,7 +386,10 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
         "'ManagerA vs ManagerB:' prefix — that's shown separately on the "
         "page. Just start straight into the recap itself. Whenever you "
         "state a player's point total, always write it as 'X points' or "
-        "'X.X points' — never a bare number on its own. Mention AT MOST "
+        "'X.X points' — never a bare number on its own. Whenever you "
+        "state a percentage (playoff probability or anything else), "
+        "always write it as 'X%' or 'X.X%' — never spell out 'percent' "
+        "as a word. Mention AT MOST "
         "one standout performance and ONE disappointing performance per "
         "team, and ONLY the specific players named in the top/bottom "
         "scorer fields given — never reference, name, or invent stats "
@@ -492,7 +512,19 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "names, projections, stats, or background details not provided. "
         "Do not use markdown formatting. Whenever you state a point "
         "total, always write it as 'X points' or 'X.X points' — never a "
-        "bare number alone. Whenever the selection criteria refers to a "
+        "bare number alone. Whenever you state a percentage (playoff "
+        "probability or anything else), always write it as 'X%' or "
+        "'X.X%' — never spell out 'percent' as a word. When referring "
+        "to a manager's standings position, always phrase it as an "
+        "ordinal — 'ranked 2nd', 'sits 5th in the standings', etc. — "
+        "never 'rank 2' or 'at rank 5' as a bare number. IMPORTANT: "
+        "schedule_difficulty is counterintuitively named — a HIGHER "
+        "(more positive) value means an EASIER schedule, and a LOWER "
+        "(more negative, or less positive) value means a HARDER "
+        "schedule. Do not assume a higher number means 'tougher' — "
+        "double-check the actual comparison before describing either "
+        "manager's schedule as harder or easier. Whenever the selection "
+        "criteria refers to a "
         "manager's 'rank' or being 'ranked' (e.g. 'top 5', 'ranked "
         "7-10'), this means their standings_rank field specifically — "
         "their position in the actual win-loss standings — NOT their "
