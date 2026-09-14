@@ -1066,3 +1066,63 @@ main {
 .rafters-panel {
   padding-bottom: 0.75rem;
 }
+
+.recap-section {
+  text-align: center;
+}
+
+.recap-text {
+  max-width: 640px;
+  margin: 0 auto;
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.recap-game-label {
+  font-weight: 700;
+  color: var(--rust);
+}
+
+.callout-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .callout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.callout-item {
+  background: var(--panel-solid);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink);
+  text-align: left;
+}
+
+.callout-item.callout-record {
+  border-color: var(--rust);
+  background: rgba(184, 80, 31, 0.06);
+}
+
+.test-banner {
+  background: #b8501f;
+  color: #fff;
+  text-align: center;
+  font-family: 'EB Garamond', serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 1rem;
+}
