@@ -28,18 +28,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     pageHeader.textContent = `${season} Season`;
   }
 
-  renderRecap(data);
-  renderStreaks(data);
-  renderStandings(data);
-  renderPlayoffProbability(data);
-  renderPowerRankings(data);
+  // Each section renders independently — one section's bug should
+  // never take down the rest of the page.
+  const sections = [renderRecap, renderStreaks, renderStandings, renderPlayoffProbability, renderPowerRankings];
+  for (const renderFn of sections) {
+    try {
+      renderFn(data);
+    } catch (err) {
+      console.error(`${renderFn.name} failed:`, err);
+    }
+  }
 });
 
 function renderRecap(data) {
   const recap = data.weekly_recap || {};
 
   const prevHeading = document.getElementById("recap-previous-heading");
-  if (recap.previous_weekend_week != null) {
+  if (prevHeading && recap.previous_weekend_week != null) {
     prevHeading.textContent = `Week ${recap.previous_weekend_week} Impact Game`;
   }
 
@@ -51,7 +56,7 @@ function renderRecap(data) {
   }
 
   const gotwHeading = document.getElementById("recap-gotw-heading");
-  if (recap.game_of_the_week_week != null) {
+  if (gotwHeading && recap.game_of_the_week_week != null) {
     gotwHeading.textContent = `Week ${recap.game_of_the_week_week} - Game of the Week`;
   }
 
