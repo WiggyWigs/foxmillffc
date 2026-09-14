@@ -1,0 +1,30 @@
+{
+  "year": 2025,
+  "week": 9,
+  "matchups": [
+    {
+      "away_manager": "Carl Bruce",
+      "home_manager": "Jason Carlton"
+    },
+    {
+      "away_manager": "Erik Servinsky",
+      "home_manager": "Blake Pratt"
+    },
+    {
+      "away_manager": "Daniel Bahamonde",
+      "home_manager": "Jay Nelson"
+    },
+    {
+      "away_manager": "Brian Kleinhenz",
+      "home_manager": "John Schauder"
+    },
+    {
+      "away_manager": "Brian Harris",
+      "home_manager": "Eddie McCumiskey"
+    },
+    {
+      "away_manager": "Kevin Mallon",
+      "home_manager": "Greg Wigton"
+    }
+  ]
+}
