@@ -1193,7 +1193,7 @@ main {
   text-align: center;
   font-family: 'EB Garamond', serif;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1.15rem;
   color: var(--ink-soft);
-  margin: -0.5rem 0 0.75rem;
+  margin: -0.3rem 0 0.75rem;
 }
