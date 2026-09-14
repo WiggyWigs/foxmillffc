@@ -1188,3 +1188,12 @@ main {
   letter-spacing: 0.05em;
   padding: 0.5rem 1rem;
 }
+
+.recap-matchup-subtitle {
+  text-align: center;
+  font-family: 'EB Garamond', serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: -0.5rem 0 0.75rem;
+}
