@@ -45,10 +45,10 @@ import requests
 
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "data"
-STATS_PATH = DATA_DIR / "stats.json"
-STATS_SNAPSHOT_PATH = DATA_DIR / "stats_previous_run.json"  # written by espn_pull.py before ingest overwrites stats.json
-UPCOMING_MATCHUPS_PATH = DATA_DIR / "upcoming_matchups.json"
-PLAYER_LINEUPS_PATH = DATA_DIR / "player_lineups.json"
+STATS_PATH = DATA_DIR / os.environ.get("STATS_FILENAME", "stats.json")
+STATS_SNAPSHOT_PATH = DATA_DIR / os.environ.get("STATS_SNAPSHOT_FILENAME", "stats_previous_run.json")
+UPCOMING_MATCHUPS_PATH = DATA_DIR / os.environ.get("UPCOMING_MATCHUPS_FILENAME", "upcoming_matchups.json")
+PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
 RECAP_CRITERIA_PATH = SCRIPT_DIR / "recap_criteria.json"
 
 MODEL = "claude-sonnet-5"
@@ -462,7 +462,7 @@ def main():
     }
     with open(STATS_PATH, "w") as f:
         json.dump(stats, f, indent=2)
-    print("Saved recap content to stats.json.")
+    print(f"Saved recap content to {STATS_PATH}.")
 
 
 if __name__ == "__main__":
