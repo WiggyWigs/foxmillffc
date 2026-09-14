@@ -41,6 +41,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
 CSV_OUTPUT_PATH = SCRIPT_DIR / "espn_pull_latest.csv"
+UPCOMING_MATCHUPS_PATH = SCRIPT_DIR.parent / "data" / "upcoming_matchups.json"
 INGEST_SCRIPT_PATH = SCRIPT_DIR / "ingest_csv.py"
 
 LEAGUE_ID = 1222412013
@@ -200,6 +201,138 @@ def pull_all_scores(league_id, swid, espn_s2):
     return rows, unmapped
 
 
+PLAYER_LINEUPS_PATH = SCRIPT_DIR.parent / "data" / "player_lineups.json"
+
+
+def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
+    """
+    Pulls individual player lineup data (starters + bench, each player's
+    points that week) for the current year's most recently completed
+    week only — appended to player_lineups.json incrementally, same
+    de-duplication approach as the score data itself. Historical
+    seasons are NOT backfilled by this; it only ever adds the newest
+    week going forward from whenever this is first run.
+    """
+    year = max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    regular_season_weeks = league.settings.reg_season_count
+
+    existing = []
+    if PLAYER_LINEUPS_PATH.exists():
+        with open(PLAYER_LINEUPS_PATH) as f:
+            existing = json.load(f)
+    existing_keys = {(e["year"], e["week"], e["manager"]) for e in existing}
+
+    # Find the most recently completed week (last one with real scores).
+    latest_completed_week = None
+    for week in range(1, regular_season_weeks + 5):
+        try:
+            matchups = league.scoreboard(week=week)
+        except Exception:
+            break
+        real = [m for m in matchups if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
+        if not real:
+            break
+        if any(m.away_score != 0 or m.home_score != 0 for m in real):
+            latest_completed_week = week
+        else:
+            break  # first unplayed week — stop, we found the latest completed one already
+
+    if latest_completed_week is None:
+        print("No completed weeks found — skipping lineup capture.")
+        return
+
+    try:
+        box_scores = league.box_scores(week=latest_completed_week)
+    except Exception as e:
+        print(f"WARNING: couldn't fetch box scores for week {latest_completed_week}: {e}")
+        return
+
+    new_entries = []
+    for bs in box_scores:
+        for team, lineup in ((bs.away_team, bs.away_lineup), (bs.home_team, bs.home_lineup)):
+            if team is None:
+                continue
+            manager = resolved_mapping.get((year_str, team.team_name))
+            if manager is None:
+                continue  # unmapped team name — same safety net as the score pull
+            key = (year_str, str(latest_completed_week), manager)
+            if key in existing_keys:
+                continue
+
+            players = [
+                {
+                    "name": p.name,
+                    "position": p.position,
+                    "slot": p.slot_position,
+                    "points": p.points,
+                    "started": p.slot_position not in ("BE", "IR"),
+                }
+                for p in lineup
+            ]
+            new_entries.append({
+                "year": year_str, "week": str(latest_completed_week),
+                "manager": manager, "players": players,
+            })
+
+    if not new_entries:
+        print(f"No new lineup entries for week {latest_completed_week} (already captured, or nothing mapped).")
+        return
+
+    existing.extend(new_entries)
+    with open(PLAYER_LINEUPS_PATH, "w") as f:
+        json.dump(existing, f, indent=2)
+    print(f"Added {len(new_entries)} manager-lineups for week {latest_completed_week} to {PLAYER_LINEUPS_PATH}")
+
+
+def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
+    """
+    Finds the current (max) year's next unplayed week and saves just the
+    matchup pairings (manager names, no scores — they haven't happened
+    yet) to upcoming_matchups.json. This is the schedule data that gets
+    thrown away by the 0-0 filter in pull_all_scores, but the "Game of
+    the Week" preview needs to know who's playing whom next week.
+    """
+    year = max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    regular_season_weeks = league.settings.reg_season_count
+
+    for week in range(1, regular_season_weeks + 5):
+        try:
+            matchups = league.scoreboard(week=week)
+        except Exception:
+            break
+        if not matchups:
+            break
+
+        # An unplayed week: every real matchup shows 0-0.
+        real_matchups = [
+            m for m in matchups
+            if getattr(m, "away_team", None) and getattr(m, "home_team", None)
+        ]
+        if not real_matchups:
+            continue
+        if any(m.away_score != 0 or m.home_score != 0 for m in real_matchups):
+            continue  # this week has already been played, keep looking
+
+        pairings = []
+        for m in real_matchups:
+            away_mgr = resolved_mapping.get((year_str, m.away_team.team_name))
+            home_mgr = resolved_mapping.get((year_str, m.home_team.team_name))
+            if away_mgr and home_mgr:
+                pairings.append({"away_manager": away_mgr, "home_manager": home_mgr})
+
+        output = {"year": year, "week": week, "matchups": pairings}
+        with open(UPCOMING_MATCHUPS_PATH, "w") as f:
+            json.dump(output, f, indent=2)
+        print(f"Wrote {len(pairings)} upcoming matchups (Week {week}, {year}) to {UPCOMING_MATCHUPS_PATH}")
+        return
+
+    print("No upcoming unplayed week found — skipping upcoming_matchups.json.")
+
+
 def main():
     league_id, swid, espn_s2 = load_credentials()
 
@@ -223,6 +356,15 @@ def main():
         writer.writerows(rows)
     print(f"Wrote {len(rows)} rows to {CSV_OUTPUT_PATH}")
 
+    # Snapshot the current stats.json BEFORE ingest_csv.py overwrites it —
+    # this is what lets generate_recap.py detect "new record set this
+    # week" by comparing before/after. Scratch file, not committed.
+    stats_path = SCRIPT_DIR.parent / "data" / "stats.json"
+    stats_snapshot_path = SCRIPT_DIR.parent / "data" / "stats_previous_run.json"
+    if stats_path.exists():
+        import shutil
+        shutil.copy(stats_path, stats_snapshot_path)
+
     # Chain straight into ingest_csv.py — one script run, one result.
     result = subprocess.run(
         [sys.executable, str(INGEST_SCRIPT_PATH), str(CSV_OUTPUT_PATH)],
@@ -230,6 +372,20 @@ def main():
     )
     if result.returncode != 0:
         sys.exit("ingest_csv.py failed — see output above.")
+
+    try:
+        capture_upcoming_matchups(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        # Non-fatal — the recap step downstream just won't have a
+        # "Game of the Week" preview this run if this fails.
+        print(f"WARNING: couldn't capture upcoming matchups: {e}")
+
+    try:
+        capture_latest_lineups(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        # Non-fatal — the "highest scoring player" callout just won't
+        # have data this run if this fails.
+        print(f"WARNING: couldn't capture lineups: {e}")
 
 
 if __name__ == "__main__":
