@@ -23,6 +23,7 @@ against manager-name typos fragmenting career stats.
 """
 
 import csv
+import os
 import json
 import sys
 from pathlib import Path
@@ -38,10 +39,10 @@ except ImportError:
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "data"
 ROSTER_PATH = DATA_DIR / "manager_roster.json"
-STATS_PATH = DATA_DIR / "stats.json"
+STATS_PATH = DATA_DIR / os.environ.get("STATS_FILENAME", "stats.json")
 ASSETS_DIR = SCRIPT_DIR.parent / "assets"
 BANNER_BLANK_PATH = ASSETS_DIR / "banner_blank_25wins.png"
-BANNER_OUTPUT_PATH = DATA_DIR / "fastest-to-25-wins-banner.png"  # local working copy only —
+BANNER_OUTPUT_PATH = DATA_DIR / os.environ.get("BANNER_FILENAME", "fastest-to-25-wins-banner.png")  # local working copy only —
 # on the live site this file belongs in NewSite/images/, NOT NewSite/data/,
 # since the-rafters.html references it as "images/fastest-to-25-wins-banner.png".
 BANNER_FONT_PATH = ASSETS_DIR / "BigShoulders-Bold.ttf"
