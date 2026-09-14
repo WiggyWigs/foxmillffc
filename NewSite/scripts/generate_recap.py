@@ -402,9 +402,11 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         return None, None
 
     standings = {}
+    standings_rank = {}
     if stats.get("current_standings"):
-        for row in stats["current_standings"]["standings"]:
+        for i, row in enumerate(stats["current_standings"]["standings"]):
             standings[row["manager"]] = row
+            standings_rank[row["manager"]] = i + 1  # already sorted with the real H2H/points tiebreak logic
 
     power = {}
     if stats.get("power_rankings"):
@@ -420,6 +422,7 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
     def manager_context(name):
         p = power.get(name, {})
         ctx = {
+            "standings_rank": standings_rank.get(name),
             "record_wins": standings.get(name, {}).get("wins"),
             "record_losses": standings.get(name, {}).get("losses"),
             "power_score": p.get("power_score"),
@@ -471,7 +474,12 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "names, projections, stats, or background details not provided. "
         "Do not use markdown formatting. Whenever you state a point "
         "total, always write it as 'X points' or 'X.X points' — never a "
-        "bare number alone. If you use the all-time meetings history, "
+        "bare number alone. Whenever the selection criteria refers to a "
+        "manager's 'rank' or being 'ranked' (e.g. 'top 5', 'ranked "
+        "7-10'), this means their standings_rank field specifically — "
+        "their position in the actual win-loss standings — NOT their "
+        "power_score or any other number. If you use the all-time "
+        "meetings history, "
         "use the h2h_record field for the real record (e.g. 'X leads "
         "Y-Z') — don't invent details beyond what's given. If you "
         "mention playoff chances or probability for a manager, you MUST "
