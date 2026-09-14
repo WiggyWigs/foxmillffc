@@ -645,7 +645,9 @@ def main():
 
     stats["weekly_recap"] = {
         "previous_weekend": recap_text,
+        "previous_weekend_week": week if week_games else None,
         "game_of_the_week": gotw_text,
+        "game_of_the_week_week": upcoming.get("week") if upcoming else None,
         "game_of_the_week_matchup": gotw_matchup,  # structured, for next week's result lookup
         "callouts": callouts,
     }
