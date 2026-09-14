@@ -158,7 +158,19 @@ def call_claude(system_prompt, user_prompt, max_tokens=400):
     )
     resp.raise_for_status()
     data = resp.json()
-    return "".join(block["text"] for block in data["content"] if block["type"] == "text").strip()
+    text = "".join(block["text"] for block in data["content"] if block["type"] == "text").strip()
+
+    if not text:
+        # This happened silently before — no exception, but nothing
+        # usable either. Surface the actual API response so the real
+        # cause (stop_reason, content filtering, etc.) is visible in
+        # the Action log instead of just quietly saving an empty string.
+        stop_reason = data.get("stop_reason")
+        raise RuntimeError(
+            f"Claude returned no usable text (stop_reason={stop_reason!r}). "
+            f"Full response: {json.dumps(data)[:500]}"
+        )
+    return text
 
 
 # --- Shared helpers -------------------------------------------------------
@@ -459,7 +471,13 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "for a private fantasy football league's website — a group of "
         "40-something guys who have known each other for years and enjoy "
         "busting each other's chops — based on the selection criteria "
-        "given, then write a short preview of it. TONE: crude, funny, and "
+        "given, then write a short preview of it. You MUST pick one of "
+        "the matchups and write about it, every single time — even if "
+        "none of them perfectly satisfy the criteria. If nothing clearly "
+        "fits, use your best judgment to pick the closest available "
+        "match to what the criteria is asking for and proceed normally; "
+        "never respond with nothing, an apology, or a refusal to choose. "
+        "TONE: crude, funny, and "
         "unapologetically roasting. Backhanded compliments and blunt "
         "put-downs are expected. If a manager's background shows "
         "something roastable (a bad record, zero career playoff "
