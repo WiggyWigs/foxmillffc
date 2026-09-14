@@ -1102,18 +1102,80 @@ main {
 .callout-item {
   background: var(--panel-solid);
   border: 1px solid var(--hairline);
+  border-left: 4px solid var(--rust);
   border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  font-family: 'EB Garamond', serif;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--ink);
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   text-align: left;
 }
 
-.callout-item.callout-record {
-  border-color: var(--rust);
-  background: rgba(184, 80, 31, 0.06);
+.callout-item-text {
+  min-width: 0; /* allow truncation/wrap without pushing the number off */
+}
+
+.callout-label {
+  display: block;
+  font-family: 'EB Garamond', serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 0.2rem;
+}
+
+.callout-headline {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--navy);
+  line-height: 1.25;
+}
+
+.callout-subtitle {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+.callout-value-wrap {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.callout-value {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--rust);
+  line-height: 1;
+}
+
+.callout-unit {
+  display: block;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+/* Sentence-style callouts (e.g. last week's featured-game result) —
+   no big number, just a label and a line of text. */
+.callout-item.callout-sentence {
+  display: block;
+}
+
+.callout-item.callout-sentence .callout-headline {
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--ink);
+  line-height: 1.5;
 }
 
 .test-banner {
