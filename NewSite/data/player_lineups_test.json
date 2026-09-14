@@ -1,14 +1,30 @@
 [
   {
-    "year": "2025",
-    "week": "10",
-    "manager": "Erik Servinsky",
+    "year": "2026",
+    "week": "13",
+    "manager": "John Schauder",
     "players": [
+      {
+        "name": "Ja'Marr Chase",
+        "position": "WR",
+        "slot": "WR",
+        "points": 2.2,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
       {
         "name": "Trey McBride",
         "position": "TE",
         "slot": "TE",
-        "points": 25.2,
+        "points": 20.0,
         "started": true,
         "eligible_slots": [
           "WR/TE",
@@ -20,70 +36,10 @@
         ]
       },
       {
-        "name": "Tetairoa McMillan",
+        "name": "Emeka Egbuka",
         "position": "WR",
         "slot": "WR",
-        "points": 8.5,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tony Pollard",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Dak Prescott",
-        "position": "QB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Bucky Irving",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jordan Addison",
-        "position": "WR",
-        "slot": "WR",
-        "points": 5.0,
+        "points": 8.8,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -96,120 +52,10 @@
         ]
       },
       {
-        "name": "J.K. Dobbins",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.9,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Zach Charbonnet",
-        "position": "RB",
-        "slot": "RB",
-        "points": 14.3,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Brian Thomas Jr.",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Brandon Aubrey",
-        "position": "K",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Rams D/ST",
-        "position": "D/ST",
-        "slot": "BE",
-        "points": 5.0,
-        "started": false,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Seahawks D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 21.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Christian Watson",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 5.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Will Reichard",
-        "position": "K",
-        "slot": "K",
-        "points": 9.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Mac Jones",
+        "name": "Jalen Hurts",
         "position": "QB",
         "slot": "QB",
-        "points": 25.06,
+        "points": 24.72,
         "started": true,
         "eligible_slots": [
           "QB",
@@ -217,96 +63,14 @@
           "BE",
           "IR"
         ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Carl Bruce",
-    "players": [
+      },
       {
         "name": "TreVeyon Henderson",
         "position": "RB",
-        "slot": "RB",
-        "points": 29.5,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kenneth Walker III",
-        "position": "RB",
-        "slot": "RB",
-        "points": 7.5,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "DJ Moore",
-        "position": "WR",
-        "slot": "WR",
-        "points": 0.0,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jordan Mason",
-        "position": "RB",
-        "slot": "BE",
-        "points": 3.6,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Brock Purdy",
-        "position": "QB",
         "slot": "BE",
         "points": 0.0,
         "started": false,
         "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Chase Brown",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
           "RB",
           "RB/WR",
           "RB/WR/TE",
@@ -316,76 +80,10 @@
         ]
       },
       {
-        "name": "Caleb Williams",
-        "position": "QB",
-        "slot": "QB",
-        "points": 25.1,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Nico Collins",
-        "position": "WR",
-        "slot": "WR",
-        "points": 21.1,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Harrison Butker",
-        "position": "K",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Vikings D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 1.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Sam Darnold",
-        "position": "QB",
-        "slot": "BE",
-        "points": 4.92,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Romeo Doubs",
+        "name": "Parker Washington",
         "position": "WR",
         "slot": "RB/WR/TE",
-        "points": 1.0,
+        "points": 16.8,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -398,26 +96,10 @@
         ]
       },
       {
-        "name": "Oronde Gadsden",
-        "position": "TE",
-        "slot": "TE",
-        "points": 2.8,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Quentin Johnston",
+        "name": "Alec Pierce",
         "position": "WR",
         "slot": "BE",
-        "points": 6.7,
+        "points": 8.1,
         "started": false,
         "eligible_slots": [
           "RB/WR",
@@ -430,32 +112,12 @@
         ]
       },
       {
-        "name": "Matt Prater",
-        "position": "K",
-        "slot": "K",
-        "points": 1.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Jason Carlton",
-    "players": [
-      {
-        "name": "Ashton Jeanty",
+        "name": "Cam Skattebo",
         "position": "RB",
         "slot": "RB",
-        "points": 13.8,
+        "points": 14.1,
         "started": true,
         "eligible_slots": [
-          "Rookie",
           "RB",
           "RB/WR",
           "RB/WR/TE",
@@ -465,105 +127,10 @@
         ]
       },
       {
-        "name": "Tee Higgins",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Calvin Ridley",
-        "position": "WR",
-        "slot": "IR",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Zay Flowers",
-        "position": "WR",
-        "slot": "WR",
-        "points": 10.1,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "George Kittle",
-        "position": "TE",
-        "slot": "TE",
-        "points": 18.9,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Cooper Kupp",
-        "position": "WR",
-        "slot": "BE",
-        "points": 8.4,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Rashid Shaheed",
-        "position": "WR",
-        "slot": "WR",
-        "points": 2.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Chuba Hubbard",
+        "name": "Josh Jacobs",
         "position": "RB",
         "slot": "BE",
-        "points": 2.0,
+        "points": 0.0,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -575,26 +142,15 @@
         ]
       },
       {
-        "name": "Jake Elliott",
-        "position": "K",
+        "name": "Wan'Dale Robinson",
+        "position": "WR",
         "slot": "BE",
-        "points": 4.0,
+        "points": 6.3,
         "started": false,
         "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Juwan Johnson",
-        "position": "TE",
-        "slot": "BE",
-        "points": 17.2,
-        "started": false,
-        "eligible_slots": [
+          "RB/WR",
+          "WR",
           "WR/TE",
-          "TE",
           "RB/WR/TE",
           "OP",
           "BE",
@@ -602,26 +158,15 @@
         ]
       },
       {
-        "name": "Daniel Jones",
-        "position": "QB",
-        "slot": "QB",
-        "points": 15.5,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Matthew Stafford",
-        "position": "QB",
+        "name": "RJ Harvey",
+        "position": "RB",
         "slot": "BE",
-        "points": 26.9,
+        "points": 0,
         "started": false,
         "eligible_slots": [
-          "QB",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
           "OP",
           "BE",
           "IR"
@@ -631,7 +176,7 @@
         "name": "Texans D/ST",
         "position": "D/ST",
         "slot": "D/ST",
-        "points": 16.0,
+        "points": -4.0,
         "started": true,
         "eligible_slots": [
           "D/ST",
@@ -640,10 +185,10 @@
         ]
       },
       {
-        "name": "Rico Dowdle",
+        "name": "Quinshon Judkins",
         "position": "RB",
         "slot": "RB",
-        "points": 13.8,
+        "points": 6.0,
         "started": true,
         "eligible_slots": [
           "RB",
@@ -655,11 +200,11 @@
         ]
       },
       {
-        "name": "Nick Chubb",
+        "name": "Keaton Mitchell",
         "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 5.7,
-        "started": true,
+        "slot": "BE",
+        "points": 0.9,
+        "started": false,
         "eligible_slots": [
           "RB",
           "RB/WR",
@@ -670,13 +215,12 @@
         ]
       },
       {
-        "name": "Tyler Loop",
+        "name": "Brandon Aubrey",
         "position": "K",
         "slot": "K",
-        "points": 14.0,
+        "points": 1.0,
         "started": true,
         "eligible_slots": [
-          "Rookie",
           "K",
           "BE",
           "IR"
@@ -685,35 +229,19 @@
     ]
   },
   {
-    "year": "2025",
-    "week": "10",
-    "manager": "Daniel Bahamonde",
+    "year": "2026",
+    "week": "13",
+    "manager": "Jay Nelson",
     "players": [
       {
-        "name": "Bijan Robinson",
+        "name": "Christian McCaffrey",
         "position": "RB",
         "slot": "RB",
-        "points": 9.8,
+        "points": 11.3,
         "started": true,
         "eligible_slots": [
           "RB",
           "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Terry McLaurin",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
           "RB/WR/TE",
           "OP",
           "BE",
@@ -724,7 +252,7 @@
         "name": "DeVonta Smith",
         "position": "WR",
         "slot": "WR",
-        "points": 14.9,
+        "points": 6.8,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -737,11 +265,27 @@
         ]
       },
       {
-        "name": "Kyler Murray",
+        "name": "Tee Higgins",
+        "position": "WR",
+        "slot": "WR",
+        "points": 7.4,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Joe Burrow",
         "position": "QB",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
+        "slot": "QB",
+        "points": 14.16,
+        "started": true,
         "eligible_slots": [
           "QB",
           "OP",
@@ -750,10 +294,40 @@
         ]
       },
       {
-        "name": "Rome Odunze",
+        "name": "Tyler Warren",
+        "position": "TE",
+        "slot": "TE",
+        "points": 8.8,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "De'Von Achane",
+        "position": "RB",
+        "slot": "RB",
+        "points": 8.6,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Quentin Johnston",
         "position": "WR",
-        "slot": "WR",
-        "points": 17.6,
+        "slot": "RB/WR/TE",
+        "points": 2.7,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -766,12 +340,13 @@
         ]
       },
       {
-        "name": "Keon Coleman",
+        "name": "De'Zhaun Stribling",
         "position": "WR",
         "slot": "BE",
-        "points": 12.1,
+        "points": 0.0,
         "started": false,
         "eligible_slots": [
+          "Rookie",
           "RB/WR",
           "WR",
           "WR/TE",
@@ -782,22 +357,10 @@
         ]
       },
       {
-        "name": "Bills D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 2.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tyler Allgeier",
+        "name": "Zach Charbonnet",
         "position": "RB",
         "slot": "BE",
-        "points": 17.7,
+        "points": 0.0,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -809,26 +372,28 @@
         ]
       },
       {
-        "name": "Jaxson Dart",
-        "position": "QB",
-        "slot": "QB",
-        "points": 26.28,
-        "started": true,
+        "name": "Tyler Allgeier",
+        "position": "RB",
+        "slot": "BE",
+        "points": 8.0,
+        "started": false,
         "eligible_slots": [
-          "Rookie",
-          "QB",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
           "OP",
           "BE",
           "IR"
         ]
       },
       {
-        "name": "Darius Slayton",
+        "name": "Jordyn Tyson",
         "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 10.9,
-        "started": true,
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
         "eligible_slots": [
+          "Rookie",
           "RB/WR",
           "WR",
           "WR/TE",
@@ -839,7 +404,38 @@
         ]
       },
       {
-        "name": "Jake Bates",
+        "name": "Isiah Pacheco",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kenyon Sadiq",
+        "position": "TE",
+        "slot": "BE",
+        "points": 9.9,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Cam Little",
         "position": "K",
         "slot": "K",
         "points": 12.0,
@@ -851,41 +447,11 @@
         ]
       },
       {
-        "name": "Hunter Henry",
-        "position": "TE",
-        "slot": "TE",
-        "points": 1.4,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Devin Singletary",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.8,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Ravens D/ST",
+        "name": "Vikings D/ST",
         "position": "D/ST",
-        "slot": "BE",
-        "points": 6.0,
-        "started": false,
+        "slot": "D/ST",
+        "points": 5.0,
+        "started": true,
         "eligible_slots": [
           "D/ST",
           "BE",
@@ -893,10 +459,10 @@
         ]
       },
       {
-        "name": "Alvin Kamara",
+        "name": "Chris Brooks",
         "position": "RB",
         "slot": "BE",
-        "points": 13.0,
+        "points": 2.9,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -910,15 +476,15 @@
     ]
   },
   {
-    "year": "2025",
-    "week": "10",
-    "manager": "Blake Pratt",
+    "year": "2026",
+    "week": "13",
+    "manager": "Jason Carlton",
     "players": [
       {
         "name": "Derrick Henry",
         "position": "RB",
         "slot": "RB",
-        "points": 9.9,
+        "points": 36.8,
         "started": true,
         "eligible_slots": [
           "RB",
@@ -930,10 +496,10 @@
         ]
       },
       {
-        "name": "A.J. Brown",
+        "name": "Justin Jefferson",
         "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 2.3,
+        "slot": "WR",
+        "points": 27.2,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -946,10 +512,208 @@
         ]
       },
       {
-        "name": "D'Andre Swift",
+        "name": "Jadarian Price",
         "position": "RB",
         "slot": "RB",
-        "points": 12.3,
+        "points": 6.8,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "DJ Moore",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 20.5,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "George Pickens",
+        "position": "WR",
+        "slot": "WR",
+        "points": 4.3,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Drake Maye",
+        "position": "QB",
+        "slot": "QB",
+        "points": 9.82,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Mark Andrews",
+        "position": "TE",
+        "slot": "TE",
+        "points": 6.9,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Rachaad White",
+        "position": "RB",
+        "slot": "BE",
+        "points": 3.7,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jalen Coker",
+        "position": "WR",
+        "slot": "BE",
+        "points": 31.8,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Deebo Samuel Sr.",
+        "position": "WR",
+        "slot": "BE",
+        "points": 15.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kaelon Black",
+        "position": "RB",
+        "slot": "BE",
+        "points": 7.5,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kyler Murray",
+        "position": "QB",
+        "slot": "BE",
+        "points": -0.38,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chargers D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 0.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chig Okonkwo",
+        "position": "TE",
+        "slot": "BE",
+        "points": 2.6,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Harrison Butker",
+        "position": "K",
+        "slot": "K",
+        "points": 0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2026",
+    "week": "13",
+    "manager": "Brian Harris",
+    "players": [
+      {
+        "name": "Jonathan Taylor",
+        "position": "RB",
+        "slot": "RB",
+        "points": 23.6,
         "started": true,
         "eligible_slots": [
           "RB",
@@ -961,11 +725,104 @@
         ]
       },
       {
-        "name": "Garrett Wilson",
+        "name": "Breece Hall",
+        "position": "RB",
+        "slot": "RB",
+        "points": 20.8,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Ladd McConkey",
+        "position": "WR",
+        "slot": "WR",
+        "points": 16.7,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jaylen Warren",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 7.8,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Carnell Tate",
         "position": "WR",
         "slot": "BE",
-        "points": 0.0,
+        "points": 5.8,
         "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Rico Dowdle",
+        "position": "RB",
+        "slot": "BE",
+        "points": 3.1,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "MarShawn Lloyd",
+        "position": "RB",
+        "slot": "BE",
+        "points": 3.7,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Puka Nacua",
+        "position": "WR",
+        "slot": "WR",
+        "points": 9.9,
+        "started": true,
         "eligible_slots": [
           "RB/WR",
           "WR",
@@ -990,839 +847,10 @@
         ]
       },
       {
-        "name": "Travis Kelce",
-        "position": "TE",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Courtland Sutton",
-        "position": "WR",
-        "slot": "WR",
-        "points": 3.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jaxon Smith-Njigba",
-        "position": "WR",
-        "slot": "WR",
-        "points": 17.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Rhamondre Stevenson",
+        "name": "Woody Marks",
         "position": "RB",
         "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Justin Herbert",
-        "position": "QB",
-        "slot": "QB",
-        "points": 14.7,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Dalton Kincaid",
-        "position": "TE",
-        "slot": "TE",
-        "points": 4.7,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Patriots D/ST",
-        "position": "D/ST",
-        "slot": "BE",
-        "points": 1.0,
-        "started": false,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Cameron Dicker",
-        "position": "K",
-        "slot": "K",
-        "points": 14.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jonathon Brooks",
-        "position": "RB",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Terrell Jennings",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.5,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Browns D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 8.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Brian Kleinhenz",
-    "players": [
-      {
-        "name": "Keenan Allen",
-        "position": "WR",
-        "slot": "WR",
-        "points": 2.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jared Goff",
-        "position": "QB",
-        "slot": "BE",
-        "points": 26.8,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jalen Hurts",
-        "position": "QB",
-        "slot": "QB",
-        "points": 12.02,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Trey Benson",
-        "position": "RB",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Deebo Samuel",
-        "position": "WR",
-        "slot": "BE",
-        "points": 10.9,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jaylen Warren",
-        "position": "RB",
-        "slot": "RB",
-        "points": 10.1,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Chris Boswell",
-        "position": "K",
-        "slot": "K",
-        "points": 5.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Aaron Jones Sr.",
-        "position": "RB",
-        "slot": "RB",
-        "points": 14.4,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Michael Pittman Jr.",
-        "position": "WR",
-        "slot": "WR",
-        "points": 2.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Javonte Williams",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Malik Washington",
-        "position": "WR",
-        "slot": "BE",
-        "points": 8.3,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Theo Johnson",
-        "position": "TE",
-        "slot": "TE",
-        "points": 11.0,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kyle Monangai",
-        "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 8.8,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Dallas Goedert",
-        "position": "TE",
-        "slot": "BE",
-        "points": 6.3,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Parker Washington",
-        "position": "WR",
-        "slot": "BE",
-        "points": 16.4,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Steelers D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 5.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Jay Nelson",
-    "players": [
-      {
-        "name": "Josh Jacobs",
-        "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 17.2,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Amon-Ra St. Brown",
-        "position": "WR",
-        "slot": "WR",
-        "points": 14.3,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "RJ Harvey",
-        "position": "RB",
-        "slot": "RB",
-        "points": 2.8,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Stefon Diggs",
-        "position": "WR",
-        "slot": "WR",
-        "points": 13.1,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Baker Mayfield",
-        "position": "QB",
-        "slot": "QB",
-        "points": 22.92,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tyler Warren",
-        "position": "TE",
-        "slot": "TE",
-        "points": 13.9,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jauan Jennings",
-        "position": "WR",
-        "slot": "BE",
-        "points": 14.1,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "De'Von Achane",
-        "position": "RB",
-        "slot": "RB",
-        "points": 39.5,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Broncos D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 17.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Brandon Aiyuk",
-        "position": "WR",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "CeeDee Lamb",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Ka'imi Fairbairn",
-        "position": "K",
-        "slot": "K",
-        "points": 0.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Joe Flacco",
-        "position": "QB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Emanuel Wilson",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.9,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tyjae Spears",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Michael Badgley",
-        "position": "K",
-        "slot": "BE",
-        "points": 7.0,
-        "started": false,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Brian Harris",
-    "players": [
-      {
-        "name": "Saquon Barkley",
-        "position": "RB",
-        "slot": "RB",
-        "points": 11.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Omarion Hampton",
-        "position": "RB",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Emeka Egbuka",
-        "position": "WR",
-        "slot": "WR",
-        "points": 22.5,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jayden Daniels",
-        "position": "QB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Puka Nacua",
-        "position": "WR",
-        "slot": "WR",
-        "points": 14.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jaydon Blue",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kareem Hunt",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kayshon Boutte",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tez Johnson",
-        "position": "WR",
-        "slot": "BE",
-        "points": 18.2,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Troy Franklin",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 12.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jaguars D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 8.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Andy Borregales",
-        "position": "K",
-        "slot": "K",
-        "points": 4.0,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tank Bigsby",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.7,
+        "points": 4.5,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -1837,10 +865,9 @@
         "name": "Colston Loveland",
         "position": "TE",
         "slot": "TE",
-        "points": 7.5,
+        "points": 0.0,
         "started": true,
         "eligible_slots": [
-          "Rookie",
           "WR/TE",
           "TE",
           "RB/WR/TE",
@@ -1850,10 +877,10 @@
         ]
       },
       {
-        "name": "Marcus Mariota",
+        "name": "Tyler Shough",
         "position": "QB",
         "slot": "QB",
-        "points": 18.72,
+        "points": 25.2,
         "started": true,
         "eligible_slots": [
           "QB",
@@ -1863,12 +890,498 @@
         ]
       },
       {
-        "name": "Emari Demercado",
-        "position": "RB",
-        "slot": "RB",
-        "points": 11.9,
+        "name": "Ravens D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 8.0,
         "started": true,
         "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "George Holani",
+        "position": "RB",
+        "slot": "BE",
+        "points": 2.9,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chase McLaughlin",
+        "position": "K",
+        "slot": "K",
+        "points": 11.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2026",
+    "week": "13",
+    "manager": "Daniel Bahamonde",
+    "players": [
+      {
+        "name": "Bijan Robinson",
+        "position": "RB",
+        "slot": "RB",
+        "points": 27.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chris Olave",
+        "position": "WR",
+        "slot": "WR",
+        "points": 25.2,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Tetairoa McMillan",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 8.0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jayden Daniels",
+        "position": "QB",
+        "slot": "QB",
+        "points": 17.66,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Tony Pollard",
+        "position": "RB",
+        "slot": "RB",
+        "points": 3.9,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kyle Pitts Sr.",
+        "position": "TE",
+        "slot": "TE",
+        "points": 0.0,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Rome Odunze",
+        "position": "WR",
+        "slot": "WR",
+        "points": 6.2,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chuba Hubbard",
+        "position": "RB",
+        "slot": "BE",
+        "points": 22.2,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jakobi Meyers",
+        "position": "WR",
+        "slot": "BE",
+        "points": 11.2,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Aaron Jones Sr.",
+        "position": "RB",
+        "slot": "BE",
+        "points": 10.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chris Godwin Jr.",
+        "position": "WR",
+        "slot": "BE",
+        "points": 6.3,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Khalil Shakir",
+        "position": "WR",
+        "slot": "BE",
+        "points": 7.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Brian Robinson Jr.",
+        "position": "RB",
+        "slot": "BE",
+        "points": 3.1,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Steelers D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 20.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Ka'imi Fairbairn",
+        "position": "K",
+        "slot": "K",
+        "points": 9.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2026",
+    "week": "13",
+    "manager": "Greg Wigton",
+    "players": [
+      {
+        "name": "CeeDee Lamb",
+        "position": "WR",
+        "slot": "WR",
+        "points": 12.9,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kenneth Walker III",
+        "position": "RB",
+        "slot": "RB",
+        "points": 0,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Lamar Jackson",
+        "position": "QB",
+        "slot": "QB",
+        "points": 26.96,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "David Montgomery",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 27.4,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Michael Pittman Jr.",
+        "position": "WR",
+        "slot": "WR",
+        "points": 7.3,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kyren Williams",
+        "position": "RB",
+        "slot": "RB",
+        "points": 14.0,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Isaiah Likely",
+        "position": "TE",
+        "slot": "TE",
+        "points": 23.8,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jordan Mason",
+        "position": "RB",
+        "slot": "BE",
+        "points": 11.9,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "KC Concepcion",
+        "position": "WR",
+        "slot": "BE",
+        "points": 5.8,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Mike Washington Jr.",
+        "position": "RB",
+        "slot": "BE",
+        "points": 4.1,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Caleb Douglas",
+        "position": "WR",
+        "slot": "BE",
+        "points": 11.9,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Seahawks D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 15.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jason Myers",
+        "position": "K",
+        "slot": "K",
+        "points": 7.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jake Ferguson",
+        "position": "TE",
+        "slot": "BE",
+        "points": 1.6,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Nicholas Singleton",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
           "RB",
           "RB/WR",
           "RB/WR/TE",
@@ -1880,21 +1393,79 @@
     ]
   },
   {
-    "year": "2025",
-    "week": "10",
-    "manager": "John Schauder",
+    "year": "2026",
+    "week": "13",
+    "manager": "Eddie McCumiskey",
     "players": [
       {
-        "name": "Justin Jefferson",
+        "name": "James Cook III",
+        "position": "RB",
+        "slot": "RB",
+        "points": 8.4,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Drake London",
         "position": "WR",
         "slot": "WR",
-        "points": 5.7,
+        "points": 4.5,
         "started": true,
         "eligible_slots": [
           "RB/WR",
           "WR",
           "WR/TE",
           "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Bhayshul Tuten",
+        "position": "RB",
+        "slot": "RB",
+        "points": 9.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Rhamondre Stevenson",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 12.0,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Justin Herbert",
+        "position": "QB",
+        "slot": "QB",
+        "points": 13.26,
+        "started": true,
+        "eligible_slots": [
+          "QB",
           "OP",
           "BE",
           "IR"
@@ -1904,202 +1475,28 @@
         "name": "Marvin Harrison Jr.",
         "position": "WR",
         "slot": "WR",
-        "points": 12.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Ricky Pearsall",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "George Pickens",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Cam Skattebo",
-        "position": "RB",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Drake Maye",
-        "position": "QB",
-        "slot": "QB",
-        "points": 18.1,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Bo Nix",
-        "position": "QB",
-        "slot": "BE",
-        "points": 5.8,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jahmyr Gibbs",
-        "position": "RB",
-        "slot": "RB",
-        "points": 38.7,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "James Cook III",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.2,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Ja'Marr Chase",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Lions D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 4.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Mark Andrews",
-        "position": "TE",
-        "slot": "BE",
-        "points": 8.9,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jason Myers",
-        "position": "K",
-        "slot": "K",
-        "points": 15.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "DeMario Douglas",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 4.4,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Luke Musgrave",
-        "position": "TE",
-        "slot": "BE",
         "points": 3.8,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Courtland Sutton",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
         "started": false,
         "eligible_slots": [
+          "RB/WR",
+          "WR",
           "WR/TE",
-          "TE",
           "RB/WR/TE",
           "OP",
           "BE",
@@ -2107,33 +1504,11 @@
         ]
       },
       {
-        "name": "Cade Otton",
-        "position": "TE",
-        "slot": "TE",
-        "points": 12.7,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Kevin Mallon",
-    "players": [
-      {
-        "name": "Jonathan Taylor",
+        "name": "Kenny Gainwell",
         "position": "RB",
-        "slot": "RB",
-        "points": 50.1,
-        "started": true,
+        "slot": "BE",
+        "points": 2.3,
+        "started": false,
         "eligible_slots": [
           "RB",
           "RB/WR",
@@ -2144,39 +1519,11 @@
         ]
       },
       {
-        "name": "Josh Allen",
-        "position": "QB",
-        "slot": "QB",
-        "points": 21.34,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Breece Hall",
-        "position": "RB",
-        "slot": "RB",
-        "points": 19.0,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Sam LaPorta",
+        "name": "Brock Bowers",
         "position": "TE",
-        "slot": "TE",
-        "points": 7.8,
-        "started": true,
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
         "eligible_slots": [
           "WR/TE",
           "TE",
@@ -2190,7 +1537,189 @@
         "name": "Matthew Golden",
         "position": "WR",
         "slot": "BE",
+        "points": 12.5,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Brock Purdy",
+        "position": "QB",
+        "slot": "BE",
+        "points": 21.1,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jordan Addison",
+        "position": "WR",
+        "slot": "BE",
         "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Juwan Johnson",
+        "position": "TE",
+        "slot": "TE",
+        "points": 12.9,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Patriots D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 8.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jake Bates",
+        "position": "K",
+        "slot": "K",
+        "points": 7.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2026",
+    "week": "13",
+    "manager": "Kevin Mallon",
+    "players": [
+      {
+        "name": "Saquon Barkley",
+        "position": "RB",
+        "slot": "RB",
+        "points": 8.5,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jeremiyah Love",
+        "position": "RB",
+        "slot": "RB",
+        "points": 12.0,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Zay Flowers",
+        "position": "WR",
+        "slot": "WR",
+        "points": 25.5,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Terry McLaurin",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 2.4,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Bo Nix",
+        "position": "QB",
+        "slot": "QB",
+        "points": 0,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Kyle Monangai",
+        "position": "RB",
+        "slot": "BE",
+        "points": 21.4,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Makai Lemon",
+        "position": "WR",
+        "slot": "BE",
+        "points": 1.0,
         "started": false,
         "eligible_slots": [
           "Rookie",
@@ -2207,10 +1736,9 @@
         "name": "Jacory Croskey-Merritt",
         "position": "RB",
         "slot": "BE",
-        "points": 3.0,
+        "points": 12.1,
         "started": false,
         "eligible_slots": [
-          "Rookie",
           "RB",
           "RB/WR",
           "RB/WR/TE",
@@ -2220,7 +1748,305 @@
         ]
       },
       {
-        "name": "Travis Hunter",
+        "name": "Harold Fannin Jr.",
+        "position": "TE",
+        "slot": "TE",
+        "points": 3.1,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Rashee Rice",
+        "position": "WR",
+        "slot": "WR",
+        "points": 0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Travis Kelce",
+        "position": "TE",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Rams D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 1.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jordan Love",
+        "position": "QB",
+        "slot": "BE",
+        "points": 21.48,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Tre Tucker",
+        "position": "WR",
+        "slot": "BE",
+        "points": 3.7,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Trey Smack",
+        "position": "K",
+        "slot": "K",
+        "points": 12.0,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "K",
+          "BE",
+          "IR"
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2026",
+    "week": "13",
+    "manager": "Blake Pratt",
+    "players": [
+      {
+        "name": "Omarion Hampton",
+        "position": "RB",
+        "slot": "RB",
+        "points": 8.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Ashton Jeanty",
+        "position": "RB",
+        "slot": "RB",
+        "points": 31.7,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Davante Adams",
+        "position": "WR",
+        "slot": "WR",
+        "points": 4.1,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Luther Burden III",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 7.0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Dak Prescott",
+        "position": "QB",
+        "slot": "QB",
+        "points": 14.4,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "George Kittle",
+        "position": "TE",
+        "slot": "TE",
+        "points": 2.2,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jaxon Smith-Njigba",
+        "position": "WR",
+        "slot": "WR",
+        "points": 24.2,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Michael Wilson",
+        "position": "WR",
+        "slot": "BE",
+        "points": 8.1,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Josh Downs",
+        "position": "WR",
+        "slot": "BE",
+        "points": 4.7,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Jared Goff",
+        "position": "QB",
+        "slot": "BE",
+        "points": 16.44,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Romeo Doubs",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Lions D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 5.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Cameron Dicker",
+        "position": "K",
+        "slot": "K",
+        "points": 2.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Tank Dell",
         "position": "WR",
         "slot": "IR",
         "points": 0.0,
@@ -2232,78 +2058,15 @@
           "RB/WR/TE",
           "OP",
           "BE",
-          "IR",
-          "CB",
-          "DB",
-          "DP"
-        ]
-      },
-      {
-        "name": "Chris Olave",
-        "position": "WR",
-        "slot": "WR",
-        "points": 20.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
           "IR"
         ]
       },
       {
-        "name": "Xavier Worthy",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Rashee Rice",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Chase McLaughlin",
-        "position": "K",
-        "slot": "K",
-        "points": 5.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kimani Vidal",
+        "name": "Jonathon Brooks",
         "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 17.3,
-        "started": true,
+        "slot": "BE",
+        "points": 6.7,
+        "started": false,
         "eligible_slots": [
           "RB",
           "RB/WR",
@@ -2314,35 +2077,7 @@
         ]
       },
       {
-        "name": "Chargers D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 17.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Josh Downs",
-        "position": "WR",
-        "slot": "WR",
-        "points": 0.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Alec Pierce",
+        "name": "Devaughn Vele",
         "position": "WR",
         "slot": "BE",
         "points": 16.4,
@@ -2356,48 +2091,19 @@
           "BE",
           "IR"
         ]
-      },
-      {
-        "name": "Tre Tucker",
-        "position": "WR",
-        "slot": "BE",
-        "points": 4.5,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
       }
     ]
   },
   {
-    "year": "2025",
-    "week": "10",
-    "manager": "Eddie McCumiskey",
+    "year": "2026",
+    "week": "13",
+    "manager": "Carl Bruce",
     "players": [
       {
-        "name": "Joe Burrow",
-        "position": "QB",
-        "slot": "IR",
-        "points": 0,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "DK Metcalf",
+        "name": "Amon-Ra St. Brown",
         "position": "WR",
         "slot": "WR",
-        "points": 5.0,
+        "points": 23.7,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2410,257 +2116,14 @@
         ]
       },
       {
-        "name": "Brock Bowers",
-        "position": "TE",
-        "slot": "TE",
-        "points": 3.2,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Khalil Shakir",
-        "position": "WR",
-        "slot": "BE",
-        "points": 9.3,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jordan Love",
-        "position": "QB",
-        "slot": "QB",
-        "points": 7.84,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Wan'Dale Robinson",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 9.2,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kenneth Gainwell",
-        "position": "RB",
-        "slot": "BE",
-        "points": 1.4,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "David Montgomery",
+        "name": "D'Andre Swift",
         "position": "RB",
         "slot": "RB",
-        "points": 9.6,
+        "points": 33.9,
         "started": true,
         "eligible_slots": [
           "RB",
           "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Rachaad White",
-        "position": "RB",
-        "slot": "BE",
-        "points": 7.9,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Ladd McConkey",
-        "position": "WR",
-        "slot": "WR",
-        "points": 20.7,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jameson Williams",
-        "position": "WR",
-        "slot": "BE",
-        "points": 22.9,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kyle Pitts Sr.",
-        "position": "TE",
-        "slot": "BE",
-        "points": 4.8,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Tyrone Tracy Jr.",
-        "position": "RB",
-        "slot": "RB",
-        "points": 7.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Eddy Pineiro",
-        "position": "K",
-        "slot": "K",
-        "points": 1.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Buccaneers D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": -1.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Calvin Austin III",
-        "position": "WR",
-        "slot": "BE",
-        "points": 2.4,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      }
-    ]
-  },
-  {
-    "year": "2025",
-    "week": "10",
-    "manager": "Greg Wigton",
-    "players": [
-      {
-        "name": "Christian McCaffrey",
-        "position": "RB",
-        "slot": "RB",
-        "points": 13.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Lamar Jackson",
-        "position": "QB",
-        "slot": "QB",
-        "points": 16.64,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Davante Adams",
-        "position": "WR",
-        "slot": "WR",
-        "points": 16.7,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
           "RB/WR/TE",
           "OP",
           "BE",
@@ -2670,44 +2133,13 @@
       {
         "name": "Jaylen Waddle",
         "position": "WR",
-        "slot": "BE",
-        "points": 16.9,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Kyren Williams",
-        "position": "RB",
-        "slot": "RB",
-        "points": 21.4,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Quinshon Judkins",
-        "position": "RB",
         "slot": "RB/WR/TE",
-        "points": 9.5,
+        "points": 0,
         "started": true,
         "eligible_slots": [
-          "Rookie",
-          "RB",
           "RB/WR",
+          "WR",
+          "WR/TE",
           "RB/WR/TE",
           "OP",
           "BE",
@@ -2715,10 +2147,10 @@
         ]
       },
       {
-        "name": "Travis Etienne Jr.",
+        "name": "Blake Corum",
         "position": "RB",
         "slot": "BE",
-        "points": 14.7,
+        "points": 5.4,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -2730,10 +2162,10 @@
         ]
       },
       {
-        "name": "Chris Godwin Jr.",
+        "name": "Christian Watson",
         "position": "WR",
-        "slot": "IR",
-        "points": 0.0,
+        "slot": "BE",
+        "points": 31.7,
         "started": false,
         "eligible_slots": [
           "RB/WR",
@@ -2746,39 +2178,24 @@
         ]
       },
       {
-        "name": "Woody Marks",
-        "position": "RB",
-        "slot": "BE",
-        "points": 15.1,
-        "started": false,
+        "name": "Caleb Williams",
+        "position": "QB",
+        "slot": "QB",
+        "points": 37.26,
+        "started": true,
         "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
+          "QB",
           "OP",
           "BE",
           "IR"
         ]
       },
       {
-        "name": "Packers D/ST",
-        "position": "D/ST",
-        "slot": "BE",
-        "points": 8.0,
-        "started": false,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Jake Ferguson",
+        "name": "Tucker Kraft",
         "position": "TE",
-        "slot": "BE",
-        "points": 0,
-        "started": false,
+        "slot": "TE",
+        "points": 8.0,
+        "started": true,
         "eligible_slots": [
           "WR/TE",
           "TE",
@@ -2789,10 +2206,54 @@
         ]
       },
       {
-        "name": "Drake London",
+        "name": "DK Metcalf",
+        "position": "WR",
+        "slot": "BE",
+        "points": 6.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Chase Brown",
+        "position": "RB",
+        "slot": "RB",
+        "points": 16.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Trevor Lawrence",
+        "position": "QB",
+        "slot": "BE",
+        "points": 26.1,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Nico Collins",
         "position": "WR",
         "slot": "WR",
-        "points": 23.4,
+        "points": 17.7,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2805,10 +2266,10 @@
         ]
       },
       {
-        "name": "Bhayshul Tuten",
+        "name": "Jonah Coleman",
         "position": "RB",
         "slot": "BE",
-        "points": 1.5,
+        "points": 0,
         "started": false,
         "eligible_slots": [
           "Rookie",
@@ -2821,7 +2282,22 @@
         ]
       },
       {
-        "name": "Panthers D/ST",
+        "name": "Tank Bigsby",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0.3,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ]
+      },
+      {
+        "name": "Eagles D/ST",
         "position": "D/ST",
         "slot": "D/ST",
         "points": 5.0,
@@ -2833,25 +2309,10 @@
         ]
       },
       {
-        "name": "Dalton Schultz",
-        "position": "TE",
-        "slot": "TE",
-        "points": 14.8,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ]
-      },
-      {
-        "name": "Harrison Mevis",
+        "name": "Tyler Loop",
         "position": "K",
         "slot": "K",
-        "points": 6.0,
+        "points": 14.0,
         "started": true,
         "eligible_slots": [
           "K",
