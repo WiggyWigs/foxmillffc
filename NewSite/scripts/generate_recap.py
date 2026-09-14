@@ -50,6 +50,7 @@ STATS_SNAPSHOT_PATH = DATA_DIR / os.environ.get("STATS_SNAPSHOT_FILENAME", "stat
 UPCOMING_MATCHUPS_PATH = DATA_DIR / os.environ.get("UPCOMING_MATCHUPS_FILENAME", "upcoming_matchups.json")
 PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
 RECAP_CRITERIA_PATH = SCRIPT_DIR / "recap_criteria.json"
+MANAGER_LORE_PATH = SCRIPT_DIR / "manager_lore.json"
 
 MODEL = "claude-sonnet-5"
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -85,6 +86,32 @@ def get_criteria_for_week(criteria, section, week):
     section_criteria = criteria.get(section, {})
     overrides = section_criteria.get("week_overrides", {})
     return overrides.get(str(week), section_criteria.get("default_criteria", ""))
+
+
+def load_manager_lore():
+    """Edit manager_lore.json directly to add or change material —
+    no code changes needed."""
+    if not MANAGER_LORE_PATH.exists():
+        return {}
+    with open(MANAGER_LORE_PATH) as f:
+        return json.load(f)
+
+
+def get_manager_flavor(manager, stats, lore):
+    """Real, verified career facts for one manager — actual roast
+    material, not invented. Pulled from h2h_summary (the same all-time
+    stats the Head-to-Head page uses), plus any lore.json entry."""
+    flavor = {}
+    h2h = stats.get("h2h_summary", {}).get(manager)
+    if h2h:
+        flavor["seasons_played"] = h2h.get("seasons_played")
+        flavor["career_playoff_appearances"] = h2h.get("playoff_appearances")
+        flavor["career_championships"] = h2h.get("championships")
+        flavor["career_win_pct"] = h2h.get("win_pct")
+    note = lore.get(manager)
+    if note:
+        flavor["background_note"] = note
+    return flavor
 
 
 # --- Claude API ---------------------------------------------------------
@@ -153,30 +180,159 @@ def get_week_games(stats):
 
 # --- Previous Weekend Recap (AI writes about a fixed, deterministic pick) --
 
-def build_recap_prompt(closest_game, week, year):
+def get_manager_lineup(year, week, manager):
+    """This manager's full lineup (starters + bench) for a specific
+    week, or None if not captured."""
+    if not PLAYER_LINEUPS_PATH.exists():
+        return None
+    with open(PLAYER_LINEUPS_PATH) as f:
+        lineups = json.load(f)
+    for entry in lineups:
+        if entry["year"] == str(year) and week_num(entry["week"]) == week_num(week) and entry["manager"] == manager:
+            return entry["players"]
+    return None
+
+
+def top_and_bottom_starter(lineup):
+    """(highest-scoring starter, lowest-scoring starter) from a lineup,
+    or (None, None) if there are no starters recorded."""
+    starters = [p for p in lineup if p.get("started")]
+    if not starters:
+        return None, None
+    top = max(starters, key=lambda p: p["points"])
+    bottom = min(starters, key=lambda p: p["points"])
+    return top, bottom
+
+
+def find_best_bench_swap(losing_lineup, points_needed):
+    """
+    Checks every (bench player, starter) pair for LEGAL eligibility
+    (the bench player's real eligible_slots from ESPN must include the
+    starter's actual slot — this is not guessed or hardcoded, it's the
+    league's own real position rules, including whatever counts as
+    FLEX-eligible here). Among all legal swaps, returns the single
+    best one by point gain, and whether that gain alone would have
+    closed the gap. Only ever considers ONE swap, not combinations —
+    a "what if" story needs one clear swap, not a hypothetical full
+    lineup optimization.
+    """
+    starters = [p for p in losing_lineup if p.get("started")]
+    bench = [p for p in losing_lineup if not p.get("started")]
+    if not starters or not bench:
+        return None
+
+    best = None
+    for b in bench:
+        eligible = b.get("eligible_slots", [])
+        for s in starters:
+            if s["slot"] not in eligible:
+                continue  # not a legal swap under this league's real rules
+            gain = b["points"] - s["points"]
+            if best is None or gain > best["gain"]:
+                best = {
+                    "bench_player": b["name"], "bench_points": b["points"],
+                    "starter_replaced": s["name"], "starter_points": s["points"],
+                    "gain": round(gain, 2),
+                }
+
+    if best is None:
+        return None
+    best["would_have_won"] = best["gain"] >= points_needed
+    return best
+
+
+def build_recap_prompt(closest_game, week, year, stats, lore):
+    away, home = closest_game["away_manager"], closest_game["home_manager"]
+    away_score, home_score = closest_game["away_score"], closest_game["home_score"]
+
+    context = dict(closest_game)  # copy — don't mutate the caller's dict
+
+    # Player-level context, if lineup data was captured for this week.
+    # This is genuinely optional: if player_lineups.json doesn't have
+    # this week yet, the recap still works fine without it.
+    away_lineup = get_manager_lineup(year, week, away)
+    home_lineup = get_manager_lineup(year, week, home)
+
+    if away_lineup:
+        top, bottom = top_and_bottom_starter(away_lineup)
+        if top:
+            context["away_top_scorer"] = {"name": top["name"], "points": top["points"]}
+        if bottom:
+            context["away_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
+    if home_lineup:
+        top, bottom = top_and_bottom_starter(home_lineup)
+        if top:
+            context["home_top_scorer"] = {"name": top["name"], "points": top["points"]}
+        if bottom:
+            context["home_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
+
+    # Bench-swap analysis for the losing team only (a winning team has
+    # no "what if" story — they already won).
+    loser = None
+    if away_score != home_score:
+        loser = away if away_score < home_score else home
+        losing_lineup = away_lineup if away_score < home_score else home_lineup
+        margin = abs(away_score - home_score)
+        if losing_lineup:
+            swap = find_best_bench_swap(losing_lineup, margin)
+            if swap and swap["would_have_won"]:
+                context["bench_swap_that_would_have_won"] = swap
+
+    # Real, verified career context — this is the actual roast material.
+    # Only include it for the loser (or both, if you want the winner
+    # razzed too — but a loser's bad history is the sharper, fairer
+    # target here).
+    away_flavor = get_manager_flavor(away, stats, lore)
+    home_flavor = get_manager_flavor(home, stats, lore)
+    if away_flavor:
+        context["away_manager_background"] = away_flavor
+    if home_flavor:
+        context["home_manager_background"] = home_flavor
+
     system = (
-        "You write short, punchy fantasy football recap blurbs for a small "
-        "12-manager home league's website. Tone: knowledgeable, a little "
-        "playful, never mean-spirited. 2-4 sentences. Use ONLY the facts "
-        "given — never invent player names, stats, or plays, since none "
-        "are available. Do not use markdown formatting. Start your "
-        "response with the two manager names in the format "
-        "'ManagerA vs ManagerB: ' followed by the recap."
+        "You write short fantasy football recap blurbs for a private "
+        "league's website — a group of 40-something guys who have known "
+        "each other for years and enjoy busting each other's chops. "
+        "TONE: crude, funny, and unapologetically roasting. Backhanded "
+        "compliments and blunt put-downs are expected, not optional. If "
+        "someone lost, don't soften it — make sure they feel it. If their "
+        "background context shows something roastable (never made the "
+        "playoffs, a long losing streak, zero championships in many "
+        "seasons), point it out directly and use it as ammunition. This "
+        "is good-natured friend-group ribbing, not actual cruelty — keep "
+        "every joke grounded in the real facts given and aimed at their "
+        "fantasy football performance and history, never at anything "
+        "personal or unrelated to the game. 2-4 sentences. Use ONLY the "
+        "facts given — never invent player names, stats, plays, or "
+        "background details beyond what's provided. Do not use markdown "
+        "formatting. Start your response with the two manager names in "
+        "the format 'ManagerA vs ManagerB: ' followed by the recap."
     )
     user = (
         f"Write a recap of the closest game of Week {week}, {year} — this "
         f"was the tightest matchup of the week by score margin:\n"
-        f"{json.dumps(closest_game, indent=2)}\n\n"
+        f"{json.dumps(context, indent=2)}\n\n"
         f"Mention the final score and margin. If all_time_meetings is more "
         f"than 1, you can briefly note this isn't their first meeting — "
-        f"don't invent details about those past games beyond the count."
+        f"don't invent details about those past games beyond the count. "
+        f"If top/bottom scorer fields are present, you can mention a "
+        f"standout or disappointing individual performance if it fits "
+        f"naturally. If bench_swap_that_would_have_won is present, that's "
+        f"a real, verified fact — a bench player who would have won the "
+        f"game if started instead of the named starter — and it's usually "
+        f"prime material for mocking whoever set that lineup. If "
+        f"away_manager_background or home_manager_background is present "
+        f"(especially for {loser or 'the loser'}, who lost this game), use "
+        f"it as real ammunition — a bad career record, zero playoff "
+        f"appearances, a background_note personality trait, etc. are all "
+        f"fair game and encouraged, not just optional color."
     )
     return system, user
 
 
 # --- Game of the Week (AI both picks and writes) ---------------------------
 
-def build_game_of_week_prompt(upcoming, stats, criteria):
+def build_game_of_week_prompt(upcoming, stats, criteria, lore):
     matchups = upcoming.get("matchups", [])
     if not matchups:
         return None, None
@@ -186,6 +342,32 @@ def build_game_of_week_prompt(upcoming, stats, criteria):
         for row in stats["current_standings"]["standings"]:
             standings[row["manager"]] = row
 
+    power = {}
+    if stats.get("power_rankings"):
+        for row in stats["power_rankings"]["rankings"]:
+            power[row["manager"]] = row
+
+    playoff_prob = {}
+    pp = stats.get("playoff_probabilities")
+    if pp and pp.get("visible"):
+        for row in pp["managers"]:
+            playoff_prob[row["manager"]] = row["probability"]
+
+    def manager_context(name):
+        p = power.get(name, {})
+        ctx = {
+            "record_wins": standings.get(name, {}).get("wins"),
+            "record_losses": standings.get(name, {}).get("losses"),
+            "power_score": p.get("power_score"),
+            "points_scored": p.get("points_scored"),
+            "schedule_difficulty": p.get("schedule_difficulty"),
+            "playoff_probability_pct": playoff_prob.get(name),
+        }
+        flavor = get_manager_flavor(name, stats, lore)
+        if flavor:
+            ctx["background"] = flavor
+        return ctx
+
     enriched = []
     for m in matchups:
         away, home = m["away_manager"], m["home_manager"]
@@ -194,23 +376,29 @@ def build_game_of_week_prompt(upcoming, stats, criteria):
             if {g["away_manager"], g["home_manager"]} == {away, home}
         ]
         enriched.append({
-            "away_manager": away,
-            "away_record": standings.get(away, {}).get("wins"),
-            "home_manager": home,
-            "home_record": standings.get(home, {}).get("wins"),
+            "away_manager": away, **{f"away_{k}": v for k, v in manager_context(away).items()},
+            "home_manager": home, **{f"home_{k}": v for k, v in manager_context(home).items()},
             "all_time_meetings": len(h2h_games),
         })
 
     system = (
         "You pick the single most compelling upcoming matchup from a list "
-        "for a small 12-manager fantasy football league's website, based "
-        "on the selection criteria given, then write a short, engaging "
-        "preview of it. Tone: knowledgeable, a little playful, never "
-        "mean-spirited. 2-4 sentences. Use ONLY the facts given — never "
-        "invent player names, projections, or stats not provided. Do not "
-        "use markdown formatting. Start your response with the two "
-        "manager names in the format 'ManagerA vs ManagerB: ' followed by "
-        "the preview."
+        "for a private fantasy football league's website — a group of "
+        "40-something guys who have known each other for years and enjoy "
+        "busting each other's chops — based on the selection criteria "
+        "given, then write a short preview of it. TONE: crude, funny, and "
+        "unapologetically roasting. Backhanded compliments and blunt "
+        "put-downs are expected. If a manager's background shows "
+        "something roastable (a bad record, zero career playoff "
+        "appearances, a known reputation), use it as ammunition. This is "
+        "good-natured friend-group ribbing, not actual cruelty — keep "
+        "every joke grounded in the real facts given and aimed at their "
+        "fantasy football performance and history, never at anything "
+        "personal or unrelated to the game. 2-4 sentences. Use ONLY the "
+        "facts given — never invent player names, projections, stats, or "
+        "background details not provided. Do not use markdown "
+        "formatting. Start your response with the two manager names in "
+        "the format 'ManagerA vs ManagerB: ' followed by the preview."
     )
     user = (
         f"Selection criteria: {criteria}\n\n"
@@ -379,6 +567,7 @@ def main():
             old_stats = json.load(f)
 
     criteria = load_recap_criteria()
+    lore = load_manager_lore()
     week_games, week, year = get_week_games(stats)
 
     recap_text = None
@@ -389,7 +578,7 @@ def main():
     try:
         if week_games:
             closest_game = min(week_games, key=lambda g: g["margin"])
-            system, user = build_recap_prompt(closest_game, week, year)
+            system, user = build_recap_prompt(closest_game, week, year, stats, lore)
             recap_text = call_claude(system, user)
             print("Generated Previous Weekend Recap.")
         else:
@@ -404,7 +593,7 @@ def main():
             with open(UPCOMING_MATCHUPS_PATH) as f:
                 upcoming = json.load(f)
             week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
-            system, user = build_game_of_week_prompt(upcoming, stats, week_criteria)
+            system, user = build_game_of_week_prompt(upcoming, stats, week_criteria, lore)
             if system:
                 gotw_text = call_claude(system, user)
                 gotw_matchup = pick_game_of_week_matchup(gotw_text, upcoming)
