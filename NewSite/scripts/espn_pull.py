@@ -156,7 +156,8 @@ def pull_all_scores(league_id, swid, espn_s2):
 
             try:
                 matchups = league.scoreboard(week=week)
-            except Exception:
+            except Exception as e:
+                print(f"WARNING: fetching week {week} failed: {e}")
                 break
             if not matchups:
                 break
@@ -256,7 +257,8 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
         for week in range(1, regular_season_weeks + 5):
             try:
                 matchups = league.scoreboard(week=week)
-            except Exception:
+            except Exception as e:
+                print(f"WARNING: fetching week {week} failed: {e}")
                 break
             real = [m for m in matchups if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
             if not real:
@@ -340,7 +342,8 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
     for week in target_weeks:
         try:
             matchups = league.scoreboard(week=week)
-        except Exception:
+        except Exception as e:
+            print(f"WARNING: fetching week {week} failed: {e}")
             break
         if not matchups:
             break
@@ -362,7 +365,13 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
             away_mgr = resolved_mapping.get((year_str, m.away_team.team_name))
             home_mgr = resolved_mapping.get((year_str, m.home_team.team_name))
             if away_mgr and home_mgr:
-                pairings.append({"away_manager": away_mgr, "home_manager": home_mgr})
+                pairings.append({
+                    "away_manager": away_mgr, "away_team": m.away_team.team_name,
+                    "home_manager": home_mgr, "home_team": m.home_team.team_name,
+                })
+            else:
+                print(f"WARNING: couldn't map team name(s) for week {week}: "
+                      f"{m.away_team.team_name!r} / {m.home_team.team_name!r}")
 
         output = {"year": year, "week": week, "matchups": pairings}
         with open(UPCOMING_MATCHUPS_PATH, "w") as f:
@@ -371,6 +380,13 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
         return
 
     print("No upcoming unplayed week found — skipping upcoming_matchups.json.")
+    # Clear any stale file from a previous run rather than silently
+    # leaving old data behind pretending to be current — this is
+    # exactly what caused a week=12 test run to keep showing week 9's
+    # leftover matchups after a failed fetch.
+    if UPCOMING_MATCHUPS_PATH.exists():
+        UPCOMING_MATCHUPS_PATH.unlink()
+        print(f"Removed stale {UPCOMING_MATCHUPS_PATH} so it doesn't show outdated data.")
 
 
 def main():
