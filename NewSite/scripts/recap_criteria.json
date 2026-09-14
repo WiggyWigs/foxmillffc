@@ -1,0 +1,9 @@
+{
+  "game_of_the_week": {
+    "default_criteria": "Pick the most compelling upcoming matchup based on records, standings position, and head-to-head history.",
+    "week_overrides": {
+      "1": "It's the season opener — prioritize a marquee rivalry or a grudge match from last year's standings.",
+      "14": "Final week of the regular season — prioritize whichever game most affects who makes the playoffs."
+    }
+  }
+}
