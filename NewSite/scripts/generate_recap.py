@@ -320,20 +320,26 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
     # Player-level context, if lineup data was captured for this week.
     # This is genuinely optional: if player_lineups.json doesn't have
     # this week yet, the recap still works fine without it.
+    # Thresholds are hard rules, not prompt suggestions: a "big score"
+    # under 15 isn't actually impressive, and a "pathetic score" over
+    # 10 isn't actually bad — so those just don't get mentioned at all.
+    HIGH_SCORE_THRESHOLD = 15
+    LOW_SCORE_THRESHOLD = 10
+
     away_lineup = get_manager_lineup(year, week, away)
     home_lineup = get_manager_lineup(year, week, home)
 
     if away_lineup:
         top, bottom = top_and_bottom_starter(away_lineup)
-        if top:
+        if top and top["points"] > HIGH_SCORE_THRESHOLD:
             context["away_top_scorer"] = {"name": top["name"], "points": top["points"]}
-        if bottom:
+        if bottom and bottom["points"] < LOW_SCORE_THRESHOLD:
             context["away_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
     if home_lineup:
         top, bottom = top_and_bottom_starter(home_lineup)
-        if top:
+        if top and top["points"] > HIGH_SCORE_THRESHOLD:
             context["home_top_scorer"] = {"name": top["name"], "points": top["points"]}
-        if bottom:
+        if bottom and bottom["points"] < LOW_SCORE_THRESHOLD:
             context["home_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
 
     # Bench-swap analysis for the losing team only (a winning team has
@@ -389,11 +395,21 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
         "'X.X points' — never a bare number on its own. Whenever you "
         "state a percentage (playoff probability or anything else), "
         "always write it as 'X%' or 'X.X%' — never spell out 'percent' "
-        "as a word. Mention AT MOST "
+        "as a word. Win percentages (career_win_pct or any other "
+        "win_pct field) are given as decimals (e.g. 0.6818) — always "
+        "convert to a whole-number percentage with two decimals and "
+        "spell out the words, e.g. 'a 68.18 winning percentage' — never "
+        "write the raw decimal or abbreviate to 'win pct'. Mention AT MOST "
         "one standout performance and ONE disappointing performance per "
         "team, and ONLY the specific players named in the top/bottom "
         "scorer fields given — never reference, name, or invent stats "
-        "for any other player not explicitly provided. If you mention "
+        "for any other player not explicitly provided. Frame any "
+        "top/bottom scorer mention as a dramatic contrast in one "
+        "sentence — the big performance overcoming, carrying, or "
+        "outshining the weak one (or vice versa) — never as two flat, "
+        "separate statements listing each player's score. Vary the "
+        "verb and the adjective each time rather than reusing the same "
+        "phrasing. If you mention "
         "playoff chances or probability for a manager, you MUST cite "
         "both their previous_week_pct and current_week_pct numbers from "
         "their playoff_probability_trend field if it's present — never "
@@ -453,12 +469,17 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
 
     def manager_context(name):
         p = power.get(name, {})
+        wins = standings.get(name, {}).get("wins")
+        losses = standings.get(name, {}).get("losses")
+        games_played = (wins or 0) + (losses or 0)
+        points_total = p.get("points_scored")
+        points_avg = round(points_total / games_played, 2) if points_total is not None and games_played else None
         ctx = {
             "standings_rank": standings_rank.get(name),
-            "record_wins": standings.get(name, {}).get("wins"),
-            "record_losses": standings.get(name, {}).get("losses"),
+            "record_wins": wins,
+            "record_losses": losses,
             "power_score": p.get("power_score"),
-            "points_scored": p.get("points_scored"),
+            "points_scored_avg": points_avg,
             "schedule_difficulty": p.get("schedule_difficulty"),
             "playoff_probability_pct": playoff_prob.get(name),
         }
@@ -512,18 +533,34 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "names, projections, stats, or background details not provided. "
         "Do not use markdown formatting. Whenever you state a point "
         "total, always write it as 'X points' or 'X.X points' — never a "
-        "bare number alone. Whenever you state a percentage (playoff "
+        "bare number alone. Points totals given are SEASON AVERAGES "
+        "(points_scored_avg) — always describe them as such (e.g. "
+        "'averaging X points a game'), never imply it's a season total. "
+        "Whenever you state a percentage (playoff "
         "probability or anything else), always write it as 'X%' or "
-        "'X.X%' — never spell out 'percent' as a word. When referring "
+        "'X.X%' — never spell out 'percent' as a word. Win percentages "
+        "(career_win_pct or any other win_pct field) are given as "
+        "decimals (e.g. 0.6818) — always convert to a whole-number "
+        "percentage with two decimals and spell out the words, e.g. "
+        "'a 68.18 winning percentage' — never write the raw decimal or "
+        "abbreviate to 'win pct'. When referring "
         "to a manager's standings position, always phrase it as an "
         "ordinal — 'ranked 2nd', 'sits 5th in the standings', etc. — "
         "never 'rank 2' or 'at rank 5' as a bare number. IMPORTANT: "
         "schedule_difficulty is counterintuitively named — a HIGHER "
         "(more positive) value means an EASIER schedule, and a LOWER "
         "(more negative, or less positive) value means a HARDER "
-        "schedule. Do not assume a higher number means 'tougher' — "
-        "double-check the actual comparison before describing either "
-        "manager's schedule as harder or easier. Whenever the selection "
+        "schedule. The value itself is a percentage-point gap: it's how "
+        "much higher or lower a manager's actual win percentage is "
+        "compared to what their weekly scoring alone would predict — "
+        "describe it in those terms (e.g. 'his actual win rate runs X "
+        "points ahead of what his scoring alone would suggest') rather "
+        "than citing the bare decimal, which means nothing to a reader. "
+        "NEVER describe one manager's schedule as easier or harder than "
+        "another's unless their schedule_difficulty values differ by at "
+        "least 0.15 — if the gap is smaller than that, it's not a real "
+        "difference and shouldn't be mentioned as one at all. Whenever "
+        "the selection "
         "criteria refers to a "
         "manager's 'rank' or being 'ranked' (e.g. 'top 5', 'ranked "
         "7-10'), this means their standings_rank field specifically — "
@@ -537,7 +574,13 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "from their playoff_probability_trend field if present — never a "
         "vague qualitative claim without those two real numbers; if "
         "that field isn't present for a manager, don't speculate about "
-        "their playoff chances. You MUST start your response with the "
+        "their playoff chances. If you reference a manager's individual "
+        "top or bottom player performance, frame it as a dramatic "
+        "contrast in one sentence — the big performance overcoming, "
+        "carrying, or outshining the weak one (or vice versa) — never "
+        "as two flat, separate statements listing each player's score. "
+        "Vary the verb and the adjective each time rather than reusing "
+        "the same phrasing. You MUST start your response with the "
         "two manager names in the exact format 'ManagerA vs ManagerB: ' "
         "(this prefix is required for internal tracking and will be "
         "removed before anyone sees it, so it does not count toward the "
