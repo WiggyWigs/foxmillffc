@@ -1,0 +1,68 @@
+name: TEST weekly update (historical cutoff)
+
+# Manual trigger ONLY — never runs on a schedule. Lets you pick any
+# past year/week and run the full real pipeline (real ESPN data, real
+# Claude API calls, using your real secrets) as if the season had only
+# gotten that far — without ever touching your live stats.json or any
+# other production file. Everything this writes uses "_test" filenames.
+
+on:
+  workflow_dispatch:
+    inputs:
+      cutoff_year:
+        description: 'Pretend the season stopped after this year'
+        required: true
+        type: string
+      cutoff_week:
+        description: 'Pretend the season stopped after this week'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  test-update:
+    runs-on: ubuntu-latest
+    env:
+      STATS_FILENAME: stats_test.json
+      STATS_SNAPSHOT_FILENAME: stats_previous_run_test.json
+      UPCOMING_MATCHUPS_FILENAME: upcoming_matchups_test.json
+      PLAYER_LINEUPS_FILENAME: player_lineups_test.json
+      CSV_OUTPUT_FILENAME: espn_pull_test.csv
+      BANNER_FILENAME: fastest-to-25-wins-banner-test.png
+      TEST_CUTOFF_YEAR: ${{ inputs.cutoff_year }}
+      TEST_CUTOFF_WEEK: ${{ inputs.cutoff_week }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install espn_api Pillow requests
+
+      - name: Run ESPN pull + ingest pipeline (test-cutoff mode)
+        env:
+          ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+        run: python NewSite/scripts/espn_pull.py
+
+      - name: Generate weekly recap narratives (test-cutoff mode)
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python NewSite/scripts/generate_recap.py
+
+      - name: Commit and push TEST-only files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add NewSite/data/stats_test.json NewSite/data/upcoming_matchups_test.json NewSite/data/player_lineups_test.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "TEST update: cutoff ${{ inputs.cutoff_year }} week ${{ inputs.cutoff_week }}"
+          git push
