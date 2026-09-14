@@ -17,20 +17,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const seasonLabel = document.getElementById("season-year-label");
   const pageHeader = document.getElementById("page-season-header");
   const season = data.power_rankings?.season || data.current_streaks?.season
     || data.current_standings?.season;
-  if (season && seasonLabel) {
-    seasonLabel.textContent = `Fox Mill Fantasy Football Club — ${season} Season`;
-  }
   if (season && pageHeader) {
     pageHeader.textContent = `${season} Season`;
   }
 
   // Each section renders independently — one section's bug should
   // never take down the rest of the page.
-  const sections = [renderRecap, renderStreaks, renderStandings, renderPlayoffProbability, renderPowerRankings];
+  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings];
   for (const renderFn of sections) {
     try {
       renderFn(data);
@@ -48,6 +44,11 @@ function renderRecap(data) {
     prevHeading.textContent = `Week ${recap.previous_weekend_week} Impact Game`;
   }
 
+  const prevSubtitle = document.getElementById("recap-previous-subtitle");
+  if (prevSubtitle && recap.previous_weekend_away_team && recap.previous_weekend_home_team) {
+    prevSubtitle.textContent = `${recap.previous_weekend_away_team} vs ${recap.previous_weekend_home_team}`;
+  }
+
   const prevWrap = document.getElementById("recap-previous-wrap");
   if (recap.previous_weekend) {
     prevWrap.innerHTML = `<p class="recap-text">${recap.previous_weekend}</p>`;
@@ -58,6 +59,11 @@ function renderRecap(data) {
   const gotwHeading = document.getElementById("recap-gotw-heading");
   if (gotwHeading && recap.game_of_the_week_week != null) {
     gotwHeading.textContent = `Week ${recap.game_of_the_week_week} - Game of the Week`;
+  }
+
+  const gotwSubtitle = document.getElementById("recap-gotw-subtitle");
+  if (gotwSubtitle && recap.game_of_the_week_away_team && recap.game_of_the_week_home_team) {
+    gotwSubtitle.textContent = `${recap.game_of_the_week_away_team} vs ${recap.game_of_the_week_home_team}`;
   }
 
   const gotwWrap = document.getElementById("recap-gotw-wrap");
