@@ -45,6 +45,15 @@ jobs:
       - name: Install dependencies
         run: pip install espn_api Pillow requests
 
+      - name: Clear previous test data (test mode must start clean every run)
+        run: |
+          rm -f NewSite/data/stats_test.json
+          rm -f NewSite/data/stats_previous_run_test.json
+          rm -f NewSite/data/upcoming_matchups_test.json
+          rm -f NewSite/data/player_lineups_test.json
+          rm -f NewSite/scripts/espn_pull_test.csv
+          echo "Cleared stale test files — this run starts from a genuinely clean slate."
+
       - name: Run ESPN pull + ingest pipeline (test-cutoff mode)
         env:
           ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
