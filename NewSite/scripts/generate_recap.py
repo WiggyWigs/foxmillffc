@@ -51,6 +51,7 @@ UPCOMING_MATCHUPS_PATH = DATA_DIR / os.environ.get("UPCOMING_MATCHUPS_FILENAME",
 PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
 RECAP_CRITERIA_PATH = SCRIPT_DIR / "recap_criteria.json"
 MANAGER_LORE_PATH = SCRIPT_DIR / "manager_lore.json"
+NARRATIVE_TONE_PATH = SCRIPT_DIR / "narrative_tone.txt"
 
 MODEL = "claude-sonnet-5"
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -95,6 +96,16 @@ def load_manager_lore():
         return {}
     with open(MANAGER_LORE_PATH) as f:
         return json.load(f)
+
+
+def load_narrative_tone():
+    """Edit narrative_tone.txt directly to change the voice/tone both
+    narratives are written in — no code changes needed. Falls back to
+    a plain, safe default if the file is ever missing, rather than
+    failing the whole run over a style file."""
+    if not NARRATIVE_TONE_PATH.exists():
+        return "Write in a clear, engaging tone appropriate for a fantasy football league website."
+    return NARRATIVE_TONE_PATH.read_text().strip()
 
 
 def get_manager_flavor(manager, stats, lore):
@@ -310,7 +321,7 @@ def find_best_bench_swap(losing_lineup, points_needed):
     return best
 
 
-def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
+def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
     away, home = closest_game["away_manager"], closest_game["home_manager"]
     away_score, home_score = closest_game["away_score"], closest_game["home_score"]
 
@@ -374,17 +385,9 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
     system = (
         "You write short fantasy football recap blurbs for a private "
         "league's website — a group of 40-something guys who have known "
-        "each other for years and enjoy busting each other's chops. "
-        "TONE: crude, funny, and unapologetically roasting. Backhanded "
-        "compliments and blunt put-downs are expected, not optional. If "
-        "someone lost, don't soften it — make sure they feel it. If their "
-        "background context shows something roastable (never made the "
-        "playoffs, a long losing streak, zero championships in many "
-        "seasons), point it out directly and use it as ammunition. This "
-        "is good-natured friend-group ribbing, not actual cruelty — keep "
-        "every joke grounded in the real facts given and aimed at their "
-        "fantasy football performance and history, never at anything "
-        "personal or unrelated to the game. The recap must be between 95 "
+        "each other for years and enjoy busting each other's chops.\n\n"
+        f"{tone}\n\n"
+        "The recap must be between 95 "
         "and 125 words — this is a hard requirement, not a suggestion. "
         "Use ONLY the facts given — never invent player names, stats, "
         "plays, or background details beyond what's provided. Do not use "
@@ -450,7 +453,7 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
 
 # --- Game of the Week (AI both picks and writes) ---------------------------
 
-def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
+def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats, tone):
     matchups = upcoming.get("matchups", [])
     if not matchups:
         return None, None
@@ -524,15 +527,8 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "fits, use your best judgment to pick the closest available "
         "match to what the criteria is asking for and proceed normally; "
         "never respond with nothing, an apology, or a refusal to choose. "
-        "TONE: crude, funny, and "
-        "unapologetically roasting. Backhanded compliments and blunt "
-        "put-downs are expected. If a manager's background shows "
-        "something roastable (a bad record, zero career playoff "
-        "appearances, a known reputation), use it as ammunition. This is "
-        "good-natured friend-group ribbing, not actual cruelty — keep "
-        "every joke grounded in the real facts given and aimed at their "
-        "fantasy football performance and history, never at anything "
-        "personal or unrelated to the game. The preview must be between "
+        f"{tone}\n\n"
+        "The preview must be between "
         "95 and 125 words for the preview itself, not counting the "
         "required prefix below — this is a hard requirement, not a "
         "suggestion. Use ONLY the facts given — never invent player "
@@ -818,6 +814,7 @@ def main():
 
     criteria = load_recap_criteria()
     lore = load_manager_lore()
+    tone = load_narrative_tone()
     week_games, week, year = get_week_games(stats)
 
     recap_text = None
@@ -831,7 +828,7 @@ def main():
         if week_games:
             closest_game = min(week_games, key=lambda g: g["margin"])
             system, user, recap_away_team, recap_home_team = build_recap_prompt(
-                closest_game, week, year, stats, lore, old_stats
+                closest_game, week, year, stats, lore, old_stats, tone
             )
             recap_text = call_claude(system, user)
             print("Generated Previous Weekend Recap.")
@@ -847,7 +844,7 @@ def main():
             with open(UPCOMING_MATCHUPS_PATH) as f:
                 upcoming = json.load(f)
             week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
-            system, user = build_game_of_week_prompt(upcoming, stats, week_criteria, lore, old_stats)
+            system, user = build_game_of_week_prompt(upcoming, stats, week_criteria, lore, old_stats, tone)
             if system:
                 raw_gotw_text = call_claude(system, user)
                 gotw_matchup, gotw_text = parse_and_strip_gotw_prefix(raw_gotw_text, upcoming)
