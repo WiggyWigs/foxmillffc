@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Current Season (TEST) — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<div class="test-banner">TEST ENVIRONMENT — not visible in site navigation, for internal review only</div>
+
+<main>
+  <div class="panel">
+    <h2 id="page-season-header">Current Season</h2>
+    <p class="msi-meta" id="season-year-label">Fox Mill Fantasy Football Club</p>
+
+    <div class="record-section recap-section">
+      <h3 class="season-subhead">Previous Weekend Recap</h3>
+      <div id="recap-previous-wrap">
+        <p class="load-state">Loading recap&hellip;</p>
+      </div>
+    </div>
+
+    <div class="record-section recap-section">
+      <h3 class="season-subhead">Game of the Week</h3>
+      <div id="recap-gotw-wrap">
+        <p class="load-state">Loading preview&hellip;</p>
+      </div>
+    </div>
+
+    <div class="record-section" id="callouts-section" style="display:none;">
+      <h3 class="season-subhead">This Week's Notes</h3>
+      <div class="callout-grid" id="callout-grid"></div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">Current Streaks</h3>
+      <div id="streaks-wrap">
+        <p class="load-state">Loading streaks&hellip;</p>
+      </div>
+      <p class="record-footnote">*Regular season games only</p>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">Standings</h3>
+      <p class="msi-meta">Sorted by win %. Ties break by head-to-head record, then total points scored.</p>
+      <div id="standings-wrap">
+        <p class="load-state">Loading standings&hellip;</p>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">Power Rankings</h3>
+      <p class="msi-meta" id="power-season-label">Current season strength, based on three factors weighed equally.</p>
+
+      <div id="power-wrap">
+        <p class="load-state">Loading power rankings&hellip;</p>
+      </div>
+    </div>
+
+    <div class="msi-criteria">
+      <h3>How Power Rankings are scored</h3>
+      <p class="power-explainer">
+        Each manager is ranked 1st-to-last among all active managers in each of three factors,
+        earning points equal to their rank position (best = 12, worst = 1). Ties split the
+        points evenly. Power Score is the sum of all three.
+      </p>
+      <ol>
+        <li>Current Season Win %</li>
+        <li>Points Scored</li>
+        <li>Schedule Difficulty</li>
+      </ol>
+      <p class="power-explainer">
+        Schedule Difficulty compares each manager's actual record to their "break-down" record —
+        the record they'd have if they'd played every other manager's score each week instead of
+        just their real opponent. A large negative gap means the real schedule was harder than the
+        scoring alone suggests, and that manager earns the most points for this factor.
+      </p>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">Playoff Probability</h3>
+      <p class="msi-meta" id="playoff-prob-meta"></p>
+      <div id="playoff-prob-wrap"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ============= MANAGER DETAIL MODAL ============= -->
+<div class="modal-overlay" id="statModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalMgrName">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Power Ranking Breakdown</div>
+    <div class="modal-name" id="modalMgrName"></div>
+    <div class="modal-year" id="modalMgrRank"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">Win %</span>
+        <span class="modal-stat-value" id="modalWinPct"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points</span>
+        <span class="modal-stat-value" id="modalWinPctPts"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points Scored</span>
+        <span class="modal-stat-value" id="modalPtsScored"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points</span>
+        <span class="modal-stat-value" id="modalPtsScoredPts"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Schedule Difficulty</span>
+        <span class="modal-stat-value" id="modalSchedDiff"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points</span>
+        <span class="modal-stat-value" id="modalSchedPts"></span>
+      </div>
+      <div class="modal-stat modal-stat-full">
+        <span class="modal-stat-label">Power Score</span>
+        <span class="modal-stat-value" id="modalPowerScore"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="current-season-test.js"></script>
+
+</body>
+</html>
