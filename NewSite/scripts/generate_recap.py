@@ -367,9 +367,9 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
     away_pp = get_playoff_probability_trend(away, old_stats, stats)
     home_pp = get_playoff_probability_trend(home, old_stats, stats)
     if away_pp:
-        context["away_playoff_probability_trend"] = away_pp
+        context["away_season_playoff_probability_trend"] = away_pp
     if home_pp:
-        context["home_playoff_probability_trend"] = home_pp
+        context["home_season_playoff_probability_trend"] = home_pp
 
     system = (
         "You write short fantasy football recap blurbs for a private "
@@ -390,7 +390,13 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
         "plays, or background details beyond what's provided. Do not use "
         "markdown formatting. Do NOT start with the manager names or a "
         "'ManagerA vs ManagerB:' prefix — that's shown separately on the "
-        "page. Just start straight into the recap itself. Whenever you "
+        "page. Just start straight into the recap itself. EVERY field "
+        "given is prefixed with either 'season_' or 'career_' to show "
+        "its scope — whenever you state ANY number from a season_ or "
+        "career_ field, you MUST include a matching word in the "
+        "sentence itself ('this season', 'career', 'all-time', etc.) "
+        "so a reader always knows which scope it's from — never state "
+        "a number without that context. Whenever you "
         "state a player's point total, always write it as 'X points' or "
         "'X.X points' — never a bare number on its own. Whenever you "
         "state a percentage (playoff probability or anything else), "
@@ -412,7 +418,7 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats):
         "phrasing. If you mention "
         "playoff chances or probability for a manager, you MUST cite "
         "both their previous_week_pct and current_week_pct numbers from "
-        "their playoff_probability_trend field if it's present — never "
+        "their season_playoff_probability_trend field if it's present — never "
         "make a vague qualitative claim about playoff odds without "
         "those two real numbers. If that field isn't present for a "
         "manager, don't speculate about their playoff chances at all."
@@ -475,20 +481,20 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         points_total = p.get("points_scored")
         points_avg = round(points_total / games_played, 2) if points_total is not None and games_played else None
         ctx = {
-            "standings_rank": standings_rank.get(name),
-            "record_wins": wins,
-            "record_losses": losses,
-            "power_score": p.get("power_score"),
-            "points_scored_avg": points_avg,
-            "schedule_difficulty": p.get("schedule_difficulty"),
-            "playoff_probability_pct": playoff_prob.get(name),
+            "season_standings_rank": standings_rank.get(name),
+            "season_wins": wins,
+            "season_losses": losses,
+            "season_power_score": p.get("power_score"),
+            "season_points_avg": points_avg,
+            "season_schedule_difficulty": p.get("schedule_difficulty"),
+            "season_playoff_probability_pct": playoff_prob.get(name),
         }
         flavor = get_manager_flavor(name, stats, lore)
         if flavor:
             ctx["background"] = flavor
         pp_trend = get_playoff_probability_trend(name, old_stats, stats)
         if pp_trend:
-            ctx["playoff_probability_trend"] = pp_trend
+            ctx["season_playoff_probability_trend"] = pp_trend
         return ctx
 
     enriched = []
@@ -531,23 +537,32 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "required prefix below — this is a hard requirement, not a "
         "suggestion. Use ONLY the facts given — never invent player "
         "names, projections, stats, or background details not provided. "
-        "Do not use markdown formatting. Whenever you state a point "
+        "Do not use markdown formatting. EVERY field given is prefixed "
+        "with either 'season_' or 'career_' to show its scope — whenever "
+        "you state ANY number from a season_ or career_ field, you MUST "
+        "include a matching word in the sentence itself ('this season', "
+        "'career', 'all-time', etc.) so a reader always knows which "
+        "scope it's from — never state a number without that context, "
+        "especially when a season stat and a career stat appear near "
+        "each other in the same sentence. Whenever you state a point "
         "total, always write it as 'X points' or 'X.X points' — never a "
         "bare number alone. Points totals given are SEASON AVERAGES "
-        "(points_scored_avg) — always describe them as such (e.g. "
-        "'averaging X points a game'), never imply it's a season total. "
+        "(season_points_avg) — always describe them as such (e.g. "
+        "'averaging X points a game this season'), never imply it's a "
+        "season total or a career figure. "
         "Whenever you state a percentage (playoff "
         "probability or anything else), always write it as 'X%' or "
         "'X.X%' — never spell out 'percent' as a word. Win percentages "
         "(career_win_pct or any other win_pct field) are given as "
         "decimals (e.g. 0.6818) — always convert to a whole-number "
         "percentage with two decimals and spell out the words, e.g. "
-        "'a 68.18 winning percentage' — never write the raw decimal or "
-        "abbreviate to 'win pct'. When referring "
+        "'a 68.18 career winning percentage' — never write the raw "
+        "decimal or abbreviate to 'win pct'. When referring "
         "to a manager's standings position, always phrase it as an "
-        "ordinal — 'ranked 2nd', 'sits 5th in the standings', etc. — "
+        "ordinal — 'ranked 2nd this season', 'sits 5th in the "
+        "standings', etc. — "
         "never 'rank 2' or 'at rank 5' as a bare number. IMPORTANT: "
-        "schedule_difficulty is counterintuitively named — a HIGHER "
+        "season_schedule_difficulty is counterintuitively named — a HIGHER "
         "(more positive) value means an EASIER schedule, and a LOWER "
         "(more negative, or less positive) value means a HARDER "
         "schedule. The value itself is a percentage-point gap: it's how "
@@ -557,21 +572,21 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats):
         "points ahead of what his scoring alone would suggest') rather "
         "than citing the bare decimal, which means nothing to a reader. "
         "NEVER describe one manager's schedule as easier or harder than "
-        "another's unless their schedule_difficulty values differ by at "
+        "another's unless their season_schedule_difficulty values differ by at "
         "least 0.15 — if the gap is smaller than that, it's not a real "
         "difference and shouldn't be mentioned as one at all. Whenever "
         "the selection "
         "criteria refers to a "
         "manager's 'rank' or being 'ranked' (e.g. 'top 5', 'ranked "
-        "7-10'), this means their standings_rank field specifically — "
+        "7-10'), this means their season_standings_rank field specifically — "
         "their position in the actual win-loss standings — NOT their "
-        "power_score or any other number. If you use the all-time "
+        "season_power_score or any other number. If you use the all-time "
         "meetings history, "
         "use the h2h_record field for the real record (e.g. 'X leads "
         "Y-Z') — don't invent details beyond what's given. If you "
         "mention playoff chances or probability for a manager, you MUST "
         "cite both their previous_week_pct and current_week_pct numbers "
-        "from their playoff_probability_trend field if present — never a "
+        "from their season_playoff_probability_trend field if present — never a "
         "vague qualitative claim without those two real numbers; if "
         "that field isn't present for a manager, don't speculate about "
         "their playoff chances. If you reference a manager's individual "
