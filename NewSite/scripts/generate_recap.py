@@ -431,6 +431,9 @@ def pick_game_of_week_matchup(gotw_text, upcoming):
 # --- Callout: last week's featured Game of the Week, actual result --------
 
 def callout_last_gotw_result(old_stats, new_games):
+    """This one stays sentence-style rather than the name+number card
+    format — a head-to-head result genuinely doesn't compress into a
+    single headline and number the way the others do."""
     old_pick = (old_stats or {}).get("weekly_recap", {}).get("game_of_the_week_matchup")
     if not old_pick:
         return None
@@ -449,12 +452,34 @@ def callout_last_gotw_result(old_stats, new_games):
         return None
 
     winner = match["winner"] or "Tie"
-    return (f"Last week's Game of the Week — {a} vs {b} — went to {winner}, "
-            f"{match['away_manager']} {match['away_score']} - "
-            f"{match['home_score']} {match['home_manager']}.")
+    return {
+        "style": "sentence",
+        "label": "LAST WEEK'S PICK",
+        "text": (f"{a} vs {b} went to {winner}, "
+                 f"{match['away_manager']} {match['away_score']} - "
+                 f"{match['home_score']} {match['home_manager']}."),
+    }
 
 
 # --- Callout: new record set this week -------------------------------------
+
+RECORD_LIST_LABELS = {
+    "top_avg_regular_season": "Top Average Score",
+    "bottom_avg_regular_season": "Lowest Average Score",
+    "top_regular_season_games": "Highest R/S Game Score",
+    "bottom_regular_season_games": "Lowest R/S Game Score",
+    "top_playoff_games": "Highest Playoff Score",
+    "bottom_playoff_games": "Lowest Playoff Score",
+    "top_winning_streaks": "Longest Win Streak (All-Time)",
+    "top_losing_streaks": "Longest Losing Streak (All-Time)",
+    "top_over100_streaks": "Longest Streak Over 100",
+    "top_under100_streaks": "Longest Streak Under 100",
+    "fastest_to_25_wins": "Fastest to 25 Wins",
+    "fastest_to_50_wins": "Fastest to 50 Wins",
+    "fastest_to_25_losses": "Fastest to 25 Losses",
+    "fastest_to_50_losses": "Fastest to 50 Losses",
+}
+
 
 def detect_new_records(old_stats, new_stats):
     """Compares each Record Books / Rafters leaderboard's TOP entry
@@ -482,7 +507,14 @@ def detect_new_records(old_stats, new_stats):
         newly_added = new_top_managers - old_top_managers
         if newly_added:
             names = ", ".join(sorted(newly_added))
-            callouts.append(f"New entry atop {key.replace('_', ' ')}: {names}.")
+            callouts.append({
+                "style": "card",
+                "label": "NEW RECORD",
+                "headline": names,
+                "subtitle": RECORD_LIST_LABELS.get(key, key.replace("_", " ")),
+                "value": new_top_value,
+                "unit": "",
+            })
 
     return callouts
 
@@ -499,12 +531,18 @@ def callout_streaks(stats):
         top = cs["top_current_winning_streaks"]
         streak = top[0]["win_streak"]
         names = ", ".join(e["manager"] for e in top if e["win_streak"] == streak)
-        win_callout = f"Longest active winning streak: {names} ({streak} games)."
+        win_callout = {
+            "style": "card", "label": "WIN STREAK", "headline": names,
+            "subtitle": "active streak", "value": streak, "unit": "games",
+        }
     if cs.get("top_current_losing_streaks"):
         top = cs["top_current_losing_streaks"]
         streak = top[0]["loss_streak"]
         names = ", ".join(e["manager"] for e in top if e["loss_streak"] == streak)
-        loss_callout = f"Longest active losing streak: {names} ({streak} games)."
+        loss_callout = {
+            "style": "card", "label": "LOSING STREAK", "headline": names,
+            "subtitle": "active streak", "value": streak, "unit": "games",
+        }
     return win_callout, loss_callout
 
 
@@ -514,8 +552,10 @@ def callout_biggest_margin(week_games):
     biggest = max(week_games, key=lambda g: g["margin"])
     winner = biggest["away_manager"] if biggest["away_score"] > biggest["home_score"] else biggest["home_manager"]
     loser = biggest["home_manager"] if winner == biggest["away_manager"] else biggest["away_manager"]
-    return (f"Biggest margin of victory: {winner} over {loser} by "
-            f"{biggest['margin']} points.")
+    return {
+        "style": "card", "label": "BLOWOUT", "headline": winner,
+        "subtitle": f"over {loser}", "value": biggest["margin"], "unit": "points",
+    }
 
 
 def callout_lowest_scoring_team(week_games):
@@ -526,7 +566,10 @@ def callout_lowest_scoring_team(week_games):
         all_scores.append((g["away_manager"], g["away_score"]))
         all_scores.append((g["home_manager"], g["home_score"]))
     manager, score = min(all_scores, key=lambda t: t[1])
-    return f"Lowest team score of the week: {manager} with {score} points."
+    return {
+        "style": "card", "label": "ICE COLD", "headline": manager,
+        "subtitle": "lowest score this week", "value": score, "unit": "points",
+    }
 
 
 def callout_highest_scoring_player(year, week):
@@ -547,8 +590,11 @@ def callout_highest_scoring_player(year, week):
                         "position": p["position"], "points": p["points"]}
     if best is None:
         return None
-    return (f"Highest-scoring player: {best['player']} ({best['position']}), "
-            f"started by {best['manager']}, with {best['points']} points.")
+    return {
+        "style": "card", "label": "STANDOUT", "headline": best["player"],
+        "subtitle": f"{best['manager']} \u00b7 {best['position']}",
+        "value": best["points"], "unit": "points",
+    }
 
 
 # --- Main ---------------------------------------------------------------
