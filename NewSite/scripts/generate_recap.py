@@ -1051,8 +1051,8 @@ def callout_streaks(stats):
         tied = [e for e in top if e["win_streak"] == streak]
         names = ", ".join(e["manager"] for e in tied)
         win_callout = {
-            "style": "card", "label": "WIN STREAK", "headline": names,
-            "subtitle": "active streak", "value": streak, "unit": "games",
+            "style": "card", "label": "Longest Current R/S Winning Streak", "headline": names,
+            "value": streak,
             "streak_details": [
                 {"manager": e["manager"], "games": e["streak_games"]} for e in tied
             ],
@@ -1063,8 +1063,8 @@ def callout_streaks(stats):
         tied = [e for e in top if e["loss_streak"] == streak]
         names = ", ".join(e["manager"] for e in tied)
         loss_callout = {
-            "style": "card", "label": "LOSING STREAK", "headline": names,
-            "subtitle": "active streak", "value": streak, "unit": "games",
+            "style": "card", "label": "Longest Current R/S Losing Streak", "headline": names,
+            "value": streak,
             "streak_details": [
                 {"manager": e["manager"], "games": e["streak_games"]} for e in tied
             ],
