@@ -1,0 +1,38 @@
+name: Backfill historical player lineups
+
+on:
+  workflow_dispatch: {}  # manual trigger only — this is a one-time job, not a schedule
+
+permissions:
+  contents: write  # needed so the workflow can commit player_lineups.json back
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install espn_api
+
+      - name: Run historical lineup backfill
+        run: python NewSite/scripts/backfill_player_lineups.py
+        env:
+          ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+
+      - name: Commit and push backfilled lineups
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add NewSite/data/player_lineups.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Backfill historical player lineup data"
+          git push
