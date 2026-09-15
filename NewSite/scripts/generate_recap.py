@@ -39,6 +39,7 @@ GitHub Secret in the automated workflow).
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -164,7 +165,7 @@ def get_playoff_probability_trend(manager, old_stats, new_stats):
 
 # --- Claude API ---------------------------------------------------------
 
-def call_claude(system_prompt, user_prompt, max_tokens=2000):
+def call_claude(system_prompt, user_prompt, max_tokens=4000):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY not set")
@@ -284,6 +285,60 @@ def top_and_bottom_starter(lineup):
     return top, bottom
 
 
+def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final_score):
+    """
+    Determines whether the outcome of this game was decided by the
+    LAST real NFL game to finish that week (usually Monday Night
+    Football, though this checks the actual date rather than assuming
+    it). Compares each team's score with that final game's starters
+    excluded against their actual final score — if the leader changes
+    once those points are added back in, that's a real, verified
+    comeback-or-collapse story, not speculation.
+
+    Returns None if there's no real swing to report (the eventual
+    winner was already leading before the final game too), or a dict
+    describing what happened if there was one.
+    """
+    if not away_lineup or not home_lineup:
+        return None
+
+    all_dates = [
+        p.get("game_date") for p in away_lineup + home_lineup
+        if p.get("started") and p.get("game_date")
+    ]
+    if not all_dates:
+        return None
+    final_date_str = max(all_dates)
+    final_date = datetime.fromisoformat(final_date_str)
+    is_monday_night = final_date.weekday() == 0  # Monday == 0
+
+    def score_before_final_game(lineup):
+        return sum(
+            p["points"] for p in lineup
+            if p.get("started") and p.get("game_date") != final_date_str
+        )
+
+    away_before = score_before_final_game(away_lineup)
+    home_before = score_before_final_game(home_lineup)
+
+    leader_before = None
+    if away_before != home_before:
+        leader_before = "away" if away_before > home_before else "home"
+    leader_after = "away" if away_final_score > home_final_score else (
+        "home" if home_final_score > away_final_score else None)
+
+    if leader_before is None or leader_after is None or leader_before == leader_after:
+        return None  # no real swing — same leader throughout, or a tie somewhere
+
+    return {
+        "game_type": "Monday Night Football" if is_monday_night else "the final game of the week",
+        "leader_before_final_game": leader_before,
+        "final_winner": leader_after,
+        "away_score_before_final_game": round(away_before, 2),
+        "home_score_before_final_game": round(home_before, 2),
+    }
+
+
 def find_best_bench_swap(losing_lineup, points_needed):
     """
     Checks every (bench player, starter) pair for LEGAL eligibility
@@ -365,6 +420,14 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
             if swap and swap["would_have_won"]:
                 context["bench_swap_that_would_have_won"] = swap
 
+    # Did the final game of the week (usually MNF) flip the outcome?
+    swing = find_final_game_swing(away_lineup, home_lineup, away_score, home_score)
+    if swing:
+        swing_display = dict(swing)
+        swing_display["leader_before_final_game"] = away if swing["leader_before_final_game"] == "away" else home
+        swing_display["final_winner"] = away if swing["final_winner"] == "away" else home
+        context["final_game_swing"] = swing_display
+
     # Real, verified career context — this is the actual roast material.
     away_flavor = get_manager_flavor(away, stats, lore)
     home_flavor = get_manager_flavor(home, stats, lore)
@@ -406,8 +469,8 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         "always write it as 'X%' or 'X.X%' — never spell out 'percent' "
         "as a word. Win percentages (career_win_pct or any other "
         "win_pct field) are given as decimals (e.g. 0.6818) — always "
-        "convert to a whole-number percentage with two decimals and "
-        "spell out the words, e.g. 'a 68.18 winning percentage' — never "
+        "convert to a whole-number percentage rounded to ONE decimal and "
+        "spell out the words, e.g. 'a 68.2 winning percentage' — never "
         "write the raw decimal or abbreviate to 'win pct'. Mention AT MOST "
         "one standout performance and ONE disappointing performance per "
         "team, and ONLY the specific players named in the top/bottom "
@@ -442,6 +505,14 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
         f"material for mocking whoever set that lineup. If "
+        f"final_game_swing is present, that's a real, verified fact: "
+        f"the manager named in leader_before_final_game was actually "
+        f"ahead before {swing['game_type'] if swing else 'the final game'} "
+        f"finished, but final_winner ended up taking the game — meaning "
+        f"final_winner pulled off a genuine comeback, and "
+        f"leader_before_final_game blew a lead they had going into that "
+        f"last game. This is excellent, dramatic material and should "
+        f"usually be mentioned prominently. If "
         f"away_manager_background or home_manager_background is present "
         f"(especially for {loser or 'the loser'}, who lost this game), "
         f"use it as real ammunition — a bad career record, zero playoff "
@@ -551,10 +622,11 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats, tone):
         "'X.X%' — never spell out 'percent' as a word. Win percentages "
         "(career_win_pct or any other win_pct field) are given as "
         "decimals (e.g. 0.6818) — always convert to a whole-number "
-        "percentage with two decimals and spell out the words, e.g. "
-        "'a 68.18 career winning percentage' — never write the raw "
+        "percentage rounded to ONE decimal and spell out the words, e.g. "
+        "'a 68.2 career winning percentage' — never write the raw "
         "decimal or abbreviate to 'win pct'. When referring "
         "to a manager's standings position, always phrase it as an "
+        "ordinal — 'ranked 2nd this season', 'sits 5th in the "
         "ordinal — 'ranked 2nd this season', 'sits 5th in the "
         "standings', etc. — "
         "never 'rank 2' or 'at rank 5' as a bare number. IMPORTANT: "
@@ -902,11 +974,28 @@ def main():
         print("Nothing generated this run — leaving stats.json untouched.")
         return
 
+    box_scores = []
+    if week_games:
+        for g in week_games:
+            if g["away_score"] >= g["home_score"]:
+                winner_team, winner_score = g["away_team"], g["away_score"]
+                loser_team, loser_score = g["home_team"], g["home_score"]
+                winner_mgr, loser_mgr = g["away_manager"], g["home_manager"]
+            else:
+                winner_team, winner_score = g["home_team"], g["home_score"]
+                loser_team, loser_score = g["away_team"], g["away_score"]
+                winner_mgr, loser_mgr = g["home_manager"], g["away_manager"]
+            box_scores.append({
+                "winner_team": winner_team, "winner_score": winner_score, "winner_manager": winner_mgr,
+                "loser_team": loser_team, "loser_score": loser_score, "loser_manager": loser_mgr,
+            })
+
     stats["weekly_recap"] = {
         "previous_weekend": recap_text,
         "previous_weekend_week": week if week_games else None,
         "previous_weekend_away_team": recap_away_team,
         "previous_weekend_home_team": recap_home_team,
+        "box_scores": box_scores,
         "game_of_the_week": gotw_text,
         "game_of_the_week_week": upcoming.get("week") if upcoming else None,
         "game_of_the_week_matchup": gotw_matchup,  # structured, for next week's result lookup
