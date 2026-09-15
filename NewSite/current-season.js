@@ -4,6 +4,8 @@
 // streaks rendering does light client-side formatting only.
 
 document.addEventListener("DOMContentLoaded", async () => {
+  setupBoxScoreModal();
+  setupStreakModal();
   let data;
   try {
     const res = await fetch("data/stats.json");
@@ -17,22 +19,238 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const seasonLabel = document.getElementById("season-year-label");
   const pageHeader = document.getElementById("page-season-header");
   const season = data.power_rankings?.season || data.current_streaks?.season
     || data.current_standings?.season;
-  if (season && seasonLabel) {
-    seasonLabel.textContent = `Fox Mill Fantasy Football Club — ${season} Season`;
-  }
   if (season && pageHeader) {
     pageHeader.textContent = `${season} Season`;
   }
 
-  renderStreaks(data);
-  renderStandings(data);
-  renderPlayoffProbability(data);
-  renderPowerRankings(data);
+  // Each section renders independently — one section's bug should
+  // never take down the rest of the page.
+  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings];
+  for (const renderFn of sections) {
+    try {
+      renderFn(data);
+    } catch (err) {
+      console.error(`${renderFn.name} failed:`, err);
+    }
+  }
 });
+
+function renderRecap(data) {
+  const recap = data.weekly_recap || {};
+
+  const prevHeading = document.getElementById("recap-previous-heading");
+  if (prevHeading && recap.previous_weekend_week != null) {
+    prevHeading.textContent = `Week ${recap.previous_weekend_week} Impact Game`;
+  }
+
+  const prevSubtitle = document.getElementById("recap-previous-subtitle");
+  if (prevSubtitle && recap.previous_weekend_away_team && recap.previous_weekend_home_team) {
+    prevSubtitle.textContent = `${recap.previous_weekend_away_team} vs ${recap.previous_weekend_home_team}`;
+  }
+
+  const prevWrap = document.getElementById("recap-previous-wrap");
+  if (recap.previous_weekend) {
+    prevWrap.innerHTML = `<p class="recap-text">${recap.previous_weekend}</p>`;
+  } else {
+    prevWrap.innerHTML = `<p class="load-state">No recap yet — check back after this week's games.</p>`;
+  }
+
+  const gotwHeading = document.getElementById("recap-gotw-heading");
+  if (gotwHeading && recap.game_of_the_week_week != null) {
+    gotwHeading.textContent = `Week ${recap.game_of_the_week_week} - Game of the Week`;
+  }
+
+  const gotwSubtitle = document.getElementById("recap-gotw-subtitle");
+  if (gotwSubtitle && recap.game_of_the_week_away_team && recap.game_of_the_week_home_team) {
+    gotwSubtitle.textContent = `${recap.game_of_the_week_away_team} vs ${recap.game_of_the_week_home_team}`;
+  }
+
+  const gotwWrap = document.getElementById("recap-gotw-wrap");
+  if (recap.game_of_the_week) {
+    gotwWrap.innerHTML = `<p class="recap-text">${recap.game_of_the_week}</p>`;
+  } else {
+    gotwWrap.innerHTML = `<p class="load-state">No preview yet — check back closer to kickoff.</p>`;
+  }
+
+  renderCallouts(recap.callouts || {});
+  renderBoxScores(recap.box_scores || []);
+}
+
+function renderBoxScores(boxScores) {
+  const grid = document.getElementById("box-score-grid");
+  if (!grid) return;
+
+  if (boxScores.length === 0) {
+    grid.innerHTML = `<p class="load-state">No box scores yet.</p>`;
+    return;
+  }
+
+  grid.innerHTML = boxScores.map((b, i) => `
+    <div class="box-score-card" data-box-score-index="${i}">
+      <div class="box-score-winner">${b.winner_team} <span class="box-score-score">${b.winner_score}</span></div>
+      <div class="box-score-loser">${b.loser_team} <span class="box-score-score">${b.loser_score}</span></div>
+    </div>
+  `).join("");
+
+  grid.querySelectorAll("[data-box-score-index]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const b = boxScores[parseInt(card.dataset.boxScoreIndex, 10)];
+      openBoxScoreModal(b);
+    });
+  });
+}
+
+function openBoxScoreModal(boxScore) {
+  const modal = document.getElementById("boxScoreModal");
+  const title = document.getElementById("boxScoreModalTitle");
+  const body = document.getElementById("boxScoreModalBody");
+  const closeBtn = document.getElementById("boxScoreModalClose");
+  if (!modal || !title || !body) return;
+
+  title.textContent = `${boxScore.winner_team} ${boxScore.winner_score} - ${boxScore.loser_score} ${boxScore.loser_team}`;
+  body.textContent = boxScore.narrative || "No write-up for this game yet.";
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeBoxScoreModal() {
+  const modal = document.getElementById("boxScoreModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupBoxScoreModal() {
+  const overlay = document.getElementById("boxScoreModal");
+  const closeBtn = document.getElementById("boxScoreModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeBoxScoreModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeBoxScoreModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeBoxScoreModal();
+  });
+}
+
+function renderCallouts(callouts) {
+  const section = document.getElementById("callouts-section");
+  const grid = document.getElementById("callout-grid");
+
+  const items = [];
+  if (callouts.last_gotw_result) items.push(callouts.last_gotw_result);
+  if (Array.isArray(callouts.new_records)) {
+    callouts.new_records.forEach((item) => items.push(item));
+  }
+  if (callouts.longest_win_streak) items.push(callouts.longest_win_streak);
+  if (callouts.longest_loss_streak) items.push(callouts.longest_loss_streak);
+  if (callouts.biggest_margin) items.push(callouts.biggest_margin);
+  if (callouts.lowest_scoring_team) items.push(callouts.lowest_scoring_team);
+  if (callouts.highest_scoring_player) items.push(callouts.highest_scoring_player);
+
+  if (items.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  grid.innerHTML = items.map(renderCalloutCard).join("");
+
+  grid.querySelectorAll(".callout-item").forEach((el, i) => {
+    if (items[i].streak_details) {
+      el.classList.add("callout-clickable");
+      el.addEventListener("click", () => openStreakModal(items[i]));
+    }
+  });
+}
+
+function renderCalloutCard(item) {
+  if (item.style === "sentence") {
+    return `
+      <div class="callout-item callout-sentence">
+        <div class="callout-item-text">
+          <span class="callout-label">${item.label}</span>
+          <span class="callout-headline">${item.text}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Default: the name + big number "impact" card.
+  const valueDisplay = typeof item.value === "number"
+    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
+    : item.value;
+
+  return `
+    <div class="callout-item">
+      <div class="callout-item-text">
+        <span class="callout-label">${item.label}</span>
+        <span class="callout-headline">${item.headline}</span>
+        ${item.subtitle ? `<span class="callout-subtitle">${item.subtitle}</span>` : ""}
+      </div>
+      <div class="callout-value-wrap">
+        <span class="callout-value">${valueDisplay}</span>
+        ${item.unit ? `<span class="callout-unit">${item.unit}</span>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function openStreakModal(item) {
+  const modal = document.getElementById("streakModal");
+  const title = document.getElementById("streakModalTitle");
+  const body = document.getElementById("streakModalBody");
+  const closeBtn = document.getElementById("streakModalClose");
+  if (!modal || !title || !body) return;
+
+  title.textContent = item.headline;
+
+  body.innerHTML = item.streak_details.map((entry) => {
+    const gamesList = entry.games.map((g) => {
+      return `<div class="streak-game-line">
+        <span>vs ${g.opponent}: ${g.manager_score} - ${g.opponent_score}</span>
+        <span class="streak-game-yearweek">(${g.year}, W${g.week})</span>
+      </div>`;
+    }).join("");
+    const managerHeader = item.streak_details.length > 1
+      ? `<div class="streak-modal-manager">${entry.manager}</div>` : "";
+    return managerHeader + gamesList;
+  }).join("");
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeStreakModal() {
+  const modal = document.getElementById("streakModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupStreakModal() {
+  const overlay = document.getElementById("streakModal");
+  const closeBtn = document.getElementById("streakModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeStreakModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeStreakModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeStreakModal();
+  });
+}
 
 function renderStreaks(data) {
   const wrap = document.getElementById("streaks-wrap");
