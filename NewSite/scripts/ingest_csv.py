@@ -312,6 +312,7 @@ def compute_records(all_games, roster_names):
     playoff_entries = []
     games_above_125 = defaultdict(int)
     games_below_100 = defaultdict(int)
+    total_games_played = defaultdict(int)
 
     for g in all_games:
         for mgr, score in ((g["away_manager"], g["away_score"]),
@@ -321,12 +322,14 @@ def compute_records(all_games, roster_names):
                 regular_entries.append(entry)
             else:
                 playoff_entries.append(entry)
-            # The current in-progress season (if any) is excluded from
-            # these two counts — a partial season would otherwise let a
-            # manager rack up an artificially low count just because
-            # fewer of their games have happened yet.
-            if g["year"] == in_progress_year:
-                continue
+            # Unlike the old design, the in-progress season is now
+            # INCLUDED here — expressing this as a rate (occurrences
+            # divided by total games played) rather than a raw count
+            # is what makes that fair: a manager 3 games into a new
+            # season is compared on the same footing as one with 200
+            # career games, rather than needing a full season before
+            # showing up here at all.
+            total_games_played[mgr] += 1
             if score > 125:
                 games_above_125[mgr] += 1
             if score < 100:
@@ -365,12 +368,14 @@ def compute_records(all_games, roster_names):
         smallest_margins = [e for e in smallest_margins_sorted if e["margin"] <= cutoff]
 
     games_above_125_list = sorted(
-        [{"manager": m, "count": c} for m, c in games_above_125.items()],
-        key=lambda e: -e["count"],
+        [{"manager": m, "count": c, "games_played": total_games_played[m],
+          "rate": round(c / total_games_played[m], 4)} for m, c in games_above_125.items()],
+        key=lambda e: -e["rate"],
     )
     games_below_100_list = sorted(
-        [{"manager": m, "count": c} for m, c in games_below_100.items()],
-        key=lambda e: -e["count"],
+        [{"manager": m, "count": c, "games_played": total_games_played[m],
+          "rate": round(c / total_games_played[m], 4)} for m, c in games_below_100.items()],
+        key=lambda e: -e["rate"],
     )
 
     # --- Per-manager, per-season regular-season averages ---
@@ -384,13 +389,22 @@ def compute_records(all_games, roster_names):
             season_totals[mgr][g["year"]]["games"] += 1
 
     season_avgs = []
+    MIN_GAMES_FOR_CURRENT_SEASON_AVG = 3
     for mgr, years in season_totals.items():
         for year, d in years.items():
-            if d["games"]:
-                season_avgs.append({
-                    "manager": mgr, "year": year,
-                    "avg_score": round(d["total"] / d["games"], 2),
-                })
+            if not d["games"]:
+                continue
+            # The current in-progress season needs a real sample
+            # before its average means anything — 1-2 games isn't a
+            # season average, it's just whatever happened so far.
+            # Complete (past) seasons have no such restriction, since
+            # a finished season's average is always meaningful.
+            if year == in_progress_year and d["games"] < MIN_GAMES_FOR_CURRENT_SEASON_AVG:
+                continue
+            season_avgs.append({
+                "manager": mgr, "year": year,
+                "avg_score": round(d["total"] / d["games"], 2),
+            })
 
     top_avg_regular_season = sorted(season_avgs, key=lambda e: -e["avg_score"])[:10]
     bottom_avg_regular_season = sorted(season_avgs, key=lambda e: e["avg_score"])[:10]
