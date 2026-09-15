@@ -337,6 +337,33 @@ def compute_records(all_games, roster_names):
     top_playoff_games = sorted(playoff_entries, key=lambda e: -e["score"])[:5]
     bottom_playoff_games = sorted(playoff_entries, key=lambda e: e["score"])[:5]
 
+    # Smallest margins of victory, all-time — deliberately includes
+    # the in-progress season's games (unlike games_above_125/below_100
+    # above), since the whole point is to be able to tell whether a
+    # game happening RIGHT NOW is a genuinely historic nail-biter.
+    # Ties are excluded (a margin of 0 isn't a "narrow win").
+    margin_entries = []
+    for g in all_games:
+        if g["tie"]:
+            continue
+        winner_score = max(g["away_score"], g["home_score"])
+        loser_score = min(g["away_score"], g["home_score"])
+        margin_entries.append({
+            "winner": g["winner"], "loser": g["loser"],
+            "winner_score": winner_score, "loser_score": loser_score,
+            "margin": round(winner_score - loser_score, 2),
+            "year": g["year"], "week": g["week"],
+        })
+    smallest_margins_sorted = sorted(margin_entries, key=lambda e: e["margin"])
+    # Top-10-with-ties: pull in every game sharing the 10th-place margin
+    # value, same "don't cut a tied group in half" principle used for
+    # streaks below.
+    if len(smallest_margins_sorted) <= 10:
+        smallest_margins = smallest_margins_sorted
+    else:
+        cutoff = smallest_margins_sorted[9]["margin"]
+        smallest_margins = [e for e in smallest_margins_sorted if e["margin"] <= cutoff]
+
     games_above_125_list = sorted(
         [{"manager": m, "count": c} for m, c in games_above_125.items()],
         key=lambda e: -e["count"],
@@ -554,6 +581,7 @@ def compute_records(all_games, roster_names):
         "bottom_regular_season_games": bottom_regular_games,
         "top_playoff_games": top_playoff_games,
         "bottom_playoff_games": bottom_playoff_games,
+        "smallest_margins": smallest_margins,
         "games_above_125": games_above_125_list,
         "games_below_100": games_below_100_list,
         "top_winning_streaks": top_win_streaks,
