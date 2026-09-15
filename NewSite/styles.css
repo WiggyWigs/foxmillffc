@@ -1340,3 +1340,50 @@ main {
 .input-submit:hover {
   background: var(--rust);
 }
+
+/* Callout cards that open a detail modal (currently just streaks) */
+.callout-item.callout-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.callout-item.callout-clickable:hover {
+  box-shadow: 0 2px 10px rgba(42, 36, 32, 0.12);
+  transform: translateY(-1px);
+}
+
+.streak-modal-body {
+  text-align: left;
+  margin-top: 1rem;
+  border-top: 1px solid var(--hairline);
+  padding-top: 1rem;
+}
+
+.streak-modal-manager {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--navy);
+  margin: 0.75rem 0 0.4rem;
+}
+
+.streak-modal-manager:first-child {
+  margin-top: 0;
+}
+
+.streak-game-line {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.streak-game-line:last-child {
+  border-bottom: none;
+}
+
+.streak-game-recent {
+  font-weight: 700;
+  color: var(--rust);
+}
