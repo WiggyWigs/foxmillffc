@@ -29,3 +29,13 @@ the write-up. Use what genuinely earns its place in the sentence —
 if a line reads better and still lands the joke without a career
 stat crammed in, leave it out. Don't force in career_win_pct or any
 other background field just because it's available.
+
+Watch specifically for forced non-sequitur transitions bolting on an
+unrelated stat — e.g. "...a schedule so soft it's practically a
+pillow fight — good thing, since his career line sits at a modest
+61.3% winning percentage..." The career stat there has nothing to do
+with the schedule difficulty it's welded onto; it's just filler
+wearing a transition word as a costume. If a stat doesn't connect
+logically to what the sentence is actually about, cut the stat
+entirely rather than forcing a "good thing," "which explains why,"
+or similar bridge to justify including it.
