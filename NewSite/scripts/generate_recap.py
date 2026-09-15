@@ -111,21 +111,33 @@ def load_narrative_tone():
 
 def get_manager_flavor(manager, stats, lore):
     """Real, verified career facts for one manager — actual roast
-    material, not invented. Pulled from stats["managers"][manager]
-    ["career"], which ONLY counts complete seasons (ones with a
-    recorded Championship game) — deliberately NOT h2h_summary, which
-    exists for the Head-to-Head page's different "how do these two
-    compare right now" purpose and intentionally includes the
-    in-progress season. That distinction matters here: an unfinished
-    season hasn't produced a real "did they make the playoffs" or
-    "did they win it" answer yet, so it must not be counted as a
-    season with a result.
+    material, not invented. Blends two sources deliberately, because
+    different stat types have different correct answers mid-season:
 
-    Career playoff appearances, championships, and win percentage
-    are only included once a manager has at least 3 COMPLETE
-    seasons — anything less isn't a real sample, and "zero career
-    championships" is a meaningless dig at someone still early in
-    their career."""
+    - seasons_played, career_championships, career_playoff_appearances
+      come from stats["managers"][manager]["career"], which ONLY
+      counts complete seasons (has a recorded Championship game).
+      These are binary season-end outcomes — "made the playoffs" or
+      "won it" literally isn't knowable until a season concludes, so
+      counting the in-progress season here would either be undefined
+      or silently wrong. This is also what keeps a manager with 1
+      complete season from being mislabeled a "rookie" when they're
+      actually partway through their 2nd (or later) season.
+
+    - career_win_pct comes from h2h_summary instead, which DOES
+      include the in-progress season. A win-loss record is always a
+      valid, meaningful number mid-season — "leave this season's
+      games out of his win percentage" would make the number stale
+      and wrong, not more careful. So this one field intentionally
+      uses the "live" source while the others use the "frozen" one.
+
+    Career playoff appearances and championships are only included
+    once a manager has at least 3 COMPLETE seasons — anything less
+    isn't a real sample, and "zero career championships" is a
+    meaningless dig at someone still early in their career. This
+    threshold does NOT apply to career_win_pct, since a win
+    percentage is meaningful at any sample size (it's just a
+    fraction), unlike a countable "zero" that implies failure."""
     MIN_SEASONS_FOR_CAREER_ROAST = 3
 
     flavor = {}
@@ -135,7 +147,11 @@ def get_manager_flavor(manager, stats, lore):
     if seasons_played >= MIN_SEASONS_FOR_CAREER_ROAST:
         flavor["career_playoff_appearances"] = career.get("playoff_appearances")
         flavor["career_championships"] = career.get("championships")
-        flavor["career_win_pct"] = career.get("regular_season_win_pct")
+
+    h2h = stats.get("h2h_summary", {}).get(manager, {})
+    if h2h.get("rs_win_pct") is not None:
+        flavor["career_win_pct"] = h2h["rs_win_pct"]
+
     note = lore.get(manager)
     if note:
         flavor["background_note"] = note
