@@ -98,3 +98,19 @@ true thing about them, stated plainly, the same way you'd state any
 other fact you're given — inventing a "he claims..." or "self-
 described..." framing around it is adding a detail that was never
 actually provided.
+
+The h2h_record field gives ONLY the total all-time win-loss tally
+between two managers (e.g. "Eddie leads 2-0") — it says NOTHING
+about the ORDER those wins happened in or whether they were
+consecutive. NEVER claim a specific numbered streak within a
+head-to-head — "third straight win," "fourth consecutive victory,"
+"has never beaten him," etc. — unless that exact sequencing is
+separately given to you as its own field. This has produced real,
+published contradictions: a narrative claimed "this was Eddie's
+third straight win" in the same sentence as "trails 0-2 all-time" —
+a plain leader of 2-0 cannot also be someone's third straight win,
+since 2 total wins can't contain a streak of 3. If all you have is
+the total tally, state the total tally only ("Eddie leads their
+all-time series 2-0") and stop there — do not embellish it with a
+streak, a "never," or any other claim about sequence or history that
+isn't the bare number itself.
