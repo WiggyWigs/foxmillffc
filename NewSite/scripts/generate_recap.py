@@ -224,6 +224,50 @@ def week_num(w):
     return int(w) if str(w).isdigit() else 0
 
 
+def find_last_season_playoff_meeting(manager_a, manager_b, all_games):
+    """Did these two managers meet in a PLAYOFF game (Quarterfinal,
+    Semifinal, or Championship) during the most recently COMPLETED
+    season? Returns a dict with the details if so, else None. This is
+    specifically what several week-1/week-2 selection criteria need
+    ("a rematch of a playoff game from last year") — the general
+    h2h_record/all_time_meetings fields don't carry game_type or
+    which season a meeting happened in, so this has to be computed
+    separately."""
+    complete_years = {g["year"] for g in all_games if g["game_type"] == "Championship"}
+    if not complete_years:
+        return None
+    last_complete_year = max(complete_years)
+
+    for g in all_games:
+        if g["year"] != last_complete_year or g["game_type"] == "Regular":
+            continue
+        if {g["away_manager"], g["home_manager"]} != {manager_a, manager_b}:
+            continue
+        return {
+            "year": last_complete_year, "round": g["game_type"],
+            "winner": g["winner"], "loser": g["loser"],
+            "winner_score": max(g["away_score"], g["home_score"]),
+            "loser_score": min(g["away_score"], g["home_score"]),
+        }
+    return None
+
+
+def get_unfiltered_championship_history(manager, stats):
+    """UNFILTERED (no minimum-seasons gate) career championship and
+    playoff appearance counts — deliberately different from
+    get_manager_flavor(), which filters for narrative fairness
+    (don't roast a newer manager over a small sample). Selection
+    criteria like "clash between prior season champions" need the
+    real, complete truth regardless of how many seasons a manager
+    has played — filtering this for selection would hide a genuine
+    past championship just because the manager is relatively new."""
+    career = stats.get("managers", {}).get(manager, {}).get("career", {})
+    return {
+        "career_championships": career.get("championships", 0),
+        "career_playoff_appearances": career.get("playoff_appearances", 0),
+    }
+
+
 def h2h_record(manager_a, manager_b, all_games):
     """Real head-to-head win-loss record between two managers, all
     games all-time (not just a meeting count)."""
@@ -703,6 +747,26 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats):
     return enriched
 
 
+def add_selection_only_context(enriched, stats):
+    """Returns a NEW list — the original enriched list (used later for
+    writing, which needs the fairness-filtered version of career
+    stats) is never mutated. Adds facts the selection step needs that
+    writing either doesn't need or shouldn't see filtered: whether
+    these two managers met in the playoffs last season, and their
+    real, unfiltered championship/playoff history."""
+    augmented = []
+    for m in enriched:
+        away, home = m["away_manager"], m["home_manager"]
+        entry = dict(m)
+        playoff_meeting = find_last_season_playoff_meeting(away, home, stats["games"])
+        if playoff_meeting:
+            entry["last_season_playoff_meeting"] = playoff_meeting
+        entry["away_career_history"] = get_unfiltered_championship_history(away, stats)
+        entry["home_career_history"] = get_unfiltered_championship_history(home, stats)
+        augmented.append(entry)
+    return augmented
+
+
 def build_matchup_selection_prompt(enriched, criteria):
     """Selection ONLY — no tone, no formatting rules, no writing. Just
     picks a matchup and outputs the two manager names plus one short
@@ -724,7 +788,19 @@ def build_matchup_selection_prompt(enriched, criteria):
         "line 2 is a single brief sentence explaining which part of "
         "the criteria this pick satisfies and why, referencing the "
         "specific real stats that drove the decision. No other text, "
-        "no markdown, no extra lines."
+        "no markdown, no extra lines. "
+        "If a matchup has a last_season_playoff_meeting field, that "
+        "means these two managers actually played each other in the "
+        "playoffs (possibly the Championship) last season — this is "
+        "exactly what criteria referring to a 'rematch' or 'repeat' "
+        "of a playoff/championship game from last year means; check "
+        "for this field directly rather than trying to infer it from "
+        "h2h_record or all_time_meetings, which don't carry this "
+        "detail. For criteria referring to 'prior season champions,' "
+        "use each manager's away_career_history / home_career_history "
+        "field (career_championships > 0 means that manager has won "
+        "a championship before) — this is the complete, real history "
+        "and should be used directly rather than any other field."
     )
     user = (
         f"Selection criteria: {criteria}\n\n"
@@ -1104,7 +1180,8 @@ def main():
                 week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
 
                 # Call 1: selection only.
-                sel_system, sel_user = build_matchup_selection_prompt(enriched, week_criteria)
+                selection_enriched = add_selection_only_context(enriched, stats)
+                sel_system, sel_user = build_matchup_selection_prompt(selection_enriched, week_criteria)
                 selection_text = call_claude(sel_system, sel_user, max_tokens=1500)
                 chosen, selection_reasoning = parse_matchup_selection(selection_text, enriched)
 
