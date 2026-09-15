@@ -18,24 +18,33 @@
   <div class="panel">
     <h2 id="page-season-header">Current Season</h2>
 
-    <div class="record-section recap-section">
+    <hr class="section-divider recap-tight-divider">
+    <div class="recap-header-block">
       <h3 class="season-subhead" id="recap-previous-heading">Impact Game</h3>
+      <hr class="recap-thin-divider">
       <p class="recap-matchup-subtitle" id="recap-previous-subtitle"></p>
-      <hr class="section-divider">
-      <div id="recap-previous-wrap">
-        <p class="load-state">Loading recap&hellip;</p>
-      </div>
+    </div>
+    <hr class="section-divider recap-tight-divider">
+
+    <div id="recap-previous-wrap" class="recap-tight-wrap">
+      <p class="load-state">Loading recap&hellip;</p>
     </div>
 
-    <hr class="section-divider">
+    <div class="recap-tight-wrap">
+      <h3 class="season-subhead">Box Scores</h3>
+      <div class="box-score-grid" id="box-score-grid"></div>
+    </div>
 
-    <div class="record-section recap-section">
+    <hr class="section-divider recap-tight-divider">
+    <div class="recap-header-block">
       <h3 class="season-subhead" id="recap-gotw-heading">Game of the Week</h3>
+      <hr class="recap-thin-divider">
       <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
-      <hr class="section-divider">
-      <div id="recap-gotw-wrap">
-        <p class="load-state">Loading preview&hellip;</p>
-      </div>
+    </div>
+    <hr class="section-divider recap-tight-divider">
+
+    <div id="recap-gotw-wrap" class="recap-tight-wrap">
+      <p class="load-state">Loading preview&hellip;</p>
     </div>
 
     <div class="record-section" id="callouts-section" style="display:none;">
@@ -135,6 +144,15 @@
 </div>
 
 <script src="current-season-test.js"></script>
+
+<div class="modal-overlay" id="boxScoreModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="boxScoreModalTitle">
+    <button class="modal-close" id="boxScoreModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Box Score</div>
+    <div class="modal-name" id="boxScoreModalTitle"></div>
+    <p class="recap-text" id="boxScoreModalBody"></p>
+  </div>
+</div>
 
 </body>
 </html>
