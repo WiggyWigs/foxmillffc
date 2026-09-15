@@ -730,19 +730,38 @@ def compute_current_streaks(all_games, roster_names):
         most_recent = glist_desc[0]
 
         win_streak = loss_streak = 0
+        streak_games_desc = []  # collected most-recent-first, reversed below for display
         if not most_recent["tie"]:
             if most_recent["winner"] == mgr:
                 for g in glist_desc:
                     if g["tie"] or g["winner"] != mgr:
                         break
                     win_streak += 1
+                    streak_games_desc.append(g)
             else:
                 for g in glist_desc:
                     if g["tie"] or g["winner"] == mgr:
                         break
                     loss_streak += 1
+                    streak_games_desc.append(g)
 
-        entries.append({"manager": mgr, "win_streak": win_streak, "loss_streak": loss_streak})
+        # Chronological order (oldest first) for display — the streak
+        # started with the oldest game and ends with the most recent.
+        streak_game_details = []
+        for g in reversed(streak_games_desc):
+            if g["away_manager"] == mgr:
+                opponent, own_score, opp_score = g["home_manager"], g["away_score"], g["home_score"]
+            else:
+                opponent, own_score, opp_score = g["away_manager"], g["home_score"], g["away_score"]
+            streak_game_details.append({
+                "opponent": opponent, "manager_score": own_score, "opponent_score": opp_score,
+                "year": g["year"], "week": g["week"],
+            })
+
+        entries.append({
+            "manager": mgr, "win_streak": win_streak, "loss_streak": loss_streak,
+            "streak_games": streak_game_details,
+        })
 
     def top_two_distinct_values(items, key):
         """'Top 2 including ties' = every manager whose value matches
