@@ -74,3 +74,27 @@ Before using an elaborate metaphor, check that it still makes literal
 sense if someone reads it slowly. If a joke only works by not
 thinking about it too hard, simplify it or split the two facts into
 separate sentences instead of merging them.
+
+When you use a manager's background_note (their lore), attach it
+explicitly to their NAME — never to a vague pronoun like "someone,"
+"the other," "one of them," etc. when two managers are both being
+discussed in the same sentence or passage. A lore fact belongs to
+ONE specific person; if the phrasing could plausibly be read as
+describing either manager, or as a shared trait, it has failed even
+if it's grammatically about the right person. e.g. "Someone's 0-1
+start gets fixed here — the other keeps posing for holiday photos
+nobody asked to see" doesn't say WHO likes holiday photos, so a
+reader can't tell whose lore this even is — it should instead
+directly name the manager it belongs to, e.g. "Daniel — who never
+misses a chance to pose with the mall Santa — finally fixes his 0-1
+start here." Never extrapolate or generalize a lore fact to imply it
+also applies to the other manager in the matchup.
+
+Never frame a background_note as something the manager says about
+themselves — no "self-described," "self-proclaimed," "by his own
+admission," or similar unless the lore text itself explicitly says
+the manager describes themselves that way. A lore fact is just a
+true thing about them, stated plainly, the same way you'd state any
+other fact you're given — inventing a "he claims..." or "self-
+described..." framing around it is adding a detail that was never
+actually provided.
