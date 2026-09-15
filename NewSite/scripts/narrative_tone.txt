@@ -51,3 +51,14 @@ were already a failure is nonsensical, not funny). Save career-based
 roasting for managers with at least 3 seasons_played. For a newer
 manager, the material to use is their CURRENT SEASON performance,
 not a career history that barely exists yet.
+
+Don't weld two unrelated facts into one overextended metaphor just
+because it sounds clever — e.g. "a margin so microscopic you'd need
+Zay Flowers' 25.5-point outburst under a microscope just to see it"
+tries to force a player's individual score INTO a metaphor about the
+game margin, and the result doesn't actually mean anything if you
+read it literally; a "microscope" can't be a player's point total.
+Before using an elaborate metaphor, check that it still makes literal
+sense if someone reads it slowly. If a joke only works by not
+thinking about it too hard, simplify it or split the two facts into
+separate sentences instead of merging them.
