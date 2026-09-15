@@ -197,7 +197,7 @@ def get_playoff_probability_trend(manager, old_stats, new_stats):
 
 # --- Claude API ---------------------------------------------------------
 
-def call_claude(system_prompt, user_prompt, max_tokens=4000):
+def call_claude(system_prompt, user_prompt, max_tokens=8000):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY not set")
@@ -215,7 +215,7 @@ def call_claude(system_prompt, user_prompt, max_tokens=4000):
             "system": system_prompt,
             "messages": [{"role": "user", "content": user_prompt}],
         },
-        timeout=120,
+        timeout=180,
     )
     resp.raise_for_status()
     data = resp.json()
