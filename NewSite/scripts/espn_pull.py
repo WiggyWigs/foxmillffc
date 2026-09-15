@@ -298,6 +298,7 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
                     "points": p.points,
                     "started": p.slot_position not in ("BE", "IR"),
                     "eligible_slots": getattr(p, "eligibleSlots", []),
+                    "game_date": getattr(p, "game_date", None).isoformat() if getattr(p, "game_date", None) else None,
                 }
                 for p in lineup
             ]
