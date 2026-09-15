@@ -183,7 +183,7 @@ async function loadRecords() {
   // requested a/b pairing. Titles: "Top N"/"Bottom N" counts dropped
   // (the table itself shows how many rows there are) and "Regular
   // Season" shortened to "R/S" throughout.
-  const s1a = section("Average R/S Score", r.top_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
+  const s1a = section("Highest Average R/S Score", r.top_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
   const s1b = section("Lowest Average R/S Score", r.bottom_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
   const s2a = section("Highest R/S Game Scores", r.top_regular_season_games, managerYearScoreCols, (row) => row.score, false);
   const s2b = section("Lowest R/S Game Scores", r.bottom_regular_season_games, managerYearScoreCols, (row) => row.score, false);
