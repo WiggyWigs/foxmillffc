@@ -111,15 +111,31 @@ def load_narrative_tone():
 
 def get_manager_flavor(manager, stats, lore):
     """Real, verified career facts for one manager — actual roast
-    material, not invented. Pulled from h2h_summary (the same all-time
-    stats the Head-to-Head page uses), plus any lore.json entry."""
+    material, not invented. Pulled from stats["managers"][manager]
+    ["career"], which ONLY counts complete seasons (ones with a
+    recorded Championship game) — deliberately NOT h2h_summary, which
+    exists for the Head-to-Head page's different "how do these two
+    compare right now" purpose and intentionally includes the
+    in-progress season. That distinction matters here: an unfinished
+    season hasn't produced a real "did they make the playoffs" or
+    "did they win it" answer yet, so it must not be counted as a
+    season with a result.
+
+    Career playoff appearances, championships, and win percentage
+    are only included once a manager has at least 3 COMPLETE
+    seasons — anything less isn't a real sample, and "zero career
+    championships" is a meaningless dig at someone still early in
+    their career."""
+    MIN_SEASONS_FOR_CAREER_ROAST = 3
+
     flavor = {}
-    h2h = stats.get("h2h_summary", {}).get(manager)
-    if h2h:
-        flavor["seasons_played"] = h2h.get("seasons_played")
-        flavor["career_playoff_appearances"] = h2h.get("playoff_appearances")
-        flavor["career_championships"] = h2h.get("championships")
-        flavor["career_win_pct"] = h2h.get("win_pct")
+    career = stats.get("managers", {}).get(manager, {}).get("career", {})
+    seasons_played = career.get("seasons_played", 0)
+    flavor["seasons_played"] = seasons_played
+    if seasons_played >= MIN_SEASONS_FOR_CAREER_ROAST:
+        flavor["career_playoff_appearances"] = career.get("playoff_appearances")
+        flavor["career_championships"] = career.get("championships")
+        flavor["career_win_pct"] = career.get("regular_season_win_pct")
     note = lore.get(manager)
     if note:
         flavor["background_note"] = note
@@ -383,6 +399,17 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
     context = dict(closest_game)  # copy — don't mutate the caller's dict
     away_team, home_team = context.pop("away_team", None), context.pop("home_team", None)
 
+    # Does this game rank among the all-time smallest margins of
+    # victory? Real, verified fact from the actual leaderboard — not
+    # something left for the AI to judge or estimate itself.
+    smallest_margins = stats.get("records", {}).get("smallest_margins", [])
+    for i, entry in enumerate(smallest_margins):
+        if (entry["year"] == year and week_num(entry["week"]) == week_num(week)
+                and {entry["winner"], entry["loser"]} == {away, home}):
+            context["all_time_smallest_margin_rank"] = i + 1
+            context["all_time_smallest_margins_count"] = len(smallest_margins)
+            break
+
     # Player-level context, if lineup data was captured for this week.
     # This is genuinely optional: if player_lineups.json doesn't have
     # this week yet, the recap still works fine without it.
@@ -493,7 +520,16 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         f"Write a recap of the closest game of Week {week}, {year} — this "
         f"was the tightest matchup of the week by score margin:\n"
         f"{json.dumps(context, indent=2)}\n\n"
-        f"Mention the final score and margin. If all_time_meetings is "
+        f"Mention the final score and margin. If "
+        f"all_time_smallest_margin_rank is present, this is a real, "
+        f"verified fact: use it and all_time_smallest_margins_count "
+        f"together to state this game's actual rank among the "
+        f"smallest margins of victory in the league's entire history "
+        f"(e.g. rank 3 out of a count of 10 means 'the 3rd smallest "
+        f"margin of victory ever recorded') — this is a genuinely "
+        f"rare, notable event and should be called out prominently, "
+        f"not buried as an aside. If "
+        f"all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
         f"record between them (e.g. 'X leads Y-Z') — don't invent "
@@ -524,10 +560,12 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
 
 # --- Game of the Week (AI both picks and writes) ---------------------------
 
-def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats, tone):
+def build_enriched_matchups(upcoming, stats, lore, old_stats):
+    """Shared data-gathering for both the selection and writing steps —
+    computed once, used by whichever step needs it."""
     matchups = upcoming.get("matchups", [])
     if not matchups:
-        return None, None
+        return []
 
     standings = {}
     standings_rank = {}
@@ -553,7 +591,14 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats, tone):
         losses = standings.get(name, {}).get("losses")
         games_played = (wins or 0) + (losses or 0)
         points_total = p.get("points_scored")
-        points_avg = round(points_total / games_played, 2) if points_total is not None and games_played else None
+        # A single game isn't an "average" — need at least 2 games
+        # played before this means anything as a season average.
+        MIN_GAMES_FOR_AVERAGE = 2
+        points_avg = (
+            round(points_total / games_played, 2)
+            if points_total is not None and games_played and games_played >= MIN_GAMES_FOR_AVERAGE
+            else None
+        )
         ctx = {
             "season_standings_rank": standings_rank.get(name),
             "season_wins": wins,
@@ -586,95 +631,141 @@ def build_game_of_week_prompt(upcoming, stats, criteria, lore, old_stats, tone):
                 else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
                 else f"series tied {away_wins}-{home_wins}",
         })
+    return enriched
 
+
+def build_matchup_selection_prompt(enriched, criteria):
+    """Selection ONLY — no tone, no formatting rules, no writing. Just
+    picks a matchup and outputs the two manager names plus one short
+    reasoning line. Keeping this call narrow and simple is what makes
+    it fast and reliable — the model doesn't have to juggle selection
+    logic and a dozen style rules in the same pass. The reasoning line
+    is for the run log only (so you can audit why a pick was made),
+    never shown on the site itself."""
     system = (
-        "You pick the single most compelling upcoming matchup from a list "
-        "for a private fantasy football league's website — a group of "
-        "40-something guys who have known each other for years and enjoy "
-        "busting each other's chops — based on the selection criteria "
-        "given, then write a short preview of it. You MUST pick one of "
-        "the matchups and write about it, every single time — even if "
-        "none of them perfectly satisfy the criteria. If nothing clearly "
-        "fits, use your best judgment to pick the closest available "
-        "match to what the criteria is asking for and proceed normally; "
-        "never respond with nothing, an apology, or a refusal to choose. "
-        f"{tone}\n\n"
-        "The preview must be between "
-        "95 and 125 words for the preview itself, not counting the "
-        "required prefix below — this is a hard requirement, not a "
-        "suggestion. Use ONLY the facts given — never invent player "
-        "names, projections, stats, or background details not provided. "
-        "Do not use markdown formatting. EVERY field given is prefixed "
-        "with either 'season_' or 'career_' to show its scope — whenever "
-        "you state ANY number from a season_ or career_ field, you MUST "
-        "include a matching word in the sentence itself ('this season', "
-        "'career', 'all-time', etc.) so a reader always knows which "
-        "scope it's from — never state a number without that context, "
-        "especially when a season stat and a career stat appear near "
-        "each other in the same sentence. Whenever you state a point "
-        "total, always write it as 'X points' or 'X.X points' — never a "
-        "bare number alone. Points totals given are SEASON AVERAGES "
-        "(season_points_avg) — always describe them as such (e.g. "
-        "'averaging X points a game this season'), never imply it's a "
-        "season total or a career figure. "
-        "Whenever you state a percentage (playoff "
-        "probability or anything else), always write it as 'X%' or "
-        "'X.X%' — never spell out 'percent' as a word. Win percentages "
-        "(career_win_pct or any other win_pct field) are given as "
-        "decimals (e.g. 0.6818) — always convert to a whole-number "
-        "percentage rounded to ONE decimal and spell out the words, e.g. "
-        "'a 68.2 career winning percentage' — never write the raw "
-        "decimal or abbreviate to 'win pct'. When referring "
-        "to a manager's standings position, always phrase it as an "
-        "ordinal placed BEFORE their name or the noun it modifies, "
-        "like a compound adjective — e.g. '2nd ranked Brian Kleinhenz' "
-        "or 'the 5th ranked squad' — never 'ranked 2nd Brian Kleinhenz' "
-        "or 'sits 5th in the standings' with the ordinal trailing after. "
-        "never 'rank 2' or 'at rank 5' as a bare number. IMPORTANT: "
-        "season_schedule_difficulty is counterintuitively named — a HIGHER "
-        "(more positive) value means an EASIER schedule, and a LOWER "
-        "(more negative, or less positive) value means a HARDER "
-        "schedule. The value itself is a percentage-point gap: it's how "
-        "much higher or lower a manager's actual win percentage is "
-        "compared to what their weekly scoring alone would predict — "
-        "describe it in those terms (e.g. 'his actual win rate runs X "
-        "points ahead of what his scoring alone would suggest') rather "
-        "than citing the bare decimal, which means nothing to a reader. "
-        "NEVER describe one manager's schedule as easier or harder than "
-        "another's unless their season_schedule_difficulty values differ by at "
-        "least 0.15 — if the gap is smaller than that, it's not a real "
-        "difference and shouldn't be mentioned as one at all. Whenever "
-        "the selection "
-        "criteria refers to a "
-        "manager's 'rank' or being 'ranked' (e.g. 'top 5', 'ranked "
-        "7-10'), this means their season_standings_rank field specifically — "
-        "their position in the actual win-loss standings — NOT their "
-        "season_power_score or any other number. If you use the all-time "
-        "meetings history, "
-        "use the h2h_record field for the real record (e.g. 'X leads "
-        "Y-Z') — don't invent details beyond what's given. If you "
-        "mention playoff chances or probability for a manager, you MUST "
-        "cite both their previous_week_pct and current_week_pct numbers "
-        "from their season_playoff_probability_trend field if present — never a "
-        "vague qualitative claim without those two real numbers; if "
-        "that field isn't present for a manager, don't speculate about "
-        "their playoff chances. If you reference a manager's individual "
-        "top or bottom player performance, frame it as a dramatic "
-        "contrast in one sentence — the big performance overcoming, "
-        "carrying, or outshining the weak one (or vice versa) — never "
-        "as two flat, separate statements listing each player's score. "
-        "Vary the verb and the adjective each time rather than reusing "
-        "the same phrasing. You MUST start your response with the "
-        "two manager names in the exact format 'ManagerA vs ManagerB: ' "
-        "(this prefix is required for internal tracking and will be "
-        "removed before anyone sees it, so it does not count toward the "
-        "word limit or read as part of the preview)."
+        "You pick the single most compelling upcoming matchup from a "
+        "list for a fantasy football league, based on the selection "
+        "criteria given. You MUST pick one of the matchups every "
+        "single time, even if none of them perfectly satisfy the "
+        "criteria — if nothing clearly fits, use your best judgment "
+        "to pick the closest available match. Respond with EXACTLY "
+        "two lines and nothing else: "
+        "line 1 is the two manager names in the exact format "
+        "'ManagerA vs ManagerB'; "
+        "line 2 is a single brief sentence explaining which part of "
+        "the criteria this pick satisfies and why, referencing the "
+        "specific real stats that drove the decision. No other text, "
+        "no markdown, no extra lines."
     )
     user = (
         f"Selection criteria: {criteria}\n\n"
         f"This week's matchups:\n{json.dumps(enriched, indent=2)}"
     )
     return system, user
+
+
+def build_gotw_writing_prompt(matchup, tone):
+    """Writing ONLY, for a single ALREADY-CHOSEN matchup — no
+    selection logic to juggle here, just the same tone/formatting
+    rules as the other narrative."""
+    system = (
+        f"{tone}\n\n"
+        "You are writing a short preview of a specific upcoming "
+        "fantasy football matchup for a private league's website. "
+        "The preview must be between 95 and 125 words — this is a "
+        "hard requirement, not a suggestion. Use ONLY the facts "
+        "given — never invent player names, projections, stats, or "
+        "background details not provided. Do not use markdown "
+        "formatting. EVERY field given is prefixed with either "
+        "'season_' or 'career_' to show its scope — whenever you "
+        "state ANY number from a season_ or career_ field, you MUST "
+        "include a matching word in the sentence itself ('this "
+        "season', 'career', 'all-time', etc.) so a reader always "
+        "knows which scope it's from — never state a number without "
+        "that context, especially when a season stat and a career "
+        "stat appear near each other in the same sentence. Whenever "
+        "you state a point total, always write it as 'X points' or "
+        "'X.X points' — never a bare number alone. Points totals "
+        "given are SEASON AVERAGES (season_points_avg) — always "
+        "describe them as such (e.g. 'averaging X points a game this "
+        "season'), never imply it's a season total or a career "
+        "figure. If season_points_avg is absent for a manager (this "
+        "happens early in a season, when only one game has been "
+        "played — a single score isn't a real average yet), do not "
+        "reference their scoring average at all; don't estimate one "
+        "or call any single-game score an 'average.' Whenever you state a percentage (playoff "
+        "probability or anything else), always write it as 'X%' or "
+        "'X.X%' — never spell out 'percent' as a word. Win "
+        "percentages (career_win_pct or any other win_pct field) are "
+        "given as decimals (e.g. 0.6818) — always convert to a "
+        "whole-number percentage rounded to ONE decimal and spell "
+        "out the words, e.g. 'a 68.2 career winning percentage' — "
+        "never write the raw decimal or abbreviate to 'win pct'. "
+        "When referring to a manager's standings position, always "
+        "phrase it as an ordinal placed BEFORE their name or the "
+        "noun it modifies, like a compound adjective — e.g. '2nd "
+        "ranked Brian Kleinhenz' or 'the 5th ranked squad' — never "
+        "'ranked 2nd Brian Kleinhenz' or 'sits 5th in the standings' "
+        "with the ordinal trailing after; never 'rank 2' or 'at rank "
+        "5' as a bare number. IMPORTANT: season_schedule_difficulty "
+        "is counterintuitively named — a HIGHER (more positive) "
+        "value means an EASIER schedule, and a LOWER (more negative, "
+        "or less positive) value means a HARDER schedule. The value "
+        "itself is a percentage-point gap: it's how much higher or "
+        "lower a manager's actual win percentage is compared to what "
+        "their weekly scoring alone would predict — describe it in "
+        "those terms rather than citing the bare decimal. NEVER "
+        "describe one manager's schedule as easier or harder than "
+        "another's unless their season_schedule_difficulty values "
+        "differ by at least 0.15. If you use the all-time meetings "
+        "history, use the h2h_record field for the real record (e.g. "
+        "'X leads Y-Z') — don't invent details beyond what's given. "
+        "If you mention playoff chances or probability for a "
+        "manager, you MUST cite both their previous_week_pct and "
+        "current_week_pct numbers from their "
+        "season_playoff_probability_trend field if present — never a "
+        "vague qualitative claim without those two real numbers; if "
+        "that field isn't present for a manager, don't speculate "
+        "about their playoff chances. If you reference a manager's "
+        "individual top or bottom player performance, frame it as a "
+        "dramatic contrast in one sentence — the big performance "
+        "overcoming, carrying, or outshining the weak one (or vice "
+        "versa) — never as two flat, separate statements. Vary the "
+        "verb and the adjective each time rather than reusing the "
+        "same phrasing. You MUST start your response with the two "
+        "manager names in the exact format 'ManagerA vs ManagerB: ' "
+        "(this prefix is required for internal tracking and will be "
+        "removed before anyone sees it, so it does not count toward "
+        "the word limit or read as part of the preview)."
+    )
+    user = f"Write the preview for this matchup:\n{json.dumps(matchup, indent=2)}"
+    return system, user
+
+
+def parse_matchup_selection(selection_text, enriched):
+    """Parses the selection call's two-line output — the matchup pick
+    on line 1, the reasoning on line 2. Returns (matched_matchup_or_None,
+    reasoning_text_or_None). Falls back gracefully if the second line
+    is missing or the format is slightly off — the reasoning is only
+    ever used for the log, so a parsing miss there shouldn't affect
+    anything else."""
+    if not selection_text:
+        return None, None
+    lines = [l.strip() for l in selection_text.strip().split("\n") if l.strip()]
+    if not lines or " vs " not in lines[0]:
+        return None, None
+
+    try:
+        a, b = [s.strip() for s in lines[0].split(" vs ", 1)]
+    except Exception:
+        return None, None
+
+    reasoning = lines[1] if len(lines) > 1 else None
+
+    for m in enriched:
+        if {m["away_manager"], m["home_manager"]} == {a, b}:
+            return m, reasoning
+    return None, reasoning
 
 
 def parse_and_strip_gotw_prefix(gotw_text, upcoming):
@@ -918,26 +1009,45 @@ def main():
     except Exception as e:
         print(f"WARNING: recap generation failed: {e}")
 
-    # --- Game of the Week: AI picks and writes ---
+    # --- Game of the Week: two separate calls, selection then writing ---
+    # Splitting this into two focused calls (rather than one call doing
+    # both) keeps each call's reasoning burden small, which is what
+    # actually fixes the timeout/max_tokens failures — a single call
+    # juggling "compare 6 matchups against criteria" AND "write 100
+    # words following a dozen style rules" was consistently the
+    # slowest, least reliable part of this whole pipeline.
     upcoming = None
     try:
         if UPCOMING_MATCHUPS_PATH.exists():
             with open(UPCOMING_MATCHUPS_PATH) as f:
                 upcoming = json.load(f)
-            week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
-            system, user = build_game_of_week_prompt(upcoming, stats, week_criteria, lore, old_stats, tone)
-            if system:
-                raw_gotw_text = call_claude(system, user)
-                gotw_matchup, gotw_text = parse_and_strip_gotw_prefix(raw_gotw_text, upcoming)
-                if gotw_matchup:
-                    picked = next(
-                        (m for m in upcoming["matchups"]
-                         if {m["away_manager"], m["home_manager"]} == {gotw_matchup["manager_a"], gotw_matchup["manager_b"]}),
-                        None,
-                    )
-                    if picked:
-                        gotw_away_team, gotw_home_team = picked.get("away_team"), picked.get("home_team")
-                print("Generated Game of the Week.")
+            enriched = build_enriched_matchups(upcoming, stats, lore, old_stats)
+            if enriched:
+                week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
+
+                # Call 1: selection only.
+                sel_system, sel_user = build_matchup_selection_prompt(enriched, week_criteria)
+                selection_text = call_claude(sel_system, sel_user, max_tokens=200)
+                chosen, selection_reasoning = parse_matchup_selection(selection_text, enriched)
+
+                if chosen is None:
+                    print(f"WARNING: couldn't parse a valid selection from: {selection_text!r} — "
+                          f"falling back to the first matchup.")
+                    chosen = enriched[0]
+
+                gotw_away_team, gotw_home_team = chosen.get("away_team"), chosen.get("home_team")
+                gotw_matchup = {
+                    "manager_a": chosen["away_manager"], "manager_b": chosen["home_manager"],
+                    "week": upcoming.get("week"), "year": upcoming.get("year"),
+                }
+                print(f"Game of the Week selected: {chosen['away_manager']} vs {chosen['home_manager']}.")
+                print(f"Reason: {selection_reasoning or '(no reasoning line returned)'}")
+
+                # Call 2: writing only, about the one already-chosen matchup.
+                write_system, write_user = build_gotw_writing_prompt(chosen, tone)
+                raw_gotw_text = call_claude(write_system, write_user)
+                _, gotw_text = parse_and_strip_gotw_prefix(raw_gotw_text, upcoming)
+                print("Game of the Week write-up generated.")
             else:
                 print("No upcoming matchups available — skipping Game of the Week.")
         else:
