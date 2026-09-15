@@ -1282,3 +1282,61 @@ main {
 .box-score-score {
   font-weight: 700;
 }
+
+/* --- Input page: manager lore submission form --- */
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 560px;
+  margin: 1.5rem auto 0;
+}
+
+.input-label {
+  font-family: 'EB Garamond', serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin-top: 0.75rem;
+}
+
+.input-select,
+.input-textarea {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  background: var(--panel-solid);
+  color: var(--ink);
+  width: 100%;
+}
+
+.input-select {
+  min-width: unset;
+}
+
+.input-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.input-submit {
+  align-self: center;
+  margin-top: 1rem;
+  font-family: 'EB Garamond', serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  color: #FFFCF6;
+  background: var(--navy);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem 2rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.input-submit:hover {
+  background: var(--rust);
+}
