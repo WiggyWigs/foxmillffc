@@ -183,7 +183,7 @@ def call_claude(system_prompt, user_prompt, max_tokens=4000):
             "system": system_prompt,
             "messages": [{"role": "user", "content": user_prompt}],
         },
-        timeout=30,
+        timeout=120,
     )
     resp.raise_for_status()
     data = resp.json()
