@@ -131,7 +131,7 @@ def get_manager_flavor(manager, stats, lore):
     flavor = {}
     career = stats.get("managers", {}).get(manager, {}).get("career", {})
     seasons_played = career.get("seasons_played", 0)
-    flavor["seasons_played"] = seasons_played
+    flavor["complete_seasons_played"] = seasons_played
     if seasons_played >= MIN_SEASONS_FOR_CAREER_ROAST:
         flavor["career_playoff_appearances"] = career.get("playoff_appearances")
         flavor["career_championships"] = career.get("championships")
@@ -407,7 +407,6 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         if (entry["year"] == year and week_num(entry["week"]) == week_num(week)
                 and {entry["winner"], entry["loser"]} == {away, home}):
             context["all_time_smallest_margin_rank"] = i + 1
-            context["all_time_smallest_margins_count"] = len(smallest_margins)
             break
 
     # Player-level context, if lineup data was captured for this week.
@@ -522,11 +521,11 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         f"{json.dumps(context, indent=2)}\n\n"
         f"Mention the final score and margin. If "
         f"all_time_smallest_margin_rank is present, this is a real, "
-        f"verified fact: use it and all_time_smallest_margins_count "
-        f"together to state this game's actual rank among the "
-        f"smallest margins of victory in the league's entire history "
-        f"(e.g. rank 3 out of a count of 10 means 'the 3rd smallest "
-        f"margin of victory ever recorded') — this is a genuinely "
+        f"verified fact: state it as an ordinal only — e.g. rank 3 "
+        f"means 'the 3rd smallest margin of victory in league "
+        f"history' — do not mention any total count of how many "
+        f"games are being compared against, just the rank itself. "
+        f"This is a genuinely "
         f"rare, notable event and should be called out prominently, "
         f"not buried as an aside. If "
         f"all_time_meetings is "
@@ -1027,7 +1026,7 @@ def main():
 
                 # Call 1: selection only.
                 sel_system, sel_user = build_matchup_selection_prompt(enriched, week_criteria)
-                selection_text = call_claude(sel_system, sel_user, max_tokens=200)
+                selection_text = call_claude(sel_system, sel_user, max_tokens=1500)
                 chosen, selection_reasoning = parse_matchup_selection(selection_text, enriched)
 
                 if chosen is None:
