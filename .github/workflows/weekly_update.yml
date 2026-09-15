@@ -14,7 +14,12 @@ on:
     # during EDT, 13:00 UTC during EST) — not something GitHub
     # Actions does automatically.
     - cron: '0 13 * * 2'
-  workflow_dispatch: {}  # lets you also trigger this manually from the Actions tab
+  workflow_dispatch:  # lets you also trigger this manually from the Actions tab
+    inputs:
+      skip_recap:
+        description: 'Skip narrative generation (only refresh stats/records — leaves current narratives untouched)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write  # needed so the workflow can commit stats.json back
@@ -42,6 +47,7 @@ jobs:
         run: python NewSite/scripts/espn_pull.py
 
       - name: Generate weekly recap narratives
+        if: github.event.inputs.skip_recap != 'true'
         continue-on-error: true  # a failure here should never block the stats update itself
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
