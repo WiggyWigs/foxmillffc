@@ -1197,3 +1197,88 @@ main {
   color: var(--ink-soft);
   margin: -0.3rem 0 0.75rem;
 }
+
+/* Condensed recap header block: thick divider, title, thin divider,
+   subtitle, thick divider — all tightly spaced with minimal blank
+   space between elements. */
+.recap-tight-divider {
+  margin: 0.75rem 0;
+}
+
+.recap-header-block {
+  text-align: center;
+}
+
+.recap-header-block .season-subhead {
+  margin-bottom: 0.35rem;
+}
+
+.recap-thin-divider {
+  border: none;
+  border-top: 1.5px solid var(--hairline);
+  width: 40%;
+  max-width: 260px;
+  margin: 0.35rem auto;
+}
+
+.recap-header-block .recap-matchup-subtitle {
+  margin: 0.35rem 0 0;
+}
+
+.recap-tight-wrap {
+  margin: 0.75rem 0;
+}
+
+/* Box Scores: compact winner/loser cards, styled like the callout
+   boxes and clickable to open that game's own narrative. */
+.box-score-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  max-width: 700px;
+  margin: 0.75rem auto 0;
+}
+
+@media (max-width: 640px) {
+  .box-score-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.box-score-card {
+  background: var(--panel-solid);
+  border: 1px solid var(--hairline);
+  border-left: 4px solid var(--navy);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.box-score-card:hover {
+  box-shadow: 0 2px 10px rgba(42, 36, 32, 0.12);
+  transform: translateY(-1px);
+}
+
+.box-score-winner {
+  font-family: 'EB Garamond', serif;
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 0.95rem;
+}
+
+.box-score-winner .box-score-score {
+  color: var(--rust);
+}
+
+.box-score-loser {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+.box-score-score {
+  font-weight: 700;
+}
