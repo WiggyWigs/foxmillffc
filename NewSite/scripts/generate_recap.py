@@ -803,18 +803,26 @@ def callout_streaks(stats):
     if cs.get("top_current_winning_streaks"):
         top = cs["top_current_winning_streaks"]
         streak = top[0]["win_streak"]
-        names = ", ".join(e["manager"] for e in top if e["win_streak"] == streak)
+        tied = [e for e in top if e["win_streak"] == streak]
+        names = ", ".join(e["manager"] for e in tied)
         win_callout = {
             "style": "card", "label": "WIN STREAK", "headline": names,
             "subtitle": "active streak", "value": streak, "unit": "games",
+            "streak_details": [
+                {"manager": e["manager"], "games": e["streak_games"]} for e in tied
+            ],
         }
     if cs.get("top_current_losing_streaks"):
         top = cs["top_current_losing_streaks"]
         streak = top[0]["loss_streak"]
-        names = ", ".join(e["manager"] for e in top if e["loss_streak"] == streak)
+        tied = [e for e in top if e["loss_streak"] == streak]
+        names = ", ".join(e["manager"] for e in tied)
         loss_callout = {
             "style": "card", "label": "LOSING STREAK", "headline": names,
             "subtitle": "active streak", "value": streak, "unit": "games",
+            "streak_details": [
+                {"manager": e["manager"], "games": e["streak_games"]} for e in tied
+            ],
         }
     return win_callout, loss_callout
 
