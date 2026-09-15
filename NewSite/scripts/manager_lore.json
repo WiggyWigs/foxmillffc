@@ -1,6 +1,11 @@
 {
   "Brian Kleinhenz": "Loves making absurd, lopsided trade proposals and trying to shake up the league's rosters.",
   "John Schauder": "Always the bridesmaid, good teams, tough schedules.",
+  "Brian Harris": "Drink of choice: Miller Lite.  Average consumption: 10+.  You know hes ready for a good time when he turns his hat backwards.",
+  "Kevin Mallon": "Exercises 20 minutes everyday.  Runs triathlons and stuff like that.",
+  "Jay Nelson": "The trusted commissioner.",
+  "Daniel Bahamonde": "The loveable loser.  Two time last place in standings.  Likes to take adult pictures with santa clause.",
+  "Josh Davis": "The Stand Up Comedian.",
 
   "_readme": "Add a line for any manager you want the AI to have material on — running jokes, reputations, whatever's true and fair game. Managers without an entry here just won't get any personal flavor added; that's fine, not every recap needs it. Keep entries short (one sentence) since this gets fed into the prompt every time that manager appears."
 }
