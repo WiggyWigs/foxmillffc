@@ -4,6 +4,8 @@
 // streaks rendering does light client-side formatting only.
 
 document.addEventListener("DOMContentLoaded", async () => {
+  setupBoxScoreModal();
+  setupStreakModal();
   let data;
   try {
     const res = await fetch("data/stats_test.json");
@@ -74,6 +76,68 @@ function renderRecap(data) {
   }
 
   renderCallouts(recap.callouts || {});
+  renderBoxScores(recap.box_scores || []);
+}
+
+function renderBoxScores(boxScores) {
+  const grid = document.getElementById("box-score-grid");
+  if (!grid) return;
+
+  if (boxScores.length === 0) {
+    grid.innerHTML = `<p class="load-state">No box scores yet.</p>`;
+    return;
+  }
+
+  grid.innerHTML = boxScores.map((b, i) => `
+    <div class="box-score-card" data-box-score-index="${i}">
+      <div class="box-score-winner">${b.winner_team} <span class="box-score-score">${b.winner_score}</span></div>
+      <div class="box-score-loser">${b.loser_team} <span class="box-score-score">${b.loser_score}</span></div>
+    </div>
+  `).join("");
+
+  grid.querySelectorAll("[data-box-score-index]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const b = boxScores[parseInt(card.dataset.boxScoreIndex, 10)];
+      openBoxScoreModal(b);
+    });
+  });
+}
+
+function openBoxScoreModal(boxScore) {
+  const modal = document.getElementById("boxScoreModal");
+  const title = document.getElementById("boxScoreModalTitle");
+  const body = document.getElementById("boxScoreModalBody");
+  const closeBtn = document.getElementById("boxScoreModalClose");
+  if (!modal || !title || !body) return;
+
+  title.textContent = `${boxScore.winner_team} ${boxScore.winner_score} - ${boxScore.loser_score} ${boxScore.loser_team}`;
+  body.textContent = boxScore.narrative || "No write-up for this game yet.";
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeBoxScoreModal() {
+  const modal = document.getElementById("boxScoreModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupBoxScoreModal() {
+  const overlay = document.getElementById("boxScoreModal");
+  const closeBtn = document.getElementById("boxScoreModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeBoxScoreModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeBoxScoreModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeBoxScoreModal();
+  });
 }
 
 function renderCallouts(callouts) {
@@ -98,6 +162,13 @@ function renderCallouts(callouts) {
 
   section.style.display = "";
   grid.innerHTML = items.map(renderCalloutCard).join("");
+
+  grid.querySelectorAll(".callout-item").forEach((el, i) => {
+    if (items[i].streak_details) {
+      el.classList.add("callout-clickable");
+      el.addEventListener("click", () => openStreakModal(items[i]));
+    }
+  });
 }
 
 function renderCalloutCard(item) {
@@ -130,6 +201,55 @@ function renderCalloutCard(item) {
       </div>
     </div>
   `;
+}
+
+function openStreakModal(item) {
+  const modal = document.getElementById("streakModal");
+  const title = document.getElementById("streakModalTitle");
+  const body = document.getElementById("streakModalBody");
+  const closeBtn = document.getElementById("streakModalClose");
+  if (!modal || !title || !body) return;
+
+  title.textContent = `${item.headline} — ${item.value} ${item.unit}`;
+
+  body.innerHTML = item.streak_details.map((entry) => {
+    const gamesList = entry.games.map((g) => {
+      const isMostRecent = g === entry.games[entry.games.length - 1];
+      return `<div class="streak-game-line${isMostRecent ? " streak-game-recent" : ""}">
+        vs ${g.opponent}: ${g.manager_score} - ${g.opponent_score}
+      </div>`;
+    }).join("");
+    const managerHeader = item.streak_details.length > 1
+      ? `<div class="streak-modal-manager">${entry.manager}</div>` : "";
+    return managerHeader + gamesList;
+  }).join("");
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeStreakModal() {
+  const modal = document.getElementById("streakModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupStreakModal() {
+  const overlay = document.getElementById("streakModal");
+  const closeBtn = document.getElementById("streakModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeStreakModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeStreakModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeStreakModal();
+  });
 }
 
 function renderStreaks(data) {
