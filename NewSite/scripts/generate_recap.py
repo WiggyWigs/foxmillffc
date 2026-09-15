@@ -301,32 +301,39 @@ def top_and_bottom_starter(lineup):
     return top, bottom
 
 
-def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final_score):
-    """
-    Determines whether the outcome of this game was decided by the
-    LAST real NFL game to finish that week (usually Monday Night
-    Football, though this checks the actual date rather than assuming
-    it). Compares each team's score with that final game's starters
-    excluded against their actual final score — if the leader changes
-    once those points are added back in, that's a real, verified
-    comeback-or-collapse story, not speculation.
-
-    Returns None if there's no real swing to report (the eventual
-    winner was already leading before the final game too), or a dict
-    describing what happened if there was one.
-    """
+def find_final_game_date(away_lineup, home_lineup):
+    """The date of the LAST real NFL game to finish that week among
+    all of both teams' starters (usually Monday Night Football, though
+    this checks the actual date rather than assuming it). Returns
+    (final_date_str, is_monday_night) or (None, False) if no dated
+    starters are available."""
     if not away_lineup or not home_lineup:
-        return None
-
+        return None, False
     all_dates = [
         p.get("game_date") for p in away_lineup + home_lineup
         if p.get("started") and p.get("game_date")
     ]
     if not all_dates:
-        return None
+        return None, False
     final_date_str = max(all_dates)
-    final_date = datetime.fromisoformat(final_date_str)
-    is_monday_night = final_date.weekday() == 0  # Monday == 0
+    is_monday_night = datetime.fromisoformat(final_date_str).weekday() == 0  # Monday == 0
+    return final_date_str, is_monday_night
+
+
+def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final_score, final_date_str, is_monday_night):
+    """
+    Determines whether the outcome of this game was decided by the
+    last game of the week. Compares each team's score with that final
+    game's starters excluded against their actual final score — if
+    the leader changes once those points are added back in, that's a
+    real, verified comeback-or-collapse story, not speculation.
+
+    Returns None if there's no real swing to report (the eventual
+    winner was already leading before the final game too), or a dict
+    describing what happened if there was one.
+    """
+    if not final_date_str:
+        return None
 
     def score_before_final_game(lineup):
         return sum(
@@ -353,6 +360,35 @@ def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final
         "away_score_before_final_game": round(away_before, 2),
         "home_score_before_final_game": round(home_before, 2),
     }
+
+
+def find_final_game_heroics_or_bust(losing_lineup, final_date_str):
+    """
+    For the LOSING team's STARTERS who played in the last game of the
+    week (usually MNF): flags any who scored 15+ points (genuinely
+    good — just wasn't enough to save the game) or under 11 points
+    (genuinely bad — helped seal the loss). Scores in between (11-15)
+    aren't notable either way and don't get flagged. This is a
+    different story than find_final_game_swing — that one only fires
+    on an ACTUAL lead change; this one fires on the losing team's real
+    starters having a notably good or bad final game even when the
+    overall result never was in doubt.
+    """
+    if not losing_lineup or not final_date_str:
+        return []
+
+    GOOD_THRESHOLD = 15
+    BAD_THRESHOLD = 11
+
+    results = []
+    for p in losing_lineup:
+        if not p.get("started") or p.get("game_date") != final_date_str:
+            continue
+        if p["points"] >= GOOD_THRESHOLD:
+            results.append({"name": p["name"], "points": p["points"], "category": "good_but_not_enough"})
+        elif p["points"] < BAD_THRESHOLD:
+            results.append({"name": p["name"], "points": p["points"], "category": "bad_sealed_the_loss"})
+    return results
 
 
 def find_best_bench_swap(losing_lineup, points_needed):
@@ -437,6 +473,7 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
     # Bench-swap analysis for the losing team only (a winning team has
     # no "what if" story — they already won).
     loser = None
+    losing_lineup = None
     if away_score != home_score:
         loser = away if away_score < home_score else home
         losing_lineup = away_lineup if away_score < home_score else home_lineup
@@ -447,12 +484,24 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
                 context["bench_swap_that_would_have_won"] = swap
 
     # Did the final game of the week (usually MNF) flip the outcome?
-    swing = find_final_game_swing(away_lineup, home_lineup, away_score, home_score)
+    final_date_str, is_monday_night = find_final_game_date(away_lineup, home_lineup)
+    swing = find_final_game_swing(away_lineup, home_lineup, away_score, home_score, final_date_str, is_monday_night)
     if swing:
         swing_display = dict(swing)
         swing_display["leader_before_final_game"] = away if swing["leader_before_final_game"] == "away" else home
         swing_display["final_winner"] = away if swing["final_winner"] == "away" else home
         context["final_game_swing"] = swing_display
+
+    # For the LOSING team's real starters who played the final game of
+    # the week: did they have a notably good performance that still
+    # wasn't enough, or a notably bad one that helped seal the loss?
+    # Different from final_game_swing above — this fires even when the
+    # result was never really in doubt.
+    if losing_lineup:
+        heroics_or_bust = find_final_game_heroics_or_bust(losing_lineup, final_date_str)
+        if heroics_or_bust:
+            context["losing_team_final_game_players"] = heroics_or_bust
+            context["final_game_type"] = "Monday Night Football" if is_monday_night else "the final game of the week"
 
     # Real, verified career context — this is the actual roast material.
     away_flavor = get_manager_flavor(away, stats, lore)
@@ -476,8 +525,8 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         "league's website — a group of 40-something guys who have known "
         "each other for years and enjoy busting each other's chops.\n\n"
         f"{tone}\n\n"
-        "The recap must be between 95 "
-        "and 125 words — this is a hard requirement, not a suggestion. "
+        "The recap must be between 140 "
+        "and 160 words — this is a hard requirement, not a suggestion. "
         "Use ONLY the facts given — never invent player names, stats, "
         "plays, or background details beyond what's provided. Do not use "
         "markdown formatting. Do NOT start with the manager names or a "
@@ -548,6 +597,18 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         f"leader_before_final_game blew a lead they had going into that "
         f"last game. This is excellent, dramatic material and should "
         f"usually be mentioned prominently. If "
+        f"losing_team_final_game_players is present, these are real "
+        f"starters from the LOSING team who played in the game named "
+        f"by final_game_type — for each one, category "
+        f"'good_but_not_enough' means they had a genuinely strong game "
+        f"(15+ points) that still wasn't enough to save their manager "
+        f"(great material for 'even his best player couldn't bail him "
+        f"out' framing), and category 'bad_sealed_the_loss' means they "
+        f"badly underperformed (under 11 points) and helped seal the "
+        f"defeat (great material for blaming that specific player by "
+        f"name for the loss). Use whichever categories are present as "
+        f"real, specific material — don't invent a reason for the "
+        f"performance, just state what happened. If "
         f"away_manager_background or home_manager_background is present "
         f"(especially for {loser or 'the loser'}, who lost this game), "
         f"use it as real ammunition — a bad career record, zero playoff "
@@ -598,13 +659,22 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats):
             if points_total is not None and games_played and games_played >= MIN_GAMES_FOR_AVERAGE
             else None
         )
+        # Schedule difficulty needs a real sample too — 1-2 games
+        # isn't enough for "their schedule has been hard/easy" to
+        # mean anything yet.
+        MIN_GAMES_FOR_SCHEDULE_DIFFICULTY = 3
+        schedule_difficulty = (
+            p.get("schedule_difficulty")
+            if games_played and games_played >= MIN_GAMES_FOR_SCHEDULE_DIFFICULTY
+            else None
+        )
         ctx = {
             "season_standings_rank": standings_rank.get(name),
             "season_wins": wins,
             "season_losses": losses,
             "season_power_score": p.get("power_score"),
             "season_points_avg": points_avg,
-            "season_schedule_difficulty": p.get("schedule_difficulty"),
+            "season_schedule_difficulty": schedule_difficulty,
             "season_playoff_probability_pct": playoff_prob.get(name),
         }
         flavor = get_manager_flavor(name, stats, lore)
@@ -671,7 +741,7 @@ def build_gotw_writing_prompt(matchup, tone):
         f"{tone}\n\n"
         "You are writing a short preview of a specific upcoming "
         "fantasy football matchup for a private league's website. "
-        "The preview must be between 95 and 125 words — this is a "
+        "The preview must be between 140 and 160 words — this is a "
         "hard requirement, not a suggestion. Use ONLY the facts "
         "given — never invent player names, projections, stats, or "
         "background details not provided. Do not use markdown "
@@ -713,7 +783,12 @@ def build_gotw_writing_prompt(matchup, tone):
         "itself is a percentage-point gap: it's how much higher or "
         "lower a manager's actual win percentage is compared to what "
         "their weekly scoring alone would predict — describe it in "
-        "those terms rather than citing the bare decimal. NEVER "
+        "those terms rather than citing the bare decimal. If "
+        "season_schedule_difficulty is absent for a manager (this "
+        "happens early in a season, before enough games have been "
+        "played for it to mean anything), do not reference their "
+        "schedule strength or difficulty at all — don't estimate or "
+        "guess at it. NEVER "
         "describe one manager's schedule as easier or harder than "
         "another's unless their season_schedule_difficulty values "
         "differ by at least 0.15. If you use the all-time meetings "
