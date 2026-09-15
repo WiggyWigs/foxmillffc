@@ -152,31 +152,22 @@ async function loadRecords() {
     ["Span", "span"],
   ];
 
-  // "Most games above 125" / "Most games below 100" both get an extra
-  // derived Average column (count ÷ seasons played), then re-sorted
-  // by that average — this is the one pairing where a small sample
-  // genuinely skews the number, so flagIncomplete is true for both.
-  // The current in-progress season is already excluded from the raw
-  // counts server-side, so no per-row highlighting applies here.
+  // "Most games above 125" / "Most games below 100" both get a Rate
+  // column — occurrences divided by TOTAL GAMES PLAYED (computed
+  // server-side, now including the in-progress season), not divided
+  // by seasons played. A rate normalizes fairly regardless of how
+  // many games someone's actually played, which is what lets a
+  // partial current season contribute meaningfully without needing
+  // a full season's worth of games first.
   const games125WithAvg = (r.games_above_125 || [])
-    .map((e) => {
-      const seasons = data.managers[e.manager]?.career?.seasons_played || 0;
-      return { ...e, seasons, avgRaw: seasons ? e.count / seasons : -1 };
-    })
-    .sort((a, b) => b.avgRaw - a.avgRaw)
-    .map((e) => ({ ...e, avg: e.seasons ? e.avgRaw.toFixed(2) : "—" }));
+    .map((e) => ({ ...e, avg: e.rate != null ? (e.rate * 100).toFixed(1) + "%" : "—" }));
   const games100WithAvg = (r.games_below_100 || [])
-    .map((e) => {
-      const seasons = data.managers[e.manager]?.career?.seasons_played || 0;
-      return { ...e, seasons, avgRaw: seasons ? e.count / seasons : -1 };
-    })
-    .sort((a, b) => b.avgRaw - a.avgRaw)
-    .map((e) => ({ ...e, avg: e.seasons ? e.avgRaw.toFixed(2) : "—" }));
+    .map((e) => ({ ...e, avg: e.rate != null ? (e.rate * 100).toFixed(1) + "%" : "—" }));
   const gamesThresholdCols = [
     rankCol,
     ["Manager", "manager"],
     ["Number of Games", "count"],
-    ["Average<br>(per season)", "avg"],
+    ["Rate<br>(per game played)", "avg"],
   ];
 
   // Sections, built individually, then grouped into rows per the
@@ -189,8 +180,8 @@ async function loadRecords() {
   const s2b = section("Lowest R/S Game Scores", r.bottom_regular_season_games, managerYearScoreCols, (row) => row.score, false);
   const s3a = section("Highest Playoff Game Scores", r.top_playoff_games, managerYearScoreCols, (row) => row.score, false);
   const s3b = section("Lowest Playoff Game Scores", r.bottom_playoff_games, managerYearScoreCols, (row) => row.score, false);
-  const s4a = section("Games Scored Above 125 Points", games125WithAvg, gamesThresholdCols, (row) => row.avgRaw, true);
-  const s4b = section("Games Scored Below 100 Points", games100WithAvg, gamesThresholdCols, (row) => row.avgRaw, true);
+  const s4a = section("Games Scored Above 125 Points", games125WithAvg, gamesThresholdCols, (row) => row.rate, true);
+  const s4b = section("Games Scored Below 100 Points", games100WithAvg, gamesThresholdCols, (row) => row.rate, true);
 
   // Streaks — inserted between the games-threshold pair and the
   // fastest-to-N pairs, per the requested ordering.
