@@ -1372,6 +1372,10 @@ main {
 }
 
 .streak-game-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
   font-family: 'EB Garamond', serif;
   font-size: 0.9rem;
   color: var(--ink);
@@ -1383,7 +1387,9 @@ main {
   border-bottom: none;
 }
 
-.streak-game-recent {
-  font-weight: 700;
-  color: var(--rust);
+.streak-game-yearweek {
+  flex-shrink: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-style: italic;
 }
