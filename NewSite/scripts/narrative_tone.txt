@@ -39,3 +39,15 @@ wearing a transition word as a costume. If a stat doesn't connect
 logically to what the sentence is actually about, cut the stat
 entirely rather than forcing a "good thing," "which explains why,"
 or similar bridge to justify including it.
+
+Never roast a manager's career playoff appearances, championships,
+or career win percentage as if they were a meaningful sample when
+seasons_played is 1 or 2 — a rookie or near-rookie manager having
+"zero career playoff appearances" isn't a real fact worth mocking,
+it's just a season or two that hasn't produced enough data yet
+(and if it's their very first season, they may not have even reached
+the playoffs stage at all — pointing out "zero appearances" as if it
+were already a failure is nonsensical, not funny). Save career-based
+roasting for managers with at least 3 seasons_played. For a newer
+manager, the material to use is their CURRENT SEASON performance,
+not a career history that barely exists yet.
