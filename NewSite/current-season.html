@@ -15,14 +15,34 @@
 <main>
   <div class="panel">
     <h2 id="page-season-header">Current Season</h2>
-    <p class="msi-meta" id="season-year-label">Fox Mill Fantasy Football Club</p>
 
-    <div class="record-section">
-      <h3 class="season-subhead">Current Streaks</h3>
-      <div id="streaks-wrap">
-        <p class="load-state">Loading streaks&hellip;</p>
-      </div>
-      <p class="record-footnote">*Regular season games only</p>
+    <hr class="section-divider recap-tight-divider">
+    <div class="recap-header-block">
+      <h3 class="season-subhead" id="recap-previous-heading">Impact Game</h3>
+      <hr class="recap-thin-divider">
+      <p class="recap-matchup-subtitle" id="recap-previous-subtitle"></p>
+    </div>
+    <hr class="section-divider recap-tight-divider">
+
+    <div id="recap-previous-wrap" class="recap-tight-wrap">
+      <p class="load-state">Loading recap&hellip;</p>
+    </div>
+
+    <hr class="section-divider recap-tight-divider">
+    <div class="recap-header-block">
+      <h3 class="season-subhead" id="recap-gotw-heading">Game of the Week</h3>
+      <hr class="recap-thin-divider">
+      <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
+    </div>
+    <hr class="section-divider recap-tight-divider">
+
+    <div id="recap-gotw-wrap" class="recap-tight-wrap">
+      <p class="load-state">Loading preview&hellip;</p>
+    </div>
+
+    <div class="record-section" id="callouts-section" style="display:none;">
+      <h3 class="season-subhead">This Week's Notes</h3>
+      <div class="callout-grid" id="callout-grid"></div>
     </div>
 
     <hr class="section-divider">
@@ -33,14 +53,6 @@
       <div id="standings-wrap">
         <p class="load-state">Loading standings&hellip;</p>
       </div>
-    </div>
-
-    <hr class="section-divider">
-
-    <div class="record-section">
-      <h3 class="season-subhead">Playoff Probability</h3>
-      <p class="msi-meta" id="playoff-prob-meta"></p>
-      <div id="playoff-prob-wrap"></div>
     </div>
 
     <hr class="section-divider">
@@ -72,6 +84,14 @@
         just their real opponent. A large negative gap means the real schedule was harder than the
         scoring alone suggests, and that manager earns the most points for this factor.
       </p>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">Playoff Probability</h3>
+      <p class="msi-meta" id="playoff-prob-meta"></p>
+      <div id="playoff-prob-wrap"></div>
     </div>
   </div>
 </main>
@@ -117,6 +137,14 @@
 </div>
 
 <script src="current-season.js"></script>
+
+<div class="modal-overlay" id="streakModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="streakModalTitle">
+    <button class="modal-close" id="streakModalClose" aria-label="Close">&times;</button>
+    <div class="modal-name" id="streakModalTitle"></div>
+    <div id="streakModalBody" class="streak-modal-body"></div>
+  </div>
+</div>
 
 </body>
 </html>
