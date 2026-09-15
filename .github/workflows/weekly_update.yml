@@ -2,11 +2,18 @@ name: Weekly stats update
 
 on:
   schedule:
-    # 5:00 AM Eastern. GitHub Actions cron runs in UTC and does NOT
-    # adjust for daylight saving automatically — this is 10:00 UTC,
-    # which is 5:00 AM EST (winter) but 6:00 AM EDT (summer/early
-    # season). See the note below the workflow for how to handle this.
-    - cron: '0 10 * * 2'
+    # 8:00 AM Eastern Standard Time. GitHub Actions cron runs in UTC
+    # and does NOT adjust for daylight saving automatically — this is
+    # 13:00 UTC, which is 8:00 AM EST (winter) but 9:00 AM EDT
+    # (summer/early season, roughly March through early November).
+    # NFL season spans both — so this will run at 8 AM Eastern for
+    # most of the season, and 9 AM Eastern during the early-season
+    # weeks that still fall under daylight saving. If you want it to
+    # always be exactly 8:00 AM local regardless of DST, this cron
+    # value would need to be manually flipped twice a year (12:00 UTC
+    # during EDT, 13:00 UTC during EST) — not something GitHub
+    # Actions does automatically.
+    - cron: '0 13 * * 2'
   workflow_dispatch: {}  # lets you also trigger this manually from the Actions tab
 
 permissions:
