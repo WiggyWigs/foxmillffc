@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
 <link rel="stylesheet" href="styles.css">
 <title>Input — Fox Mill Fantasy Football Club</title>
 </head>
@@ -17,31 +18,17 @@
     <h2>Manager Lore Submission</h2>
     <p class="msi-meta">
       Got material on another manager — a running joke, a reputation, something
-      they always do? Submit it here. Pick who it's about, write it up, and
-      submit. This opens a GitHub issue in a new tab — sign in and click
-      "Submit new issue" there to finish. It'll be added to that manager's
-      lore file automatically once submitted.
+      they always do? Submit it below. It gets added to that manager's lore
+      automatically within a day.
     </p>
 
-    <form id="lore-form" class="input-form">
-      <label for="lore-manager" class="input-label">About which manager?</label>
-      <select id="lore-manager" class="h2h-select input-select" required>
-        <option value="">Select a manager…</option>
-      </select>
-
-      <label for="lore-text" class="input-label">What's the material?</label>
-      <textarea id="lore-text" class="input-textarea" rows="6"
-        placeholder="e.g. Always proposes trades nobody in their right mind would accept."
-        required></textarea>
-
-      <button type="submit" class="input-submit">Submit</button>
-    </form>
-
-    <p id="input-status" class="msi-meta" style="display:none;"></p>
+    <div style="text-align: center; margin-top: 1.5rem;">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeLJ9dOqcuZKPXALjBaKJdsy98XQCDO6LMYE0kYlhs7Xr8m-w/viewform" target="_blank" rel="noopener" class="input-submit" style="display: inline-block; text-decoration: none;">
+        Submit Manager Lore
+      </a>
+    </div>
   </div>
 </main>
-
-<script src="input.js"></script>
 
 </body>
 </html>
