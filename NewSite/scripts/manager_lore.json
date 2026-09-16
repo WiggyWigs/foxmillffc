@@ -6,6 +6,7 @@
   "Jay Nelson": "The trusted commissioner.",
   "Daniel Bahamonde": "The loveable loser.  Two time last place in standings.  Likes to take adult pictures with santa clause.",
   "Josh Davis": "The Stand Up Comedian.",
-
-  "_readme": "Add a line for any manager you want the AI to have material on — running jokes, reputations, whatever's true and fair game. Managers without an entry here just won't get any personal flavor added; that's fine, not every recap needs it. Keep entries short (one sentence) since this gets fed into the prompt every time that manager appears."
+  "_readme": "Add a line for any manager you want the AI to have material on \u2014 running jokes, reputations, whatever's true and fair game. Managers without an entry here just won't get any personal flavor added; that's fine, not every recap needs it. Keep entries short (one sentence) since this gets fed into the prompt every time that manager appears.",
+  "Blake Pratt": "can't eat gluten",
+  "Jason Carlton": "Loves to rip trading card packs, always chasing the next hit"
 }
