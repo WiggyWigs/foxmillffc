@@ -1,0 +1,40 @@
+name: Sync manager lore submissions
+
+on:
+  schedule:
+    # Once a week, Sunday at 9:00 UTC — lore isn't time-critical, no
+    # need to check more often than that.
+    - cron: '0 9 * * 0'
+  workflow_dispatch: {}  # lets you also trigger this manually from the Actions tab
+
+permissions:
+  contents: write  # needed to commit manager_lore.json and the sync state file
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install gspread google-auth
+
+      - name: Sync new lore submissions
+        run: python NewSite/scripts/sync_lore_submissions.py
+        env:
+          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+
+      - name: Commit and push updated lore
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add NewSite/scripts/manager_lore.json NewSite/scripts/lore_sync_state.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Sync manager lore submissions"
+          git push
