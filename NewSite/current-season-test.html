@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
 <link rel="stylesheet" href="styles.css">
 <title>Current Season (TEST) — Fox Mill Fantasy Football Club</title>
 </head>
@@ -28,6 +29,25 @@
 
     <div id="recap-previous-wrap" class="recap-tight-wrap">
       <p class="load-state">Loading recap&hellip;</p>
+    </div>
+
+    <div id="honorable-mention-wrap" class="recap-tight-wrap" style="display:none;">
+      <div class="box-score-card honorable-mention-card" id="honorable-mention-card">
+        <span class="box-score-eyebrow">Honorable Mention</span>
+        <div class="box-score-matchup">
+          <div class="box-score-side">
+            <div class="box-score-team-name" id="hm-away-team"></div>
+            <div class="box-score-manager-name" id="hm-away-manager"></div>
+            <div class="box-score-score" id="hm-away-score"></div>
+          </div>
+          <div class="box-score-vs">vs</div>
+          <div class="box-score-side">
+            <div class="box-score-team-name" id="hm-home-team"></div>
+            <div class="box-score-manager-name" id="hm-home-manager"></div>
+            <div class="box-score-score" id="hm-home-score"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <hr class="section-divider recap-tight-divider">
@@ -145,6 +165,15 @@
     <button class="modal-close" id="streakModalClose" aria-label="Close">&times;</button>
     <div class="modal-name" id="streakModalTitle"></div>
     <div id="streakModalBody" class="streak-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="honorableMentionModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="honorableMentionModalTitle">
+    <button class="modal-close" id="honorableMentionModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Honorable Mention</div>
+    <div class="modal-name" id="honorableMentionModalTitle"></div>
+    <p class="recap-text" id="honorableMentionModalBody"></p>
   </div>
 </div>
 
