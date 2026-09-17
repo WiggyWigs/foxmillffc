@@ -335,6 +335,68 @@ def get_week_games(stats):
     return enriched, latest_week, current_year
 
 
+def find_honorable_mention(week_games, impact_game, stats):
+    """
+    Picks the week's Honorable Mention game, distinct from the Impact
+    Game (the closest margin overall). Selection order, per the
+    site's actual rules:
+      1. Among games where BOTH managers are ranked top-6 in the
+         current standings (real win-loss rank, not power score),
+         pick the closest margin. Multiple qualifying games ->
+         closest margin wins.
+      2. If no top-6-vs-top-6 game exists, fall back to whichever
+         remaining game (excluding the Impact Game) had the next
+         closest margin — but only if that margin is under 15 points.
+      3. If nothing else was within 15 points either, pick the
+         BIGGEST blowout instead. In that case, flag whether either
+         team hit the real extremes (150+ or under 100) so the
+         write-up knows to drill into that specific team, per the
+         site's rule for this fallback tier.
+
+    Returns (game, reason, blowout_detail) — reason is one of
+    "top6_matchup", "next_closest_margin", "biggest_blowout";
+    blowout_detail is only set for the blowout tier.
+    """
+    standings = {}
+    if stats.get("current_standings"):
+        for i, row in enumerate(stats["current_standings"]["standings"]):
+            standings[row["manager"]] = i + 1  # 1-indexed rank, real W/L standings order
+
+    def is_same_game(g):
+        return ({g["away_manager"], g["home_manager"]}
+                == {impact_game["away_manager"], impact_game["home_manager"]})
+
+    candidates = [g for g in week_games if not is_same_game(g)]
+    if not candidates:
+        return None, None, None
+
+    TOP_N = 6
+    top6_matchups = [
+        g for g in candidates
+        if standings.get(g["away_manager"], 99) <= TOP_N
+        and standings.get(g["home_manager"], 99) <= TOP_N
+    ]
+    if top6_matchups:
+        best = min(top6_matchups, key=lambda g: g["margin"])
+        return best, "top6_matchup", None
+
+    NARROW_MARGIN_THRESHOLD = 15
+    next_closest = min(candidates, key=lambda g: g["margin"])
+    if next_closest["margin"] < NARROW_MARGIN_THRESHOLD:
+        return next_closest, "next_closest_margin", None
+
+    # Nothing close at all this week — pick the biggest blowout and
+    # flag whichever real extreme(s) it hit.
+    biggest_blowout = max(candidates, key=lambda g: g["margin"])
+    winner_score = max(biggest_blowout["away_score"], biggest_blowout["home_score"])
+    loser_score = min(biggest_blowout["away_score"], biggest_blowout["home_score"])
+    blowout_detail = {
+        "winner_scored_150_plus": winner_score >= 150,
+        "loser_scored_under_100": loser_score < 100,
+    }
+    return biggest_blowout, "biggest_blowout", blowout_detail
+
+
 # --- Previous Weekend Recap (AI writes about a fixed, deterministic pick) --
 
 def get_manager_lineup(year, week, manager):
@@ -488,11 +550,21 @@ def find_best_bench_swap(losing_lineup, points_needed):
     return best
 
 
-def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
-    away, home = closest_game["away_manager"], closest_game["home_manager"]
-    away_score, home_score = closest_game["away_score"], closest_game["home_score"]
+def build_game_narrative_context(game, week, year, stats, lore, old_stats):
+    """Shared context-gathering for ANY single-game narrative (Impact
+    Game, Honorable Mention, or any future one) — all the real,
+    verified facts (H2H record, top/bottom scorer, bench swap, MNF
+    swing, heroics-or-bust, career background, playoff probability
+    trend, all-time smallest margin rank) computed once, in one
+    place, so every narrative that needs them gets the exact same
+    correct logic rather than a risky copy-paste of it.
 
-    context = dict(closest_game)  # copy — don't mutate the caller's dict
+    Returns (context, away, home, away_team, home_team, loser) —
+    the caller adds its own instructions/system prompt on top."""
+    away, home = game["away_manager"], game["home_manager"]
+    away_score, home_score = game["away_score"], game["home_score"]
+
+    context = dict(game)  # copy — don't mutate the caller's dict
     away_team, home_team = context.pop("away_team", None), context.pop("home_team", None)
 
     # Does this game rank among the all-time smallest margins of
@@ -580,6 +652,14 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
     if home_pp:
         context["home_season_playoff_probability_trend"] = home_pp
 
+    return context, away, home, away_team, home_team, loser
+
+
+def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
+    context, away, home, away_team, home_team, loser = build_game_narrative_context(
+        closest_game, week, year, stats, lore, old_stats
+    )
+
     system = (
         "You write short fantasy football recap blurbs for a private "
         "league's website — a group of 40-something guys who have known "
@@ -651,7 +731,7 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         f"material for mocking whoever set that lineup. If "
         f"final_game_swing is present, that's a real, verified fact: "
         f"the manager named in leader_before_final_game was actually "
-        f"ahead before {swing['game_type'] if swing else 'the final game'} "
+        f"ahead before {swing['game_type'] if (swing := context.get('final_game_swing')) else 'the final game'} "
         f"finished, but final_winner ended up taking the game — meaning "
         f"final_winner pulled off a genuine comeback, and "
         f"leader_before_final_game blew a lead they had going into that "
@@ -781,6 +861,118 @@ def add_selection_only_context(enriched, stats):
         entry["home_career_history"] = get_unfiltered_championship_history(home, stats)
         augmented.append(entry)
     return augmented
+
+
+def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, tone, reason, blowout_detail):
+    """The week's Honorable Mention narrative — reuses the exact same
+    shared fact-gathering as the Impact Game (build_game_narrative_context),
+    just with its own framing and, in the blowout fallback tier, an
+    instruction to drill into whichever team hit a real scoring
+    extreme."""
+    context, away, home, away_team, home_team, loser = build_game_narrative_context(
+        game, week, year, stats, lore, old_stats
+    )
+
+    reason_text = {
+        "top6_matchup": "Both managers are ranked in the top 6 of the current standings (real win-loss rank) — this was the closest margin among such matchups this week.",
+        "next_closest_margin": "No matchup between two top-6 managers existed this week, so this is simply the next-closest game by margin.",
+        "biggest_blowout": "Nothing else this week was decided by fewer than 15 points either, so this is the week's biggest blowout instead.",
+    }[reason]
+    context["why_this_game_was_selected"] = reason_text
+
+    blowout_instruction = ""
+    if reason == "biggest_blowout" and blowout_detail:
+        winner = away if game["away_score"] > game["home_score"] else home
+        loser_name = home if winner == away else away
+        extremes = []
+        if blowout_detail.get("winner_scored_150_plus"):
+            extremes.append(f"{winner} scored 150+ points — a genuinely huge individual week")
+        if blowout_detail.get("loser_scored_under_100"):
+            extremes.append(f"{loser_name} scored under 100 points — a genuinely bad individual week")
+        if extremes:
+            context["real_scoring_extreme"] = "; ".join(extremes)
+            blowout_instruction = (
+                " Since this game was selected as the week's biggest blowout, spend real "
+                "attention on real_scoring_extreme — drill into whichever team hit that "
+                "extreme (150+ points, or under 100) rather than treating this as just "
+                "another game recap; that extreme IS the story here."
+            )
+
+    system = (
+        "You write short fantasy football recap blurbs for a private "
+        "league's website — a group of 40-something guys who have known "
+        "each other for years and enjoy busting each other's chops. "
+        "This one is the week's HONORABLE MENTION game — a second "
+        "featured game, distinct from the week's main Impact Game. "
+        "You can reference why_this_game_was_selected briefly if it "
+        "fits naturally, but don't just recite it — weave it in, or "
+        "skip it if the game's own story is more interesting.\n\n"
+        f"{tone}\n\n"
+        "The recap must be between 140 "
+        "and 160 words — this is a hard requirement, not a suggestion. "
+        "Use ONLY the facts given — never invent player names, stats, "
+        "plays, or background details beyond what's provided. Do not use "
+        "markdown formatting. Do NOT start with the manager names or a "
+        "'ManagerA vs ManagerB:' prefix — that's shown separately on the "
+        "page. Just start straight into the recap itself. EVERY field "
+        "given is prefixed with either 'season_' or 'career_' to show "
+        "its scope — whenever you state ANY number from a season_ or "
+        "career_ field, you MUST include a matching word in the "
+        "sentence itself ('this season', 'career', 'all-time', etc.) "
+        "so a reader always knows which scope it's from — never state "
+        "a number without that context." + blowout_instruction + " Whenever you "
+        "state a point total, always write it as 'X points' or "
+        "'X.X points' — never a bare number on its own. Whenever you "
+        "state a percentage (playoff probability or anything else), "
+        "always write it as 'X%' or 'X.X%' — never spell out 'percent' "
+        "as a word. Win percentages (career_win_pct or any other "
+        "win_pct field) are given as decimals (e.g. 0.6818) — always "
+        "convert to a whole-number percentage rounded to ONE decimal and "
+        "spell out the words, e.g. 'a 68.2 career winning percentage' — "
+        "never write the raw decimal or abbreviate to 'win pct'. Mention AT MOST "
+        "one standout performance and ONE disappointing performance per "
+        "team, and ONLY the specific players named in the top/bottom "
+        "scorer fields given — never reference, name, or invent stats "
+        "for any other player not explicitly provided. Frame any "
+        "top/bottom scorer mention as a dramatic contrast in one "
+        "sentence — the big performance overcoming, carrying, or "
+        "outshining the weak one (or vice versa) — never as two flat, "
+        "separate statements. Vary the "
+        "verb and the adjective each time rather than reusing the same "
+        "phrasing. If you mention "
+        "playoff chances or probability for a manager, you MUST cite "
+        "both their previous_week_pct and current_week_pct numbers from "
+        "their season_playoff_probability_trend field if it's present — never "
+        "make a vague qualitative claim about playoff odds without "
+        "those two real numbers. If that field isn't present for a "
+        "manager, don't speculate about their playoff chances at all."
+    )
+    user = (
+        f"Write the Honorable Mention recap for this Week {week}, {year} game:\n"
+        f"{json.dumps(context, indent=2)}\n\n"
+        f"Mention the final score and margin. If all_time_meetings is "
+        f"more than 1, you can briefly note this isn't their first "
+        f"meeting, using the h2h_record field for the real all-time "
+        f"record between them (e.g. 'X leads Y-Z') — don't invent "
+        f"details about those past games beyond what's given. If "
+        f"top/bottom scorer fields are present, you can mention a "
+        f"standout or disappointing individual performance if it fits "
+        f"naturally, following the one-per-team limit above. If "
+        f"bench_swap_that_would_have_won is present, that's a real, "
+        f"verified fact — a bench player who would have won the game if "
+        f"started instead of the named starter — and it's usually prime "
+        f"material for mocking whoever set that lineup. If "
+        f"final_game_swing is present, that's a real, verified fact: "
+        f"the manager named in leader_before_final_game was actually "
+        f"ahead before {swing['game_type'] if (swing := context.get('final_game_swing')) else 'the final game'} "
+        f"finished, but final_winner ended up taking the game. If "
+        f"away_manager_background or home_manager_background is present "
+        f"(especially for {loser or 'the loser'}, who lost this game), "
+        f"use it as real ammunition — a bad career record, zero playoff "
+        f"appearances, a background_note personality trait, etc. are all "
+        f"fair game and encouraged, not just optional color."
+    )
+    return system, user, away_team, home_team
 
 
 def build_matchup_selection_prompt(enriched, criteria):
@@ -1161,11 +1353,17 @@ def main():
 
     recap_text = None
     recap_away_team = recap_home_team = None
+    honorable_mention_text = None
+    honorable_mention_away_team = honorable_mention_home_team = None
+    honorable_mention_away_manager = honorable_mention_home_manager = None
+    honorable_mention_away_score = honorable_mention_home_score = None
+    honorable_mention_week = None
     gotw_text = None
     gotw_matchup = None
     gotw_away_team = gotw_home_team = None
 
     # --- Previous Weekend Recap: always the closest game ---
+    closest_game = None
     try:
         if week_games:
             closest_game = min(week_games, key=lambda g: g["margin"])
@@ -1178,6 +1376,29 @@ def main():
             print("No completed games found — skipping recap.")
     except Exception as e:
         print(f"WARNING: recap generation failed: {e}")
+
+    # --- Honorable Mention: a second featured game, distinct from
+    # the Impact Game above. Selection is fully deterministic
+    # (find_honorable_mention) — only the write-up itself is AI.
+    try:
+        if week_games and closest_game:
+            hm_game, hm_reason, hm_blowout_detail = find_honorable_mention(week_games, closest_game, stats)
+            if hm_game:
+                honorable_mention_week = week  # deterministic — known regardless of whether the AI call below succeeds
+                honorable_mention_away_manager = hm_game["away_manager"]
+                honorable_mention_home_manager = hm_game["home_manager"]
+                honorable_mention_away_score = hm_game["away_score"]
+                honorable_mention_home_score = hm_game["home_score"]
+                hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
+                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail
+                )
+                honorable_mention_text = call_claude(hm_system, hm_user)
+                print(f"Generated Honorable Mention ({hm_reason}): "
+                      f"{hm_game['away_manager']} vs {hm_game['home_manager']}.")
+            else:
+                print("Only one game this week — no separate Honorable Mention possible.")
+    except Exception as e:
+        print(f"WARNING: Honorable Mention generation failed: {e}")
 
     # --- Game of the Week: two separate calls, selection then writing ---
     # Splitting this into two focused calls (rather than one call doing
@@ -1285,6 +1506,14 @@ def main():
         "previous_weekend_week": week if week_games else None,
         "previous_weekend_away_team": recap_away_team,
         "previous_weekend_home_team": recap_home_team,
+        "honorable_mention": honorable_mention_text,
+        "honorable_mention_week": honorable_mention_week,
+        "honorable_mention_away_team": honorable_mention_away_team,
+        "honorable_mention_home_team": honorable_mention_home_team,
+        "honorable_mention_away_manager": honorable_mention_away_manager,
+        "honorable_mention_home_manager": honorable_mention_home_manager,
+        "honorable_mention_away_score": honorable_mention_away_score,
+        "honorable_mention_home_score": honorable_mention_home_score,
         "box_scores": box_scores,
         "game_of_the_week": gotw_text,
         "game_of_the_week_week": upcoming.get("week") if upcoming else None,
