@@ -6,6 +6,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   setupBoxScoreModal();
   setupStreakModal();
+  setupHonorableMentionModal();
   let data;
   try {
     const res = await fetch("data/stats_test.json");
@@ -77,6 +78,68 @@ function renderRecap(data) {
 
   renderCallouts(recap.callouts || {});
   renderBoxScores(recap.box_scores || []);
+  renderHonorableMention(recap);
+}
+
+function renderHonorableMention(recap) {
+  const wrap = document.getElementById("honorable-mention-wrap");
+  if (!wrap) return;
+
+  const hasData = recap.honorable_mention_away_team && recap.honorable_mention_home_team
+    && recap.honorable_mention_away_score != null && recap.honorable_mention_home_score != null;
+  if (!hasData) {
+    wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "";
+
+  document.getElementById("hm-away-team").textContent = recap.honorable_mention_away_team;
+  document.getElementById("hm-away-manager").textContent = recap.honorable_mention_away_manager || "";
+  document.getElementById("hm-away-score").textContent = recap.honorable_mention_away_score;
+  document.getElementById("hm-home-team").textContent = recap.honorable_mention_home_team;
+  document.getElementById("hm-home-manager").textContent = recap.honorable_mention_home_manager || "";
+  document.getElementById("hm-home-score").textContent = recap.honorable_mention_home_score;
+
+  const card = document.getElementById("honorable-mention-card");
+  card.onclick = () => openHonorableMentionModal(recap);
+}
+
+function openHonorableMentionModal(recap) {
+  const modal = document.getElementById("honorableMentionModal");
+  const title = document.getElementById("honorableMentionModalTitle");
+  const body = document.getElementById("honorableMentionModalBody");
+  const closeBtn = document.getElementById("honorableMentionModalClose");
+  if (!modal || !title || !body) return;
+
+  title.textContent = `${recap.honorable_mention_away_team} ${recap.honorable_mention_away_score} - ${recap.honorable_mention_home_score} ${recap.honorable_mention_home_team}`;
+  body.textContent = recap.honorable_mention || "No write-up available yet.";
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeHonorableMentionModal() {
+  const modal = document.getElementById("honorableMentionModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupHonorableMentionModal() {
+  const overlay = document.getElementById("honorableMentionModal");
+  const closeBtn = document.getElementById("honorableMentionModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeHonorableMentionModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeHonorableMentionModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeHonorableMentionModal();
+  });
 }
 
 function renderBoxScores(boxScores) {
@@ -210,13 +273,13 @@ function openStreakModal(item) {
   const closeBtn = document.getElementById("streakModalClose");
   if (!modal || !title || !body) return;
 
-  title.textContent = `${item.headline} — ${item.value} ${item.unit}`;
+  title.textContent = item.headline;
 
   body.innerHTML = item.streak_details.map((entry) => {
     const gamesList = entry.games.map((g) => {
-      const isMostRecent = g === entry.games[entry.games.length - 1];
-      return `<div class="streak-game-line${isMostRecent ? " streak-game-recent" : ""}">
-        vs ${g.opponent}: ${g.manager_score} - ${g.opponent_score}
+      return `<div class="streak-game-line">
+        <span>vs ${g.opponent}: ${g.manager_score} - ${g.opponent_score}</span>
+        <span class="streak-game-yearweek">(${g.year}, W${g.week})</span>
       </div>`;
     }).join("");
     const managerHeader = item.streak_details.length > 1
