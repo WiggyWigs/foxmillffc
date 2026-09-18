@@ -106,12 +106,10 @@ function renderHonorableMention(recap) {
 
 function openHonorableMentionModal(recap) {
   const modal = document.getElementById("honorableMentionModal");
-  const title = document.getElementById("honorableMentionModalTitle");
   const body = document.getElementById("honorableMentionModalBody");
   const closeBtn = document.getElementById("honorableMentionModalClose");
-  if (!modal || !title || !body) return;
+  if (!modal || !body) return;
 
-  title.textContent = `${recap.honorable_mention_away_team} ${recap.honorable_mention_away_score} - ${recap.honorable_mention_home_score} ${recap.honorable_mention_home_team}`;
   body.textContent = recap.honorable_mention || "No write-up available yet.";
 
   modal.classList.add("active");
