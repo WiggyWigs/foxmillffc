@@ -880,6 +880,17 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
     }[reason]
     context["why_this_game_was_selected"] = reason_text
 
+    # Only one player total gets mentioned per team here, and it's not
+    # "top and bottom for each team" like the Impact Game — it's
+    # specifically the WINNING team's top scorer and the LOSING team's
+    # bottom scorer. Drop whichever of the four possible scorer fields
+    # don't match that (the winner's bottom scorer, the loser's top
+    # scorer), so the AI physically can't reach for them.
+    winner_side = "away" if game["away_score"] > game["home_score"] else "home"
+    loser_side = "home" if winner_side == "away" else "away"
+    context.pop(f"{winner_side}_bottom_scorer", None)
+    context.pop(f"{loser_side}_top_scorer", None)
+
     blowout_instruction = ""
     if reason == "biggest_blowout" and blowout_detail:
         winner = away if game["away_score"] > game["home_score"] else home
@@ -908,8 +919,8 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "fits naturally, but don't just recite it — weave it in, or "
         "skip it if the game's own story is more interesting.\n\n"
         f"{tone}\n\n"
-        "The recap must be between 140 "
-        "and 160 words — this is a hard requirement, not a suggestion. "
+        "The recap must be between 90 "
+        "and 110 words — this is a hard requirement, not a suggestion. "
         "Use ONLY the facts given — never invent player names, stats, "
         "plays, or background details beyond what's provided. Do not use "
         "markdown formatting. Do NOT start with the manager names or a "
@@ -930,14 +941,19 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "convert to a whole-number percentage rounded to ONE decimal and "
         "spell out the words, e.g. 'a 68.2 career winning percentage' — "
         "never write the raw decimal or abbreviate to 'win pct'. Mention AT MOST "
-        "one standout performance and ONE disappointing performance per "
-        "team, and ONLY the specific players named in the top/bottom "
-        "scorer fields given — never reference, name, or invent stats "
-        "for any other player not explicitly provided. Frame any "
-        "top/bottom scorer mention as a dramatic contrast in one "
-        "sentence — the big performance overcoming, carrying, or "
-        "outshining the weak one (or vice versa) — never as two flat, "
-        "separate statements. Vary the "
+        "ONE player from each team, total — the WINNING team's top "
+        "scorer (if a top_scorer field is present for them) and the "
+        "LOSING team's bottom scorer (if a bottom_scorer field is "
+        "present for them). Do not mention the winning team's bottom "
+        "scorer or the losing team's top scorer even if you can infer "
+        "them — those fields have deliberately been left out of what "
+        "you're given specifically so they can't be mentioned. Use "
+        "ONLY the specific players named in whichever scorer fields "
+        "are actually present — never reference, name, or invent stats "
+        "for any other player not explicitly provided. If both "
+        "qualifying fields are present, frame them together as a "
+        "dramatic contrast in one sentence — the big performance "
+        "against the weak one. Vary the "
         "verb and the adjective each time rather than reusing the same "
         "phrasing. If you mention "
         "playoff chances or probability for a manager, you MUST cite "
@@ -955,9 +971,9 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"meeting, using the h2h_record field for the real all-time "
         f"record between them (e.g. 'X leads Y-Z') — don't invent "
         f"details about those past games beyond what's given. If "
-        f"top/bottom scorer fields are present, you can mention a "
-        f"standout or disappointing individual performance if it fits "
-        f"naturally, following the one-per-team limit above. If "
+        f"a top_scorer or bottom_scorer field is present, mention it "
+        f"following the winner-top-scorer / loser-bottom-scorer-only "
+        f"rule above. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
