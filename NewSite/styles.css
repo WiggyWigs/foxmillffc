@@ -970,6 +970,13 @@ main {
   margin: 2.5rem 0;
 }
 
+/* Record Books cards reuse the callout-item layout but get a navy
+   accent instead of rust, to read as distinct from "This Week's
+   Notes" above them. */
+.record-book-item {
+  border-left-color: var(--navy);
+}
+
 /* Current Season page: bigger page title and bigger subsection headers */
 #page-season-header {
   font-size: clamp(2rem, 5vw, 2.8rem);
