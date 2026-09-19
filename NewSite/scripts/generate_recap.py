@@ -1341,8 +1341,8 @@ def callout_highest_scoring_player(year, week):
     if best is None:
         return None
     return {
-        "style": "card", "label": "STANDOUT", "headline": best["player"],
-        "subtitle": f"{best['manager']} \u00b7 {best['position']}",
+        "style": "card", "label": "Highest Scoring Player", "headline": best["player"],
+        "subtitle": f"{best['manager']} · {best['position']}",
         "value": best["points"], "unit": "points",
     }
 
