@@ -315,9 +315,9 @@ def compute_records(all_games, roster_names):
     total_games_played = defaultdict(int)
 
     for g in all_games:
-        for mgr, score in ((g["away_manager"], g["away_score"]),
-                           (g["home_manager"], g["home_score"])):
-            entry = {"manager": mgr, "year": g["year"], "week": g["week"], "score": score}
+        for mgr, score, team_name in ((g["away_manager"], g["away_score"], g["away_team"]),
+                                       (g["home_manager"], g["home_score"], g["home_team"])):
+            entry = {"manager": mgr, "team_name": team_name, "year": g["year"], "week": g["week"], "score": score}
             if g["game_type"] == "Regular":
                 regular_entries.append(entry)
             else:
@@ -429,6 +429,7 @@ def compute_records(all_games, roster_names):
         hit_25w = hit_50w = hit_25l = hit_50l = False
         for g in glist_sorted:
             games_played += 1
+            team_name = g["away_team"] if g["away_manager"] == mgr else g["home_team"]
             if g["tie"]:
                 pass
             elif g["winner"] == mgr:
@@ -437,16 +438,28 @@ def compute_records(all_games, roster_names):
                 losses += 1
 
             if wins >= 25 and not hit_25w:
-                milestones["fastest_to_25_wins"].append({"manager": mgr, "games": games_played, "year": g["year"]})
+                milestones["fastest_to_25_wins"].append({
+                    "manager": mgr, "team_name": team_name, "games": games_played,
+                    "year": g["year"], "week": g["week"],
+                })
                 hit_25w = True
             if wins >= 50 and not hit_50w:
-                milestones["fastest_to_50_wins"].append({"manager": mgr, "games": games_played, "year": g["year"]})
+                milestones["fastest_to_50_wins"].append({
+                    "manager": mgr, "team_name": team_name, "games": games_played,
+                    "year": g["year"], "week": g["week"],
+                })
                 hit_50w = True
             if losses >= 25 and not hit_25l:
-                milestones["fastest_to_25_losses"].append({"manager": mgr, "games": games_played, "year": g["year"]})
+                milestones["fastest_to_25_losses"].append({
+                    "manager": mgr, "team_name": team_name, "games": games_played,
+                    "year": g["year"], "week": g["week"],
+                })
                 hit_25l = True
             if losses >= 50 and not hit_50l:
-                milestones["fastest_to_50_losses"].append({"manager": mgr, "games": games_played, "year": g["year"]})
+                milestones["fastest_to_50_losses"].append({
+                    "manager": mgr, "team_name": team_name, "games": games_played,
+                    "year": g["year"], "week": g["week"],
+                })
                 hit_50l = True
 
     for key in milestones:
@@ -474,6 +487,7 @@ def compute_records(all_games, roster_names):
         win_start = loss_start = None
         best_win = best_loss = 0
         best_win_span = best_loss_span = None
+        best_win_team = best_loss_team = None
 
         cur_over = cur_under = 0
         over_start = under_start = None
@@ -482,6 +496,7 @@ def compute_records(all_games, roster_names):
 
         for g in reg_games:
             point = (g["year"], g["week"])
+            team_name = g["away_team"] if g["away_manager"] == mgr else g["home_team"]
             if g["tie"]:
                 cur_win = 0
                 cur_loss = 0
@@ -493,6 +508,7 @@ def compute_records(all_games, roster_names):
                 if cur_win > best_win:
                     best_win = cur_win
                     best_win_span = (win_start, point)
+                    best_win_team = team_name
             else:
                 if cur_loss == 0:
                     loss_start = point
@@ -501,6 +517,7 @@ def compute_records(all_games, roster_names):
                 if cur_loss > best_loss:
                     best_loss = cur_loss
                     best_loss_span = (loss_start, point)
+                    best_loss_team = team_name
 
             score = g["away_score"] if g["away_manager"] == mgr else g["home_score"]
             if score >= 100:
@@ -528,13 +545,13 @@ def compute_records(all_games, roster_names):
 
         if best_win > 0:
             win_streaks.append({
-                "manager": mgr, "streak": best_win, "span": fmt_span(best_win_span),
-                "end_year": best_win_span[1][0],
+                "manager": mgr, "team_name": best_win_team, "streak": best_win, "span": fmt_span(best_win_span),
+                "end_year": best_win_span[1][0], "end_week": best_win_span[1][1],
             })
         if best_loss > 0:
             loss_streaks.append({
-                "manager": mgr, "streak": best_loss, "span": fmt_span(best_loss_span),
-                "end_year": best_loss_span[1][0],
+                "manager": mgr, "team_name": best_loss_team, "streak": best_loss, "span": fmt_span(best_loss_span),
+                "end_year": best_loss_span[1][0], "end_week": best_loss_span[1][1],
             })
         # Over/under streaks are appended even at 0 — a manager who has
         # NEVER strung together even one qualifying game is a genuine,
