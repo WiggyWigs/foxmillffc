@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Each section renders independently — one section's bug should
   // never take down the rest of the page.
-  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings];
+  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings, renderRecordBooks];
   for (const renderFn of sections) {
     try {
       renderFn(data);
@@ -214,7 +214,6 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   }
   if (callouts.longest_win_streak) items.push(callouts.longest_win_streak);
   if (callouts.longest_loss_streak) items.push(callouts.longest_loss_streak);
-  if (callouts.biggest_margin) items.push(callouts.biggest_margin);
   if (callouts.lowest_scoring_team) items.push(callouts.lowest_scoring_team);
   if (callouts.highest_scoring_player) items.push(callouts.highest_scoring_player);
 
@@ -276,6 +275,81 @@ function renderCalloutCard(item) {
       </div>
     </div>
   `;
+}
+
+const RECORD_BOOKS_LABELS = {
+  top_game_score: "Top 15 R/S Game Score",
+  bottom_game_score: "Bottom 15 R/S Game Score",
+  top_win_streak: "Top 5 R/S Winning Streak",
+  top_loss_streak: "Top 5 R/S Losing Streak",
+  "25th_win": "25th Career Victory",
+  "25th_loss": "25th Career Defeat",
+};
+
+function ordinal(n) {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+}
+
+function renderRecordBookCard(item) {
+  const label = RECORD_BOOKS_LABELS[item.kind] || item.kind;
+  const isMilestone = item.kind === "25th_win" || item.kind === "25th_loss";
+
+  if (isMilestone) {
+    return `
+      <div class="callout-item record-book-item">
+        <div class="callout-item-text">
+          <span class="callout-label">${label}</span>
+          <span class="callout-headline">${item.manager}</span>
+          ${item.team_name ? `<span class="callout-subtitle">${item.team_name}</span>` : ""}
+        </div>
+        <div class="callout-value-wrap">
+          <span class="callout-value">${ordinal(item.rank)}</span>
+          <span class="callout-unit">fastest all-time</span>
+        </div>
+      </div>
+    `;
+  }
+
+  const isStreak = item.kind === "top_win_streak" || item.kind === "top_loss_streak";
+  const unit = isStreak ? "games" : "points";
+  const valueDisplay = typeof item.value === "number"
+    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
+    : item.value;
+  const subtitle = `${item.team_name ? item.team_name + " · " : ""}Rank #${item.rank} all-time`;
+
+  return `
+    <div class="callout-item record-book-item">
+      <div class="callout-item-text">
+        <span class="callout-label">${label}</span>
+        <span class="callout-headline">${item.manager}</span>
+        <span class="callout-subtitle">${subtitle}</span>
+      </div>
+      <div class="callout-value-wrap">
+        <span class="callout-value">${valueDisplay}</span>
+        <span class="callout-unit">${unit}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderRecordBooks(data) {
+  const divider = document.getElementById("record-books-divider");
+  const section = document.getElementById("record-books-section");
+  const grid = document.getElementById("record-books-grid");
+  if (!section || !grid) return;
+
+  const entries = data.weekly_recap?.record_books_entries || [];
+  if (entries.length === 0) {
+    section.style.display = "none";
+    if (divider) divider.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  if (divider) divider.style.display = "";
+  grid.innerHTML = entries.map(renderRecordBookCard).join("");
 }
 
 function openStreakModal(item) {
