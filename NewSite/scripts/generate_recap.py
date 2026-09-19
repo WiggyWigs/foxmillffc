@@ -1417,6 +1417,56 @@ def compute_weekly_highest_scoring_players(stats):
     return {"season": current_year, "weeks": weeks_out}
 
 
+# --- Current-season lowest scoring team by week (popup detail data) ------
+
+def compute_weekly_lowest_scoring_teams(stats):
+    """
+    Current season's lowest-scoring team for each completed
+    regular-season week (1-14). This is the week-by-week companion to
+    callout_lowest_scoring_team() above (which only ever shows the
+    most recently completed week) — powers that callout's
+    click-through detail popup on the Current Season page.
+
+    Unlike compute_weekly_highest_scoring_players() above, this needs
+    no player_lineups.json — team scores are already sitting in every
+    game record in stats["games"], which is guaranteed to be complete
+    and current by the time this script runs (ingest_csv.py, which
+    ingests the raw game log, is always the very first step of the
+    pipeline). So there's no pipeline-ordering hazard here; this could
+    technically live in ingest_csv.py too, but it stays next to its
+    per-week sibling above for consistency.
+
+    Fails soft, same convention as everywhere else here: no games yet
+    just means the whole feature is omitted rather than raising.
+    """
+    games = stats.get("games", [])
+    if not games:
+        return None
+    current_year = max(g["year"] for g in games)
+
+    season_games = [g for g in games if g["year"] == current_year and g["game_type"] == "Regular"]
+    if not season_games:
+        return None
+
+    by_week = {}  # week_num -> [(manager, score), ...]
+    for g in season_games:
+        wk = week_num(g["week"])
+        if wk < 1 or wk > 14:
+            continue  # regular season only (1-14) — playoffs aren't in scope here
+        by_week.setdefault(wk, []).append((g["away_manager"], g["away_score"]))
+        by_week[wk].append((g["home_manager"], g["home_score"]))
+
+    weeks_out = []
+    for wk in sorted(by_week.keys()):
+        manager, score = min(by_week[wk], key=lambda t: t[1])
+        weeks_out.append({"week": wk, "manager": manager, "score": score})
+
+    if not weeks_out:
+        return None
+
+    return {"season": current_year, "weeks": weeks_out}
+
+
 # --- Main ---------------------------------------------------------------
 
 def main():
@@ -1573,8 +1623,15 @@ def main():
         print(f"WARNING: current_highest_scoring_players computation failed: {e}")
         current_highest_scoring_players = None
 
+    try:
+        current_lowest_scoring_teams = compute_weekly_lowest_scoring_teams(stats)
+    except Exception as e:
+        print(f"WARNING: current_lowest_scoring_teams computation failed: {e}")
+        current_lowest_scoring_teams = None
+
     if (recap_text is None and gotw_text is None and not any(callouts.values())
-            and current_highest_scoring_players is None):
+            and current_highest_scoring_players is None
+            and current_lowest_scoring_teams is None):
         print("Nothing generated this run — leaving stats.json untouched.")
         return
 
@@ -1616,6 +1673,7 @@ def main():
         "callouts": callouts,
     }
     stats["current_highest_scoring_players"] = current_highest_scoring_players
+    stats["current_lowest_scoring_teams"] = current_lowest_scoring_teams
     with open(STATS_PATH, "w") as f:
         json.dump(stats, f, indent=2)
     print(f"Saved recap content to {STATS_PATH}.")
