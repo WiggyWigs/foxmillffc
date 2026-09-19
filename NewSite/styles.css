@@ -560,6 +560,13 @@ main {
   max-width: 540px;
 }
 
+/* Highest Scoring Player's weekly table needs more horizontal room
+   than the stat-grid modals (Week / Manager / Player / Points, four
+   columns) — same reasoning as Honorable Mention above. */
+#highestScoringPlayerModal .modal-card {
+  max-width: 480px;
+}
+
 .modal-overlay.active .modal-card {
   transform: translateY(0) scale(1);
   opacity: 1;
@@ -924,6 +931,18 @@ main {
 .streak-table th:first-child,
 .streak-table td:first-child {
   width: 65%;
+}
+
+/* Highest Scoring Player modal table: Week stays tight, Manager and
+   Player get the room, Points stays tight too. */
+.highest-scoring-table th:first-child,
+.highest-scoring-table td:first-child {
+  width: 14%;
+}
+
+.highest-scoring-table th:last-child,
+.highest-scoring-table td:last-child {
+  width: 18%;
 }
 
 /* --- Thick section divider between major stat sections --- */
@@ -1347,7 +1366,8 @@ main {
   background: var(--rust);
 }
 
-/* Callout cards that open a detail modal (currently just streaks) */
+/* Callout cards that open a detail modal (streaks, Highest Scoring
+   Player) */
 .callout-item.callout-clickable {
   cursor: pointer;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
@@ -1486,4 +1506,13 @@ main {
   .box-score-score {
     font-size: 1.4rem;
   }
+}
+
+/* --- Highest Scoring Player modal body: table with the same
+   top-divider treatment as the streak modal's body. --- */
+.highest-scoring-modal-body {
+  text-align: left;
+  margin-top: 1rem;
+  border-top: 1px solid var(--hairline);
+  padding-top: 1rem;
 }
