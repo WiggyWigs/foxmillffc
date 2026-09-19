@@ -1347,6 +1347,76 @@ def callout_highest_scoring_player(year, week):
     }
 
 
+# --- Current-season highest scorer by week (popup detail data) -----------
+
+def compute_weekly_highest_scoring_players(stats):
+    """
+    Current season's highest-scoring individual starter for each
+    completed regular-season week (1-14), sourced from
+    player_lineups.json. This is the week-by-week companion to
+    callout_highest_scoring_player() above (which only ever shows the
+    most recently completed week) — this covers every week of the
+    in-progress season so far, powering that callout's click-through
+    detail popup on the Current Season page.
+
+    Deliberately lives HERE rather than in ingest_csv.py: this script
+    always runs as its own later pipeline step, after espn_pull.py's
+    capture_latest_lineups() has already appended the latest week to
+    player_lineups.json. ingest_csv.py runs too early for that to be
+    true — it's invoked as a subprocess from the middle of
+    espn_pull.py, before capture_latest_lineups() ever executes, so on
+    a fresh run (e.g. a test run, where player_lineups_test.json is
+    wiped at the start) it would always compute against a file that
+    doesn't have this week's data in it yet, or doesn't exist at all.
+
+    Fails soft, same convention as every other computation here: no
+    games yet, no player_lineups.json, or a given week's lineups never
+    captured, just means that week (or the whole feature) is omitted
+    rather than raising.
+    """
+    games = stats.get("games", [])
+    if not games:
+        return None
+    current_year = max(g["year"] for g in games)
+
+    season_weeks_played = sorted({
+        week_num(g["week"]) for g in games
+        if g["year"] == current_year and g["game_type"] == "Regular"
+    })
+    if not season_weeks_played:
+        return None
+
+    if not PLAYER_LINEUPS_PATH.exists():
+        return None
+    with open(PLAYER_LINEUPS_PATH) as f:
+        lineups = json.load(f)
+
+    weeks_out = []
+    for wk in season_weeks_played:
+        if wk < 1 or wk > 14:
+            continue  # regular season only (1-14) — playoffs aren't in scope here
+        best = None
+        for entry in lineups:
+            if entry["year"] != str(current_year) or week_num(entry["week"]) != wk:
+                continue
+            for p in entry["players"]:
+                if not p.get("started"):
+                    continue
+                if best is None or p["points"] > best["points"]:
+                    best = {
+                        "week": wk, "manager": entry["manager"],
+                        "player": p["name"], "position": p["position"],
+                        "points": p["points"],
+                    }
+        if best is not None:
+            weeks_out.append(best)
+
+    if not weeks_out:
+        return None
+
+    return {"season": current_year, "weeks": weeks_out}
+
+
 # --- Main ---------------------------------------------------------------
 
 def main():
@@ -1497,7 +1567,14 @@ def main():
     except Exception as e:
         print(f"WARNING: highest_scoring_player callout failed: {e}")
 
-    if recap_text is None and gotw_text is None and not any(callouts.values()):
+    try:
+        current_highest_scoring_players = compute_weekly_highest_scoring_players(stats)
+    except Exception as e:
+        print(f"WARNING: current_highest_scoring_players computation failed: {e}")
+        current_highest_scoring_players = None
+
+    if (recap_text is None and gotw_text is None and not any(callouts.values())
+            and current_highest_scoring_players is None):
         print("Nothing generated this run — leaving stats.json untouched.")
         return
 
@@ -1538,6 +1615,7 @@ def main():
         "game_of_the_week_home_team": gotw_home_team,
         "callouts": callouts,
     }
+    stats["current_highest_scoring_players"] = current_highest_scoring_players
     with open(STATS_PATH, "w") as f:
         json.dump(stats, f, indent=2)
     print(f"Saved recap content to {STATS_PATH}.")
