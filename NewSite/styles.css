@@ -567,6 +567,12 @@ main {
   max-width: 480px;
 }
 
+/* Lowest Scoring Team's weekly table is narrower still (Week /
+   Manager / Score, three columns). */
+#lowestScoringTeamModal .modal-card {
+  max-width: 420px;
+}
+
 .modal-overlay.active .modal-card {
   transform: translateY(0) scale(1);
   opacity: 1;
@@ -943,6 +949,18 @@ main {
 .highest-scoring-table th:last-child,
 .highest-scoring-table td:last-child {
   width: 18%;
+}
+
+/* Lowest Scoring Team modal table: Week stays tight, Manager gets
+   the room, Score stays tight too. */
+.lowest-scoring-table th:first-child,
+.lowest-scoring-table td:first-child {
+  width: 18%;
+}
+
+.lowest-scoring-table th:last-child,
+.lowest-scoring-table td:last-child {
+  width: 22%;
 }
 
 /* --- Thick section divider between major stat sections --- */
