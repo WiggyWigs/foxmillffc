@@ -40,6 +40,7 @@ SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "data"
 ROSTER_PATH = DATA_DIR / "manager_roster.json"
 STATS_PATH = DATA_DIR / os.environ.get("STATS_FILENAME", "stats.json")
+PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
 ASSETS_DIR = SCRIPT_DIR.parent / "assets"
 BANNER_BLANK_PATH = ASSETS_DIR / "banner_blank_25wins.png"
 BANNER_OUTPUT_PATH = DATA_DIR / os.environ.get("BANNER_FILENAME", "fastest-to-25-wins-banner.png")  # local working copy only —
@@ -523,8 +524,8 @@ def compute_records(all_games, roster_names):
         def fmt_span(span):
             (sy, sw), (ey, ew) = span
             if sy == ey:
-                return f"{sy} Wk{sw}\u2013Wk{ew}"
-            return f"{sy} Wk{sw} \u2013 {ey} Wk{ew}"
+                return f"{sy} Wk{sw}–Wk{ew}"
+            return f"{sy} Wk{sw} – {ey} Wk{ew}"
 
         if best_win > 0:
             win_streaks.append({
@@ -950,6 +951,66 @@ def compute_standings(all_games, roster_names):
     return {"season": current_year, "standings": standings}
 
 
+def compute_weekly_highest_scoring_players(all_games, roster_names):
+    """
+    Current season's highest-scoring individual starter for each
+    completed regular-season week (1-14), sourced from
+    player_lineups.json.
+
+    This is the week-by-week companion to generate_recap.py's
+    "Highest Scoring Player" callout, which only ever shows the most
+    recently completed week — this instead covers every week of the
+    in-progress season so far, powering the callout's click-through
+    detail popup on the Current Season page.
+
+    Fails soft, same convention as every other current-season
+    computation here: no player_lineups.json yet, or a given week's
+    lineups never captured, just means that week (or the whole
+    feature) is omitted rather than raising.
+    """
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    current_year = max(years)
+
+    season_weeks_played = sorted({
+        _week_sort_key(g["week"]) for g in all_games
+        if g["year"] == current_year and g["game_type"] == "Regular"
+    })
+    if not season_weeks_played:
+        return None
+
+    if not PLAYER_LINEUPS_PATH.exists():
+        return None
+    with open(PLAYER_LINEUPS_PATH) as f:
+        lineups = json.load(f)
+
+    weeks_out = []
+    for wk in season_weeks_played:
+        if wk > 14:
+            continue  # regular season only (1-14) — playoffs aren't in scope here
+        best = None
+        for entry in lineups:
+            if entry["year"] != str(current_year) or _week_sort_key(entry["week"]) != wk:
+                continue
+            for p in entry["players"]:
+                if not p.get("started"):
+                    continue
+                if best is None or p["points"] > best["points"]:
+                    best = {
+                        "week": wk, "manager": entry["manager"],
+                        "player": p["name"], "position": p["position"],
+                        "points": p["points"],
+                    }
+        if best is not None:
+            weeks_out.append(best)
+
+    if not weeks_out:
+        return None
+
+    return {"season": current_year, "weeks": weeks_out}
+
+
 MIN_HISTORICAL_SAMPLES = 4  # below this, an exact bucket is too noisy to trust
 
 
@@ -1359,6 +1420,7 @@ def main():
     stats["power_rankings"] = compute_power_rankings(stats["games"], roster_names)
     stats["current_streaks"] = compute_current_streaks(stats["games"], roster_names)
     stats["current_standings"] = compute_standings(stats["games"], roster_names)
+    stats["current_highest_scoring_players"] = compute_weekly_highest_scoring_players(stats["games"], roster_names)
     stats["playoff_probability_model"] = compute_playoff_probability_model(stats["games"], roster_names)
     stats["playoff_probabilities"] = compute_playoff_probabilities(
         stats["games"], roster_names, stats["playoff_probability_model"]
