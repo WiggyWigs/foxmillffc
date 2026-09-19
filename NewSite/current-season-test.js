@@ -1,624 +1,199 @@
-// Current Season page — three sections (streaks, power rankings,
-// standings), all reading from the same stats.json fetch. Power
-// rankings and standings are fully precomputed in ingest_csv.py;
-// streaks rendering does light client-side formatting only.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Current Season (TEST) — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
 
-document.addEventListener("DOMContentLoaded", async () => {
-  setupBoxScoreModal();
-  setupStreakModal();
-  setupHonorableMentionModal();
-  setupHighestScoringPlayerModal();
-  let data;
-  try {
-    const res = await fetch("data/stats_test.json");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    data = await res.json();
-  } catch (err) {
-    document.getElementById("streaks-wrap").innerHTML =
-      `<p class="load-state">Couldn't load stats.json (${err.message}).</p>`;
-    document.getElementById("power-wrap").innerHTML = "";
-    document.getElementById("standings-wrap").innerHTML = "";
-    return;
-  }
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
 
-  const pageHeader = document.getElementById("page-season-header");
-  const season = data.power_rankings?.season || data.current_streaks?.season
-    || data.current_standings?.season;
-  if (season && pageHeader) {
-    pageHeader.textContent = `${season} Season`;
-  }
+<div class="test-banner">TEST ENVIRONMENT — not visible in site navigation, for internal review only</div>
 
-  // Each section renders independently — one section's bug should
-  // never take down the rest of the page.
-  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings];
-  for (const renderFn of sections) {
-    try {
-      renderFn(data);
-    } catch (err) {
-      console.error(`${renderFn.name} failed:`, err);
-    }
-  }
-});
+<main>
+  <div class="panel">
+    <h2 id="page-season-header">Current Season</h2>
 
-function renderRecap(data) {
-  const recap = data.weekly_recap || {};
-
-  const prevHeading = document.getElementById("recap-previous-heading");
-  if (prevHeading && recap.previous_weekend_week != null) {
-    prevHeading.textContent = `Week ${recap.previous_weekend_week} Impact Game`;
-  }
-
-  const prevSubtitle = document.getElementById("recap-previous-subtitle");
-  if (prevSubtitle && recap.previous_weekend_away_team && recap.previous_weekend_home_team) {
-    prevSubtitle.textContent = `${recap.previous_weekend_away_team} vs ${recap.previous_weekend_home_team}`;
-  }
-
-  const prevWrap = document.getElementById("recap-previous-wrap");
-  if (recap.previous_weekend) {
-    prevWrap.innerHTML = `<p class="recap-text">${recap.previous_weekend}</p>`;
-  } else {
-    prevWrap.innerHTML = `<p class="load-state">No recap yet — check back after this week's games.</p>`;
-  }
-
-  const gotwHeading = document.getElementById("recap-gotw-heading");
-  if (gotwHeading && recap.game_of_the_week_week != null) {
-    gotwHeading.textContent = `Week ${recap.game_of_the_week_week} - Game of the Week`;
-  }
-
-  const gotwSubtitle = document.getElementById("recap-gotw-subtitle");
-  if (gotwSubtitle && recap.game_of_the_week_away_team && recap.game_of_the_week_home_team) {
-    gotwSubtitle.textContent = `${recap.game_of_the_week_away_team} vs ${recap.game_of_the_week_home_team}`;
-  }
-
-  const gotwWrap = document.getElementById("recap-gotw-wrap");
-  if (recap.game_of_the_week) {
-    gotwWrap.innerHTML = `<p class="recap-text">${recap.game_of_the_week}</p>`;
-  } else {
-    gotwWrap.innerHTML = `<p class="load-state">No preview yet — check back closer to kickoff.</p>`;
-  }
-
-  renderCallouts(recap.callouts || {}, data.current_highest_scoring_players);
-  renderBoxScores(recap.box_scores || []);
-  renderHonorableMention(recap);
-}
-
-function renderHonorableMention(recap) {
-  const wrap = document.getElementById("honorable-mention-wrap");
-  if (!wrap) return;
-
-  const hasData = recap.honorable_mention_away_team && recap.honorable_mention_home_team
-    && recap.honorable_mention_away_score != null && recap.honorable_mention_home_score != null;
-  if (!hasData) {
-    wrap.style.display = "none";
-    return;
-  }
-  wrap.style.display = "";
-
-  document.getElementById("hm-away-team").textContent = recap.honorable_mention_away_team;
-  document.getElementById("hm-away-manager").textContent = recap.honorable_mention_away_manager || "";
-  document.getElementById("hm-away-score").textContent = recap.honorable_mention_away_score;
-  document.getElementById("hm-home-team").textContent = recap.honorable_mention_home_team;
-  document.getElementById("hm-home-manager").textContent = recap.honorable_mention_home_manager || "";
-  document.getElementById("hm-home-score").textContent = recap.honorable_mention_home_score;
-
-  const card = document.getElementById("honorable-mention-card");
-  card.onclick = () => openHonorableMentionModal(recap);
-}
-
-function openHonorableMentionModal(recap) {
-  const modal = document.getElementById("honorableMentionModal");
-  const body = document.getElementById("honorableMentionModalBody");
-  const closeBtn = document.getElementById("honorableMentionModalClose");
-  if (!modal || !body) return;
-
-  body.textContent = recap.honorable_mention || "No write-up available yet.";
-
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeHonorableMentionModal() {
-  const modal = document.getElementById("honorableMentionModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupHonorableMentionModal() {
-  const overlay = document.getElementById("honorableMentionModal");
-  const closeBtn = document.getElementById("honorableMentionModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeHonorableMentionModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeHonorableMentionModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeHonorableMentionModal();
-  });
-}
-
-function renderBoxScores(boxScores) {
-  const grid = document.getElementById("box-score-grid");
-  if (!grid) return;
-
-  if (boxScores.length === 0) {
-    grid.innerHTML = `<p class="load-state">No box scores yet.</p>`;
-    return;
-  }
-
-  grid.innerHTML = boxScores.map((b, i) => `
-    <div class="box-score-card" data-box-score-index="${i}">
-      <div class="box-score-winner">${b.winner_team} <span class="box-score-score">${b.winner_score}</span></div>
-      <div class="box-score-loser">${b.loser_team} <span class="box-score-score">${b.loser_score}</span></div>
+    <hr class="section-divider recap-tight-divider">
+    <div class="recap-header-block">
+      <h3 class="season-subhead" id="recap-previous-heading">Impact Game</h3>
+      <hr class="recap-thin-divider">
+      <p class="recap-matchup-subtitle" id="recap-previous-subtitle"></p>
     </div>
-  `).join("");
+    <hr class="section-divider recap-tight-divider">
 
-  grid.querySelectorAll("[data-box-score-index]").forEach((card) => {
-    card.addEventListener("click", () => {
-      const b = boxScores[parseInt(card.dataset.boxScoreIndex, 10)];
-      openBoxScoreModal(b);
-    });
-  });
-}
+    <div id="recap-previous-wrap" class="recap-tight-wrap">
+      <p class="load-state">Loading recap&hellip;</p>
+    </div>
 
-function openBoxScoreModal(boxScore) {
-  const modal = document.getElementById("boxScoreModal");
-  const title = document.getElementById("boxScoreModalTitle");
-  const body = document.getElementById("boxScoreModalBody");
-  const closeBtn = document.getElementById("boxScoreModalClose");
-  if (!modal || !title || !body) return;
-
-  title.textContent = `${boxScore.winner_team} ${boxScore.winner_score} - ${boxScore.loser_score} ${boxScore.loser_team}`;
-  body.textContent = boxScore.narrative || "No write-up for this game yet.";
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeBoxScoreModal() {
-  const modal = document.getElementById("boxScoreModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupBoxScoreModal() {
-  const overlay = document.getElementById("boxScoreModal");
-  const closeBtn = document.getElementById("boxScoreModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeBoxScoreModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeBoxScoreModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeBoxScoreModal();
-  });
-}
-
-function renderCallouts(callouts, highestScoringPlayers) {
-  const section = document.getElementById("callouts-section");
-  const grid = document.getElementById("callout-grid");
-
-  const items = [];
-  if (callouts.last_gotw_result) items.push(callouts.last_gotw_result);
-  if (Array.isArray(callouts.new_records)) {
-    callouts.new_records.forEach((item) => items.push(item));
-  }
-  if (callouts.longest_win_streak) items.push(callouts.longest_win_streak);
-  if (callouts.longest_loss_streak) items.push(callouts.longest_loss_streak);
-  if (callouts.biggest_margin) items.push(callouts.biggest_margin);
-  if (callouts.lowest_scoring_team) items.push(callouts.lowest_scoring_team);
-  if (callouts.highest_scoring_player) items.push(callouts.highest_scoring_player);
-
-  if (items.length === 0) {
-    section.style.display = "none";
-    return;
-  }
-
-  section.style.display = "";
-  grid.innerHTML = items.map(renderCalloutCard).join("");
-
-  const hasWeeklyScorers = highestScoringPlayers && Array.isArray(highestScoringPlayers.weeks)
-    && highestScoringPlayers.weeks.length > 0;
-
-  grid.querySelectorAll(".callout-item").forEach((el, i) => {
-    const item = items[i];
-    if (item.streak_details) {
-      el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openStreakModal(item));
-    } else if (item === callouts.highest_scoring_player && hasWeeklyScorers) {
-      el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openHighestScoringPlayerModal(highestScoringPlayers));
-    }
-  });
-}
-
-function renderCalloutCard(item) {
-  if (item.style === "sentence") {
-    return `
-      <div class="callout-item callout-sentence">
-        <div class="callout-item-text">
-          <span class="callout-label">${item.label}</span>
-          <span class="callout-headline">${item.text}</span>
+    <div id="honorable-mention-wrap" class="recap-tight-wrap" style="display:none;">
+      <hr class="section-divider recap-tight-divider">
+      <div class="box-score-card honorable-mention-card" id="honorable-mention-card">
+        <span class="box-score-eyebrow">Honorable Mention</span>
+        <div class="box-score-matchup">
+          <div class="box-score-side">
+            <div class="box-score-team-name" id="hm-away-team"></div>
+            <div class="box-score-manager-name" id="hm-away-manager"></div>
+            <div class="box-score-score" id="hm-away-score"></div>
+          </div>
+          <div class="box-score-vs">vs</div>
+          <div class="box-score-side">
+            <div class="box-score-team-name" id="hm-home-team"></div>
+            <div class="box-score-manager-name" id="hm-home-manager"></div>
+            <div class="box-score-score" id="hm-home-score"></div>
+          </div>
         </div>
       </div>
-    `;
-  }
+    </div>
 
-  // Default: the name + big number "impact" card.
-  const valueDisplay = typeof item.value === "number"
-    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
-    : item.value;
+    <hr class="section-divider recap-tight-divider">
+    <div class="recap-header-block">
+      <h3 class="season-subhead" id="recap-gotw-heading">Game of the Week</h3>
+      <hr class="recap-thin-divider">
+      <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
+    </div>
+    <hr class="section-divider recap-tight-divider">
 
-  return `
-    <div class="callout-item">
-      <div class="callout-item-text">
-        <span class="callout-label">${item.label}</span>
-        <span class="callout-headline">${item.headline}</span>
-        ${item.subtitle ? `<span class="callout-subtitle">${item.subtitle}</span>` : ""}
-      </div>
-      <div class="callout-value-wrap">
-        <span class="callout-value">${valueDisplay}</span>
-        ${item.unit ? `<span class="callout-unit">${item.unit}</span>` : ""}
+    <div id="recap-gotw-wrap" class="recap-tight-wrap">
+      <p class="load-state">Loading preview&hellip;</p>
+    </div>
+
+    <div class="record-section" id="callouts-section" style="display:none;">
+      <h3 class="season-subhead">This Week's Notes</h3>
+      <div class="callout-grid" id="callout-grid"></div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">Standings</h3>
+      <p class="msi-meta">Sorted by win %. Ties break by head-to-head record, then total points scored.</p>
+      <div id="standings-wrap">
+        <p class="load-state">Loading standings&hellip;</p>
       </div>
     </div>
-  `;
-}
 
-function openStreakModal(item) {
-  const modal = document.getElementById("streakModal");
-  const title = document.getElementById("streakModalTitle");
-  const body = document.getElementById("streakModalBody");
-  const closeBtn = document.getElementById("streakModalClose");
-  if (!modal || !title || !body) return;
+    <hr class="section-divider">
 
-  title.textContent = item.headline;
+    <div class="record-section">
+      <h3 class="season-subhead">Power Rankings</h3>
+      <p class="msi-meta" id="power-season-label">Current season strength, based on three factors weighed equally.</p>
 
-  body.innerHTML = item.streak_details.map((entry) => {
-    const gamesList = entry.games.map((g) => {
-      return `<div class="streak-game-line">
-        <span>vs ${g.opponent}: ${g.manager_score} - ${g.opponent_score}</span>
-        <span class="streak-game-yearweek">(${g.year}, W${g.week})</span>
-      </div>`;
-    }).join("");
-    const managerHeader = item.streak_details.length > 1
-      ? `<div class="streak-modal-manager">${entry.manager}</div>` : "";
-    return managerHeader + gamesList;
-  }).join("");
-
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeStreakModal() {
-  const modal = document.getElementById("streakModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupStreakModal() {
-  const overlay = document.getElementById("streakModal");
-  const closeBtn = document.getElementById("streakModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeStreakModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeStreakModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeStreakModal();
-  });
-}
-
-function openHighestScoringPlayerModal(highestScoringPlayers) {
-  const modal = document.getElementById("highestScoringPlayerModal");
-  const body = document.getElementById("highestScoringPlayerModalBody");
-  const closeBtn = document.getElementById("highestScoringPlayerModalClose");
-  if (!modal || !body) return;
-
-  const rows = (highestScoringPlayers.weeks || []).slice().sort((a, b) => a.week - b.week);
-
-  body.innerHTML = `
-    <table class="record-table highest-scoring-table">
-      <thead>
-        <tr>
-          <th>Week</th>
-          <th class="col-name">Manager</th>
-          <th class="col-name">Player</th>
-          <th>Points</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map((r) => `
-          <tr>
-            <td>${r.week}</td>
-            <td class="col-name">${r.manager}</td>
-            <td class="col-name">${r.player}</td>
-            <td>${r.points}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeHighestScoringPlayerModal() {
-  const modal = document.getElementById("highestScoringPlayerModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupHighestScoringPlayerModal() {
-  const overlay = document.getElementById("highestScoringPlayerModal");
-  const closeBtn = document.getElementById("highestScoringPlayerModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeHighestScoringPlayerModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeHighestScoringPlayerModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeHighestScoringPlayerModal();
-  });
-}
-
-function renderStreaks(data) {
-  const wrap = document.getElementById("streaks-wrap");
-  const cs = data.current_streaks;
-  if (!cs) {
-    wrap.innerHTML = `<p class="load-state">No streak data found yet.</p>`;
-    return;
-  }
-
-  function streakTable(title, rows, key) {
-    if (!rows || rows.length === 0) {
-      return `<div class="record-section"><h3>${title}</h3><p class="load-state">No active streaks.</p></div>`;
-    }
-    const body = rows.map((row) => `
-      <tr>
-        <td class="col-name">${row.manager}</td>
-        <td>${row[key]} games</td>
-      </tr>
-    `).join("");
-    return `
-      <div class="record-section">
-        <h3>${title}</h3>
-        <table class="record-table streak-table">
-          <thead><tr><th class="col-name">Manager</th><th>Streak</th></tr></thead>
-          <tbody>${body}</tbody>
-        </table>
+      <div id="power-wrap">
+        <p class="load-state">Loading power rankings&hellip;</p>
       </div>
-    `;
-  }
+    </div>
 
-  const winTable = streakTable("Winning Streak Leaders", cs.top_current_winning_streaks, "win_streak");
-  const loseTable = streakTable("Losing Streak Leaders", cs.top_current_losing_streaks, "loss_streak");
+    <div class="msi-criteria">
+      <h3>How Power Rankings are scored</h3>
+      <p class="power-explainer">
+        Each manager is ranked 1st-to-last among all active managers in each of three factors,
+        earning points equal to their rank position (best = 12, worst = 1). Ties split the
+        points evenly. Power Score is the sum of all three.
+      </p>
+      <ol>
+        <li>Current Season Win %</li>
+        <li>Points Scored</li>
+        <li>Schedule Difficulty</li>
+      </ol>
+      <p class="power-explainer">
+        Schedule Difficulty compares each manager's actual record to their "break-down" record —
+        the record they'd have if they'd played every other manager's score each week instead of
+        just their real opponent. A large negative gap means the real schedule was harder than the
+        scoring alone suggests, and that manager earns the most points for this factor.
+      </p>
+    </div>
 
-  wrap.innerHTML = `<div class="record-row">${winTable}${loseTable}</div>`;
-}
+    <hr class="section-divider">
 
-function renderPlayoffProbability(data) {
-  const section = document.getElementById("playoff-prob-wrap").closest(".record-section");
-  const meta = document.getElementById("playoff-prob-meta");
-  const wrap = document.getElementById("playoff-prob-wrap");
-  const divider = section.previousElementSibling; // the <hr> right before this section
+    <div class="record-section">
+      <h3 class="season-subhead">Playoff Probability</h3>
+      <p class="msi-meta" id="playoff-prob-meta"></p>
+      <div id="playoff-prob-wrap"></div>
+    </div>
+  </div>
+</main>
 
-  const pp = data.playoff_probabilities;
+<!-- ============= MANAGER DETAIL MODAL ============= -->
+<div class="modal-overlay" id="statModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalMgrName">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Power Ranking Breakdown</div>
+    <div class="modal-name" id="modalMgrName"></div>
+    <div class="modal-year" id="modalMgrRank"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">Win %</span>
+        <span class="modal-stat-value" id="modalWinPct"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points</span>
+        <span class="modal-stat-value" id="modalWinPctPts"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points Scored</span>
+        <span class="modal-stat-value" id="modalPtsScored"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points</span>
+        <span class="modal-stat-value" id="modalPtsScoredPts"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Schedule Difficulty</span>
+        <span class="modal-stat-value" id="modalSchedDiff"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Points</span>
+        <span class="modal-stat-value" id="modalSchedPts"></span>
+      </div>
+      <div class="modal-stat modal-stat-full">
+        <span class="modal-stat-label">Power Score</span>
+        <span class="modal-stat-value" id="modalPowerScore"></span>
+      </div>
+    </div>
+  </div>
+</div>
 
-  if (!pp || !pp.visible) {
-    // Season not far enough along, or already fully decided — hide
-    // the whole section (and its leading divider) rather than show
-    // an empty box.
-    if (pp && pp.reason === "too_early") {
-      section.style.display = "";
-      if (divider) divider.style.display = "";
-      meta.textContent = "";
-      wrap.innerHTML = `<p class="load-state">Coming after Week 3.</p>`;
-    } else {
-      section.style.display = "none";
-      if (divider) divider.style.display = "none";
-    }
-    return;
-  }
+<script src="current-season-test.js"></script>
 
-  section.style.display = "";
-  if (divider) divider.style.display = "";
-  const seasonCount = data.playoff_probability_model?.seasons_used?.length || 0;
-  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and schedule difficulty.`;
+<div class="modal-overlay" id="streakModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="streakModalTitle">
+    <button class="modal-close" id="streakModalClose" aria-label="Close">&times;</button>
+    <div class="modal-name" id="streakModalTitle"></div>
+    <div id="streakModalBody" class="streak-modal-body"></div>
+  </div>
+</div>
 
-  const rows = pp.managers; // already sorted by probability descending
+<div class="modal-overlay" id="honorableMentionModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="honorableMentionModalBadge">
+    <button class="modal-close" id="honorableMentionModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge" id="honorableMentionModalBadge">Honorable Mention</div>
+    <p class="recap-text" id="honorableMentionModalBody"></p>
+  </div>
+</div>
 
-  const body = rows.map((row) => `
-    <tr>
-      <td class="col-name">${row.manager}</td>
-      <td>${row.wins}-${row.losses}</td>
-      <td class="msi-score">${row.probability}%</td>
-      <td class="num col-extra">${row.points_scored.toFixed(1)}</td>
-      <td class="num col-extra">${row.schedule_difficulty >= 0 ? "+" : ""}${(row.schedule_difficulty * 100).toFixed(1)}%</td>
-    </tr>
-  `).join("");
+<div class="modal-overlay" id="highestScoringPlayerModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="highestScoringPlayerModalTitle">
+    <button class="modal-close" id="highestScoringPlayerModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Highest Scoring Player</div>
+    <div class="modal-name" id="highestScoringPlayerModalTitle">By Week</div>
+    <div id="highestScoringPlayerModalBody" class="highest-scoring-modal-body"></div>
+  </div>
+</div>
 
-  wrap.innerHTML = `
-    <table class="msi-table">
-      <thead>
-        <tr>
-          <th class="col-name">Manager</th>
-          <th>Record</th>
-          <th class="col-msi">Probability</th>
-          <th class="num col-extra">Points</th>
-          <th class="num col-extra">Sched Diff</th>
-        </tr>
-      </thead>
-      <tbody>${body}</tbody>
-    </table>
-  `;
-}
+<div class="modal-overlay" id="lowestScoringTeamModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="lowestScoringTeamModalTitle">
+    <button class="modal-close" id="lowestScoringTeamModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Lowest Scoring Team</div>
+    <div class="modal-name" id="lowestScoringTeamModalTitle">By Week</div>
+    <div id="lowestScoringTeamModalBody" class="highest-scoring-modal-body"></div>
+  </div>
+</div>
 
-function renderPowerRankings(data) {
-  const wrap = document.getElementById("power-wrap");
-  const pr = data.power_rankings;
-  if (!pr || !pr.rankings || pr.rankings.length === 0) {
-    wrap.innerHTML = `<p class="load-state">No power rankings data found yet.</p>`;
-    return;
-  }
-
-  const rows = pr.rankings; // already sorted by power_score descending
-
-  const ranks = [];
-  let lastValue = null;
-  rows.forEach((row, i) => {
-    if (lastValue !== null && row.power_score === lastValue) {
-      ranks.push("");
-    } else {
-      ranks.push(String(i + 1));
-      lastValue = row.power_score;
-    }
-  });
-  const boldRows = new Set([0]);
-  for (let i = 1; i < ranks.length; i++) {
-    if (ranks[i] === "") boldRows.add(i);
-    else break;
-  }
-
-  const fmtPct = (v) => (v * 100).toFixed(1) + "%";
-  const fmtDiff = (v) => (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
-
-  let html = `
-    <table class="msi-table">
-      <thead>
-        <tr>
-          <th class="col-rank">Rank</th>
-          <th class="col-name">Manager</th>
-          <th class="col-msi">Tot Points</th>
-          <th class="num col-extra">Win %</th>
-          <th class="num col-extra">Scoring</th>
-          <th class="num col-extra">Sched Diff</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  rows.forEach((row, i) => {
-    html += `
-        <tr class="${boldRows.has(i) ? "rank-first" : ""}">
-          <td class="rank-cell col-rank">${ranks[i]}</td>
-          <td class="col-name msi-name-cell" tabindex="0" role="button" aria-haspopup="dialog">${row.manager}</td>
-          <td class="msi-score col-msi">${row.power_score}</td>
-          <td class="num col-extra">${row.win_pct_points}</td>
-          <td class="num col-extra">${row.points_scored_points}</td>
-          <td class="num col-extra">${row.schedule_difficulty_points}</td>
-        </tr>
-    `;
-  });
-
-  html += `</tbody></table>`;
-  wrap.innerHTML = html;
-
-  setupModal(rows, fmtPct, fmtDiff);
-}
-
-function setupModal(rows, fmtPct, fmtDiff) {
-  const overlay = document.getElementById("statModal");
-  const closeBtn = document.getElementById("modalClose");
-  let lastFocused = null;
-
-  function openModal(rank, m) {
-    document.getElementById("modalMgrName").textContent = m.manager;
-    document.getElementById("modalMgrRank").textContent = `Rank #${rank}`;
-    document.getElementById("modalWinPct").textContent = fmtPct(m.win_pct);
-    document.getElementById("modalWinPctPts").textContent = m.win_pct_points;
-    document.getElementById("modalPtsScored").textContent = m.points_scored.toFixed(2);
-    document.getElementById("modalPtsScoredPts").textContent = m.points_scored_points;
-    document.getElementById("modalSchedDiff").textContent = fmtDiff(m.schedule_difficulty);
-    document.getElementById("modalSchedPts").textContent = m.schedule_difficulty_points;
-    document.getElementById("modalPowerScore").textContent = m.power_score;
-    lastFocused = document.activeElement;
-    overlay.classList.add("active");
-    overlay.setAttribute("aria-hidden", "false");
-    closeBtn.focus();
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal() {
-    overlay.classList.remove("active");
-    overlay.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-    if (lastFocused) lastFocused.focus();
-  }
-
-  document.querySelectorAll(".msi-name-cell").forEach((cell, i) => {
-    const openThis = () => openModal(i + 1, rows[i]);
-    cell.addEventListener("click", openThis);
-    cell.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openThis();
-      }
-    });
-  });
-
-  closeBtn.addEventListener("click", closeModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeModal();
-  });
-}
-
-function renderStandings(data) {
-  const wrap = document.getElementById("standings-wrap");
-  const st = data.current_standings;
-  if (!st || !st.standings || st.standings.length === 0) {
-    wrap.innerHTML = `<p class="load-state">No standings data found yet.</p>`;
-    return;
-  }
-
-  const rows = st.standings; // already sorted with H2H/points tiebreak applied
-
-  const body = rows.map((row) => {
-    const record = row.ties > 0 ? `${row.wins}-${row.losses}-${row.ties}` : `${row.wins}-${row.losses}`;
-    return `
-      <tr>
-        <td class="col-name">${row.manager}</td>
-        <td class="col-name">${row.team_name}</td>
-        <td>${record}</td>
-        <td>${row.points_for.toFixed(2)}</td>
-        <td>${row.points_against.toFixed(2)}</td>
-      </tr>
-    `;
-  }).join("");
-
-  wrap.innerHTML = `
-    <table class="record-table standings-table">
-      <thead>
-        <tr>
-          <th class="col-name">Manager</th>
-          <th class="col-name">Team Name</th>
-          <th>Record</th>
-          <th>Points For</th>
-          <th>Points Against</th>
-        </tr>
-      </thead>
-      <tbody>${body}</tbody>
-    </table>
-  `;
-}
+</body>
+</html>
