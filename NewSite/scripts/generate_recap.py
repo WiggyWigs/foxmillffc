@@ -1296,18 +1296,6 @@ def callout_streaks(stats):
     return win_callout, loss_callout
 
 
-def callout_biggest_margin(week_games):
-    if not week_games:
-        return None
-    biggest = max(week_games, key=lambda g: g["margin"])
-    winner = biggest["away_manager"] if biggest["away_score"] > biggest["home_score"] else biggest["home_manager"]
-    loser = biggest["home_manager"] if winner == biggest["away_manager"] else biggest["away_manager"]
-    return {
-        "style": "card", "label": "BLOWOUT", "headline": winner,
-        "subtitle": f"over {loser}", "value": biggest["margin"], "unit": "points",
-    }
-
-
 def callout_lowest_scoring_team(week_games):
     if not week_games:
         return None
@@ -1467,6 +1455,87 @@ def compute_weekly_lowest_scoring_teams(stats):
     return {"season": current_year, "weeks": weeks_out}
 
 
+# --- "Welcome to the Record Books" section ---------------------------------
+
+RECORD_BOOKS_LABELS = {
+    "top_game_score": "Top 15 R/S Game Score",
+    "bottom_game_score": "Bottom 15 R/S Game Score",
+    "top_win_streak": "Top 5 R/S Winning Streak",
+    "top_loss_streak": "Top 5 R/S Losing Streak",
+    "25th_win": "25th Career Victory",
+    "25th_loss": "25th Career Defeat",
+}
+
+
+def build_record_books_entries(week_games, week, year, stats):
+    """
+    "Welcome to the Record Books": every league record a manager
+    touched during the most recently completed regular-season week —
+    landing anywhere in the Top 15 / Bottom 15 all-time R/S game
+    scores, breaking into the Top 5 all-time R/S win/loss streaks, or
+    crossing the 25th-career-win/loss milestone. Returns a list of
+    entries (empty if nothing happened this week) — the frontend only
+    shows this section at all when the list is non-empty.
+
+    Deliberately keyed on identity (did THIS week's game/streak-ending
+    game/milestone-game land in the list) rather than "is this the
+    new #1" — unlike detect_new_records() above (which only fires
+    when the very TOP of a leaderboard changes), this fires any time
+    a game from this week lands anywhere in a Top 15 / Top 5 list, so
+    e.g. the 9th-highest game ever still gets its moment. Every
+    leaderboard checked here is a small, fixed-size list (top_regular_
+    season_games etc. are already capped at 15/5 by ingest_csv.py),
+    so this is cheap even run every single week.
+
+    Scoped to the most recently completed REGULAR SEASON week only —
+    same convention as every other weekly callout on this page (which
+    all key off get_week_games(), itself Regular-season-only). A
+    milestone reached during a playoff game won't show up here, same
+    as it wouldn't trigger any other weekly recap content either.
+    """
+    if not week_games:
+        return []
+
+    records = stats.get("records", {})
+    entries = []
+
+    def check_game_score_list(list_key, kind):
+        for i, e in enumerate(records.get(list_key) or []):
+            if e.get("year") == year and week_num(e.get("week")) == week_num(week):
+                entries.append({
+                    "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
+                    "value": e["score"], "rank": i + 1,
+                })
+
+    check_game_score_list("top_regular_season_games", "top_game_score")
+    check_game_score_list("bottom_regular_season_games", "bottom_game_score")
+
+    def check_streak_list(list_key, kind):
+        for i, e in enumerate(records.get(list_key) or []):
+            end_week = e.get("end_week")
+            if e.get("end_year") == year and end_week is not None and week_num(end_week) == week_num(week):
+                entries.append({
+                    "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
+                    "value": e["streak"], "rank": i + 1,
+                })
+
+    check_streak_list("top_winning_streaks", "top_win_streak")
+    check_streak_list("top_losing_streaks", "top_loss_streak")
+
+    def check_milestone(list_key, kind):
+        for i, e in enumerate(records.get(list_key) or []):
+            if e.get("year") == year and week_num(e.get("week")) == week_num(week):
+                entries.append({
+                    "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
+                    "rank": i + 1,
+                })
+
+    check_milestone("fastest_to_25_wins", "25th_win")
+    check_milestone("fastest_to_25_losses", "25th_loss")
+
+    return entries
+
+
 # --- Main ---------------------------------------------------------------
 
 def main():
@@ -1603,11 +1672,6 @@ def main():
         print(f"WARNING: streak callouts failed: {e}")
 
     try:
-        callouts["biggest_margin"] = callout_biggest_margin(week_games)
-    except Exception as e:
-        print(f"WARNING: biggest_margin callout failed: {e}")
-
-    try:
         callouts["lowest_scoring_team"] = callout_lowest_scoring_team(week_games)
     except Exception as e:
         print(f"WARNING: lowest_scoring_team callout failed: {e}")
@@ -1629,9 +1693,16 @@ def main():
         print(f"WARNING: current_lowest_scoring_teams computation failed: {e}")
         current_lowest_scoring_teams = None
 
+    try:
+        record_books_entries = build_record_books_entries(week_games, week, year, stats)
+    except Exception as e:
+        print(f"WARNING: record_books_entries computation failed: {e}")
+        record_books_entries = []
+
     if (recap_text is None and gotw_text is None and not any(callouts.values())
             and current_highest_scoring_players is None
-            and current_lowest_scoring_teams is None):
+            and current_lowest_scoring_teams is None
+            and not record_books_entries):
         print("Nothing generated this run — leaving stats.json untouched.")
         return
 
@@ -1671,6 +1742,7 @@ def main():
         "game_of_the_week_away_team": gotw_away_team,
         "game_of_the_week_home_team": gotw_home_team,
         "callouts": callouts,
+        "record_books_entries": record_books_entries,
     }
     stats["current_highest_scoring_players"] = current_highest_scoring_players
     stats["current_lowest_scoring_teams"] = current_lowest_scoring_teams
