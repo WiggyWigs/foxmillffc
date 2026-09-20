@@ -58,6 +58,13 @@
 // browser, that rejection only shows up as a console.warn in
 // DevTools, not anywhere Greg would normally see it. Worth an
 // occasional manual check of the sheet against the roster.
+//
+// Avg Odds and ASSWIPE column headers each render TWO versions: a
+// one-line ".th-label-desktop" span ("Avg Odds" / "ASSWIPE") and a
+// stacked ".th-label-mobile" span ("Avg" / "Odds" and "ASS-" /
+// "WIPE" on two lines). CSS toggles which one is visible — the mobile
+// version only shows up in narrow portrait view, where the one-line
+// versions were overlapping the neighboring column.
 
 const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9gbWRe2LfduGjbKHt5cWdq8p2LT_vTXgDkCJetDh3v-5cDD2LA5NBI4Du-7n7VGnZolw-DbcsyeRG/pub?gid=0&single=true&output=csv";
@@ -364,8 +371,8 @@ const ROLLUP_COLUMNS = [
   { key: "wins", label: "W", type: "number" },
   { key: "losses", label: "L", type: "number" },
   { key: "winPct", label: "W%", type: "number" },
-  { key: "avgOdds", label: "Avg Odds", type: "number" },
-  { key: "asswipe", label: "ASSWIPE", type: "number" },
+  { key: "avgOdds", label: '<span class="th-label-desktop">Avg Odds</span><span class="th-label-mobile">Avg<br>Odds</span>', type: "number" },
+  { key: "asswipe", label: '<span class="th-label-desktop">ASSWIPE</span><span class="th-label-mobile">ASS-<br>WIPE</span>', type: "number" },
 ];
 
 function computeRollup(picks) {
