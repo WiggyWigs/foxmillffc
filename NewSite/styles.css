@@ -984,6 +984,39 @@ main {
   color: var(--rust);
 }
 
+/* --- "Welcome to the Record Books" narrative sentence list --- */
+.sentence-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.sentence-item {
+  text-align: center;
+  max-width: 520px;
+}
+
+.sentence-label {
+  display: block;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: var(--rust);
+  margin-bottom: 0.25rem;
+}
+
+.sentence-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.sentence-text b {
+  color: var(--navy);
+}
+
 /* --- Head-to-Head page --- */
 .h2h-picker {
   display: flex;
