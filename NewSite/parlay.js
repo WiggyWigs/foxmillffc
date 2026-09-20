@@ -20,13 +20,20 @@
 // count toward the record).
 //
 // ASSWIPE (Adjusted Standardized Score - Weighted Individual Parlay
-// Evaluator) = PISS + Winning Differential, where:
+// Evaluator) = PISS + (Winning Differential / 10), where:
 //   PISS  = Win% (decimal, 0-1) x Average Odds
 //   Winning Differential = Total Wins - Total Losses
 // Average Odds is the mean of the raw signed Odds value (e.g. +450,
-// -110) across EVERY pick in the current time frame, win or lose —
-// not just the winning ones. Everything here respects the Parlay
-// Standings table's own Year filter, same as W/L/W% already did.
+// -110), decimals preserved, across EVERY pick in the current time
+// frame, win or lose — not just the winning ones. Everything here
+// respects the Parlay Standings table's own Year filter, same as
+// W/L/W% already did.
+//
+// Odds display: every Odds value (Avg Odds in Standings, Odds in All
+// Picks) is formatted to exactly two decimal places. The sign
+// character shown (+/-/none) is taken from however each row's raw
+// Odds text was actually entered — a computed average always shows
+// an explicit sign, since it isn't tied to one row's original text.
 //
 // Every "Name" value is checked against data/manager_roster.json (the
 // same roster file every other page uses). An unrecognized name is
@@ -176,10 +183,35 @@ function parseWeek(week) {
   return Number.isNaN(n) ? 0 : n;
 }
 
+// Decimal-aware: preserves a leading +/- sign and any decimal portion
+// (parseInt would silently truncate "4.5" down to 4). Used both for
+// sorting and for every Avg Odds / PISS / ASSWIPE calculation.
 function parseOdds(odds) {
   if (odds == null) return 0;
-  const n = parseInt(String(odds).replace(/[^-\d]/g, ""), 10);
+  const s = String(odds).trim();
+  if (!s) return 0;
+  const n = parseFloat(s.replace(/[^0-9.+-]/g, ""));
   return Number.isNaN(n) ? 0 : n;
+}
+
+// Display-only formatter: shows exactly two decimal places, keeping
+// whichever sign character (if any) was actually typed in the sheet
+// rather than inventing one — a "+" only appears if the raw text had
+// one, so this doesn't misrepresent decimal-odds data as American
+// odds or vice versa.
+function formatOddsDisplay(oddsRaw) {
+  const s = String(oddsRaw || "").trim();
+  if (!s) return s;
+  const sign = s[0] === "+" || s[0] === "-" ? s[0] : "";
+  const magnitude = parseFloat(s.replace(/[^0-9.]/g, ""));
+  if (Number.isNaN(magnitude)) return s; // unparsable — show the raw text rather than mangling it
+  return sign + magnitude.toFixed(2);
+}
+
+// Computed averages aren't tied to one row's original text, so they
+// always show an explicit sign for readability.
+function formatOddsSigned(n) {
+  return (n >= 0 ? "+" : "") + n.toFixed(2);
 }
 
 function isWin(p) { return p.outcomeNorm === "win" || p.outcomeNorm === "w"; }
@@ -189,9 +221,21 @@ function uniqueSortedNumbers(arr) {
   return [...new Set(arr)].sort((a, b) => a - b);
 }
 
+// Preserves any non-numeric Week values (e.g. "Playoffs") as their
+// own distinct filter options instead of collapsing them all down to
+// a single numeric bucket — numeric weeks sort first and ascending,
+// text values follow, alphabetically.
+function uniqueSortedWeeks(picks) {
+  const values = [...new Set(picks.map((p) => String(p.week)))];
+  const isNumeric = (v) => /^-?\d+(\.\d+)?$/.test(v.trim());
+  const nums = values.filter(isNumeric).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const text = values.filter((v) => !isNumeric(v)).sort((a, b) => a.localeCompare(b));
+  return [...nums, ...text];
+}
+
 function populateFilterOptions() {
   const years = uniqueSortedNumbers(allPicks.map((p) => p.year)).reverse();
-  const weeks = uniqueSortedNumbers(allPicks.map((p) => p.weekNum));
+  const weeks = uniqueSortedWeeks(allPicks);
   const managers = [...new Set(allPicks.map((p) => p.manager))].sort((a, b) => a.localeCompare(b));
 
   fillSelect("rollupYearFilter", years);
@@ -271,6 +315,7 @@ const ROLLUP_COLUMNS = [
   { key: "wins", label: "W", type: "number" },
   { key: "losses", label: "L", type: "number" },
   { key: "winPct", label: "W%", type: "number" },
+  { key: "avgOdds", label: "Avg Odds", type: "number" },
   { key: "asswipe", label: "ASSWIPE", type: "number" },
 ];
 
@@ -296,7 +341,7 @@ function computeRollup(picks) {
     const avgOdds = m.totalPicks ? m.totalOdds / m.totalPicks : 0;
     const winningDifferential = m.wins - m.losses;
     const piss = winPct * avgOdds;
-    const asswipe = piss + winningDifferential;
+    const asswipe = piss + (winningDifferential / 10);
     return { ...m, winPct, avgOdds, winningDifferential, piss, asswipe };
   });
 }
@@ -321,6 +366,7 @@ function renderRollup() {
       <td>${r.wins}</td>
       <td>${r.losses}</td>
       <td>${(r.winPct * 100).toFixed(1)}%</td>
+      <td>${formatOddsSigned(r.avgOdds)}</td>
       <td class="msi-score">${r.asswipe.toFixed(2)}</td>
     </tr>
   `).join("");
@@ -352,7 +398,7 @@ function renderPicks() {
   const wrap = document.getElementById("picks-wrap");
   let filtered = allPicks;
   if (picksState.year !== "All") filtered = filtered.filter((p) => String(p.year) === String(picksState.year));
-  if (picksState.week !== "All") filtered = filtered.filter((p) => String(p.weekNum) === String(picksState.week));
+  if (picksState.week !== "All") filtered = filtered.filter((p) => String(p.week) === String(picksState.week));
   if (picksState.manager !== "All") filtered = filtered.filter((p) => p.manager === picksState.manager);
 
   if (filtered.length === 0) {
@@ -369,7 +415,7 @@ function renderPicks() {
       <td>${p.week}</td>
       <td class="col-name">${p.manager}</td>
       <td class="parlay-bet-cell">${p.bet}</td>
-      <td>${p.odds}</td>
+      <td>${formatOddsDisplay(p.odds)}</td>
       <td>${p.outcome}</td>
     </tr>
   `).join("");
