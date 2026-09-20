@@ -1672,3 +1672,24 @@ main {
     max-width: 11rem;
   }
 }
+
+/* Avg Odds / ASSWIPE headers each carry two versions: a one-line
+   ".th-label-desktop" span and a stacked ".th-label-mobile" span
+   ("Avg" / "Odds" and "ASS-" / "WIPE" on two lines, via <br> in the
+   markup). Only one is shown at a time — the stacked version only in
+   narrow portrait view, where the one-line text was wide enough to
+   overlap the neighboring column. */
+.parlay-rollup-table .th-label-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) and (orientation: portrait) {
+  .parlay-rollup-table .th-label-desktop {
+    display: none;
+  }
+
+  .parlay-rollup-table .th-label-mobile {
+    display: inline-block;
+    line-height: 1.1;
+  }
+}
