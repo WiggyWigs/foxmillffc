@@ -277,59 +277,71 @@ function renderCalloutCard(item) {
   `;
 }
 
-const RECORD_BOOKS_LABELS = {
-  top_game_score: "Top 15 R/S Game Score",
-  bottom_game_score: "Bottom 15 R/S Game Score",
-  top_win_streak: "Top 5 R/S Winning Streak",
-  top_loss_streak: "Top 5 R/S Losing Streak",
-  "25th_win": "25th Career Victory",
-  "25th_loss": "25th Career Defeat",
+// "Welcome to the Record Books" — one small table per record type,
+// styled to match the real Record Books page (record-books.html /
+// records.js): plain, non-clickable, everything centered, nothing
+// wraps. Paired left/right the same way that page pairs Top/Bottom,
+// Win Streak/Loss Streak, etc. — when both sides of a pair have an
+// entry this week they sit side by side (.record-row); when only one
+// side does, it's centered alone (.record-row.single); when neither
+// does, the pair is skipped entirely.
+const RECORD_BOOKS_CONFIG = {
+  top_game_score: { title: "Top 15 R/S Game Score", valueLabel: "Game Score", format: fmtRecordNumber },
+  bottom_game_score: { title: "Bottom 15 R/S Game Score", valueLabel: "Game Score", format: fmtRecordNumber },
+  top_win_streak: { title: "Top 5 R/S Winning Streak", valueLabel: "Winning Streak", format: (v) => `${v} games` },
+  top_loss_streak: { title: "Top 5 R/S Losing Streak", valueLabel: "Losing Streak", format: (v) => `${v} games` },
+  "25th_win": { title: "25th Career Victory", valueLabel: null },
+  "25th_loss": { title: "25th Career Defeat", valueLabel: null },
 };
 
-function ordinal(n) {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const v = n % 100;
-  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+const RECORD_BOOKS_PAIRS = [
+  ["top_game_score", "bottom_game_score"],
+  ["top_win_streak", "top_loss_streak"],
+  ["25th_win", "25th_loss"],
+];
+
+function fmtRecordNumber(v) {
+  return typeof v === "number" ? (Number.isInteger(v) ? v : v.toFixed(2)) : v;
 }
 
-function renderRecordBookCard(item) {
-  const label = RECORD_BOOKS_LABELS[item.kind] || item.kind;
-  const isMilestone = item.kind === "25th_win" || item.kind === "25th_loss";
+function recordBooksTable(kind, rows) {
+  const config = RECORD_BOOKS_CONFIG[kind];
+  const sorted = rows.slice().sort((a, b) => a.rank - b.rank);
 
-  if (isMilestone) {
-    return `
-      <div class="callout-item record-book-item">
-        <div class="callout-item-text">
-          <span class="callout-label">${label}</span>
-          <span class="callout-headline">${item.manager}</span>
-          ${item.team_name ? `<span class="callout-subtitle">${item.team_name}</span>` : ""}
-        </div>
-        <div class="callout-value-wrap">
-          <span class="callout-value">${ordinal(item.rank)}</span>
-          <span class="callout-unit">fastest all-time</span>
-        </div>
-      </div>
-    `;
-  }
+  // Two managers landing on the exact same value (e.g. tied game
+  // scores) show the same rank number instead of two sequential
+  // ones — this is what visually groups them together as a tie.
+  let lastValue = null;
+  let lastRankLabel = null;
+  const rankLabels = sorted.map((r) => {
+    if (config.valueLabel && lastValue !== null && r.value === lastValue) {
+      return lastRankLabel;
+    }
+    lastValue = r.value;
+    lastRankLabel = String(r.rank);
+    return lastRankLabel;
+  });
 
-  const isStreak = item.kind === "top_win_streak" || item.kind === "top_loss_streak";
-  const unit = isStreak ? "games" : "points";
-  const valueDisplay = typeof item.value === "number"
-    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
-    : item.value;
-  const subtitle = `${item.team_name ? item.team_name + " · " : ""}Rank #${item.rank} all-time`;
+  const headCols = config.valueLabel
+    ? `<th>#</th><th class="col-name">Manager</th><th class="col-name">Team Name</th><th>${config.valueLabel}</th>`
+    : `<th>#</th><th class="col-name">Manager</th><th class="col-name">Team Name</th>`;
+
+  const bodyRows = sorted.map((r, i) => `
+    <tr>
+      <td>${rankLabels[i]}</td>
+      <td class="col-name">${r.manager}</td>
+      <td class="col-name">${r.team_name || ""}</td>
+      ${config.valueLabel ? `<td>${config.format(r.value)}</td>` : ""}
+    </tr>
+  `).join("");
 
   return `
-    <div class="callout-item record-book-item">
-      <div class="callout-item-text">
-        <span class="callout-label">${label}</span>
-        <span class="callout-headline">${item.manager}</span>
-        <span class="callout-subtitle">${subtitle}</span>
-      </div>
-      <div class="callout-value-wrap">
-        <span class="callout-value">${valueDisplay}</span>
-        <span class="callout-unit">${unit}</span>
-      </div>
+    <div class="record-section">
+      <h3>${config.title}</h3>
+      <table class="record-table">
+        <thead><tr>${headCols}</tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
     </div>
   `;
 }
@@ -337,19 +349,36 @@ function renderRecordBookCard(item) {
 function renderRecordBooks(data) {
   const divider = document.getElementById("record-books-divider");
   const section = document.getElementById("record-books-section");
-  const grid = document.getElementById("record-books-grid");
-  if (!section || !grid) return;
+  const wrap = document.getElementById("record-books-grid");
+  if (!section || !wrap) return;
 
   const entries = data.weekly_recap?.record_books_entries || [];
   if (entries.length === 0) {
     section.style.display = "none";
     if (divider) divider.style.display = "none";
+    wrap.innerHTML = "";
     return;
   }
 
+  const byKind = {};
+  entries.forEach((e) => {
+    (byKind[e.kind] = byKind[e.kind] || []).push(e);
+  });
+
+  const rowsHtml = RECORD_BOOKS_PAIRS.map(([leftKind, rightKind]) => {
+    const left = byKind[leftKind];
+    const right = byKind[rightKind];
+    if (!left && !right) return "";
+    if (left && right) {
+      return `<div class="record-row">${recordBooksTable(leftKind, left)}${recordBooksTable(rightKind, right)}</div>`;
+    }
+    const only = left ? recordBooksTable(leftKind, left) : recordBooksTable(rightKind, right);
+    return `<div class="record-row single">${only}</div>`;
+  }).join("");
+
   section.style.display = "";
   if (divider) divider.style.display = "";
-  grid.innerHTML = entries.map(renderRecordBookCard).join("");
+  wrap.innerHTML = rowsHtml;
 }
 
 function openStreakModal(item) {
