@@ -1630,6 +1630,16 @@ main {
   overflow-x: auto;
 }
 
+/* Standings table only: force all 6 columns (Manager/W/L/W%/Avg
+   Odds/ASSWIPE) to equal width instead of each sizing to its own
+   content — without this, Manager and Avg Odds/ASSWIPE ended up
+   wildly different widths, leaving an oversized gap around the
+   narrower numeric columns. Scoped only to the rollup table, not
+   All Picks, since All Picks' free-text Bet column needs to flex. */
+.parlay-rollup-table {
+  table-layout: fixed;
+}
+
 .parlay-picks-table td.parlay-bet-cell {
   text-align: left;
   max-width: 260px;
