@@ -12,28 +12,44 @@
 // the sheet is still Published to the web (File > Share > Publish to
 // web > CSV) and that SHEET_CSV_URL below still matches its URL.
 //
-// Win/Loss record + W% only count picks whose Outcome is exactly
-// "Win" or "Loss" (case-insensitive). Anything else — "Push",
-// "Pending", blank, etc. — still shows up in the All Picks table but
-// is excluded from the decided-games denominator, same convention
-// used for win_pct everywhere else on this site (ties/undecided don't
-// count toward the record).
+// A row only counts — anywhere on this page — if it has BOTH a
+// non-empty Odds value AND a decided Outcome ("Win" or "Loss",
+// case-insensitive). A row missing either one is dropped entirely: it
+// never appears in the All Picks table and never enters any Standings
+// math (W, L, W%, Avg Odds, PISS, Winning Differential, ASSWIPE).
+// "Push", "Pending", blank Outcome, or blank Odds are all treated the
+// same way — excluded, not just uncounted. (This is a stricter rule
+// than the old "ties don't count toward the record" convention used
+// elsewhere on the site: here the whole row disappears, not just its
+// contribution to the decided-games denominator.)
 //
 // ASSWIPE (Adjusted Standardized Score - Weighted Individual Parlay
 // Evaluator) = PISS + (Winning Differential / 10), where:
 //   PISS  = Win% (decimal, 0-1) x Average Odds
 //   Winning Differential = Total Wins - Total Losses
 // Average Odds is the mean of the raw signed Odds value (e.g. +450,
-// -110), decimals preserved, across EVERY pick in the current time
-// frame, win or lose — not just the winning ones. Everything here
-// respects the Parlay Standings table's own Year filter, same as
+// -110), decimals preserved, across every counted pick in the current
+// time frame, win or lose — not just the winning ones. Everything
+// here respects the Parlay Standings table's own Year filter, same as
 // W/L/W% already did.
 //
-// Odds display: every Odds value (Avg Odds in Standings, Odds in All
-// Picks) is formatted to exactly two decimal places. The sign
-// character shown (+/-/none) is taken from however each row's raw
-// Odds text was actually entered — a computed average always shows
-// an explicit sign, since it isn't tied to one row's original text.
+// Odds display, two DIFFERENT rules on purpose:
+//   - All Picks' Odds column shows each row's raw sheet text,
+//     reformatted to exactly two decimal places but keeping whatever
+//     sign character (+/-/none) was actually typed — that's someone's
+//     literal entry, not a computed value, so it isn't second-guessed.
+//   - Standings' Avg Odds column is a computed average, never shows a
+//     "+" — just the magnitude to two decimals, with a "-" only when
+//     the average is actually negative (toFixed already supplies that,
+//     nothing extra added).
+//
+// Week column ("Week" filter + sort in All Picks) uses a NATURAL sort,
+// not a plain text or plain numeric one: values like "13",
+// "13a - Thanksgiving", "14" sort as 13, 13a - Thanksgiving, 14 —
+// by leading number first, then by whatever text follows it — no
+// matter what order those rows happen to sit in on the sheet itself.
+// A week with no leading number at all (e.g. "Playoffs") sorts after
+// every numbered week.
 //
 // Every "Name" value is checked against data/manager_roster.json (the
 // same roster file every other page uses). An unrecognized name is
@@ -163,24 +179,32 @@ function normalizePicks(rows, roster) {
       return;
     }
 
+    // A pick only counts if it has BOTH a non-empty Odds value and a
+    // decided Win/Loss Outcome. Missing either one drops the row
+    // entirely — not shown in All Picks, not counted in any Standings
+    // math. "Push"/"Pending"/blank Outcome and blank Odds are all
+    // treated the same: excluded.
+    const outcomeNorm = outcome.trim().toLowerCase();
+    const hasOdds = odds.trim() !== "";
+    const hasDecision = outcomeNorm === "win" || outcomeNorm === "w" ||
+      outcomeNorm === "loss" || outcomeNorm === "lose" || outcomeNorm === "l";
+    if (!hasOdds || !hasDecision) {
+      console.warn(`Parlay sheet row ${rowNum}: needs both an Odds value and a decided Win/Loss Outcome — excluded from display and calculations.`);
+      return;
+    }
+
     picks.push({
       year,
       week: weekRaw,
-      weekNum: parseWeek(weekRaw),
       manager: name,
       bet,
       odds,
       oddsNum: parseOdds(odds),
       outcome,
-      outcomeNorm: outcome.trim().toLowerCase(),
+      outcomeNorm,
     });
   });
   return picks;
-}
-
-function parseWeek(week) {
-  const n = parseInt(String(week).replace(/[^\d]/g, ""), 10);
-  return Number.isNaN(n) ? 0 : n;
 }
 
 // Decimal-aware: preserves a leading +/- sign and any decimal portion
@@ -194,12 +218,11 @@ function parseOdds(odds) {
   return Number.isNaN(n) ? 0 : n;
 }
 
-// Display-only formatter: shows exactly two decimal places, keeping
-// whichever sign character (if any) was actually typed in the sheet
-// rather than inventing one — a "+" only appears if the raw text had
-// one, so this doesn't misrepresent decimal-odds data as American
-// odds or vice versa.
-function formatOddsDisplay(oddsRaw) {
+// All Picks' Odds column: reformats a row's raw Odds text to exactly
+// two decimal places, keeping whichever sign character (if any) was
+// actually typed in the sheet — someone's literal entry, not second-
+// guessed.
+function formatOddsRaw(oddsRaw) {
   const s = String(oddsRaw || "").trim();
   if (!s) return s;
   const sign = s[0] === "+" || s[0] === "-" ? s[0] : "";
@@ -208,10 +231,11 @@ function formatOddsDisplay(oddsRaw) {
   return sign + magnitude.toFixed(2);
 }
 
-// Computed averages aren't tied to one row's original text, so they
-// always show an explicit sign for readability.
-function formatOddsSigned(n) {
-  return (n >= 0 ? "+" : "") + n.toFixed(2);
+// Standings' Avg Odds column: a computed average, never shown with a
+// "+" — just the magnitude to two decimals. A negative average still
+// shows its "-" (toFixed(2) supplies that on its own; nothing added).
+function formatOddsAvg(n) {
+  return n.toFixed(2);
 }
 
 function isWin(p) { return p.outcomeNorm === "win" || p.outcomeNorm === "w"; }
@@ -221,16 +245,36 @@ function uniqueSortedNumbers(arr) {
   return [...new Set(arr)].sort((a, b) => a - b);
 }
 
-// Preserves any non-numeric Week values (e.g. "Playoffs") as their
-// own distinct filter options instead of collapsing them all down to
-// a single numeric bucket — numeric weeks sort first and ascending,
-// text values follow, alphabetically.
+// --- Natural sort for the Week column ---
+// Splits a week value into its leading number (if any) and whatever
+// text trails it, e.g. "13a - Thanksgiving" -> {num: 13, suffix: "a -
+// Thanksgiving"}. A bare "13" gets suffix "", which always sorts
+// before a non-empty suffix at the same number — so "13" comes right
+// before "13a - Thanksgiving", which comes right before "14". A week
+// with no leading number at all sorts after every numbered week.
+function parseWeekSortKey(week) {
+  const s = String(week).trim();
+  const m = s.match(/^(\d+(?:\.\d+)?)/);
+  if (m) {
+    return { num: parseFloat(m[1]), suffix: s.slice(m[0].length).trim() };
+  }
+  return { num: Infinity, suffix: s };
+}
+
+function compareWeek(weekA, weekB) {
+  const a = parseWeekSortKey(weekA);
+  const b = parseWeekSortKey(weekB);
+  if (a.num !== b.num) return a.num - b.num;
+  return a.suffix.localeCompare(b.suffix, undefined, { sensitivity: "base" });
+}
+
+// Unique Week values for the filter dropdown, in the same natural
+// order as the table itself uses — so a text week like
+// "13a - Thanksgiving" shows up between "13" and "14" in the dropdown
+// too, not shoved to the end.
 function uniqueSortedWeeks(picks) {
   const values = [...new Set(picks.map((p) => String(p.week)))];
-  const isNumeric = (v) => /^-?\d+(\.\d+)?$/.test(v.trim());
-  const nums = values.filter(isNumeric).sort((a, b) => parseFloat(a) - parseFloat(b));
-  const text = values.filter((v) => !isNumeric(v)).sort((a, b) => a.localeCompare(b));
-  return [...nums, ...text];
+  return values.sort(compareWeek);
 }
 
 function populateFilterOptions() {
@@ -279,9 +323,14 @@ function wireFilterEvents() {
 function sortRows(rows, key, dir, columns) {
   const col = columns.find((c) => c.key === key) || columns[0];
   return [...rows].sort((a, b) => {
-    const cmp = col.type === "number"
-      ? (a[col.key] ?? 0) - (b[col.key] ?? 0)
-      : String(a[col.key] ?? "").localeCompare(String(b[col.key] ?? ""), undefined, { sensitivity: "base" });
+    let cmp;
+    if (col.type === "number") {
+      cmp = (a[col.key] ?? 0) - (b[col.key] ?? 0);
+    } else if (col.type === "natural-week") {
+      cmp = compareWeek(a[col.key], b[col.key]);
+    } else {
+      cmp = String(a[col.key] ?? "").localeCompare(String(b[col.key] ?? ""), undefined, { sensitivity: "base" });
+    }
     return dir === "asc" ? cmp : -cmp;
   });
 }
@@ -366,7 +415,7 @@ function renderRollup() {
       <td>${r.wins}</td>
       <td>${r.losses}</td>
       <td>${(r.winPct * 100).toFixed(1)}%</td>
-      <td>${formatOddsSigned(r.avgOdds)}</td>
+      <td>${formatOddsAvg(r.avgOdds)}</td>
       <td class="msi-score">${r.asswipe.toFixed(2)}</td>
     </tr>
   `).join("");
@@ -387,7 +436,7 @@ function renderRollup() {
 
 const PICK_COLUMNS = [
   { key: "year", label: "Year", type: "number" },
-  { key: "weekNum", label: "Week", type: "number" },
+  { key: "week", label: "Week", type: "natural-week" },
   { key: "manager", label: "Manager", type: "string" },
   { key: "bet", label: "Bet", type: "string" },
   { key: "oddsNum", label: "Odds", type: "number" },
@@ -415,7 +464,7 @@ function renderPicks() {
       <td>${p.week}</td>
       <td class="col-name">${p.manager}</td>
       <td class="parlay-bet-cell">${p.bet}</td>
-      <td>${formatOddsDisplay(p.odds)}</td>
+      <td>${formatOddsRaw(p.odds)}</td>
       <td>${p.outcome}</td>
     </tr>
   `).join("");
