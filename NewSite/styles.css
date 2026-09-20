@@ -1567,3 +1567,78 @@ main {
   border-top: 1px solid var(--hairline);
   padding-top: 1rem;
 }
+
+/* ============================================
+   PARLAY PAGE
+   These rules were missing from the first Parlay build — the HTML/JS
+   already referenced these classes, but nothing here defined them,
+   which is exactly why the filter <select> boxes rendered at full
+   width (they were just inheriting .input-select's width: 100% with
+   nothing to constrain them). Fixed now.
+============================================ */
+.parlay-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 0.75rem 0 1.5rem;
+}
+
+.parlay-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.parlay-filter-label {
+  font-family: 'EB Garamond', serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Fixed, uniform width across every filter dropdown on this page —
+   sized to comfortably fit the longest manager name as an option,
+   not stretched to the table's width. Same specificity as
+   .input-select's width: 100%, but declared later, so this wins. */
+.parlay-filter-select {
+  width: 13rem;
+  min-width: 13rem;
+  max-width: 13rem;
+}
+
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+.sortable-th:hover {
+  color: var(--rust);
+}
+
+.sort-indicator {
+  font-size: 0.7em;
+  color: var(--rust);
+  margin-left: 0.15em;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.parlay-picks-table td.parlay-bet-cell {
+  text-align: left;
+  max-width: 260px;
+}
+
+@media (max-width: 640px) {
+  .parlay-filter-select {
+    width: 11rem;
+    min-width: 11rem;
+    max-width: 11rem;
+  }
+}
