@@ -1630,14 +1630,34 @@ main {
   overflow-x: auto;
 }
 
-/* Standings table only: force all 6 columns (Manager/W/L/W%/Avg
-   Odds/ASSWIPE) to equal width instead of each sizing to its own
-   content — without this, Manager and Avg Odds/ASSWIPE ended up
-   wildly different widths, leaving an oversized gap around the
-   narrower numeric columns. Scoped only to the rollup table, not
-   All Picks, since All Picks' free-text Bet column needs to flex. */
+/* Standings table: fixed layout so the 6 columns (Manager/W/L/W%/Avg
+   Odds/ASSWIPE) don't each size to their own content (that's what
+   left an oversized gap around the narrower numeric columns) — but
+   an equal 1/6 share for every column wasn't enough room for Manager,
+   whose names (via .col-name's white-space: nowrap) were overflowing
+   into the W column. Manager gets a wider fixed share; the other five
+   columns split what's left evenly. Scoped only to the rollup table,
+   not All Picks, since All Picks' free-text Bet column needs to flex. */
 .parlay-rollup-table {
   table-layout: fixed;
+}
+
+.parlay-rollup-table th:nth-child(1),
+.parlay-rollup-table td:nth-child(1) {
+  width: 32%;
+}
+
+.parlay-rollup-table th:nth-child(2),
+.parlay-rollup-table td:nth-child(2),
+.parlay-rollup-table th:nth-child(3),
+.parlay-rollup-table td:nth-child(3),
+.parlay-rollup-table th:nth-child(4),
+.parlay-rollup-table td:nth-child(4),
+.parlay-rollup-table th:nth-child(5),
+.parlay-rollup-table td:nth-child(5),
+.parlay-rollup-table th:nth-child(6),
+.parlay-rollup-table td:nth-child(6) {
+  width: 13.6%;
 }
 
 .parlay-picks-table td.parlay-bet-cell {
