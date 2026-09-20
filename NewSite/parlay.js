@@ -19,6 +19,15 @@
 // used for win_pct everywhere else on this site (ties/undecided don't
 // count toward the record).
 //
+// ASSWIPE (Adjusted Standardized Score - Weighted Individual Parlay
+// Evaluator) = PISS + Winning Differential, where:
+//   PISS  = Win% (decimal, 0-1) x Average Odds
+//   Winning Differential = Total Wins - Total Losses
+// Average Odds is the mean of the raw signed Odds value (e.g. +450,
+// -110) across EVERY pick in the current time frame, win or lose —
+// not just the winning ones. Everything here respects the Parlay
+// Standings table's own Year filter, same as W/L/W% already did.
+//
 // Every "Name" value is checked against data/manager_roster.json (the
 // same roster file every other page uses). An unrecognized name is
 // dropped rather than creating a new, misspelled entry in the Parlay
@@ -33,7 +42,7 @@ const ROSTER_URL = "data/manager_roster.json";
 
 let allPicks = [];
 
-const rollupState = { year: "All", sortKey: "winPct", sortDir: "desc" };
+const rollupState = { year: "All", sortKey: "asswipe", sortDir: "desc" };
 const picksState = { year: "All", week: "All", manager: "All", sortKey: "year", sortDir: "desc" };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -262,22 +271,33 @@ const ROLLUP_COLUMNS = [
   { key: "wins", label: "W", type: "number" },
   { key: "losses", label: "L", type: "number" },
   { key: "winPct", label: "W%", type: "number" },
+  { key: "asswipe", label: "ASSWIPE", type: "number" },
 ];
 
 function computeRollup(picks) {
   const byManager = new Map();
   picks.forEach((p) => {
     if (!byManager.has(p.manager)) {
-      byManager.set(p.manager, { manager: p.manager, wins: 0, losses: 0, other: 0 });
+      byManager.set(p.manager, {
+        manager: p.manager, wins: 0, losses: 0, other: 0,
+        totalOdds: 0, totalPicks: 0,
+      });
     }
     const m = byManager.get(p.manager);
     if (isWin(p)) m.wins++;
     else if (isLoss(p)) m.losses++;
     else m.other++;
+    m.totalOdds += p.oddsNum;
+    m.totalPicks++;
   });
   return Array.from(byManager.values()).map((m) => {
     const decided = m.wins + m.losses;
-    return { ...m, winPct: decided ? m.wins / decided : 0 };
+    const winPct = decided ? m.wins / decided : 0;
+    const avgOdds = m.totalPicks ? m.totalOdds / m.totalPicks : 0;
+    const winningDifferential = m.wins - m.losses;
+    const piss = winPct * avgOdds;
+    const asswipe = piss + winningDifferential;
+    return { ...m, winPct, avgOdds, winningDifferential, piss, asswipe };
   });
 }
 
@@ -301,6 +321,7 @@ function renderRollup() {
       <td>${r.wins}</td>
       <td>${r.losses}</td>
       <td>${(r.winPct * 100).toFixed(1)}%</td>
+      <td class="msi-score">${r.asswipe.toFixed(2)}</td>
     </tr>
   `).join("");
 
