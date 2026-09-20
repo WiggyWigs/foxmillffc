@@ -1527,7 +1527,7 @@ def build_record_books_entries(week_games, week, year, stats):
             if e.get("year") == year and week_num(e.get("week")) == week_num(week):
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
-                    "rank": i + 1,
+                    "value": e.get("games"), "rank": i + 1,
                 })
 
     check_milestone("fastest_to_25_wins", "25th_win")
