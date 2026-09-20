@@ -1,8 +1,16 @@
-// Parlay page — reads the precomputed data/parlays.json (built by
-// scripts/sync_parlays.py from the "Parlay" Google Sheet) and does
-// ALL rollup, filtering, and sorting client-side, since both need to
-// respond instantly to user interaction rather than being baked in
-// server-side like every other page's tables.
+// Parlay page — fetches the "Parlay" Google Sheet directly from the
+// browser (it's published to the web as CSV) and does ALL parsing,
+// rollup, filtering, and sorting client-side. No server-side sync
+// step and no data/parlays.json: this is the one page on the site
+// that reads live from an external source instead of a precomputed
+// local data/*.json file, by deliberate choice — standings reflect a
+// sheet edit the moment the page is reloaded, at the cost of page
+// load depending on Google's endpoint responding (with CORS headers
+// that allow a browser fetch — this works today but isn't a
+// documented guarantee from Google). If this page ever starts
+// silently failing to load, that's the first thing to check: confirm
+// the sheet is still Published to the web (File > Share > Publish to
+// web > CSV) and that SHEET_CSV_URL below still matches its URL.
 //
 // Win/Loss record + W% only count picks whose Outcome is exactly
 // "Win" or "Loss" (case-insensitive). Anything else — "Push",
@@ -10,8 +18,18 @@
 // is excluded from the decided-games denominator, same convention
 // used for win_pct everywhere else on this site (ties/undecided don't
 // count toward the record).
+//
+// Every "Name" value is checked against data/manager_roster.json (the
+// same roster file every other page uses). An unrecognized name is
+// dropped rather than creating a new, misspelled entry in the Parlay
+// Standings table — but since this now runs in each visitor's
+// browser, that rejection only shows up as a console.warn in
+// DevTools, not anywhere Greg would normally see it. Worth an
+// occasional manual check of the sheet against the roster.
 
-const DATA_URL = "data/parlays.json";
+const SHEET_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9gbWRe2LfduGjbKHt5cWdq8p2LT_vTXgDkCJetDh3v-5cDD2LA5NBI4Du-7n7VGnZolw-DbcsyeRG/pub?gid=0&single=true&output=csv";
+const ROSTER_URL = "data/manager_roster.json";
 
 let allPicks = [];
 
@@ -19,17 +37,26 @@ const rollupState = { year: "All", sortKey: "winPct", sortDir: "desc" };
 const picksState = { year: "All", week: "All", manager: "All", sortKey: "year", sortDir: "desc" };
 
 document.addEventListener("DOMContentLoaded", async () => {
+  let csvText, roster;
   try {
-    const res = await fetch(DATA_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    allPicks = normalizePicks(data.picks || []);
+    const [csvRes, rosterRes] = await Promise.all([
+      fetch(SHEET_CSV_URL),
+      fetch(ROSTER_URL),
+    ]);
+    if (!csvRes.ok) throw new Error(`sheet fetch HTTP ${csvRes.status}`);
+    if (!rosterRes.ok) throw new Error(`roster fetch HTTP ${rosterRes.status}`);
+    csvText = await csvRes.text();
+    const rosterJson = await rosterRes.json();
+    roster = new Set(rosterJson.managers || []);
   } catch (err) {
     document.getElementById("rollup-wrap").innerHTML =
-      `<p class="load-state">Couldn't load parlay data (${err.message}).</p>`;
+      `<p class="load-state">Couldn't load parlay data (${err.message}). If this keeps happening, ` +
+      `confirm the sheet is still Published to the web (File &gt; Share &gt; Publish to web) as CSV.</p>`;
     document.getElementById("picks-wrap").innerHTML = "";
     return;
   }
+
+  allPicks = normalizePicks(parseCsvRows(csvText), roster);
 
   if (allPicks.length === 0) {
     document.getElementById("rollup-wrap").innerHTML =
@@ -44,18 +71,95 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderPicks();
 });
 
-function normalizePicks(rawPicks) {
-  return rawPicks.map((p) => ({
-    year: Number(p.year),
-    week: p.week,
-    weekNum: parseWeek(p.week),
-    manager: p.manager,
-    bet: p.bet,
-    odds: p.odds,
-    oddsNum: parseOdds(p.odds),
-    outcome: p.outcome,
-    outcomeNorm: String(p.outcome || "").trim().toLowerCase(),
-  }));
+// --- CSV parsing (minimal RFC4180: quoted fields, embedded commas,
+// escaped "" quotes, \r\n or \n line endings) ---
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else { inQuotes = false; }
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += c;
+    }
+  }
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
+function parseCsvRows(text) {
+  const table = parseCsv(text);
+  if (table.length === 0) return [];
+  const headers = table[0].map((h) => h.trim());
+  return table.slice(1)
+    .filter((r) => r.some((cell) => cell.trim() !== ""))
+    .map((r) => Object.fromEntries(headers.map((h, idx) => [h, (r[idx] ?? "").trim()])));
+}
+
+// --- Row validation + normalization ---
+
+function normalizePicks(rows, roster) {
+  const picks = [];
+  rows.forEach((row, idx) => {
+    const yearRaw = row["Year"] || "";
+    const weekRaw = row["Week"] || "";
+    const name = row["Name"] || "";
+    const bet = row["Bet"] || "";
+    const odds = row["Odds"] || "";
+    const outcome = row["Outcome"] || "";
+    const rowNum = idx + 2; // +1 for header row, +1 for 1-indexing
+
+    if (!yearRaw || !weekRaw || !name || !bet) {
+      console.warn(`Parlay sheet row ${rowNum}: missing Year/Week/Name/Bet — skipped.`);
+      return;
+    }
+    if (roster.size > 0 && !roster.has(name)) {
+      console.warn(`Parlay sheet row ${rowNum}: '${name}' isn't a recognized manager — skipped.`);
+      return;
+    }
+    const year = Number(yearRaw);
+    if (Number.isNaN(year)) {
+      console.warn(`Parlay sheet row ${rowNum}: Year '${yearRaw}' isn't a number — skipped.`);
+      return;
+    }
+
+    picks.push({
+      year,
+      week: weekRaw,
+      weekNum: parseWeek(weekRaw),
+      manager: name,
+      bet,
+      odds,
+      oddsNum: parseOdds(odds),
+      outcome,
+      outcomeNorm: outcome.trim().toLowerCase(),
+    });
+  });
+  return picks;
 }
 
 function parseWeek(week) {
