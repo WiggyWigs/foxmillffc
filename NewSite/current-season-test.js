@@ -277,73 +277,94 @@ function renderCalloutCard(item) {
   `;
 }
 
-// "Welcome to the Record Books" — one small table per record type,
-// styled to match the real Record Books page (record-books.html /
-// records.js): plain, non-clickable, everything centered, nothing
-// wraps. Paired left/right the same way that page pairs Top/Bottom,
-// Win Streak/Loss Streak, etc. — when both sides of a pair have an
-// entry this week they sit side by side (.record-row); when only one
-// side does, it's centered alone (.record-row.single); when neither
-// does, the pair is skipped entirely.
-const RECORD_BOOKS_CONFIG = {
-  top_game_score: { title: "Top 15 R/S Game Score", valueLabel: "Game Score", format: fmtRecordNumber },
-  bottom_game_score: { title: "Bottom 15 R/S Game Score", valueLabel: "Game Score", format: fmtRecordNumber },
-  top_win_streak: { title: "Top 5 R/S Winning Streak", valueLabel: "Winning Streak", format: (v) => `${v} games` },
-  top_loss_streak: { title: "Top 5 R/S Losing Streak", valueLabel: "Losing Streak", format: (v) => `${v} games` },
-  "25th_win": { title: "25th Career Victory", valueLabel: null },
-  "25th_loss": { title: "25th Career Defeat", valueLabel: null },
+// "Welcome to the Record Books" — plain narrative sentences, one per
+// achievement, non-clickable and centered (matching the tone of the
+// "last week's pick" callout elsewhere on this page rather than a
+// table or card). Entries are grouped first by category, then by the
+// exact stat value within that category — two managers who hit the
+// SAME mark (e.g. tied game scores) become one "share the record"
+// sentence together; two managers in the same category at different
+// values still get their own separate sentences.
+const RECORD_BOOKS_LABELS = {
+  top_game_score: "Top 15 R/S Game Score",
+  bottom_game_score: "Bottom 15 R/S Game Score",
+  top_win_streak: "Top 5 R/S Winning Streak",
+  top_loss_streak: "Top 5 R/S Losing Streak",
+  "25th_win": "25th Career Victory",
+  "25th_loss": "25th Career Defeat",
 };
 
-const RECORD_BOOKS_PAIRS = [
-  ["top_game_score", "bottom_game_score"],
-  ["top_win_streak", "top_loss_streak"],
-  ["25th_win", "25th_loss"],
+// Display order, top to bottom.
+const RECORD_BOOKS_ORDER = [
+  "top_game_score", "bottom_game_score",
+  "top_win_streak", "top_loss_streak",
+  "25th_win", "25th_loss",
 ];
+
+function ordinal(n) {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+}
 
 function fmtRecordNumber(v) {
   return typeof v === "number" ? (Number.isInteger(v) ? v : v.toFixed(2)) : v;
 }
 
-function recordBooksTable(kind, rows) {
-  const config = RECORD_BOOKS_CONFIG[kind];
-  const sorted = rows.slice().sort((a, b) => a.rank - b.rank);
+// Joins a list of already-HTML-safe name strings into natural
+// English: "A", "A and B", or "A, B, and C".
+function joinNames(names) {
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+}
 
-  // Two managers landing on the exact same value (e.g. tied game
-  // scores) show the same rank number instead of two sequential
-  // ones — this is what visually groups them together as a tie.
-  let lastValue = null;
-  let lastRankLabel = null;
-  const rankLabels = sorted.map((r) => {
-    if (config.valueLabel && lastValue !== null && r.value === lastValue) {
-      return lastRankLabel;
-    }
-    lastValue = r.value;
-    lastRankLabel = String(r.rank);
-    return lastRankLabel;
-  });
+// Builds the sentence for one tie-group: entries that share both a
+// category (kind) and the exact same stat value. A group of one
+// manager gets singular phrasing; two or more sharing the value get
+// "share"/"tied for" phrasing instead.
+function recordBooksSentence(kind, group) {
+  const rank = ordinal(group[0].rank);
+  const names = group.map((e) => `<b>${e.manager}</b>`);
+  const teams = group.map((e) => e.team_name).filter(Boolean);
+  const sameTeamCount = teams.length === group.length;
+  const value = group[0].value;
+  const tied = group.length > 1;
 
-  const headCols = config.valueLabel
-    ? `<th>#</th><th class="col-name">Manager</th><th class="col-name">Team Name</th><th>${config.valueLabel}</th>`
-    : `<th>#</th><th class="col-name">Manager</th><th class="col-name">Team Name</th>`;
+  switch (kind) {
+    case "top_game_score":
+      return tied
+        ? `${joinNames(names)} share the ${rank}-highest R/S game score in league history — ${fmtRecordNumber(value)} points${sameTeamCount ? `, for ${joinNames(teams)} respectively` : ""}.`
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is the ${rank}-highest R/S game score in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
 
-  const bodyRows = sorted.map((r, i) => `
-    <tr>
-      <td>${rankLabels[i]}</td>
-      <td class="col-name">${r.manager}</td>
-      <td class="col-name">${r.team_name || ""}</td>
-      ${config.valueLabel ? `<td>${config.format(r.value)}</td>` : ""}
-    </tr>
-  `).join("");
+    case "bottom_game_score":
+      return tied
+        ? `${joinNames(names)} share the ${rank}-lowest R/S game score in league history — ${fmtRecordNumber(value)} points${sameTeamCount ? `, for ${joinNames(teams)} respectively` : ""}.`
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is now the ${rank}-lowest R/S game score in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
 
-  return `
-    <div class="record-section">
-      <h3>${config.title}</h3>
-      <table class="record-table">
-        <thead><tr>${headCols}</tr></thead>
-        <tbody>${bodyRows}</tbody>
-      </table>
-    </div>
-  `;
+    case "top_win_streak":
+      return tied
+        ? `${joinNames(names)} are tied for the ${rank}-longest R/S winning streak in league history, each at ${value} games.`
+        : `${names[0]}'s active winning streak has reached ${value} games — the ${rank}-longest in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
+
+    case "top_loss_streak":
+      return tied
+        ? `${joinNames(names)} are tied for the ${rank}-longest R/S losing streak in league history, each at ${value} games.`
+        : `${names[0]}'s losing streak has reached ${value} games — the ${rank}-longest in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
+
+    case "25th_win":
+      return tied
+        ? `${joinNames(names)} both just reached their 25th career win, tied for the ${rank}-fastest anyone has ever gotten there.`
+        : `${names[0]} just picked up their 25th career win — the ${rank}-fastest anyone has ever reached that mark${teams[0] ? `, for ${teams[0]}` : ""}.`;
+
+    case "25th_loss":
+      return tied
+        ? `${joinNames(names)} both just picked up their 25th career loss, tied for the ${rank}-fastest anyone has ever gotten there.`
+        : `${names[0]} just picked up their 25th career loss — the ${rank}-fastest anyone has ever reached that mark${teams[0] ? `, for ${teams[0]}` : ""}.`;
+
+    default:
+      return "";
+  }
 }
 
 function renderRecordBooks(data) {
@@ -365,20 +386,32 @@ function renderRecordBooks(data) {
     (byKind[e.kind] = byKind[e.kind] || []).push(e);
   });
 
-  const rowsHtml = RECORD_BOOKS_PAIRS.map(([leftKind, rightKind]) => {
-    const left = byKind[leftKind];
-    const right = byKind[rightKind];
-    if (!left && !right) return "";
-    if (left && right) {
-      return `<div class="record-row">${recordBooksTable(leftKind, left)}${recordBooksTable(rightKind, right)}</div>`;
-    }
-    const only = left ? recordBooksTable(leftKind, left) : recordBooksTable(rightKind, right);
-    return `<div class="record-row single">${only}</div>`;
-  }).join("");
+  const items = [];
+  RECORD_BOOKS_ORDER.forEach((kind) => {
+    const kindEntries = byKind[kind];
+    if (!kindEntries) return;
+
+    const byValue = {};
+    kindEntries.forEach((e) => {
+      (byValue[String(e.value)] = byValue[String(e.value)] || []).push(e);
+    });
+
+    Object.values(byValue)
+      .sort((a, b) => a[0].rank - b[0].rank)
+      .forEach((group) => {
+        items.push({ kind, sentence: recordBooksSentence(kind, group) });
+      });
+  });
+
+  wrap.innerHTML = items.map((item) => `
+    <div class="sentence-item">
+      <span class="sentence-label">${RECORD_BOOKS_LABELS[item.kind]}</span>
+      <p class="sentence-text">${item.sentence}</p>
+    </div>
+  `).join("");
 
   section.style.display = "";
   if (divider) divider.style.display = "";
-  wrap.innerHTML = rowsHtml;
 }
 
 function openStreakModal(item) {
