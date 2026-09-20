@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Parlay — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<main>
+  <div class="panel">
+    <h2>Parlay</h2>
+    <p class="msi-meta">Tracking every manager's weekly parlay bet — one pick a week, win or lose.</p>
+
+    <div class="record-section">
+      <h3 class="season-subhead">Parlay Standings</h3>
+      <div class="parlay-filters">
+        <div class="parlay-filter">
+          <label class="parlay-filter-label" for="rollupYearFilter">Year</label>
+          <select id="rollupYearFilter" class="input-select parlay-filter-select">
+            <option value="All">All</option>
+          </select>
+        </div>
+      </div>
+      <div id="rollup-wrap">
+        <p class="load-state">Loading parlay standings&hellip;</p>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="record-section">
+      <h3 class="season-subhead">All Picks</h3>
+      <div class="parlay-filters">
+        <div class="parlay-filter">
+          <label class="parlay-filter-label" for="pickYearFilter">Year</label>
+          <select id="pickYearFilter" class="input-select parlay-filter-select">
+            <option value="All">All</option>
+          </select>
+        </div>
+        <div class="parlay-filter">
+          <label class="parlay-filter-label" for="pickWeekFilter">Week</label>
+          <select id="pickWeekFilter" class="input-select parlay-filter-select">
+            <option value="All">All</option>
+          </select>
+        </div>
+        <div class="parlay-filter">
+          <label class="parlay-filter-label" for="pickManagerFilter">Manager</label>
+          <select id="pickManagerFilter" class="input-select parlay-filter-select">
+            <option value="All">All</option>
+          </select>
+        </div>
+      </div>
+      <div id="picks-wrap">
+        <p class="load-state">Loading picks&hellip;</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="parlay.js"></script>
+
+</body>
+</html>
