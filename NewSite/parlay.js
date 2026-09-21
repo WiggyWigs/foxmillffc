@@ -22,7 +22,9 @@
 // just uncounted. (This is a stricter rule than the old "ties don't
 // count toward the record" convention used elsewhere on the site:
 // here the whole row disappears, not just its contribution to the
-// decided-games denominator.)
+// decided-games denominator.) Note this gate itself still checks the
+// raw American "Odds" column's presence, not Payout_Odds — see below
+// for why those are two different things now.
 //
 // Every "Name" value is checked against data/manager_roster.json —
 // spell it EXACTLY as it appears there (e.g. "Daniel Bahamonde", not
@@ -30,25 +32,31 @@
 // console.warn in DevTools), which is the single most common reason
 // a manager appears to be completely missing from the page.
 //
+// ODDS: the sheet has TWO different odds columns, and they are used
+// for two different things —
+//   - "Odds" is the raw American value someone typed (+450, -110).
+//     It's only used internally, as part of the "does this row have
+//     an Odds entry at all" validation gate above. It is NOT shown
+//     anywhere and NOT used in any math.
+//   - "Payout_Odds" is the precomputed DECIMAL odds for that leg
+//     (e.g. 5.50, not +450). EVERY odds figure actually displayed or
+//     computed on this page — the All Picks table's Odds column, the
+//     Standings table's Avg Odds column, PISS, ASSWIPE, and the Best
+//     Weeks table's Potential column — is sourced from Payout_Odds,
+//     never derived from the American column.
+// A leg whose Payout_Odds is blank (no leg entered that week, or the
+// game hasn't finished) shows as "—" in All Picks and is excluded
+// from every average/product it would otherwise be part of (Avg
+// Odds, PISS, ASSWIPE, Potential) — not treated as a zero or a 1x
+// placeholder, just left out, consistent everywhere on this page.
+//
 // ASSWIPE (Adjusted Standardized Score - Weighted Individual Parlay
 // Evaluator) = PISS + (Winning Differential / 10), where:
-//   PISS  = Win% (decimal, 0-1) x Average Odds
+//   PISS  = Win% (decimal, 0-1) x Average Odds (the Payout_Odds
+//           average described above)
 //   Winning Differential = Total Wins - Total Losses
-// Average Odds is the mean of the raw signed Odds value (e.g. +450,
-// -110), decimals preserved, across every counted pick in the current
-// time frame, win or lose — not just the winning ones. Everything
-// here respects the Parlay Standings table's own Year filter, same as
-// W/L/W% already did.
-//
-// Odds display, two DIFFERENT rules on purpose:
-//   - All Picks' Odds column shows each row's raw sheet text,
-//     reformatted to exactly two decimal places but keeping whatever
-//     sign character (+/-/none) was actually typed — that's someone's
-//     literal entry, not a computed value, so it isn't second-guessed.
-//   - Standings' Avg Odds column is a computed average, never shows a
-//     "+" — just the magnitude to two decimals, with a "-" only when
-//     the average is actually negative (toFixed already supplies that,
-//     nothing extra added).
+// Everything here respects the Parlay Standings table's own Year
+// filter, same as W/L/W% already did.
 //
 // Best/Worst Weeks (Collective W%): pools EVERY manager's counted
 // picks for a given Year+Week together (not per-manager) and ranks
@@ -64,27 +72,11 @@
 // column, Potential: the theoretical payout of a single $5 parlay
 // built from that Year+Week's counted legs, regardless of whether it
 // actually hit — the upside number, not a real payout record. Math:
-// multiply together every leg's Payout_Odds value (that week's own
-// sheet column — the pre-computed DECIMAL odds for that leg, e.g.
-// 5.50, not +450), multiply by the $5 stake.
-//
-// A leg with a blank Payout_Odds is EXCLUDED from that product
-// entirely — not derived from the American Odds column, not treated
-// as a placeholder. Per Greg, blank only happens for one of two
-// reasons: that manager didn't enter a leg for that week, or the game
-// is still in progress, so there's nothing real to multiply in yet.
-// Either way, the leg contributes nothing (mathematically the same as
-// multiplying by 1). Practical effect: a week with games still in
-// progress shows a Potential based only on the legs that have
-// actually settled so far, and will change once the rest finish.
-// (Note the sheet used to have two columns both literally named
-// "Odds" — the American value and this decimal one — which collided
-// silently in the CSV parse, since a duplicate header just overwrites
-// the earlier one when a row becomes an object. Renaming the decimal
-// column to Payout_Odds fixed that.)
-// $5 is hardcoded per Greg's confirmation that the stake has always
-// been $5 flat, every year/week on record — if that ever changes,
-// this needs to become a per-week value instead of a constant.
+// multiply together every leg's Payout_Odds value for that week,
+// multiply by the $5 stake. $5 is hardcoded per Greg's confirmation
+// that the stake has always been $5 flat, every year/week on record —
+// if that ever changes, this needs to become a per-week value instead
+// of a constant.
 //
 // Week column ("Week" filter + sort in All Picks) uses a NATURAL sort,
 // not a plain text or plain numeric one: values like "13",
@@ -228,11 +220,11 @@ function normalizePicks(rows, roster) {
       return;
     }
 
-    // A pick only counts if it has BOTH a non-empty Odds value and a
-    // decided Win/Loss Outcome. Missing either one drops the row
-    // entirely — not shown in All Picks, not counted in any Standings
-    // math. "Push"/"Pending"/blank Outcome and blank Odds are all
-    // treated the same: excluded.
+    // A pick only counts if it has BOTH a non-empty (raw, American)
+    // Odds value and a decided Win/Loss Outcome. Missing either one
+    // drops the row entirely — not shown in All Picks, not counted in
+    // any Standings math. "Push"/"Pending"/blank Outcome and blank
+    // Odds are all treated the same: excluded.
     const outcomeNorm = outcome.trim().toLowerCase();
     const hasOdds = odds.trim() !== "";
     const hasDecision = outcomeNorm === "win" || outcomeNorm === "w" ||
@@ -242,12 +234,13 @@ function normalizePicks(rows, roster) {
       return;
     }
 
-    // Payout_Odds is this leg's precomputed DECIMAL odds. A blank
-    // value here means either no leg was entered for that manager
-    // that week, or the game hasn't finished yet — either way this
-    // leg contributes nothing to the Best Weeks table's Potential
-    // product (mathematically the same as a 1x factor). No fallback
-    // derivation from the American Odds column anymore.
+    // Payout_Odds is this leg's precomputed DECIMAL odds, and is the
+    // ONLY odds value actually displayed or used in math anywhere on
+    // this page (see the top comment block). A blank value here means
+    // either no leg was entered for that manager that week, or the
+    // game hasn't finished — either way this leg is excluded from
+    // every average/product it would otherwise be part of, not
+    // treated as a zero or derived from the American Odds column.
     const payoutOddsParsed = parseFloat(payoutOddsRaw);
     const payoutOdds = Number.isNaN(payoutOddsParsed) ? null : payoutOddsParsed;
 
@@ -256,8 +249,6 @@ function normalizePicks(rows, roster) {
       week: weekRaw,
       manager: name,
       bet,
-      odds,
-      oddsNum: parseOdds(odds),
       payoutOdds,
       outcome,
       outcomeNorm,
@@ -266,34 +257,11 @@ function normalizePicks(rows, roster) {
   return picks;
 }
 
-// Decimal-aware: preserves a leading +/- sign and any decimal portion
-// (parseInt would silently truncate "4.5" down to 4). Used both for
-// sorting and for every Avg Odds / PISS / ASSWIPE calculation.
-function parseOdds(odds) {
-  if (odds == null) return 0;
-  const s = String(odds).trim();
-  if (!s) return 0;
-  const n = parseFloat(s.replace(/[^0-9.+-]/g, ""));
-  return Number.isNaN(n) ? 0 : n;
-}
-
-// All Picks' Odds column: reformats a row's raw Odds text to exactly
-// two decimal places, keeping whichever sign character (if any) was
-// actually typed in the sheet — someone's literal entry, not second-
-// guessed.
-function formatOddsRaw(oddsRaw) {
-  const s = String(oddsRaw || "").trim();
-  if (!s) return s;
-  const sign = s[0] === "+" || s[0] === "-" ? s[0] : "";
-  const magnitude = parseFloat(s.replace(/[^0-9.]/g, ""));
-  if (Number.isNaN(magnitude)) return s; // unparsable — show the raw text rather than mangling it
-  return sign + magnitude.toFixed(2);
-}
-
-// Standings' Avg Odds column: a computed average, never shown with a
-// "+" — just the magnitude to two decimals. A negative average still
-// shows its "-" (toFixed(2) supplies that on its own; nothing added).
-function formatOddsAvg(n) {
+// Odds column (All Picks) and Avg Odds column (Standings): both show
+// this Payout_Odds-based decimal, to two places, never a forced "+".
+// A leg with no Payout_Odds yet shows as an em dash rather than 0.00.
+function formatPayoutOdds(n) {
+  if (n == null) return "—";
   return n.toFixed(2);
 }
 
@@ -437,20 +405,22 @@ function computeRollup(picks) {
     if (!byManager.has(p.manager)) {
       byManager.set(p.manager, {
         manager: p.manager, wins: 0, losses: 0, other: 0,
-        totalOdds: 0, totalPicks: 0,
+        totalPayoutOdds: 0, payoutCount: 0,
       });
     }
     const m = byManager.get(p.manager);
     if (isWin(p)) m.wins++;
     else if (isLoss(p)) m.losses++;
     else m.other++;
-    m.totalOdds += p.oddsNum;
-    m.totalPicks++;
+    if (p.payoutOdds != null) {
+      m.totalPayoutOdds += p.payoutOdds;
+      m.payoutCount++;
+    }
   });
   return Array.from(byManager.values()).map((m) => {
     const decided = m.wins + m.losses;
     const winPct = decided ? m.wins / decided : 0;
-    const avgOdds = m.totalPicks ? m.totalOdds / m.totalPicks : 0;
+    const avgOdds = m.payoutCount ? m.totalPayoutOdds / m.payoutCount : 0;
     const winningDifferential = m.wins - m.losses;
     const piss = winPct * avgOdds;
     const asswipe = piss + (winningDifferential / 10);
@@ -478,7 +448,7 @@ function renderRollup() {
       <td>${r.wins}</td>
       <td>${r.losses}</td>
       <td>${(r.winPct * 100).toFixed(1)}%</td>
-      <td>${formatOddsAvg(r.avgOdds)}</td>
+      <td>${formatPayoutOdds(r.avgOdds)}</td>
       <td class="msi-score">${r.asswipe.toFixed(2)}</td>
     </tr>
   `).join("");
@@ -602,7 +572,7 @@ const PICK_COLUMNS = [
   { key: "week", label: "Week", type: "natural-week" },
   { key: "manager", label: "Manager", type: "string" },
   { key: "bet", label: "Bet", type: "string" },
-  { key: "oddsNum", label: "Odds", type: "number" },
+  { key: "payoutOdds", label: "Odds", type: "number" },
   { key: "outcome", label: "Outcome", type: "string" },
 ];
 
@@ -627,7 +597,7 @@ function renderPicks() {
       <td>${p.week}</td>
       <td class="col-name">${p.manager}</td>
       <td class="parlay-bet-cell">${p.bet}</td>
-      <td>${formatOddsRaw(p.odds)}</td>
+      <td>${formatPayoutOdds(p.payoutOdds)}</td>
       <td>${p.outcome}</td>
     </tr>
   `).join("");
