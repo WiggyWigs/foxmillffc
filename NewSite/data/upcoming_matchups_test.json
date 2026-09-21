@@ -1,42 +1,42 @@
 {
   "year": 2025,
-  "week": 13,
+  "week": 11,
   "matchups": [
     {
       "away_manager": "Carl Bruce",
       "away_team": "Off to Grandma",
-      "home_manager": "Brian Harris",
-      "home_team": "Tomahawk Piranhas"
-    },
-    {
-      "away_manager": "Kevin Mallon",
-      "away_team": "Salmation Nation",
-      "home_manager": "Brian Kleinhenz",
-      "home_team": "Eye on 2026"
-    },
-    {
-      "away_manager": "Greg Wigton",
-      "away_team": "The Invisible Hand",
       "home_manager": "Daniel Bahamonde",
       "home_team": "Freakin Ricans"
     },
     {
-      "away_manager": "Eddie McCumiskey",
-      "away_team": "Front Stuff",
+      "away_manager": "Brian Kleinhenz",
+      "away_team": "Eye on 2026",
       "home_manager": "Erik Servinsky",
       "home_team": "2 Studs for a 6th"
     },
     {
-      "away_manager": "John Schauder",
-      "away_team": "The Nicebois",
+      "away_manager": "Brian Harris",
+      "away_team": "Tomahawk Piranhas",
       "home_manager": "Jason Carlton",
       "home_team": "The PenixIS Mightier"
     },
     {
-      "away_manager": "Jay Nelson",
-      "away_team": "High Quality H2O",
+      "away_manager": "Kevin Mallon",
+      "away_team": "Salmation Nation",
       "home_manager": "Blake Pratt",
       "home_team": "Butt Stuff"
+    },
+    {
+      "away_manager": "Greg Wigton",
+      "away_team": "The Invisible Hand",
+      "home_manager": "Jay Nelson",
+      "home_team": "High Quality H2O"
+    },
+    {
+      "away_manager": "Eddie McCumiskey",
+      "away_team": "Front Stuff",
+      "home_manager": "John Schauder",
+      "home_team": "The Nicebois"
     }
   ]
 }

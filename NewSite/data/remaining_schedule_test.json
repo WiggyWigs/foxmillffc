@@ -1,6 +1,58 @@
 {
   "year": 2025,
   "weeks": {
+    "11": [
+      {
+        "away_manager": "Carl Bruce",
+        "home_manager": "Daniel Bahamonde"
+      },
+      {
+        "away_manager": "Brian Kleinhenz",
+        "home_manager": "Erik Servinsky"
+      },
+      {
+        "away_manager": "Brian Harris",
+        "home_manager": "Jason Carlton"
+      },
+      {
+        "away_manager": "Kevin Mallon",
+        "home_manager": "Blake Pratt"
+      },
+      {
+        "away_manager": "Greg Wigton",
+        "home_manager": "Jay Nelson"
+      },
+      {
+        "away_manager": "Eddie McCumiskey",
+        "home_manager": "John Schauder"
+      }
+    ],
+    "12": [
+      {
+        "away_manager": "Brian Kleinhenz",
+        "home_manager": "Carl Bruce"
+      },
+      {
+        "away_manager": "Daniel Bahamonde",
+        "home_manager": "Brian Harris"
+      },
+      {
+        "away_manager": "Erik Servinsky",
+        "home_manager": "Kevin Mallon"
+      },
+      {
+        "away_manager": "Jason Carlton",
+        "home_manager": "Greg Wigton"
+      },
+      {
+        "away_manager": "Blake Pratt",
+        "home_manager": "Eddie McCumiskey"
+      },
+      {
+        "away_manager": "Jay Nelson",
+        "home_manager": "John Schauder"
+      }
+    ],
     "13": [
       {
         "away_manager": "Carl Bruce",
