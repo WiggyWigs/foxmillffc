@@ -224,6 +224,7 @@ def pull_all_scores(league_id, swid, espn_s2):
 
 
 PLAYER_LINEUPS_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
+REMAINING_SCHEDULE_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
 
 
 def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
@@ -390,6 +391,70 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
         print(f"Removed stale {UPCOMING_MATCHUPS_PATH} so it doesn't show outdated data.")
 
 
+def capture_remaining_schedule(league_id, swid, espn_s2, resolved_mapping):
+    """
+    Saves EVERY not-yet-played regular-season matchup for the current year
+    (manager pairings only, no scores) to remaining_schedule.json. This is
+    what lets ingest_csv.py check every possible outcome of the games that
+    are left and decide exactly who has clinched a playoff spot or been
+    eliminated, instead of falling back to a schedule-blind bound.
+
+    Runs BEFORE ingest_csv.py (which reads the file). All-or-nothing on
+    purpose: if any week can't be fetched or any team name can't be mapped
+    to a manager, no file is written (and any stale one is removed), so
+    ingest_csv.py quietly falls back to the schedule-blind bound rather than
+    reasoning from a partial schedule.
+
+    In test-cutoff mode, "remaining" means every week after TEST_CUTOFF_WEEK,
+    read from ESPN's real historical schedule (scores ignored).
+    """
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    regular_season_weeks = league.settings.reg_season_count
+
+    def discard(reason):
+        print(f"Remaining schedule NOT saved: {reason}")
+        if REMAINING_SCHEDULE_PATH.exists():
+            REMAINING_SCHEDULE_PATH.unlink()
+            print(f"Removed stale {REMAINING_SCHEDULE_PATH}.")
+
+    weeks_out = {}
+    for week in range(1, regular_season_weeks + 1):
+        if TEST_CUTOFF_WEEK and week <= TEST_CUTOFF_WEEK:
+            continue
+        try:
+            matchups = league.scoreboard(week=week)
+        except Exception as e:
+            discard(f"fetching week {week} failed: {e}")
+            return
+
+        real = [m for m in matchups
+                if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
+        if not real:
+            discard(f"week {week} returned no matchups")
+            return
+
+        # Outside test mode, a week that already has scores has been played.
+        if not TEST_CUTOFF_WEEK and any(m.away_score != 0 or m.home_score != 0 for m in real):
+            continue
+
+        pairings = []
+        for m in real:
+            away_mgr = resolved_mapping.get((year_str, m.away_team.team_name))
+            home_mgr = resolved_mapping.get((year_str, m.home_team.team_name))
+            if not (away_mgr and home_mgr):
+                discard(f"couldn't map team name(s) in week {week}: "
+                        f"{m.away_team.team_name!r} / {m.home_team.team_name!r}")
+                return
+            pairings.append({"away_manager": away_mgr, "home_manager": home_mgr})
+        weeks_out[str(week)] = pairings
+
+    with open(REMAINING_SCHEDULE_PATH, "w") as f:
+        json.dump({"year": year, "weeks": weeks_out}, f, indent=2)
+    print(f"Wrote remaining schedule ({len(weeks_out)} week(s), {year}) to {REMAINING_SCHEDULE_PATH}")
+
+
 def main():
     league_id, swid, espn_s2 = load_credentials()
 
@@ -421,6 +486,14 @@ def main():
     if stats_path.exists():
         import shutil
         shutil.copy(stats_path, stats_snapshot_path)
+
+    # Full remaining schedule for the clinch/elimination check. Must happen
+    # BEFORE ingest_csv.py below, which reads it. Non-fatal: without it the
+    # check falls back to a schedule-blind (but still safe) bound.
+    try:
+        capture_remaining_schedule(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        print(f"WARNING: couldn't capture remaining schedule: {e}")
 
     # Chain straight into ingest_csv.py — one script run, one result.
     result = subprocess.run(
