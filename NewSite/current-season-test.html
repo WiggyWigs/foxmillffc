@@ -25,7 +25,6 @@
       <hr class="recap-thin-divider">
       <p class="recap-matchup-subtitle" id="recap-previous-subtitle"></p>
     </div>
-    <hr class="section-divider recap-tight-divider">
 
     <div id="recap-previous-wrap" class="recap-tight-wrap">
       <p class="load-state">Loading recap&hellip;</p>
@@ -48,22 +47,23 @@
             <div class="box-score-score" id="hm-home-score"></div>
           </div>
         </div>
+        <span class="hm-click-hint">Click for Recap</span>
       </div>
     </div>
 
     <hr class="section-divider recap-tight-divider">
     <div class="recap-header-block">
       <h3 class="season-subhead" id="recap-gotw-heading">Game of the Week</h3>
-      <hr class="recap-thin-divider">
       <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
+      <hr class="recap-thin-divider">
     </div>
-    <hr class="section-divider recap-tight-divider">
 
     <div id="recap-gotw-wrap" class="recap-tight-wrap">
       <p class="load-state">Loading preview&hellip;</p>
     </div>
 
     <div class="record-section" id="callouts-section" style="display:none;">
+      <hr class="section-divider recap-tight-divider">
       <h3 class="season-subhead">This Week's Notes</h3>
       <div class="callout-grid" id="callout-grid"></div>
     </div>
@@ -168,10 +168,9 @@
 <script src="current-season-test.js"></script>
 
 <div class="modal-overlay" id="streakModal" aria-hidden="true">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="streakModalTitle">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Streak details">
     <button class="modal-close" id="streakModalClose" aria-label="Close">&times;</button>
-    <div class="modal-name" id="streakModalTitle"></div>
-    <div id="streakModalBody" class="streak-modal-body"></div>
+    <div id="streakModalBody"></div>
   </div>
 </div>
 
