@@ -6,11 +6,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
   setupBoxScoreModal();
   setupStreakModal();
-  setupHonorableMentionModal();
-  setupHighestScoringPlayerModal();
   let data;
   try {
-    const res = await fetch("data/stats_test.json");
+    const res = await fetch("data/stats.json");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (err) {
@@ -77,68 +75,8 @@ function renderRecap(data) {
     gotwWrap.innerHTML = `<p class="load-state">No preview yet — check back closer to kickoff.</p>`;
   }
 
-  renderCallouts(recap.callouts || {}, data.current_highest_scoring_players);
+  renderCallouts(recap.callouts || {});
   renderBoxScores(recap.box_scores || []);
-  renderHonorableMention(recap);
-}
-
-function renderHonorableMention(recap) {
-  const wrap = document.getElementById("honorable-mention-wrap");
-  if (!wrap) return;
-
-  const hasData = recap.honorable_mention_away_team && recap.honorable_mention_home_team
-    && recap.honorable_mention_away_score != null && recap.honorable_mention_home_score != null;
-  if (!hasData) {
-    wrap.style.display = "none";
-    return;
-  }
-  wrap.style.display = "";
-
-  document.getElementById("hm-away-team").textContent = recap.honorable_mention_away_team;
-  document.getElementById("hm-away-manager").textContent = recap.honorable_mention_away_manager || "";
-  document.getElementById("hm-away-score").textContent = recap.honorable_mention_away_score;
-  document.getElementById("hm-home-team").textContent = recap.honorable_mention_home_team;
-  document.getElementById("hm-home-manager").textContent = recap.honorable_mention_home_manager || "";
-  document.getElementById("hm-home-score").textContent = recap.honorable_mention_home_score;
-
-  const card = document.getElementById("honorable-mention-card");
-  card.onclick = () => openHonorableMentionModal(recap);
-}
-
-function openHonorableMentionModal(recap) {
-  const modal = document.getElementById("honorableMentionModal");
-  const body = document.getElementById("honorableMentionModalBody");
-  const closeBtn = document.getElementById("honorableMentionModalClose");
-  if (!modal || !body) return;
-
-  body.textContent = recap.honorable_mention || "No write-up available yet.";
-
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeHonorableMentionModal() {
-  const modal = document.getElementById("honorableMentionModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupHonorableMentionModal() {
-  const overlay = document.getElementById("honorableMentionModal");
-  const closeBtn = document.getElementById("honorableMentionModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeHonorableMentionModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeHonorableMentionModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeHonorableMentionModal();
-  });
 }
 
 function renderBoxScores(boxScores) {
@@ -202,7 +140,7 @@ function setupBoxScoreModal() {
   });
 }
 
-function renderCallouts(callouts, highestScoringPlayers) {
+function renderCallouts(callouts) {
   const section = document.getElementById("callouts-section");
   const grid = document.getElementById("callout-grid");
 
@@ -225,17 +163,10 @@ function renderCallouts(callouts, highestScoringPlayers) {
   section.style.display = "";
   grid.innerHTML = items.map(renderCalloutCard).join("");
 
-  const hasWeeklyScorers = highestScoringPlayers && Array.isArray(highestScoringPlayers.weeks)
-    && highestScoringPlayers.weeks.length > 0;
-
   grid.querySelectorAll(".callout-item").forEach((el, i) => {
-    const item = items[i];
-    if (item.streak_details) {
+    if (items[i].streak_details) {
       el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openStreakModal(item));
-    } else if (item === callouts.highest_scoring_player && hasWeeklyScorers) {
-      el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openHighestScoringPlayerModal(highestScoringPlayers));
+      el.addEventListener("click", () => openStreakModal(items[i]));
     }
   });
 }
@@ -318,65 +249,6 @@ function setupStreakModal() {
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && overlay.classList.contains("active")) closeStreakModal();
-  });
-}
-
-function openHighestScoringPlayerModal(highestScoringPlayers) {
-  const modal = document.getElementById("highestScoringPlayerModal");
-  const body = document.getElementById("highestScoringPlayerModalBody");
-  const closeBtn = document.getElementById("highestScoringPlayerModalClose");
-  if (!modal || !body) return;
-
-  const rows = (highestScoringPlayers.weeks || []).slice().sort((a, b) => a.week - b.week);
-
-  body.innerHTML = `
-    <table class="record-table highest-scoring-table">
-      <thead>
-        <tr>
-          <th>Week</th>
-          <th class="col-name">Manager</th>
-          <th class="col-name">Player</th>
-          <th>Points</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map((r) => `
-          <tr>
-            <td>${r.week}</td>
-            <td class="col-name">${r.manager}</td>
-            <td class="col-name">${r.player}</td>
-            <td>${r.points}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeHighestScoringPlayerModal() {
-  const modal = document.getElementById("highestScoringPlayerModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupHighestScoringPlayerModal() {
-  const overlay = document.getElementById("highestScoringPlayerModal");
-  const closeBtn = document.getElementById("highestScoringPlayerModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeHighestScoringPlayerModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeHighestScoringPlayerModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeHighestScoringPlayerModal();
   });
 }
 
