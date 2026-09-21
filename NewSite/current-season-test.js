@@ -228,9 +228,14 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   section.style.display = "";
   grid.innerHTML = entries.map((e) =>
     ["streak", "lowest", "highest"].includes(e.kind)
-      ? renderCalloutHmCard(e.item)
+      ? renderCalloutHmCard(e.item, e.kind)
       : renderCalloutCard(e.item)
   ).join("");
+
+  equalizeCalloutHeights();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(equalizeCalloutHeights);
+  }
 
   const hasWeeklyScorers = highestScoringPlayers && Array.isArray(highestScoringPlayers.weeks)
     && highestScoringPlayers.weeks.length > 0;
@@ -255,22 +260,57 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
 }
 
 // Honorable Mention-style callout box: centered eyebrow label, name,
-// optional italic subtitle, big number, optional unit.
-function renderCalloutHmCard(item) {
+// optional italic subtitle, big number. Display wording is adjusted
+// here (not in the generator) so the live page's data stays untouched.
+function activeLabel(label) {
+  return String(label || "").replace(/\bCurrent\b/g, "Active");
+}
+
+function renderCalloutHmCard(item, kind) {
   const valueDisplay = typeof item.value === "number"
     ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
     : item.value;
 
+  let label = item.label;
+  let headline = item.headline;
+  let subtitle = item.subtitle || "";
+
+  if (kind === "streak") {
+    label = activeLabel(item.label);
+    // Ties stack on separate lines instead of "A, B".
+    const names = Array.isArray(item.streak_details) && item.streak_details.length
+      ? item.streak_details.map((e) => e.manager)
+      : String(item.headline).split(", ");
+    headline = names.join("<br>");
+  } else if (kind === "highest") {
+    label = "Superstar";
+    const manager = String(item.subtitle || "").split(" · ")[0];
+    headline = manager
+      ? `${item.headline} <span class="callout-hm-inline-mgr">${manager}</span>`
+      : item.headline;
+    subtitle = "highest scoring player";
+  }
+
   return `
     <div class="callout-hm">
-      <span class="box-score-eyebrow">${item.label}</span>
-      <div class="callout-hm-headline">${item.headline}</div>
-      ${item.subtitle ? `<div class="callout-hm-subtitle">${item.subtitle}</div>` : ""}
+      <span class="box-score-eyebrow">${label}</span>
+      <div class="callout-hm-headline">${headline}</div>
+      ${subtitle ? `<div class="callout-hm-subtitle">${subtitle}</div>` : ""}
       <div class="callout-hm-value">${valueDisplay}</div>
-      ${item.unit ? `<div class="callout-hm-unit">${item.unit}</div>` : ""}
     </div>
   `;
 }
+
+// Every Honorable Mention-style box takes the height of the tallest one.
+function equalizeCalloutHeights() {
+  const cards = Array.from(document.querySelectorAll("#callout-grid .callout-hm"));
+  if (cards.length === 0) return;
+  cards.forEach((c) => { c.style.minHeight = ""; });
+  const tallest = Math.max(...cards.map((c) => c.getBoundingClientRect().height));
+  cards.forEach((c) => { c.style.minHeight = `${Math.ceil(tallest)}px`; });
+}
+
+window.addEventListener("resize", equalizeCalloutHeights);
 
 function renderCalloutCard(item) {
   if (item.style === "sentence") {
@@ -441,12 +481,13 @@ function renderRecordBooks(data) {
 
 function openStreakModal(item) {
   const modal = document.getElementById("streakModal");
+  const badge = document.getElementById("streakModalBadge");
   const body = document.getElementById("streakModalBody");
   const closeBtn = document.getElementById("streakModalClose");
   if (!modal || !body) return;
 
-  // One block per manager: header text, name, then that manager's
-  // games. A tie simply repeats the block rather than stacking names.
+  // Header once, then one block per manager: name, then their games.
+  if (badge) badge.textContent = activeLabel(item.label);
   body.innerHTML = item.streak_details.map((entry) => {
     const gamesList = entry.games.map((g) => `
       <div class="streak-game-line">
@@ -455,7 +496,6 @@ function openStreakModal(item) {
       </div>`).join("");
     return `
       <div class="streak-modal-block">
-        <div class="modal-badge">${item.label}</div>
         <div class="modal-name">${entry.manager}</div>
         <div class="streak-modal-body">${gamesList}</div>
       </div>`;
