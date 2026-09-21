@@ -1791,3 +1791,9 @@ main {
 .streak-modal-block:first-of-type {
   margin-top: 0.25rem;
 }
+
+
+/* Record Books topic label: slightly larger on the TEST page */
+.sentence-label.sentence-label-lg {
+  font-size: 0.85rem;
+}
