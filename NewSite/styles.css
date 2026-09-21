@@ -1763,3 +1763,31 @@ main {
 .streak-modal-block + .streak-modal-block {
   margin-top: 1.75rem;
 }
+
+
+/* Lower-section headings on the TEST page: drop the full-width underline
+   and use the same short centered TGL as the recap headers. */
+.record-section h3.tgl-heading {
+  border-bottom: none;
+  min-height: 0;
+  padding-bottom: 0;
+  margin-bottom: 0.35rem;
+}
+
+.tgl-heading + .recap-thin-divider {
+  margin-bottom: 0.9rem;
+}
+
+/* Player name + manager on one line in the Superstar box */
+.callout-hm-inline-mgr {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.streak-modal-block:first-of-type {
+  margin-top: 0.25rem;
+}
