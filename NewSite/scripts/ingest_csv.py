@@ -1354,7 +1354,8 @@ def compute_playoff_probabilities(all_games, roster_names, model):
 
     After the tie-break nudges, any manager who has mathematically clinched
     a playoff spot is set to 100% and flagged "clinched": true; any manager
-    mathematically eliminated is set to 0% and flagged "eliminated": true
+    mathematically eliminated is set to 0% and flagged "eliminated": true;
+    everyone else is kept within 1%-99%
     (see compute_playoff_status — exact when the full remaining schedule is
     available and few enough games remain, otherwise a schedule-blind bound).
 
@@ -1462,9 +1463,13 @@ def compute_playoff_probabilities(all_games, roster_names, model):
         e["clinched"] = e["manager"] in clinched
         e["eliminated"] = e["manager"] in eliminated
         if e["clinched"]:
-            e["probability"] = 100.0
+            e["probability"] = 100.0      # displayed as "Clinched"
         elif e["eliminated"]:
-            e["probability"] = 0.0
+            e["probability"] = 0.0        # displayed as "Eliminated"
+        else:
+            # Still alive: never show 100% (that's reserved for a clinch) or
+            # 0% (reserved for elimination), however extreme the model gets.
+            e["probability"] = round(min(99.0, max(1.0, e["probability"])), 1)
 
     entries.sort(key=lambda e: -e["probability"])
     return {"season": current_year, "visible": True, "current_week": current_week,
