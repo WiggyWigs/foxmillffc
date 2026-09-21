@@ -54,8 +54,8 @@
     <hr class="section-divider recap-tight-divider">
     <div class="recap-header-block">
       <h3 class="season-subhead" id="recap-gotw-heading">Game of the Week</h3>
-      <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
       <hr class="recap-thin-divider">
+      <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
     </div>
 
     <div id="recap-gotw-wrap" class="recap-tight-wrap">
@@ -64,20 +64,23 @@
 
     <div class="record-section" id="callouts-section" style="display:none;">
       <hr class="section-divider recap-tight-divider">
-      <h3 class="season-subhead">This Week's Notes</h3>
+      <h3 class="season-subhead tgl-heading">This Week's Notes</h3>
+      <hr class="recap-thin-divider">
       <div class="callout-grid" id="callout-grid"></div>
     </div>
 
     <hr class="section-divider" id="record-books-divider" style="display:none;">
     <div class="record-section" id="record-books-section" style="display:none;">
-      <h3 class="season-subhead">Welcome to the Record Books</h3>
+      <h3 class="season-subhead tgl-heading">Welcome to the Record Books</h3>
+      <hr class="recap-thin-divider">
       <div id="record-books-grid" class="sentence-list"></div>
     </div>
 
     <hr class="section-divider">
 
     <div class="record-section">
-      <h3 class="season-subhead">Standings</h3>
+      <h3 class="season-subhead tgl-heading">Standings</h3>
+      <hr class="recap-thin-divider">
       <p class="msi-meta">Sorted by win %. Ties break by head-to-head record, then total points scored.</p>
       <div id="standings-wrap">
         <p class="load-state">Loading standings&hellip;</p>
@@ -87,7 +90,8 @@
     <hr class="section-divider">
 
     <div class="record-section">
-      <h3 class="season-subhead">Power Rankings</h3>
+      <h3 class="season-subhead tgl-heading">Power Rankings</h3>
+      <hr class="recap-thin-divider">
       <p class="msi-meta" id="power-season-label">Current season strength, based on three factors weighed equally.</p>
 
       <div id="power-wrap">
@@ -118,7 +122,8 @@
     <hr class="section-divider">
 
     <div class="record-section">
-      <h3 class="season-subhead">Playoff Probability</h3>
+      <h3 class="season-subhead tgl-heading">Playoff Probability</h3>
+      <hr class="recap-thin-divider">
       <p class="msi-meta" id="playoff-prob-meta"></p>
       <div id="playoff-prob-wrap"></div>
     </div>
@@ -170,6 +175,7 @@
 <div class="modal-overlay" id="streakModal" aria-hidden="true">
   <div class="modal-card" role="dialog" aria-modal="true" aria-label="Streak details">
     <button class="modal-close" id="streakModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge" id="streakModalBadge"></div>
     <div id="streakModalBody"></div>
   </div>
 </div>
