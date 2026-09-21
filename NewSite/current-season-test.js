@@ -712,7 +712,7 @@ function renderPlayoffProbability(data) {
     <tr>
       <td class="col-name">${row.manager}</td>
       <td>${row.wins}-${row.losses}</td>
-      <td class="msi-score">${row.clinched ? "<strong>Clinched</strong>" : `${row.probability}%`}</td>
+      <td class="msi-score">${row.clinched ? "<strong>Clinched</strong>" : (row.eliminated ? "Eliminated" : `${row.probability}%`)}</td>
       <td class="num col-extra">${row.points_scored.toFixed(1)}</td>
       <td class="num col-extra">${row.schedule_difficulty >= 0 ? "+" : ""}${(row.schedule_difficulty * 100).toFixed(1)}%</td>
     </tr>
