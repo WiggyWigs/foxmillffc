@@ -284,10 +284,7 @@ function renderCalloutHmCard(item, kind) {
     headline = names.join("<br>");
   } else if (kind === "highest") {
     label = "Superstar";
-    const manager = String(item.subtitle || "").split(" · ")[0];
-    headline = manager
-      ? `${item.headline} <span class="callout-hm-inline-mgr">${manager}</span>`
-      : item.headline;
+    headline = item.headline;
     subtitle = "highest scoring player";
   }
 
@@ -470,7 +467,7 @@ function renderRecordBooks(data) {
 
   wrap.innerHTML = items.map((item) => `
     <div class="sentence-item">
-      <span class="sentence-label">${RECORD_BOOKS_LABELS[item.kind]}</span>
+      <span class="sentence-label sentence-label-lg">${RECORD_BOOKS_LABELS[item.kind]}</span>
       <p class="sentence-text">${item.sentence}</p>
     </div>
   `).join("");
