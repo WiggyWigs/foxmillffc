@@ -60,20 +60,28 @@
 // Week — so this is deterministic even when several weeks land on the
 // exact same W%.
 //
-// The Best Weeks table ONLY (not Worst Weeks — Greg asked for this on
-// the winning-percentage side only) carries one extra column,
-// Potential: the theoretical payout of a single $5 parlay built from
-// EVERY counted leg that Year+Week, at each leg's own individual
-// odds — i.e. what that week would have paid out if every single leg
-// had hit, regardless of whether it actually did. This is NOT the
-// same thing as that week's collective W%: a week can show a strong
-// W% (most legs hit) while still being a real-money loss overall,
-// because an actual all-or-nothing parlay needs every leg to hit, not
-// just most of them. Potential is the upside number, not a real
-// payout record — it doesn't check whether the week actually swept.
-// Math: each leg's American odds -> decimal multiplier
-// (positive: 1 + odds/100; negative: 1 + 100/|odds|), multiply every
-// leg's multiplier together for that week, multiply by the $5 stake.
+// The Best Weeks table ONLY (not Worst Weeks) carries one extra
+// column, Potential: the theoretical payout of a single $5 parlay
+// built from that Year+Week's counted legs, regardless of whether it
+// actually hit — the upside number, not a real payout record. Math:
+// multiply together every leg's Payout_Odds value (that week's own
+// sheet column — the pre-computed DECIMAL odds for that leg, e.g.
+// 5.50, not +450), multiply by the $5 stake.
+//
+// A leg with a blank Payout_Odds is EXCLUDED from that product
+// entirely — not derived from the American Odds column, not treated
+// as a placeholder. Per Greg, blank only happens for one of two
+// reasons: that manager didn't enter a leg for that week, or the game
+// is still in progress, so there's nothing real to multiply in yet.
+// Either way, the leg contributes nothing (mathematically the same as
+// multiplying by 1). Practical effect: a week with games still in
+// progress shows a Potential based only on the legs that have
+// actually settled so far, and will change once the rest finish.
+// (Note the sheet used to have two columns both literally named
+// "Odds" — the American value and this decimal one — which collided
+// silently in the CSV parse, since a duplicate header just overwrites
+// the earlier one when a row becomes an object. Renaming the decimal
+// column to Payout_Odds fixed that.)
 // $5 is hardcoded per Greg's confirmation that the stake has always
 // been $5 flat, every year/week on record — if that ever changes,
 // this needs to become a per-week value instead of a constant.
@@ -203,6 +211,7 @@ function normalizePicks(rows, roster) {
     const bet = row["Bet"] || "";
     const odds = row["Odds"] || "";
     const outcome = row["Outcome"] || "";
+    const payoutOddsRaw = row["Payout_Odds"] || "";
     const rowNum = idx + 2; // +1 for header row, +1 for 1-indexing
 
     if (!yearRaw || !weekRaw || !name || !bet) {
@@ -233,6 +242,15 @@ function normalizePicks(rows, roster) {
       return;
     }
 
+    // Payout_Odds is this leg's precomputed DECIMAL odds. A blank
+    // value here means either no leg was entered for that manager
+    // that week, or the game hasn't finished yet — either way this
+    // leg contributes nothing to the Best Weeks table's Potential
+    // product (mathematically the same as a 1x factor). No fallback
+    // derivation from the American Odds column anymore.
+    const payoutOddsParsed = parseFloat(payoutOddsRaw);
+    const payoutOdds = Number.isNaN(payoutOddsParsed) ? null : payoutOddsParsed;
+
     picks.push({
       year,
       week: weekRaw,
@@ -240,6 +258,7 @@ function normalizePicks(rows, roster) {
       bet,
       odds,
       oddsNum: parseOdds(odds),
+      payoutOdds,
       outcome,
       outcomeNorm,
     });
@@ -256,17 +275,6 @@ function parseOdds(odds) {
   if (!s) return 0;
   const n = parseFloat(s.replace(/[^0-9.+-]/g, ""));
   return Number.isNaN(n) ? 0 : n;
-}
-
-// American odds -> decimal payout multiplier (what a $1 stake on that
-// single leg alone would return in total, including the stake back).
-// +450 -> 5.50, -110 -> 1.91. Used only for the Best Weeks table's
-// Potential column, where every counted leg's multiplier for a week
-// gets multiplied together to price the week as one combined parlay.
-function americanToDecimal(odds) {
-  if (odds > 0) return 1 + odds / 100;
-  if (odds < 0) return 1 + 100 / Math.abs(odds);
-  return 1; // 0 shouldn't occur in real American odds; no-op multiplier as a guard
 }
 
 // All Picks' Odds column: reformats a row's raw Odds text to exactly
@@ -494,7 +502,9 @@ function renderRollup() {
 // record per week: { year, week, wins, losses, decided, winPct,
 // potential }. potential is the Best-Weeks-only "what would a $5
 // parlay of every leg that week have paid if it had all hit" number —
-// see the big comment block at the top of this file.
+// see the big comment block at the top of this file. Legs with no
+// Payout_Odds yet (no entry that week, or the game's still in
+// progress) simply don't get multiplied in.
 function computeWeeklyRecords(picks) {
   const byWeek = new Map();
   picks.forEach((p) => {
@@ -505,7 +515,9 @@ function computeWeeklyRecords(picks) {
     const w = byWeek.get(key);
     if (isWin(p)) w.wins++;
     else if (isLoss(p)) w.losses++;
-    w.decimalProduct *= americanToDecimal(p.oddsNum);
+    if (p.payoutOdds != null) {
+      w.decimalProduct *= p.payoutOdds;
+    }
   });
   return Array.from(byWeek.values())
     .map((w) => {
