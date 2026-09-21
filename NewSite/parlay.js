@@ -16,12 +16,19 @@
 // non-empty Odds value AND a decided Outcome ("Win" or "Loss",
 // case-insensitive). A row missing either one is dropped entirely: it
 // never appears in the All Picks table and never enters any Standings
-// math (W, L, W%, Avg Odds, PISS, Winning Differential, ASSWIPE).
-// "Push", "Pending", blank Outcome, or blank Odds are all treated the
-// same way — excluded, not just uncounted. (This is a stricter rule
-// than the old "ties don't count toward the record" convention used
-// elsewhere on the site: here the whole row disappears, not just its
-// contribution to the decided-games denominator.)
+// math (W, L, W%, Avg Odds, PISS, Winning Differential, ASSWIPE), or
+// the Best/Worst Weeks tables below. "Push", "Pending", blank
+// Outcome, or blank Odds are all treated the same way — excluded, not
+// just uncounted. (This is a stricter rule than the old "ties don't
+// count toward the record" convention used elsewhere on the site:
+// here the whole row disappears, not just its contribution to the
+// decided-games denominator.)
+//
+// Every "Name" value is checked against data/manager_roster.json —
+// spell it EXACTLY as it appears there (e.g. "Daniel Bahamonde", not
+// "Dan"). A name that doesn't match drops that row silently (only a
+// console.warn in DevTools), which is the single most common reason
+// a manager appears to be completely missing from the page.
 //
 // ASSWIPE (Adjusted Standardized Score - Weighted Individual Parlay
 // Evaluator) = PISS + (Winning Differential / 10), where:
@@ -43,6 +50,34 @@
 //     the average is actually negative (toFixed already supplies that,
 //     nothing extra added).
 //
+// Best/Worst Weeks (Collective W%): pools EVERY manager's counted
+// picks for a given Year+Week together (not per-manager) and ranks
+// weeks by that pooled W%. Top 5 highest / bottom 5 lowest, always
+// all-time — these two tables have no Year filter of their own, on
+// purpose, since "best/worst week ever" only means something across
+// the whole history. Ties break first by decided-pick count (a bigger
+// sample is a stronger claim to the extreme), then by Year, then by
+// Week — so this is deterministic even when several weeks land on the
+// exact same W%.
+//
+// The Best Weeks table ONLY (not Worst Weeks — Greg asked for this on
+// the winning-percentage side only) carries one extra column,
+// Potential: the theoretical payout of a single $5 parlay built from
+// EVERY counted leg that Year+Week, at each leg's own individual
+// odds — i.e. what that week would have paid out if every single leg
+// had hit, regardless of whether it actually did. This is NOT the
+// same thing as that week's collective W%: a week can show a strong
+// W% (most legs hit) while still being a real-money loss overall,
+// because an actual all-or-nothing parlay needs every leg to hit, not
+// just most of them. Potential is the upside number, not a real
+// payout record — it doesn't check whether the week actually swept.
+// Math: each leg's American odds -> decimal multiplier
+// (positive: 1 + odds/100; negative: 1 + 100/|odds|), multiply every
+// leg's multiplier together for that week, multiply by the $5 stake.
+// $5 is hardcoded per Greg's confirmation that the stake has always
+// been $5 flat, every year/week on record — if that ever changes,
+// this needs to become a per-week value instead of a constant.
+//
 // Week column ("Week" filter + sort in All Picks) uses a NATURAL sort,
 // not a plain text or plain numeric one: values like "13",
 // "13a - Thanksgiving", "14" sort as 13, 13a - Thanksgiving, 14 —
@@ -50,14 +85,6 @@
 // matter what order those rows happen to sit in on the sheet itself.
 // A week with no leading number at all (e.g. "Playoffs") sorts after
 // every numbered week.
-//
-// Every "Name" value is checked against data/manager_roster.json (the
-// same roster file every other page uses). An unrecognized name is
-// dropped rather than creating a new, misspelled entry in the Parlay
-// Standings table — but since this now runs in each visitor's
-// browser, that rejection only shows up as a console.warn in
-// DevTools, not anywhere Greg would normally see it. Worth an
-// occasional manual check of the sheet against the roster.
 //
 // Avg Odds and ASSWIPE column headers each render TWO versions: a
 // one-line ".th-label-desktop" span ("Avg Odds" / "ASSWIPE") and a
@@ -69,6 +96,7 @@
 const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9gbWRe2LfduGjbKHt5cWdq8p2LT_vTXgDkCJetDh3v-5cDD2LA5NBI4Du-7n7VGnZolw-DbcsyeRG/pub?gid=0&single=true&output=csv";
 const ROSTER_URL = "data/manager_roster.json";
+const PARLAY_STAKE = 5; // Flat $5 per week, confirmed — see comment block above.
 
 let allPicks = [];
 
@@ -91,6 +119,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("rollup-wrap").innerHTML =
       `<p class="load-state">Couldn't load parlay data (${err.message}). If this keeps happening, ` +
       `confirm the sheet is still Published to the web (File &gt; Share &gt; Publish to web) as CSV.</p>`;
+    document.getElementById("best-weeks-wrap").innerHTML = "";
+    document.getElementById("worst-weeks-wrap").innerHTML = "";
     document.getElementById("picks-wrap").innerHTML = "";
     return;
   }
@@ -100,6 +130,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (allPicks.length === 0) {
     document.getElementById("rollup-wrap").innerHTML =
       `<p class="load-state">No parlay picks recorded yet.</p>`;
+    document.getElementById("best-weeks-wrap").innerHTML = "";
+    document.getElementById("worst-weeks-wrap").innerHTML = "";
     document.getElementById("picks-wrap").innerHTML = "";
     return;
   }
@@ -107,6 +139,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   populateFilterOptions();
   wireFilterEvents();
   renderRollup();
+  renderWeeklyExtremes();
   renderPicks();
 });
 
@@ -225,6 +258,17 @@ function parseOdds(odds) {
   return Number.isNaN(n) ? 0 : n;
 }
 
+// American odds -> decimal payout multiplier (what a $1 stake on that
+// single leg alone would return in total, including the stake back).
+// +450 -> 5.50, -110 -> 1.91. Used only for the Best Weeks table's
+// Potential column, where every counted leg's multiplier for a week
+// gets multiplied together to price the week as one combined parlay.
+function americanToDecimal(odds) {
+  if (odds > 0) return 1 + odds / 100;
+  if (odds < 0) return 1 + 100 / Math.abs(odds);
+  return 1; // 0 shouldn't occur in real American odds; no-op multiplier as a guard
+}
+
 // All Picks' Odds column: reformats a row's raw Odds text to exactly
 // two decimal places, keeping whichever sign character (if any) was
 // actually typed in the sheet — someone's literal entry, not second-
@@ -243,6 +287,10 @@ function formatOddsRaw(oddsRaw) {
 // shows its "-" (toFixed(2) supplies that on its own; nothing added).
 function formatOddsAvg(n) {
   return n.toFixed(2);
+}
+
+function formatCurrency(n) {
+  return `$${n.toFixed(2)}`;
 }
 
 function isWin(p) { return p.outcomeNorm === "win" || p.outcomeNorm === "w"; }
@@ -437,6 +485,102 @@ function renderRollup() {
   `;
 
   attachHeaderHandlers(wrap, ROLLUP_COLUMNS, rollupState, renderRollup);
+}
+
+// --- Best/Worst Weeks (collective W% across every manager, per Year+Week) ---
+
+// Pools every counted pick (already Odds+decided-only, per
+// normalizePicks) by Year+Week regardless of manager, and returns one
+// record per week: { year, week, wins, losses, decided, winPct,
+// potential }. potential is the Best-Weeks-only "what would a $5
+// parlay of every leg that week have paid if it had all hit" number —
+// see the big comment block at the top of this file.
+function computeWeeklyRecords(picks) {
+  const byWeek = new Map();
+  picks.forEach((p) => {
+    const key = `${p.year}||${p.week}`;
+    if (!byWeek.has(key)) {
+      byWeek.set(key, { year: p.year, week: p.week, wins: 0, losses: 0, decimalProduct: 1 });
+    }
+    const w = byWeek.get(key);
+    if (isWin(p)) w.wins++;
+    else if (isLoss(p)) w.losses++;
+    w.decimalProduct *= americanToDecimal(p.oddsNum);
+  });
+  return Array.from(byWeek.values())
+    .map((w) => {
+      const decided = w.wins + w.losses;
+      return {
+        ...w,
+        decided,
+        winPct: decided ? w.wins / decided : 0,
+        potential: PARLAY_STAKE * w.decimalProduct,
+      };
+    })
+    .filter((w) => w.decided > 0);
+}
+
+// direction "best" = highest W% first, "worst" = lowest W% first.
+// Ties break by decided-pick count (bigger sample = stronger claim to
+// the extreme), then by Year, then by Week — deterministic either way.
+function rankWeeks(weeklyRecords, direction) {
+  const sorted = [...weeklyRecords].sort((a, b) => {
+    const pctCmp = direction === "best" ? b.winPct - a.winPct : a.winPct - b.winPct;
+    if (pctCmp !== 0) return pctCmp;
+    if (b.decided !== a.decided) return b.decided - a.decided;
+    if (b.year !== a.year) return b.year - a.year;
+    return compareWeek(b.week, a.week);
+  });
+  return sorted.slice(0, 5);
+}
+
+function renderWeeklyExtremesTable(elementId, rows, opts = {}) {
+  const wrap = document.getElementById(elementId);
+  if (!wrap) return;
+
+  if (rows.length === 0) {
+    wrap.innerHTML = `<p class="load-state">Not enough decided picks yet.</p>`;
+    return;
+  }
+
+  const showPotential = !!opts.showPotential;
+
+  const headerCells = `
+    <tr>
+      <th>#</th>
+      <th>Year</th>
+      <th>Week</th>
+      <th>W-L</th>
+      <th>W%</th>
+      ${showPotential ? "<th>Potential</th>" : ""}
+    </tr>
+  `;
+
+  const bodyRows = rows.map((r, idx) => `
+    <tr>
+      <td class="rank-cell">#${idx + 1}</td>
+      <td>${r.year}</td>
+      <td>${r.week}</td>
+      <td>${r.wins}-${r.losses}</td>
+      <td>${(r.winPct * 100).toFixed(1)}%</td>
+      ${showPotential ? `<td>${formatCurrency(r.potential)}</td>` : ""}
+    </tr>
+  `).join("");
+
+  wrap.innerHTML = `
+    <div class="table-scroll">
+      <table class="record-table weekly-extremes-table">
+        <thead>${headerCells}</thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderWeeklyExtremes() {
+  const weekly = computeWeeklyRecords(allPicks);
+  renderWeeklyExtremesTable("best-weeks-wrap", rankWeeks(weekly, "best"), { showPotential: true });
+  renderWeeklyExtremesTable("worst-weeks-wrap", rankWeeks(weekly, "worst"));
 }
 
 // --- All Picks table ---
