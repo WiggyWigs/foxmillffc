@@ -29,6 +29,7 @@ import sys
 from pathlib import Path
 from datetime import date
 from collections import defaultdict
+from fractions import Fraction
 
 try:
     from PIL import Image, ImageDraw, ImageFont
@@ -40,6 +41,7 @@ SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "data"
 ROSTER_PATH = DATA_DIR / "manager_roster.json"
 STATS_PATH = DATA_DIR / os.environ.get("STATS_FILENAME", "stats.json")
+REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
 ASSETS_DIR = SCRIPT_DIR.parent / "assets"
 BANNER_BLANK_PATH = ASSETS_DIR / "banner_blank_25wins.png"
 BANNER_OUTPUT_PATH = DATA_DIR / os.environ.get("BANNER_FILENAME", "fastest-to-25-wins-banner.png")  # local working copy only —
@@ -969,6 +971,51 @@ def compute_standings(all_games, roster_names):
 
 MIN_HISTORICAL_SAMPLES = 4  # below this, an exact bucket is too noisy to trust
 
+# Tie-break adjustments for managers sharing the exact same record. Each pair
+# of tied managers is compared on two factors; the bigger the gap, the bigger
+# the swing, up to +/-5 percentage points per factor (+/-10 combined).
+# A gap must EXCEED a threshold to earn its tier (a gap of exactly 15.00
+# points earns nothing; 15.01 earns 1%).
+TIE_POINTS_THRESHOLDS = [15, 30, 45, 60, 75]   # total points scored -> 1%..5%
+TIE_SCHED_THRESHOLDS = [4, 7, 10, 13, 16]      # schedule-difficulty gap, in
+                                               # percentage points -> 1%..5%
+
+
+def _tier_pct(gap, thresholds):
+    """Number of thresholds the gap strictly exceeds (0-5) == percentage points."""
+    return sum(1 for t in thresholds if gap > t)
+
+
+def compute_tie_adjustments(group):
+    """
+    group: entries sharing the same (wins, losses); each has "manager",
+    "points_scored", and "schedule_difficulty" (a fraction, 0.215 = +21.5%).
+
+    Every manager is compared head-to-head with every OTHER manager in the
+    group. Each comparison earns +tier for the better side and -tier for the
+    worse side (more points = better; lower schedule_difficulty = harder
+    schedule = better). A manager's adjustment per factor is the average of
+    their comparisons, so it is always within +/-5, and the adjustments
+    across a group sum to zero. Returns {manager: (points_adj, sched_adj)}.
+    """
+    k = len(group)
+    out = {}
+    for e in group:
+        pts_total = sched_total = 0.0
+        for o in group:
+            if o is e:
+                continue
+            pts_gap = round(e["points_scored"] - o["points_scored"], 2)
+            pts_tier = _tier_pct(abs(pts_gap), TIE_POINTS_THRESHOLDS)
+            pts_total += pts_tier if pts_gap > 0 else -pts_tier
+
+            # lower schedule_difficulty is better -> flip the sign
+            sched_gap = round((o["schedule_difficulty"] - e["schedule_difficulty"]) * 100, 4)
+            sched_tier = _tier_pct(abs(sched_gap), TIE_SCHED_THRESHOLDS)
+            sched_total += sched_tier if sched_gap > 0 else -sched_tier
+        out[e["manager"]] = (pts_total / (k - 1), sched_total / (k - 1))
+    return out
+
 
 def _manager_week_by_week_records(season_games, week_range):
     """
@@ -995,6 +1042,236 @@ def _manager_week_by_week_records(season_games, week_range):
         for mgr, (w, l) in record.items():
             out[mgr][wk] = (w, l)
     return out
+
+
+# League structure (6-team playoff, 2 byes; 14-game regular season).
+PLAYOFF_SPOTS = 6
+REGULAR_SEASON_GAMES = 14
+
+
+def compute_clinched_playoffs(records, games_played,
+                              total_games=REGULAR_SEASON_GAMES, spots=PLAYOFF_SPOTS):
+    """
+    Which managers have mathematically clinched a playoff spot regardless
+    of who plays whom, what anyone scores, or how tiebreakers resolve.
+
+    records:      {manager: (wins, losses)} (ties are excluded, matching
+                  the standings' win% convention)
+    games_played: {manager: games played, ties included}
+
+    For each manager X, assume the WORST case for X (loses every remaining
+    game) and the BEST case for every rival Y (wins every remaining game).
+    Any rival whose best-case win% is >= X's worst-case win% could finish
+    at or above X — a tie counts against X, since tiebreakers (head-to-head,
+    then points) can't be known in advance. X has clinched if at most
+    (spots - 1) rivals could finish at or above them: X is then guaranteed
+    a top-`spots` finish.
+
+    This deliberately ignores the remaining schedule, so it is SOUND (never
+    reports a false clinch) but not COMPLETE — e.g. two rivals who still
+    have to play each other can't both win, and this bound can't see that.
+    Fractions are used so win% comparisons are exact.
+    """
+    worst = {}
+    best = {}
+    for mgr, (w, l) in records.items():
+        remaining = max(0, total_games - games_played.get(mgr, 0))
+        worst[mgr] = Fraction(w, w + l + remaining) if (w + l + remaining) else Fraction(0)
+        best[mgr] = Fraction(w + remaining, w + l + remaining) if (w + l + remaining) else Fraction(0)
+
+    clinched = set()
+    for mgr in records:
+        can_catch = sum(1 for other in records
+                        if other != mgr and best[other] >= worst[mgr])
+        if can_catch <= spots - 1:
+            clinched.add(mgr)
+    return clinched
+
+
+def compute_eliminated_playoffs(records, games_played,
+                                total_games=REGULAR_SEASON_GAMES, spots=PLAYOFF_SPOTS):
+    """
+    Mirror of compute_clinched_playoffs: X is eliminated when at least
+    `spots` rivals are guaranteed to finish STRICTLY above X's best case.
+    X wins every remaining game; each rival loses every remaining game; any
+    rival whose worst-case win% still beats X's best-case win% is locked
+    above X. A tie is not counted as "above" (tiebreakers are unknown), so
+    a manager is only eliminated once the math leaves no room at all.
+    Schedule-blind, so sound but not complete (see _exact_playoff_status).
+    """
+    worst = {}
+    best = {}
+    for mgr, (w, l) in records.items():
+        remaining = max(0, total_games - games_played.get(mgr, 0))
+        denom = w + l + remaining
+        worst[mgr] = Fraction(w, denom) if denom else Fraction(0)
+        best[mgr] = Fraction(w + remaining, denom) if denom else Fraction(0)
+
+    eliminated = set()
+    for mgr in records:
+        locked_above = sum(1 for other in records
+                           if other != mgr and worst[other] > best[mgr])
+        if locked_above >= spots:
+            eliminated.add(mgr)
+    return eliminated
+
+
+# Exact scenario checking is 2^games outcomes, so it only runs when few
+# enough games remain (18 games = 3 full weeks of 6 = 262,144 outcomes).
+# Earlier in the season the schedule-blind bounds are used on their own.
+MAX_EXACT_GAMES = 18
+
+
+def load_remaining_schedule(managers, games_played, current_year, current_week,
+                            total_games=REGULAR_SEASON_GAMES, path=None):
+    """
+    Loads and STRICTLY validates data/remaining_schedule.json. Returns a list
+    of weeks (each a list of (manager_a, manager_b)) or None if the file is
+    missing or anything about it is off — in which case the caller falls back
+    to the schedule-blind bounds. Better no exact answer than one computed
+    from a wrong schedule.
+
+    Checks: same season; contains every week from current_week+1 through
+    total_games; every week pairs each active manager exactly once; and each
+    manager's number of scheduled games equals the games they have left.
+    """
+    path = path or REMAINING_SCHEDULE_PATH
+    if not path.exists():
+        return None
+
+    def reject(reason):
+        print(f"Remaining schedule ignored ({reason}); using schedule-blind clinch/elimination bounds.")
+        return None
+
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        if int(data.get("year", -1)) != int(current_year):
+            return reject("wrong season")
+        weeks = data.get("weeks", {})
+        needed = [str(w) for w in range(current_week + 1, total_games + 1)]
+        if any(w not in weeks for w in needed):
+            return reject("missing weeks")
+
+        managers = set(managers)
+        out = []
+        scheduled = defaultdict(int)
+        for w in needed:
+            seen = []
+            pairs = []
+            for m in weeks[w]:
+                a, b = m["away_manager"], m["home_manager"]
+                pairs.append((a, b))
+                seen.extend([a, b])
+            if sorted(seen) != sorted(managers):
+                return reject(f"week {w} doesn't pair every manager exactly once")
+            for mgr in seen:
+                scheduled[mgr] += 1
+            out.append(pairs)
+
+        for mgr in managers:
+            if scheduled[mgr] != max(0, total_games - games_played.get(mgr, 0)):
+                return reject(f"{mgr}'s scheduled games don't match games remaining")
+        return out
+    except (ValueError, KeyError, TypeError, AttributeError, OSError) as e:
+        return reject(f"unreadable: {e}")
+
+
+def _exact_playoff_status(records, schedule, targets, spots=PLAYOFF_SPOTS):
+    """
+    Exhaustively plays out every win/loss combination of the remaining games
+    in `schedule` (list of weeks of (a, b) pairs) and, for each manager in
+    `targets`, decides:
+      clinched   - in EVERY outcome, at most spots-1 rivals finish at or
+                   above them (ties counted against them)
+      eliminated - in EVERY outcome at least `spots` rivals finish strictly
+                   above them (ties are not counted as "above")
+    Anyone who can both make and miss the field in some outcome is neither.
+
+    Assumes every remaining game produces a winner (a tied game is
+    practically impossible with two-decimal scoring). Past ties are handled:
+    win% excludes ties, as the standings do. Unresolvable tiebreaks are
+    treated as unresolved both ways, so a manager stuck in a tie for the last
+    spot is reported as neither clinched nor eliminated.
+    """
+    names = list(records)
+    idx = {m: i for i, m in enumerate(names)}
+    n = len(names)
+    games = [(idx[a], idx[b]) for week in schedule for (a, b) in week]
+
+    remaining = [0] * n
+    for a, b in games:
+        remaining[a] += 1
+        remaining[b] += 1
+    base_w = [records[m][0] for m in names]
+    denom = [records[m][0] + records[m][1] + remaining[i] for i, m in enumerate(names)]
+    # pct[i][k]: win% if team i wins k of its remaining games. Identical
+    # fractions give bit-identical floats (correctly rounded division), so
+    # equality comparisons below are exact.
+    pct = [[(base_w[i] + k) / denom[i] if denom[i] else 0.0 for k in range(remaining[i] + 1)]
+           for i in range(n)]
+
+    alive = {idx[m] for m in targets}
+    can_miss = set()   # some outcome where they could finish outside the field
+    can_make = set()   # some outcome where they could finish inside the field
+
+    for mask in range(1 << len(games)):
+        wins = [0] * n
+        for g, (a, b) in enumerate(games):
+            if (mask >> g) & 1:
+                wins[a] += 1
+            else:
+                wins[b] += 1
+        p = [pct[i][wins[i]] for i in range(n)]
+
+        for x in list(alive):
+            px = p[x]
+            at_or_above = 0
+            strictly_above = 0
+            for y in range(n):
+                if y == x:
+                    continue
+                if p[y] > px:
+                    strictly_above += 1
+                    at_or_above += 1
+                elif p[y] == px:
+                    at_or_above += 1
+            if 1 + at_or_above > spots:
+                can_miss.add(x)
+            if 1 + strictly_above <= spots:
+                can_make.add(x)
+            if x in can_miss and x in can_make:
+                alive.discard(x)   # undecided for sure; stop checking them
+        if not alive:
+            break
+
+    clinched = {names[x] for x in alive if x not in can_miss}
+    eliminated = {names[x] for x in alive if x not in can_make}
+    return clinched, eliminated
+
+
+def compute_playoff_status(records, games_played, schedule=None,
+                           total_games=REGULAR_SEASON_GAMES, spots=PLAYOFF_SPOTS):
+    """
+    Returns (clinched, eliminated, method). Always runs the cheap,
+    schedule-blind bounds first; if a validated remaining schedule is
+    supplied and few enough games remain, follows up with the exact
+    scenario check for everyone still undecided. method is "exact" or
+    "bound".
+    """
+    clinched = compute_clinched_playoffs(records, games_played, total_games, spots)
+    eliminated = compute_eliminated_playoffs(records, games_played, total_games, spots)
+    method = "bound"
+
+    if schedule:
+        n_games = sum(len(week) for week in schedule)
+        if n_games <= MAX_EXACT_GAMES:
+            undecided = [m for m in records if m not in clinched and m not in eliminated]
+            c2, e2 = _exact_playoff_status(records, schedule, undecided, spots)
+            clinched |= c2
+            eliminated |= e2
+            method = "exact"
+    return clinched, eliminated, method
 
 
 def compute_playoff_probability_model(all_games, roster_names):
@@ -1069,10 +1346,17 @@ def compute_playoff_probabilities(all_games, roster_names, model):
     """
     Current-season playoff probability per active manager, using the
     historical model above as a base rate, then nudged by two
-    tiebreakers among managers sharing the exact same record:
-      - More points scored so far → higher probability
-      - Harder schedule (more negative schedule_difficulty) → higher
-        probability, since their record undersells their true quality
+    tiebreakers among managers sharing the exact same record (tiered by
+    the size of the gap, see compute_tie_adjustments):
+      - More points scored so far → higher probability (up to ±5 pts)
+      - Harder schedule (lower schedule_difficulty) → higher probability,
+        since their record undersells their true quality (up to ±5 pts)
+
+    After the tie-break nudges, any manager who has mathematically clinched
+    a playoff spot is set to 100% and flagged "clinched": true; any manager
+    mathematically eliminated is set to 0% and flagged "eliminated": true
+    (see compute_playoff_status — exact when the full remaining schedule is
+    available and few enough games remain, otherwise a schedule-blind bound).
 
     Visibility rules (handled by the caller, not here): hidden before
     week 3, hidden once the season is fully complete (14 weeks +
@@ -1108,9 +1392,12 @@ def compute_playoff_probabilities(all_games, roster_names, model):
     # Points scored and schedule difficulty so far this season, reusing
     # the same computation the Power Rankings page already needs.
     points_scored = defaultdict(float)
+    games_played = defaultdict(int)
     for g in season_games:
         points_scored[g["away_manager"]] += g["away_score"]
         points_scored[g["home_manager"]] += g["home_score"]
+        games_played[g["away_manager"]] += 1
+        games_played[g["home_manager"]] += 1
 
     pr = compute_power_rankings(all_games, roster_names)
     sched_diff = {r["manager"]: r["schedule_difficulty"] for r in (pr["rankings"] if pr else [])}
@@ -1144,35 +1431,44 @@ def compute_playoff_probabilities(all_games, roster_names, model):
             "schedule_difficulty": sched_diff.get(mgr, 0.0),
         })
 
-    # Adjust for ties on identical (wins, losses): rank by points scored
-    # (higher = better) and schedule difficulty (lower/more negative =
-    # harder = better), each contributing up to ±5 percentage points,
-    # combined for up to ±10 total. A group of size 1 gets no
-    # adjustment (nothing to break a tie against).
-    ADJUST_PER_FACTOR = 5.0
+    # Adjust for ties on identical (wins, losses) using the tiered
+    # head-to-head comparisons in compute_tie_adjustments() above. A group
+    # of size 1 gets no adjustment (nothing to break a tie against).
     groups = defaultdict(list)
     for e in entries:
         groups[(e["wins"], e["losses"])].append(e)
 
     for group in groups.values():
-        k = len(group)
-        if k < 2:
+        if len(group) < 2:
             group[0]["probability"] = round(min(100, max(0, group[0]["base_rate"] * 100)), 1)
             continue
-        by_points = sorted(group, key=lambda e: -e["points_scored"])
-        by_sched = sorted(group, key=lambda e: e["schedule_difficulty"])  # most negative (hardest) first
-        points_rank = {e["manager"]: i for i, e in enumerate(by_points)}
-        sched_rank = {e["manager"]: i for i, e in enumerate(by_sched)}
+        adjustments = compute_tie_adjustments(group)
         for e in group:
-            norm_points = points_rank[e["manager"]] / (k - 1)   # 0 = most points
-            norm_sched = sched_rank[e["manager"]] / (k - 1)     # 0 = hardest schedule
-            points_adj = (0.5 - norm_points) * 2 * ADJUST_PER_FACTOR
-            sched_adj = (0.5 - norm_sched) * 2 * ADJUST_PER_FACTOR
+            points_adj, sched_adj = adjustments[e["manager"]]
             pct = e["base_rate"] * 100 + points_adj + sched_adj
             e["probability"] = round(min(100, max(0, pct)), 1)
 
+    # Clinch override: a manager who can't be caught by enough rivals in the
+    # games that remain is at 100% no matter what the base rate or the
+    # tie-break nudges say.
+    records = {e["manager"]: (e["wins"], e["losses"]) for e in entries}
+    schedule = load_remaining_schedule(
+        records.keys(), games_played, current_year, current_week
+    )
+    clinched, eliminated, status_method = compute_playoff_status(
+        records, games_played, schedule
+    )
+    for e in entries:
+        e["clinched"] = e["manager"] in clinched
+        e["eliminated"] = e["manager"] in eliminated
+        if e["clinched"]:
+            e["probability"] = 100.0
+        elif e["eliminated"]:
+            e["probability"] = 0.0
+
     entries.sort(key=lambda e: -e["probability"])
-    return {"season": current_year, "visible": True, "current_week": current_week, "managers": entries}
+    return {"season": current_year, "visible": True, "current_week": current_week,
+            "status_method": status_method, "managers": entries}
 
 
 def compute_h2h_summary(all_games, roster_names):
