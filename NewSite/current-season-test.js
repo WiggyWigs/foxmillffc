@@ -46,7 +46,7 @@ function renderRecap(data) {
 
   const prevHeading = document.getElementById("recap-previous-heading");
   if (prevHeading && recap.previous_weekend_week != null) {
-    prevHeading.textContent = `Week ${recap.previous_weekend_week} Impact Game`;
+    prevHeading.textContent = `Week ${recap.previous_weekend_week} - Impact Game`;
   }
 
   const prevSubtitle = document.getElementById("recap-previous-subtitle");
@@ -207,42 +207,69 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   const section = document.getElementById("callouts-section");
   const grid = document.getElementById("callout-grid");
 
-  const items = [];
-  if (callouts.last_gotw_result) items.push(callouts.last_gotw_result);
+  // Each entry carries a "kind" so the four popup boxes (streaks,
+  // lowest team, highest player) can share the Honorable Mention
+  // format while sentence/record cards keep their existing look.
+  const entries = [];
+  if (callouts.last_gotw_result) entries.push({ item: callouts.last_gotw_result, kind: "sentence" });
   if (Array.isArray(callouts.new_records)) {
-    callouts.new_records.forEach((item) => items.push(item));
+    callouts.new_records.forEach((item) => entries.push({ item, kind: "record" }));
   }
-  if (callouts.longest_win_streak) items.push(callouts.longest_win_streak);
-  if (callouts.longest_loss_streak) items.push(callouts.longest_loss_streak);
-  if (callouts.lowest_scoring_team) items.push(callouts.lowest_scoring_team);
-  if (callouts.highest_scoring_player) items.push(callouts.highest_scoring_player);
+  if (callouts.longest_win_streak) entries.push({ item: callouts.longest_win_streak, kind: "streak" });
+  if (callouts.longest_loss_streak) entries.push({ item: callouts.longest_loss_streak, kind: "streak" });
+  if (callouts.lowest_scoring_team) entries.push({ item: callouts.lowest_scoring_team, kind: "lowest" });
+  if (callouts.highest_scoring_player) entries.push({ item: callouts.highest_scoring_player, kind: "highest" });
 
-  if (items.length === 0) {
+  if (entries.length === 0) {
     section.style.display = "none";
     return;
   }
 
   section.style.display = "";
-  grid.innerHTML = items.map(renderCalloutCard).join("");
+  grid.innerHTML = entries.map((e) =>
+    ["streak", "lowest", "highest"].includes(e.kind)
+      ? renderCalloutHmCard(e.item)
+      : renderCalloutCard(e.item)
+  ).join("");
 
   const hasWeeklyScorers = highestScoringPlayers && Array.isArray(highestScoringPlayers.weeks)
     && highestScoringPlayers.weeks.length > 0;
   const hasWeeklyLowest = lowestScoringTeams && Array.isArray(lowestScoringTeams.weeks)
     && lowestScoringTeams.weeks.length > 0;
 
-  grid.querySelectorAll(".callout-item").forEach((el, i) => {
-    const item = items[i];
-    if (item.streak_details) {
-      el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openStreakModal(item));
-    } else if (item === callouts.highest_scoring_player && hasWeeklyScorers) {
-      el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openHighestScoringPlayerModal(highestScoringPlayers));
-    } else if (item === callouts.lowest_scoring_team && hasWeeklyLowest) {
-      el.classList.add("callout-clickable");
-      el.addEventListener("click", () => openLowestScoringTeamModal(lowestScoringTeams));
+  Array.from(grid.children).forEach((el, i) => {
+    const { item, kind } = entries[i];
+    let onClick = null;
+    if (kind === "streak" && item.streak_details) {
+      onClick = () => openStreakModal(item);
+    } else if (kind === "highest" && hasWeeklyScorers) {
+      onClick = () => openHighestScoringPlayerModal(highestScoringPlayers);
+    } else if (kind === "lowest" && hasWeeklyLowest) {
+      onClick = () => openLowestScoringTeamModal(lowestScoringTeams);
+    }
+    if (onClick) {
+      el.classList.add(el.classList.contains("callout-hm") ? "callout-hm-clickable" : "callout-clickable");
+      el.addEventListener("click", onClick);
     }
   });
+}
+
+// Honorable Mention-style callout box: centered eyebrow label, name,
+// optional italic subtitle, big number, optional unit.
+function renderCalloutHmCard(item) {
+  const valueDisplay = typeof item.value === "number"
+    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
+    : item.value;
+
+  return `
+    <div class="callout-hm">
+      <span class="box-score-eyebrow">${item.label}</span>
+      <div class="callout-hm-headline">${item.headline}</div>
+      ${item.subtitle ? `<div class="callout-hm-subtitle">${item.subtitle}</div>` : ""}
+      <div class="callout-hm-value">${valueDisplay}</div>
+      ${item.unit ? `<div class="callout-hm-unit">${item.unit}</div>` : ""}
+    </div>
+  `;
 }
 
 function renderCalloutCard(item) {
@@ -326,41 +353,39 @@ function joinNames(names) {
 function recordBooksSentence(kind, group) {
   const rank = ordinal(group[0].rank);
   const names = group.map((e) => `<b>${e.manager}</b>`);
-  const teams = group.map((e) => e.team_name).filter(Boolean);
-  const sameTeamCount = teams.length === group.length;
   const value = group[0].value;
   const tied = group.length > 1;
 
   switch (kind) {
     case "top_game_score":
       return tied
-        ? `${joinNames(names)} share the ${rank}-highest R/S game score in league history — ${fmtRecordNumber(value)} points${sameTeamCount ? `, for ${joinNames(teams)} respectively` : ""}.`
-        : `${names[0]}'s ${fmtRecordNumber(value)} points is the ${rank}-highest R/S game score in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
+        ? `${joinNames(names)} share the ${rank}-highest R/S game score in league history — ${fmtRecordNumber(value)} points.`
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is the ${rank}-highest R/S game score in league history.`;
 
     case "bottom_game_score":
       return tied
-        ? `${joinNames(names)} share the ${rank}-lowest R/S game score in league history — ${fmtRecordNumber(value)} points${sameTeamCount ? `, for ${joinNames(teams)} respectively` : ""}.`
-        : `${names[0]}'s ${fmtRecordNumber(value)} points is now the ${rank}-lowest R/S game score in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
+        ? `${joinNames(names)} share the ${rank}-lowest R/S game score in league history — ${fmtRecordNumber(value)} points.`
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is now the ${rank}-lowest R/S game score in league history.`;
 
     case "top_win_streak":
       return tied
         ? `${joinNames(names)} are tied for the ${rank}-longest R/S winning streak in league history, each at ${value} games.`
-        : `${names[0]}'s active winning streak has reached ${value} games — the ${rank}-longest in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
+        : `${names[0]}'s active winning streak has reached ${value} games — the ${rank}-longest in league history.`;
 
     case "top_loss_streak":
       return tied
         ? `${joinNames(names)} are tied for the ${rank}-longest R/S losing streak in league history, each at ${value} games.`
-        : `${names[0]}'s losing streak has reached ${value} games — the ${rank}-longest in league history${teams[0] ? `, for ${teams[0]}` : ""}.`;
+        : `${names[0]}'s losing streak has reached ${value} games — the ${rank}-longest in league history.`;
 
     case "25th_win":
       return tied
         ? `${joinNames(names)} both just reached their 25th career win, tied for the ${rank}-fastest anyone has ever gotten there.`
-        : `${names[0]} just picked up their 25th career win — the ${rank}-fastest anyone has ever reached that mark${teams[0] ? `, for ${teams[0]}` : ""}.`;
+        : `${names[0]} just picked up their 25th career win — the ${rank}-fastest anyone has ever reached that mark.`;
 
     case "25th_loss":
       return tied
         ? `${joinNames(names)} both just picked up their 25th career loss, tied for the ${rank}-fastest anyone has ever gotten there.`
-        : `${names[0]} just picked up their 25th career loss — the ${rank}-fastest anyone has ever reached that mark${teams[0] ? `, for ${teams[0]}` : ""}.`;
+        : `${names[0]} just picked up their 25th career loss — the ${rank}-fastest anyone has ever reached that mark.`;
 
     default:
       return "";
@@ -416,23 +441,24 @@ function renderRecordBooks(data) {
 
 function openStreakModal(item) {
   const modal = document.getElementById("streakModal");
-  const title = document.getElementById("streakModalTitle");
   const body = document.getElementById("streakModalBody");
   const closeBtn = document.getElementById("streakModalClose");
-  if (!modal || !title || !body) return;
+  if (!modal || !body) return;
 
-  title.textContent = item.headline;
-
+  // One block per manager: header text, name, then that manager's
+  // games. A tie simply repeats the block rather than stacking names.
   body.innerHTML = item.streak_details.map((entry) => {
-    const gamesList = entry.games.map((g) => {
-      return `<div class="streak-game-line">
+    const gamesList = entry.games.map((g) => `
+      <div class="streak-game-line">
         <span>vs ${g.opponent}: ${g.manager_score} - ${g.opponent_score}</span>
         <span class="streak-game-yearweek">(${g.year}, W${g.week})</span>
+      </div>`).join("");
+    return `
+      <div class="streak-modal-block">
+        <div class="modal-badge">${item.label}</div>
+        <div class="modal-name">${entry.manager}</div>
+        <div class="streak-modal-body">${gamesList}</div>
       </div>`;
-    }).join("");
-    const managerHeader = item.streak_details.length > 1
-      ? `<div class="streak-modal-manager">${entry.manager}</div>` : "";
-    return managerHeader + gamesList;
   }).join("");
 
   modal.classList.add("active");
