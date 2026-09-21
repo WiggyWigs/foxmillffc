@@ -29,6 +29,7 @@ jobs:
       STATS_SNAPSHOT_FILENAME: stats_previous_run_test.json
       UPCOMING_MATCHUPS_FILENAME: upcoming_matchups_test.json
       PLAYER_LINEUPS_FILENAME: player_lineups_test.json
+      REMAINING_SCHEDULE_FILENAME: remaining_schedule_test.json
       CSV_OUTPUT_FILENAME: espn_pull_test.csv
       BANNER_FILENAME: fastest-to-25-wins-banner-test.png
       TEST_CUTOFF_YEAR: ${{ inputs.cutoff_year }}
@@ -51,6 +52,7 @@ jobs:
           rm -f NewSite/data/stats_previous_run_test.json
           rm -f NewSite/data/upcoming_matchups_test.json
           rm -f NewSite/data/player_lineups_test.json
+          rm -f NewSite/data/remaining_schedule_test.json
           rm -f NewSite/scripts/espn_pull_test.csv
           echo "Cleared stale test files — this run starts from a genuinely clean slate."
 
@@ -72,6 +74,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add NewSite/data/stats_test.json NewSite/data/upcoming_matchups_test.json NewSite/data/player_lineups_test.json
+          git add NewSite/data/remaining_schedule_test.json 2>/dev/null || true
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "TEST update: cutoff ${{ inputs.cutoff_year }} week ${{ inputs.cutoff_week }}"
           git push
