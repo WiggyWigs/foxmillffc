@@ -41,14 +41,15 @@
 //   - "Payout_Odds" is the precomputed DECIMAL odds for that leg
 //     (e.g. 5.50, not +450). EVERY odds figure actually displayed or
 //     computed on this page — the All Picks table's Odds column, the
-//     Standings table's Avg Odds column, PISS, ASSWIPE, and the Best
-//     Weeks table's Potential column — is sourced from Payout_Odds,
-//     never derived from the American column.
+//     Standings table's Avg Odds column, PISS, ASSWIPE, WILSON, and
+//     the Best Weeks table's Potential column — is sourced from
+//     Payout_Odds, never derived from the American column.
 // A leg whose Payout_Odds is blank (no leg entered that week, or the
 // game hasn't finished) shows as "—" in All Picks and is excluded
 // from every average/product it would otherwise be part of (Avg
-// Odds, PISS, ASSWIPE, Potential) — not treated as a zero or a 1x
-// placeholder, just left out, consistent everywhere on this page.
+// Odds, PISS, ASSWIPE, WILSON, Potential) — not treated as a zero or
+// a 1x placeholder, just left out, consistent everywhere on this
+// page.
 //
 // ASSWIPE (Adjusted Standardized Score - Weighted Individual Parlay
 // Evaluator) = PISS + (Winning Differential / 10), where:
@@ -57,6 +58,29 @@
 //   Winning Differential = Total Wins - Total Losses
 // Everything here respects the Parlay Standings table's own Year
 // filter, same as W/L/W% already did.
+//
+// WILSON: a second composite score, meant to sit next to ASSWIPE for
+// comparison rather than replace it. It starts from the Wilson score
+// lower bound (95% confidence, z=1.96) on win percentage instead of
+// Winning Differential — the standard statistical fix for the
+// problem ASSWIPE's volume term has. A manager who goes 20-10 outranks
+// one who goes 10-5 under ASSWIPE despite identical W%, purely because
+// of volume, with no check on whether that extra volume is actually a
+// stronger signal or just more games. The Wilson lower bound answers
+// that directly: it's the win rate you can be 95% confident is a
+// FLOOR given the sample size, so a bigger sample at the same W% does
+// still score higher — but only because the estimate is more
+// reliable at that sample size, not just for accumulating games.
+//   WILSON = WilsonLB ^ 1.5 x Average Odds (the same Payout_Odds
+//            average PISS/ASSWIPE use)
+// The exponent (WILSON_EXPONENT below) is what makes WilsonLB matter
+// more than Avg Odds in the ranking. Multiplying WilsonLB by a plain
+// constant before the product (WilsonLB x 1.5 x AvgOdds) would NOT do
+// this — every manager's score would scale by that same constant, so
+// nobody's rank relative to anyone else would move. Raising WilsonLB
+// to a power > 1 is what actually spreads scores apart based on
+// WilsonLB specifically. 1.5 is a starting point; a higher exponent
+// widens the gap WilsonLB creates further still.
 //
 // Best/Worst Weeks (Collective W%): pools EVERY manager's counted
 // picks for a given Year+Week together (not per-manager) and ranks
@@ -97,6 +121,8 @@ const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9gbWRe2LfduGjbKHt5cWdq8p2LT_vTXgDkCJetDh3v-5cDD2LA5NBI4Du-7n7VGnZolw-DbcsyeRG/pub?gid=0&single=true&output=csv";
 const ROSTER_URL = "data/manager_roster.json";
 const PARLAY_STAKE = 5; // Flat $5 per week, confirmed — see comment block above.
+const WILSON_Z = 1.96; // 95% confidence, per Greg.
+const WILSON_EXPONENT = 1.5; // How much more WilsonLB matters than Avg Odds in WILSON — see comment block above.
 
 let allPicks = [];
 
@@ -269,6 +295,20 @@ function formatCurrency(n) {
   return `$${n.toFixed(2)}`;
 }
 
+// Wilson score lower bound at the given confidence (WILSON_Z), for a
+// binomial rate of `wins` out of `n` decided trials. Standard formula
+// (see e.g. the Wikipedia "binomial proportion confidence interval"
+// article, Wilson score interval section). Returns 0 for n === 0
+// rather than dividing by zero — a manager with no decided games has
+// no basis for a win-rate floor above zero.
+function wilsonLowerBound(wins, n) {
+  if (n === 0) return 0;
+  const z = WILSON_Z;
+  const phat = wins / n;
+  const z2 = z * z;
+  return (phat + z2 / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z2 / (4 * n)) / n)) / (1 + z2 / n);
+}
+
 function isWin(p) { return p.outcomeNorm === "win" || p.outcomeNorm === "w"; }
 function isLoss(p) { return p.outcomeNorm === "loss" || p.outcomeNorm === "lose" || p.outcomeNorm === "l"; }
 
@@ -397,6 +437,7 @@ const ROLLUP_COLUMNS = [
   { key: "winPct", label: "W%", type: "number" },
   { key: "avgOdds", label: '<span class="th-label-desktop">Avg Odds</span><span class="th-label-mobile">Avg<br>Odds</span>', type: "number" },
   { key: "asswipe", label: '<span class="th-label-desktop">ASSWIPE</span><span class="th-label-mobile">ASS-<br>WIPE</span>', type: "number" },
+  { key: "wilson", label: "Wilson", type: "number" },
 ];
 
 function computeRollup(picks) {
@@ -424,7 +465,9 @@ function computeRollup(picks) {
     const winningDifferential = m.wins - m.losses;
     const piss = winPct * avgOdds;
     const asswipe = piss + (winningDifferential / 10);
-    return { ...m, winPct, avgOdds, winningDifferential, piss, asswipe };
+    const wilsonLB = wilsonLowerBound(m.wins, decided);
+    const wilson = Math.pow(wilsonLB, WILSON_EXPONENT) * avgOdds;
+    return { ...m, winPct, avgOdds, winningDifferential, piss, asswipe, wilsonLB, wilson };
   });
 }
 
@@ -450,6 +493,7 @@ function renderRollup() {
       <td>${(r.winPct * 100).toFixed(1)}%</td>
       <td>${formatPayoutOdds(r.avgOdds)}</td>
       <td class="msi-score">${r.asswipe.toFixed(2)}</td>
+      <td class="msi-score">${r.wilson.toFixed(2)}</td>
     </tr>
   `).join("");
 
