@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
 <link rel="stylesheet" href="styles.css">
 <title>Current Season — Fox Mill Fantasy Football Club</title>
 </head>
@@ -11,6 +12,7 @@
 
 <div id="nav-placeholder"></div>
 <script src="nav.js"></script>
+
 
 <main>
   <div class="panel">
@@ -22,10 +24,30 @@
       <hr class="recap-thin-divider">
       <p class="recap-matchup-subtitle" id="recap-previous-subtitle"></p>
     </div>
-    <hr class="section-divider recap-tight-divider">
 
     <div id="recap-previous-wrap" class="recap-tight-wrap">
       <p class="load-state">Loading recap&hellip;</p>
+    </div>
+
+    <div id="honorable-mention-wrap" class="recap-tight-wrap" style="display:none;">
+      <hr class="section-divider recap-tight-divider">
+      <div class="box-score-card honorable-mention-card" id="honorable-mention-card">
+        <span class="box-score-eyebrow">Honorable Mention</span>
+        <div class="box-score-matchup">
+          <div class="box-score-side">
+            <div class="box-score-team-name" id="hm-away-team"></div>
+            <div class="box-score-manager-name" id="hm-away-manager"></div>
+            <div class="box-score-score" id="hm-away-score"></div>
+          </div>
+          <div class="box-score-vs">vs</div>
+          <div class="box-score-side">
+            <div class="box-score-team-name" id="hm-home-team"></div>
+            <div class="box-score-manager-name" id="hm-home-manager"></div>
+            <div class="box-score-score" id="hm-home-score"></div>
+          </div>
+        </div>
+        <span class="hm-click-hint">Click for Recap</span>
+      </div>
     </div>
 
     <hr class="section-divider recap-tight-divider">
@@ -34,21 +56,30 @@
       <hr class="recap-thin-divider">
       <p class="recap-matchup-subtitle" id="recap-gotw-subtitle"></p>
     </div>
-    <hr class="section-divider recap-tight-divider">
 
     <div id="recap-gotw-wrap" class="recap-tight-wrap">
       <p class="load-state">Loading preview&hellip;</p>
     </div>
 
     <div class="record-section" id="callouts-section" style="display:none;">
-      <h3 class="season-subhead">This Week's Notes</h3>
+      <hr class="section-divider recap-tight-divider">
+      <h3 class="season-subhead tgl-heading">This Week's Notes</h3>
+      <hr class="recap-thin-divider">
       <div class="callout-grid" id="callout-grid"></div>
+    </div>
+
+    <hr class="section-divider" id="record-books-divider" style="display:none;">
+    <div class="record-section" id="record-books-section" style="display:none;">
+      <h3 class="season-subhead tgl-heading">Welcome to the Record Books</h3>
+      <hr class="recap-thin-divider">
+      <div id="record-books-grid" class="sentence-list"></div>
     </div>
 
     <hr class="section-divider">
 
     <div class="record-section">
-      <h3 class="season-subhead">Standings</h3>
+      <h3 class="season-subhead tgl-heading">Standings</h3>
+      <hr class="recap-thin-divider">
       <p class="msi-meta">Sorted by win %. Ties break by head-to-head record, then total points scored.</p>
       <div id="standings-wrap">
         <p class="load-state">Loading standings&hellip;</p>
@@ -58,7 +89,8 @@
     <hr class="section-divider">
 
     <div class="record-section">
-      <h3 class="season-subhead">Power Rankings</h3>
+      <h3 class="season-subhead tgl-heading">Power Rankings</h3>
+      <hr class="recap-thin-divider">
       <p class="msi-meta" id="power-season-label">Current season strength, based on three factors weighed equally.</p>
 
       <div id="power-wrap">
@@ -89,7 +121,8 @@
     <hr class="section-divider">
 
     <div class="record-section">
-      <h3 class="season-subhead">Playoff Probability</h3>
+      <h3 class="season-subhead tgl-heading">Playoff Probability</h3>
+      <hr class="recap-thin-divider">
       <p class="msi-meta" id="playoff-prob-meta"></p>
       <div id="playoff-prob-wrap"></div>
     </div>
@@ -139,10 +172,36 @@
 <script src="current-season.js"></script>
 
 <div class="modal-overlay" id="streakModal" aria-hidden="true">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="streakModalTitle">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Streak details">
     <button class="modal-close" id="streakModalClose" aria-label="Close">&times;</button>
-    <div class="modal-name" id="streakModalTitle"></div>
-    <div id="streakModalBody" class="streak-modal-body"></div>
+    <div class="modal-badge" id="streakModalBadge"></div>
+    <div id="streakModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="honorableMentionModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="honorableMentionModalBadge">
+    <button class="modal-close" id="honorableMentionModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge" id="honorableMentionModalBadge">Honorable Mention</div>
+    <p class="recap-text" id="honorableMentionModalBody"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="highestScoringPlayerModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="highestScoringPlayerModalTitle">
+    <button class="modal-close" id="highestScoringPlayerModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Highest Scoring Player</div>
+    <div class="modal-name" id="highestScoringPlayerModalTitle">By Week</div>
+    <div id="highestScoringPlayerModalBody" class="highest-scoring-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="lowestScoringTeamModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="lowestScoringTeamModalTitle">
+    <button class="modal-close" id="lowestScoringTeamModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Lowest Scoring Team</div>
+    <div class="modal-name" id="lowestScoringTeamModalTitle">By Week</div>
+    <div id="lowestScoringTeamModalBody" class="highest-scoring-modal-body"></div>
   </div>
 </div>
 
