@@ -1156,6 +1156,160 @@ def build_matchup_selection_prompt(enriched, criteria):
     return system, user
 
 
+# --- This Week in Club History (a flashback callout — deliberately no lore) ---
+
+
+def get_manager_season_arc(manager, year, all_games, week_of_game):
+    """
+    Factual trajectory for `manager` in `year`, from the point of view of
+    the featured historical game at week_of_game: their record in the
+    REST of that regular season, whether they made the playoffs, and how
+    far they went if so. Purely computed from the game log — nothing here
+    is AI-invented, and the narrative prompt is instructed to build the
+    "how it affected each player" story ONLY from these fields.
+    """
+    season_games = [g for g in all_games if g["year"] == year]
+    reg = [g for g in season_games if g["game_type"] == "Regular"]
+    wk = int(week_of_game)
+
+    rest_of_season = [g for g in reg if int(g["week"]) > wk
+                      and (g["away_manager"] == manager or g["home_manager"] == manager)]
+    wins = sum(1 for g in rest_of_season if not g["tie"] and g["winner"] == manager)
+    losses = sum(1 for g in rest_of_season if not g["tie"] and g["loser"] == manager)
+
+    playoff_games = [g for g in season_games if g["game_type"] != "Regular"
+                     and (g["away_manager"] == manager or g["home_manager"] == manager)]
+    made_playoffs = len(playoff_games) > 0
+    playoff_result = None
+    if made_playoffs:
+        order = {"Quarterfinal": 1, "Semifinal": 2, "Championship": 3}
+        last_pg = max(playoff_games, key=lambda g: order.get(g["game_type"], 0))
+        if last_pg["game_type"] == "Championship":
+            playoff_result = "won_championship" if last_pg["winner"] == manager else "lost_championship"
+        elif last_pg["game_type"] == "Semifinal":
+            playoff_result = "lost_semifinal"
+        elif last_pg["game_type"] == "Quarterfinal":
+            playoff_result = "lost_quarterfinal"
+
+    arc = {"made_playoffs": made_playoffs}
+    if rest_of_season:
+        arc["rest_of_season_record_after_this_game"] = f"{wins}-{losses}"
+    if playoff_result:
+        arc["playoff_result"] = playoff_result
+    return arc
+
+
+def describe_week_in_history_selection(candidate):
+    """
+    Turns the raw selection_reason code + selection_detail from
+    compute_week_in_history (ingest_csv.py) into a plain-English fact the
+    model can work from — same pattern as the Honorable Mention
+    selection_hook: a real, computed fact handed over ready-made, not
+    something left for the model to reconstruct or guess at.
+    """
+    reason = candidate["selection_reason"]
+    d = candidate["selection_detail"]
+    week = candidate["week"]
+
+    if reason == "week1_all_time_high_score":
+        return (f"{d['manager']}'s {d['score']} points is still the single highest "
+                f"score ever recorded in a Week 1 game in league history.")
+    if reason == "all_time_top5_score":
+        return (f"{d['manager']}'s {d['score']} points that game ranks as the "
+                f"#{d['rank']} highest individual score in league history.")
+    if reason == "all_time_bottom5_score":
+        return (f"{d['manager']}'s {d['score']} points that game ranks as the "
+                f"#{d['rank']} lowest individual score in league history.")
+    if reason == "all_time_top5_smallest_margin":
+        return (f"the {d['margin']}-point margin ranks as the #{d['rank']} "
+                f"closest game in league history.")
+    if reason == "all_time_top5_largest_margin":
+        return (f"the {d['margin']}-point margin ranks as the #{d['rank']} "
+                f"largest blowout in league history.")
+    if reason == "milestone_5_0_or_0_5":
+        record = "5-0" if d["wins"] == 5 else "0-5"
+        return (f"this result pushed {d['manager']} to a {record} start "
+                f"through 5 weeks that season.")
+    if reason == "last_place_two_seasons_ago":
+        w, l = d["final_record"]
+        return (f"{d['manager']} finished this season dead last at {w}-{l}, and "
+                f"this was their Week 10 game that year.")
+    if reason == "clinched_playoffs":
+        return f"{d['manager']}'s win here clinched their playoff spot that season."
+    if reason == "eliminated_playoffs":
+        return f"{d['manager']}'s loss here eliminated them from playoff contention that season."
+    if reason == "week_smallest_margin":
+        return f"this was the closest margin of any Week {week} game in league history."
+    return "this game stood out as this week's flashback to league history."
+
+
+def build_week_in_history_prompt(candidate, all_games, tone):
+    """
+    "This Week in Club History" — a flashback callout to a game from a
+    PRIOR season at the same week number as the current one. Deliberately
+    does NOT use manager_lore at all (unlike the recap/Honorable Mention
+    prompts) — the story here should come entirely from what actually
+    happened in the game and its aftermath, not personality flavor.
+    """
+    year, week = candidate["year"], candidate["week"]
+    away, home = candidate["away_manager"], candidate["home_manager"]
+    away_team, home_team = candidate["away_team"], candidate["home_team"]
+
+    context = {
+        "year": year, "week": week,
+        "away_manager": away, "away_team": away_team, "away_score": candidate["away_score"],
+        "home_manager": home, "home_team": home_team, "home_score": candidate["home_score"],
+        "margin": candidate["margin"],
+        "why_this_game_was_selected": describe_week_in_history_selection(candidate),
+        "away_manager_season_arc": get_manager_season_arc(away, year, all_games, week),
+        "home_manager_season_arc": get_manager_season_arc(home, year, all_games, week),
+    }
+
+    system = (
+        "You write a short \"This Week in Club History\" flashback blurb "
+        "for a private fantasy football league's website — a group of "
+        "40-something guys who have known each other for years and enjoy "
+        "busting each other's chops.\n\n"
+        f"{tone}\n\n"
+        "The write-up must be between 120 and 150 words — a hard "
+        "requirement, not a suggestion. Use ONLY the facts given — never "
+        "invent player names, stats, plays, or background details beyond "
+        "what's provided. Do not use markdown formatting. Do NOT start "
+        "with the manager names or a 'ManagerA vs ManagerB:' prefix — "
+        "that's shown separately on the page. Do NOT reference, invent, "
+        "or speculate about either manager's personality, habits, or any "
+        "background/lore trait — this write-up is built ENTIRELY from "
+        "the game result and season-arc facts given, nothing else. Open "
+        "by working in why_this_game_was_selected as the reason this "
+        "particular game is this week's flashback — state it plainly as "
+        "a real fact (it is one), not a hedge or guess. Then spend most "
+        "of the write-up on what happened to each manager AFTER this "
+        "game — this is the actual point of the piece, not the score "
+        "itself. away_manager_season_arc and home_manager_season_arc are "
+        "each manager's real, verified trajectory for the REST of that "
+        "season: rest_of_season_record_after_this_game (their record in "
+        "every game that season after this one, if any remained), "
+        "made_playoffs (true/false), and playoff_result when they made "
+        "it (lost_quarterfinal, lost_semifinal, lost_championship, or "
+        "won_championship). Use ONLY these fields to tell each manager's "
+        "story — e.g. a manager who made the playoffs and lost in the "
+        "semifinal, or one who went on a bad losing streak the rest of "
+        "the way and missed the playoffs entirely. If a field is absent "
+        "for a manager (e.g. this was their final game of the season, so "
+        "there's no rest_of_season_record_after_this_game), don't "
+        "mention that angle for them — never invent what \"probably\" "
+        "happened. EVERY field is prefixed 'away_' or 'home_' — that "
+        "prefix is the ONLY source of truth for which manager it "
+        "belongs to; do not swap either manager's outcome to the other "
+        "side."
+    )
+    user = (
+        f"Write the \"This Week in Club History\" flashback for this game:\n"
+        f"{json.dumps(context, indent=2)}"
+    )
+    return system, user
+
+
 def build_gotw_writing_prompt(matchup, tone):
     """Writing ONLY, for a single ALREADY-CHOSEN matchup — no
     selection logic to juggle here, just the same tone/formatting
@@ -1823,10 +1977,25 @@ def main():
         print(f"WARNING: record_books_entries computation failed: {e}")
         record_books_entries = []
 
+    # "This Week in Club History" — ingest_csv.py already picked the game
+    # (stats["week_in_history"]); here we just write its narrative. No
+    # lore is used for this one, by design (see build_week_in_history_prompt).
+    week_in_history_narrative = None
+    week_in_history = stats.get("week_in_history")
+    if week_in_history:
+        try:
+            wih_system, wih_user = build_week_in_history_prompt(week_in_history, stats["games"], tone)
+            week_in_history_narrative = call_claude(wih_system, wih_user)
+            week_in_history["narrative"] = week_in_history_narrative
+        except Exception as e:
+            print(f"WARNING: This Week in Club History narrative failed: {e}")
+            week_in_history["narrative"] = None
+
     if (recap_text is None and gotw_text is None and not any(callouts.values())
             and current_highest_scoring_players is None
             and current_lowest_scoring_teams is None
-            and not record_books_entries):
+            and not record_books_entries
+            and week_in_history_narrative is None):
         print("Nothing generated this run — leaving stats.json untouched.")
         return
 
