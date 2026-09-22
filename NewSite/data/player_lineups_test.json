@@ -1,14 +1,111 @@
 [
   {
-    "year": "2026",
-    "week": "1",
-    "manager": "Josh Davis",
+    "year": "2025",
+    "week": "10",
+    "manager": "Erik Servinsky",
     "players": [
       {
-        "name": "Jahmyr Gibbs",
+        "name": "Trey McBride",
+        "position": "TE",
+        "slot": "TE",
+        "points": 25.2,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Tetairoa McMillan",
+        "position": "WR",
+        "slot": "WR",
+        "points": 8.5,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Tony Pollard",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Dak Prescott",
+        "position": "QB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Bucky Irving",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Jordan Addison",
+        "position": "WR",
+        "slot": "WR",
+        "points": 5.0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "J.K. Dobbins",
         "position": "RB",
         "slot": "RB",
-        "points": 33.1,
+        "points": 8.9,
         "started": true,
         "eligible_slots": [
           "RB",
@@ -18,13 +115,29 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-07T01:15:00"
       },
       {
-        "name": "Malik Nabers",
+        "name": "Zach Charbonnet",
+        "position": "RB",
+        "slot": "RB",
+        "points": 14.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Brian Thomas Jr.",
         "position": "WR",
         "slot": "BE",
-        "points": 9.9,
+        "points": 0.0,
         "started": false,
         "eligible_slots": [
           "RB/WR",
@@ -35,10 +148,737 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-14T00:20:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Garrett Wilson",
+        "name": "Brandon Aubrey",
+        "position": "K",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Rams D/ST",
+        "position": "D/ST",
+        "slot": "BE",
+        "points": 5.0,
+        "started": false,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Seahawks D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 21.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Christian Watson",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 5.5,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Will Reichard",
+        "position": "K",
+        "slot": "K",
+        "points": 9.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Mac Jones",
+        "position": "QB",
+        "slot": "QB",
+        "points": 25.06,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Carl Bruce",
+    "players": [
+      {
+        "name": "TreVeyon Henderson",
+        "position": "RB",
+        "slot": "RB",
+        "points": 29.5,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Kenneth Walker III",
+        "position": "RB",
+        "slot": "RB",
+        "points": 7.5,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "DJ Moore",
+        "position": "WR",
+        "slot": "WR",
+        "points": 0.0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Jordan Mason",
+        "position": "RB",
+        "slot": "BE",
+        "points": 3.6,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Brock Purdy",
+        "position": "QB",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Chase Brown",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Caleb Williams",
+        "position": "QB",
+        "slot": "QB",
+        "points": 25.1,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Nico Collins",
+        "position": "WR",
+        "slot": "WR",
+        "points": 21.1,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Harrison Butker",
+        "position": "K",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Vikings D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 1.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Sam Darnold",
+        "position": "QB",
+        "slot": "BE",
+        "points": 4.92,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Romeo Doubs",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 1.0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Oronde Gadsden",
+        "position": "TE",
+        "slot": "TE",
+        "points": 2.8,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Quentin Johnston",
+        "position": "WR",
+        "slot": "BE",
+        "points": 6.7,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Matt Prater",
+        "position": "K",
+        "slot": "K",
+        "points": 1.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Jason Carlton",
+    "players": [
+      {
+        "name": "Ashton Jeanty",
+        "position": "RB",
+        "slot": "RB",
+        "points": 13.8,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-07T01:15:00"
+      },
+      {
+        "name": "Tee Higgins",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Calvin Ridley",
+        "position": "WR",
+        "slot": "IR",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Zay Flowers",
+        "position": "WR",
+        "slot": "WR",
+        "points": 10.1,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "George Kittle",
+        "position": "TE",
+        "slot": "TE",
+        "points": 18.9,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Cooper Kupp",
+        "position": "WR",
+        "slot": "BE",
+        "points": 8.4,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Rashid Shaheed",
+        "position": "WR",
+        "slot": "WR",
+        "points": 2.8,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Chuba Hubbard",
+        "position": "RB",
+        "slot": "BE",
+        "points": 2.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Jake Elliott",
+        "position": "K",
+        "slot": "BE",
+        "points": 4.0,
+        "started": false,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Juwan Johnson",
+        "position": "TE",
+        "slot": "BE",
+        "points": 17.2,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Daniel Jones",
+        "position": "QB",
+        "slot": "QB",
+        "points": 15.5,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Matthew Stafford",
+        "position": "QB",
+        "slot": "BE",
+        "points": 26.9,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Texans D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 16.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Rico Dowdle",
+        "position": "RB",
+        "slot": "RB",
+        "points": 13.8,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Nick Chubb",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 5.7,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Tyler Loop",
+        "position": "K",
+        "slot": "K",
+        "points": 14.0,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Daniel Bahamonde",
+    "players": [
+      {
+        "name": "Bijan Robinson",
+        "position": "RB",
+        "slot": "RB",
+        "points": 9.8,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Terry McLaurin",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "DeVonta Smith",
+        "position": "WR",
+        "slot": "WR",
+        "points": 14.9,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Kyler Murray",
+        "position": "QB",
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Rome Odunze",
+        "position": "WR",
+        "slot": "WR",
+        "points": 17.6,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Keon Coleman",
+        "position": "WR",
+        "slot": "BE",
+        "points": 12.1,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Bills D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 2.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Tyler Allgeier",
+        "position": "RB",
+        "slot": "BE",
+        "points": 17.7,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Jaxson Dart",
+        "position": "QB",
+        "slot": "QB",
+        "points": 26.28,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Darius Slayton",
         "position": "WR",
         "slot": "RB/WR/TE",
         "points": 10.9,
@@ -52,2298 +892,26 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Jaxson Dart",
-        "position": "QB",
-        "slot": "QB",
-        "points": 26.6,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Bucky Irving",
-        "position": "RB",
-        "slot": "RB",
-        "points": 16.8,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Sam LaPorta",
-        "position": "TE",
-        "slot": "TE",
-        "points": 7.3,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Dallas Goedert",
-        "position": "TE",
-        "slot": "BE",
-        "points": 21.7,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Brian Thomas Jr.",
-        "position": "WR",
-        "slot": "WR",
-        "points": 5.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Matthew Stafford",
-        "position": "QB",
-        "slot": "BE",
-        "points": 4.1,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Tyjae Spears",
-        "position": "RB",
-        "slot": "BE",
-        "points": 3.4,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Xavier Worthy",
-        "position": "WR",
-        "slot": "WR",
-        "points": 3.3,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Harrison Mevis",
-        "position": "K",
-        "slot": "K",
-        "points": 1.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Broncos D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 2.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Eddy Pineiro",
-        "position": "K",
-        "slot": "BE",
-        "points": 11.0,
-        "started": false,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Browns D/ST",
-        "position": "D/ST",
-        "slot": "BE",
-        "points": -1.0,
-        "started": false,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "John Schauder",
-    "players": [
-      {
-        "name": "Ja'Marr Chase",
-        "position": "WR",
-        "slot": "WR",
-        "points": 2.2,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Trey McBride",
-        "position": "TE",
-        "slot": "TE",
-        "points": 20.0,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Emeka Egbuka",
-        "position": "WR",
-        "slot": "WR",
-        "points": 8.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Jalen Hurts",
-        "position": "QB",
-        "slot": "QB",
-        "points": 24.72,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "TreVeyon Henderson",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Parker Washington",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 16.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Alec Pierce",
-        "position": "WR",
-        "slot": "BE",
-        "points": 8.1,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Cam Skattebo",
-        "position": "RB",
-        "slot": "RB",
-        "points": 14.1,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Josh Jacobs",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Wan'Dale Robinson",
-        "position": "WR",
-        "slot": "BE",
-        "points": 6.3,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "RJ Harvey",
-        "position": "RB",
-        "slot": "BE",
-        "points": 6.1,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Texans D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": -4.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Quinshon Judkins",
-        "position": "RB",
-        "slot": "RB",
-        "points": 6.0,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Keaton Mitchell",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.9,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Brandon Aubrey",
-        "position": "K",
-        "slot": "K",
-        "points": 1.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Brian Kleinhenz",
-    "players": [
-      {
-        "name": "Josh Allen",
-        "position": "QB",
-        "slot": "QB",
-        "points": 37.66,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "A.J. Brown",
-        "position": "WR",
-        "slot": "WR",
-        "points": 4.1,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Jameson Williams",
-        "position": "WR",
-        "slot": "WR",
-        "points": 6.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Mike Evans",
-        "position": "WR",
-        "slot": "BE",
-        "points": 13.9,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "J.K. Dobbins",
-        "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 3.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Javonte Williams",
-        "position": "RB",
-        "slot": "RB",
-        "points": 21.7,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Stefon Diggs",
-        "position": "WR",
-        "slot": "BE",
-        "points": 13.5,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jayden Reed",
-        "position": "WR",
-        "slot": "BE",
-        "points": 3.5,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Chris Rodriguez Jr.",
-        "position": "RB",
-        "slot": "BE",
-        "points": 2.3,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Travis Etienne Jr.",
-        "position": "RB",
-        "slot": "RB",
-        "points": 11.3,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Pat Bryant",
-        "position": "WR",
-        "slot": "BE",
-        "points": 6.2,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Dalton Kincaid",
-        "position": "TE",
-        "slot": "TE",
-        "points": 17.5,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Baker Mayfield",
-        "position": "QB",
-        "slot": "BE",
-        "points": 11.64,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Will Reichard",
-        "position": "K",
-        "slot": "K",
-        "points": 7.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jaguars D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 15.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Jay Nelson",
-    "players": [
-      {
-        "name": "Christian McCaffrey",
-        "position": "RB",
-        "slot": "RB",
-        "points": 11.3,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "DeVonta Smith",
-        "position": "WR",
-        "slot": "WR",
-        "points": 6.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Tee Higgins",
-        "position": "WR",
-        "slot": "WR",
-        "points": 7.4,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Joe Burrow",
-        "position": "QB",
-        "slot": "QB",
-        "points": 14.16,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Tyler Warren",
-        "position": "TE",
-        "slot": "TE",
-        "points": 8.8,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "De'Von Achane",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Quentin Johnston",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 2.7,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "De'Zhaun Stribling",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Zach Charbonnet",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Tyler Allgeier",
-        "position": "RB",
-        "slot": "BE",
-        "points": 8.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jordyn Tyson",
-        "position": "WR",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Isiah Pacheco",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Kenyon Sadiq",
-        "position": "TE",
-        "slot": "BE",
-        "points": 9.9,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Cam Little",
-        "position": "K",
-        "slot": "K",
-        "points": 12.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Vikings D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 5.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Chris Brooks",
-        "position": "RB",
-        "slot": "BE",
-        "points": 2.9,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Jason Carlton",
-    "players": [
-      {
-        "name": "Derrick Henry",
-        "position": "RB",
-        "slot": "RB",
-        "points": 36.8,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Justin Jefferson",
-        "position": "WR",
-        "slot": "WR",
-        "points": 27.2,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jadarian Price",
-        "position": "RB",
-        "slot": "RB",
-        "points": 6.8,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "DJ Moore",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 20.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "George Pickens",
-        "position": "WR",
-        "slot": "WR",
-        "points": 4.3,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Drake Maye",
-        "position": "QB",
-        "slot": "QB",
-        "points": 9.82,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Mark Andrews",
-        "position": "TE",
-        "slot": "TE",
-        "points": 6.9,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Rachaad White",
-        "position": "RB",
-        "slot": "BE",
-        "points": 3.7,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jalen Coker",
-        "position": "WR",
-        "slot": "BE",
-        "points": 31.8,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Deebo Samuel Sr.",
-        "position": "WR",
-        "slot": "BE",
-        "points": 15.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Kaelon Black",
-        "position": "RB",
-        "slot": "BE",
-        "points": 7.5,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Kyler Murray",
-        "position": "QB",
-        "slot": "BE",
-        "points": -0.38,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Chargers D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 0.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Chig Okonkwo",
-        "position": "TE",
-        "slot": "BE",
-        "points": 2.6,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Harrison Butker",
-        "position": "K",
-        "slot": "K",
-        "points": 7.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Brian Harris",
-    "players": [
-      {
-        "name": "Jonathan Taylor",
-        "position": "RB",
-        "slot": "RB",
-        "points": 23.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Breece Hall",
-        "position": "RB",
-        "slot": "RB",
-        "points": 20.8,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Ladd McConkey",
-        "position": "WR",
-        "slot": "WR",
-        "points": 16.7,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jaylen Warren",
-        "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 7.8,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Carnell Tate",
-        "position": "WR",
-        "slot": "BE",
-        "points": 5.8,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Rico Dowdle",
-        "position": "RB",
-        "slot": "BE",
-        "points": 3.1,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "MarShawn Lloyd",
-        "position": "RB",
-        "slot": "BE",
-        "points": 3.7,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Puka Nacua",
-        "position": "WR",
-        "slot": "WR",
-        "points": 9.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Patrick Mahomes",
-        "position": "QB",
-        "slot": "BE",
-        "points": 21.66,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Woody Marks",
-        "position": "RB",
-        "slot": "BE",
-        "points": 4.5,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Colston Loveland",
-        "position": "TE",
-        "slot": "TE",
-        "points": 0.0,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Tyler Shough",
-        "position": "QB",
-        "slot": "QB",
-        "points": 25.2,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Ravens D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 8.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "George Holani",
-        "position": "RB",
-        "slot": "BE",
-        "points": 2.9,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Chase McLaughlin",
-        "position": "K",
-        "slot": "K",
-        "points": 11.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Daniel Bahamonde",
-    "players": [
-      {
-        "name": "Bijan Robinson",
-        "position": "RB",
-        "slot": "RB",
-        "points": 27.3,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Chris Olave",
-        "position": "WR",
-        "slot": "WR",
-        "points": 25.2,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Tetairoa McMillan",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 8.0,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Jayden Daniels",
-        "position": "QB",
-        "slot": "QB",
-        "points": 17.66,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Tony Pollard",
-        "position": "RB",
-        "slot": "RB",
-        "points": 3.9,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Kyle Pitts Sr.",
-        "position": "TE",
-        "slot": "TE",
-        "points": 0.0,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Rome Odunze",
-        "position": "WR",
-        "slot": "WR",
-        "points": 6.2,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Chuba Hubbard",
-        "position": "RB",
-        "slot": "BE",
-        "points": 22.2,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Jakobi Meyers",
-        "position": "WR",
-        "slot": "BE",
-        "points": 11.2,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Aaron Jones Sr.",
-        "position": "RB",
-        "slot": "BE",
-        "points": 10.0,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Chris Godwin Jr.",
-        "position": "WR",
-        "slot": "BE",
-        "points": 6.3,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Khalil Shakir",
-        "position": "WR",
-        "slot": "BE",
-        "points": 7.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Brian Robinson Jr.",
-        "position": "RB",
-        "slot": "BE",
-        "points": 3.1,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Steelers D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 20.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Ka'imi Fairbairn",
-        "position": "K",
-        "slot": "K",
-        "points": 9.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Greg Wigton",
-    "players": [
-      {
-        "name": "CeeDee Lamb",
-        "position": "WR",
-        "slot": "WR",
-        "points": 12.9,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Kenneth Walker III",
-        "position": "RB",
-        "slot": "RB",
-        "points": 34.6,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Lamar Jackson",
-        "position": "QB",
-        "slot": "QB",
-        "points": 26.96,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "David Montgomery",
-        "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 27.4,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Michael Pittman Jr.",
-        "position": "WR",
-        "slot": "WR",
-        "points": 7.3,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Kyren Williams",
-        "position": "RB",
-        "slot": "RB",
-        "points": 14.0,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Isaiah Likely",
-        "position": "TE",
-        "slot": "TE",
-        "points": 23.8,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Jordan Mason",
-        "position": "RB",
-        "slot": "BE",
-        "points": 11.9,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "KC Concepcion",
-        "position": "WR",
-        "slot": "BE",
-        "points": 5.8,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Mike Washington Jr.",
-        "position": "RB",
-        "slot": "BE",
-        "points": 4.1,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Caleb Douglas",
-        "position": "WR",
-        "slot": "BE",
-        "points": 11.9,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Seahawks D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 15.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Jason Myers",
-        "position": "K",
-        "slot": "K",
-        "points": 7.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Jake Ferguson",
-        "position": "TE",
-        "slot": "BE",
-        "points": 1.6,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "Nicholas Singleton",
-        "position": "RB",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Eddie McCumiskey",
-    "players": [
-      {
-        "name": "James Cook III",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.4,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Drake London",
-        "position": "WR",
-        "slot": "WR",
-        "points": 4.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Bhayshul Tuten",
-        "position": "RB",
-        "slot": "RB",
-        "points": 9.3,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Rhamondre Stevenson",
-        "position": "RB",
-        "slot": "RB/WR/TE",
-        "points": 12.0,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Justin Herbert",
-        "position": "QB",
-        "slot": "QB",
-        "points": 13.26,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Marvin Harrison Jr.",
-        "position": "WR",
-        "slot": "WR",
-        "points": 3.8,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Courtland Sutton",
-        "position": "WR",
-        "slot": "BE",
-        "points": 2.1,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Kenny Gainwell",
-        "position": "RB",
-        "slot": "BE",
-        "points": 2.3,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Brock Bowers",
-        "position": "TE",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Matthew Golden",
-        "position": "WR",
-        "slot": "BE",
-        "points": 12.5,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Brock Purdy",
-        "position": "QB",
-        "slot": "BE",
-        "points": 21.1,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Jordan Addison",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Juwan Johnson",
-        "position": "TE",
-        "slot": "TE",
-        "points": 12.9,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Patriots D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 8.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
         "name": "Jake Bates",
         "position": "K",
         "slot": "K",
-        "points": 7.0,
+        "points": 12.0,
         "started": true,
         "eligible_slots": [
           "K",
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Kevin Mallon",
-    "players": [
-      {
-        "name": "Saquon Barkley",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.5,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
+        "game_date": "2025-11-09T21:25:00"
       },
       {
-        "name": "Jeremiyah Love",
-        "position": "RB",
-        "slot": "RB",
-        "points": 12.0,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Zay Flowers",
-        "position": "WR",
-        "slot": "WR",
-        "points": 25.5,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Terry McLaurin",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 2.4,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Bo Nix",
-        "position": "QB",
-        "slot": "QB",
-        "points": 5.44,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-15T00:15:00"
-      },
-      {
-        "name": "Kyle Monangai",
-        "position": "RB",
-        "slot": "BE",
-        "points": 21.4,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Makai Lemon",
-        "position": "WR",
-        "slot": "BE",
-        "points": 1.0,
-        "started": false,
-        "eligible_slots": [
-          "Rookie",
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Jacory Croskey-Merritt",
-        "position": "RB",
-        "slot": "BE",
-        "points": 12.1,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Harold Fannin Jr.",
+        "name": "Hunter Henry",
         "position": "TE",
         "slot": "TE",
-        "points": 3.1,
+        "points": 1.4,
         "started": true,
         "eligible_slots": [
           "WR/TE",
@@ -2353,13 +921,81 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Rashee Rice",
+        "name": "Devin Singletary",
+        "position": "RB",
+        "slot": "RB",
+        "points": 8.8,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Ravens D/ST",
+        "position": "D/ST",
+        "slot": "BE",
+        "points": 6.0,
+        "started": false,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Alvin Kamara",
+        "position": "RB",
+        "slot": "BE",
+        "points": 13.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Blake Pratt",
+    "players": [
+      {
+        "name": "Derrick Henry",
+        "position": "RB",
+        "slot": "RB",
+        "points": 9.9,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "A.J. Brown",
         "position": "WR",
-        "slot": "WR",
-        "points": 8.9,
+        "slot": "RB/WR/TE",
+        "points": 2.3,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2370,13 +1006,60 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-15T00:15:00"
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "D'Andre Swift",
+        "position": "RB",
+        "slot": "RB",
+        "points": 12.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Garrett Wilson",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Patrick Mahomes",
+        "position": "QB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
       },
       {
         "name": "Travis Kelce",
         "position": "TE",
         "slot": "BE",
-        "points": 8.6,
+        "points": 0,
         "started": false,
         "eligible_slots": [
           "WR/TE",
@@ -2386,110 +1069,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-15T00:15:00"
+        "game_date": null
       },
       {
-        "name": "Rams D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 1.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Jordan Love",
-        "position": "QB",
-        "slot": "BE",
-        "points": 21.48,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Tre Tucker",
-        "position": "WR",
-        "slot": "BE",
-        "points": 3.7,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Trey Smack",
-        "position": "K",
-        "slot": "K",
-        "points": 12.0,
-        "started": true,
-        "eligible_slots": [
-          "Rookie",
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      }
-    ]
-  },
-  {
-    "year": "2026",
-    "week": "1",
-    "manager": "Blake Pratt",
-    "players": [
-      {
-        "name": "Omarion Hampton",
-        "position": "RB",
-        "slot": "RB",
-        "points": 8.3,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Ashton Jeanty",
-        "position": "RB",
-        "slot": "RB",
-        "points": 31.7,
-        "started": true,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Davante Adams",
+        "name": "Courtland Sutton",
         "position": "WR",
         "slot": "WR",
-        "points": 4.1,
+        "points": 3.9,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2500,60 +1086,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Luther Burden III",
-        "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 7.0,
-        "started": true,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Dak Prescott",
-        "position": "QB",
-        "slot": "QB",
-        "points": 14.4,
-        "started": true,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-14T00:20:00"
-      },
-      {
-        "name": "George Kittle",
-        "position": "TE",
-        "slot": "TE",
-        "points": 2.2,
-        "started": true,
-        "eligible_slots": [
-          "WR/TE",
-          "TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
+        "game_date": "2025-11-07T01:15:00"
       },
       {
         "name": "Jaxon Smith-Njigba",
         "position": "WR",
         "slot": "WR",
-        "points": 24.2,
+        "points": 17.8,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2564,121 +1103,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-10T00:20:00"
+        "game_date": "2025-11-09T21:05:00"
       },
       {
-        "name": "Michael Wilson",
-        "position": "WR",
-        "slot": "BE",
-        "points": 8.1,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Josh Downs",
-        "position": "WR",
-        "slot": "BE",
-        "points": 4.7,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Jared Goff",
-        "position": "QB",
-        "slot": "BE",
-        "points": 16.44,
-        "started": false,
-        "eligible_slots": [
-          "QB",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Romeo Doubs",
-        "position": "WR",
-        "slot": "BE",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-10T00:20:00"
-      },
-      {
-        "name": "Lions D/ST",
-        "position": "D/ST",
-        "slot": "D/ST",
-        "points": 5.0,
-        "started": true,
-        "eligible_slots": [
-          "D/ST",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Cameron Dicker",
-        "position": "K",
-        "slot": "K",
-        "points": 2.0,
-        "started": true,
-        "eligible_slots": [
-          "K",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Tank Dell",
-        "position": "WR",
-        "slot": "IR",
-        "points": 0.0,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T17:00:00"
-      },
-      {
-        "name": "Jonathon Brooks",
+        "name": "Rhamondre Stevenson",
         "position": "RB",
         "slot": "BE",
-        "points": 6.7,
+        "points": 0.0,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -2688,10 +1119,340 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Devaughn Vele",
+        "name": "Justin Herbert",
+        "position": "QB",
+        "slot": "QB",
+        "points": 14.7,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Dalton Kincaid",
+        "position": "TE",
+        "slot": "TE",
+        "points": 4.7,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Patriots D/ST",
+        "position": "D/ST",
+        "slot": "BE",
+        "points": 1.0,
+        "started": false,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Cameron Dicker",
+        "position": "K",
+        "slot": "K",
+        "points": 14.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Jonathon Brooks",
+        "position": "RB",
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Terrell Jennings",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0.5,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Browns D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 8.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Brian Kleinhenz",
+    "players": [
+      {
+        "name": "Keenan Allen",
+        "position": "WR",
+        "slot": "WR",
+        "points": 2.9,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Jared Goff",
+        "position": "QB",
+        "slot": "BE",
+        "points": 26.8,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Jalen Hurts",
+        "position": "QB",
+        "slot": "QB",
+        "points": 12.02,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Trey Benson",
+        "position": "RB",
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Deebo Samuel",
+        "position": "WR",
+        "slot": "BE",
+        "points": 10.9,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Jaylen Warren",
+        "position": "RB",
+        "slot": "RB",
+        "points": 10.1,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Chris Boswell",
+        "position": "K",
+        "slot": "K",
+        "points": 5.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Aaron Jones Sr.",
+        "position": "RB",
+        "slot": "RB",
+        "points": 14.4,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Michael Pittman Jr.",
+        "position": "WR",
+        "slot": "WR",
+        "points": 2.9,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Javonte Williams",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Malik Washington",
+        "position": "WR",
+        "slot": "BE",
+        "points": 8.3,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Theo Johnson",
+        "position": "TE",
+        "slot": "TE",
+        "points": 11.0,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Kyle Monangai",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 8.8,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Dallas Goedert",
+        "position": "TE",
+        "slot": "BE",
+        "points": 6.3,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Parker Washington",
         "position": "WR",
         "slot": "BE",
         "points": 16.4,
@@ -2705,20 +1466,49 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Steelers D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 5.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
       }
     ]
   },
   {
-    "year": "2026",
-    "week": "1",
-    "manager": "Carl Bruce",
+    "year": "2025",
+    "week": "10",
+    "manager": "Jay Nelson",
     "players": [
+      {
+        "name": "Josh Jacobs",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 17.2,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
       {
         "name": "Amon-Ra St. Brown",
         "position": "WR",
         "slot": "WR",
-        "points": 23.7,
+        "points": 14.3,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2729,15 +1519,16 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T21:25:00"
       },
       {
-        "name": "D'Andre Swift",
+        "name": "RJ Harvey",
         "position": "RB",
         "slot": "RB",
-        "points": 33.9,
+        "points": 2.8,
         "started": true,
         "eligible_slots": [
+          "Rookie",
           "RB",
           "RB/WR",
           "RB/WR/TE",
@@ -2745,13 +1536,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-07T01:15:00"
       },
       {
-        "name": "Jaylen Waddle",
+        "name": "Stefon Diggs",
         "position": "WR",
-        "slot": "RB/WR/TE",
-        "points": 0.7,
+        "slot": "WR",
+        "points": 13.1,
         "started": true,
         "eligible_slots": [
           "RB/WR",
@@ -2762,46 +1553,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-15T00:15:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Blake Corum",
-        "position": "RB",
-        "slot": "BE",
-        "points": 5.4,
-        "started": false,
-        "eligible_slots": [
-          "RB",
-          "RB/WR",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-11T00:35:00"
-      },
-      {
-        "name": "Christian Watson",
-        "position": "WR",
-        "slot": "BE",
-        "points": 31.7,
-        "started": false,
-        "eligible_slots": [
-          "RB/WR",
-          "WR",
-          "WR/TE",
-          "RB/WR/TE",
-          "OP",
-          "BE",
-          "IR"
-        ],
-        "game_date": "2026-09-13T20:25:00"
-      },
-      {
-        "name": "Caleb Williams",
+        "name": "Baker Mayfield",
         "position": "QB",
         "slot": "QB",
-        "points": 37.26,
+        "points": 22.92,
         "started": true,
         "eligible_slots": [
           "QB",
@@ -2809,15 +1567,16 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Tucker Kraft",
+        "name": "Tyler Warren",
         "position": "TE",
         "slot": "TE",
-        "points": 8.0,
+        "points": 13.9,
         "started": true,
         "eligible_slots": [
+          "Rookie",
           "WR/TE",
           "TE",
           "RB/WR/TE",
@@ -2825,13 +1584,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T20:25:00"
+        "game_date": "2025-11-09T14:30:00"
       },
       {
-        "name": "DK Metcalf",
+        "name": "Jauan Jennings",
         "position": "WR",
         "slot": "BE",
-        "points": 6.0,
+        "points": 14.1,
         "started": false,
         "eligible_slots": [
           "RB/WR",
@@ -2842,13 +1601,13 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T21:25:00"
       },
       {
-        "name": "Chase Brown",
+        "name": "De'Von Achane",
         "position": "RB",
         "slot": "RB",
-        "points": 16.3,
+        "points": 39.5,
         "started": true,
         "eligible_slots": [
           "RB",
@@ -2858,28 +1617,27 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Trevor Lawrence",
-        "position": "QB",
-        "slot": "BE",
-        "points": 26.1,
-        "started": false,
+        "name": "Broncos D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 17.0,
+        "started": true,
         "eligible_slots": [
-          "QB",
-          "OP",
+          "D/ST",
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-07T01:15:00"
       },
       {
-        "name": "Nico Collins",
+        "name": "Brandon Aiyuk",
         "position": "WR",
-        "slot": "WR",
-        "points": 17.7,
-        "started": true,
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
         "eligible_slots": [
           "RB/WR",
           "WR",
@@ -2889,12 +1647,124 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T21:25:00"
       },
       {
-        "name": "Jonah Coleman",
+        "name": "CeeDee Lamb",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Ka'imi Fairbairn",
+        "position": "K",
+        "slot": "K",
+        "points": 0.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Joe Flacco",
+        "position": "QB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Emanuel Wilson",
         "position": "RB",
         "slot": "BE",
+        "points": 0.9,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Tyjae Spears",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Michael Badgley",
+        "position": "K",
+        "slot": "BE",
+        "points": 7.0,
+        "started": false,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Brian Harris",
+    "players": [
+      {
+        "name": "Saquon Barkley",
+        "position": "RB",
+        "slot": "RB",
+        "points": 11.6,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Omarion Hampton",
+        "position": "RB",
+        "slot": "IR",
         "points": 0.0,
         "started": false,
         "eligible_slots": [
@@ -2906,13 +1776,79 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-15T00:15:00"
+        "game_date": "2025-11-10T01:20:00"
       },
       {
-        "name": "Tank Bigsby",
+        "name": "Emeka Egbuka",
+        "position": "WR",
+        "slot": "WR",
+        "points": 22.5,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Jayden Daniels",
+        "position": "QB",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Puka Nacua",
+        "position": "WR",
+        "slot": "WR",
+        "points": 14.9,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Jaydon Blue",
         "position": "RB",
         "slot": "BE",
-        "points": 0.3,
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Kareem Hunt",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0,
         "started": false,
         "eligible_slots": [
           "RB",
@@ -2922,10 +1858,1156 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T20:25:00"
+        "game_date": null
       },
       {
-        "name": "Eagles D/ST",
+        "name": "Kayshon Boutte",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Tez Johnson",
+        "position": "WR",
+        "slot": "BE",
+        "points": 18.2,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Troy Franklin",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 12.5,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-07T01:15:00"
+      },
+      {
+        "name": "Jaguars D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 8.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Andy Borregales",
+        "position": "K",
+        "slot": "K",
+        "points": 4.0,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Tank Bigsby",
+        "position": "RB",
+        "slot": "BE",
+        "points": 0.7,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Colston Loveland",
+        "position": "TE",
+        "slot": "TE",
+        "points": 7.5,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Marcus Mariota",
+        "position": "QB",
+        "slot": "QB",
+        "points": 18.72,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Emari Demercado",
+        "position": "RB",
+        "slot": "RB",
+        "points": 11.9,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "John Schauder",
+    "players": [
+      {
+        "name": "Justin Jefferson",
+        "position": "WR",
+        "slot": "WR",
+        "points": 5.7,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Marvin Harrison Jr.",
+        "position": "WR",
+        "slot": "WR",
+        "points": 12.8,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "Ricky Pearsall",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "George Pickens",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Cam Skattebo",
+        "position": "RB",
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Drake Maye",
+        "position": "QB",
+        "slot": "QB",
+        "points": 18.1,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Bo Nix",
+        "position": "QB",
+        "slot": "BE",
+        "points": 5.8,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-07T01:15:00"
+      },
+      {
+        "name": "Jahmyr Gibbs",
+        "position": "RB",
+        "slot": "RB",
+        "points": 38.7,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "James Cook III",
+        "position": "RB",
+        "slot": "RB",
+        "points": 8.2,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Ja'Marr Chase",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Lions D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 4.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Mark Andrews",
+        "position": "TE",
+        "slot": "BE",
+        "points": 8.9,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Jason Myers",
+        "position": "K",
+        "slot": "K",
+        "points": 15.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:05:00"
+      },
+      {
+        "name": "DeMario Douglas",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 4.4,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Luke Musgrave",
+        "position": "TE",
+        "slot": "BE",
+        "points": 3.8,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Cade Otton",
+        "position": "TE",
+        "slot": "TE",
+        "points": 12.7,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Kevin Mallon",
+    "players": [
+      {
+        "name": "Jonathan Taylor",
+        "position": "RB",
+        "slot": "RB",
+        "points": 50.1,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Josh Allen",
+        "position": "QB",
+        "slot": "QB",
+        "points": 21.34,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Breece Hall",
+        "position": "RB",
+        "slot": "RB",
+        "points": 19.0,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Sam LaPorta",
+        "position": "TE",
+        "slot": "TE",
+        "points": 7.8,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Matthew Golden",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Jacory Croskey-Merritt",
+        "position": "RB",
+        "slot": "BE",
+        "points": 3.0,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Travis Hunter",
+        "position": "WR",
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR",
+          "CB",
+          "DB",
+          "DP"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Chris Olave",
+        "position": "WR",
+        "slot": "WR",
+        "points": 20.9,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Xavier Worthy",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Rashee Rice",
+        "position": "WR",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Chase McLaughlin",
+        "position": "K",
+        "slot": "K",
+        "points": 5.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Kimani Vidal",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 17.3,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Chargers D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": 17.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Josh Downs",
+        "position": "WR",
+        "slot": "WR",
+        "points": 0.8,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Alec Pierce",
+        "position": "WR",
+        "slot": "BE",
+        "points": 16.4,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Tre Tucker",
+        "position": "WR",
+        "slot": "BE",
+        "points": 4.5,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-07T01:15:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Eddie McCumiskey",
+    "players": [
+      {
+        "name": "Joe Burrow",
+        "position": "QB",
+        "slot": "IR",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "DK Metcalf",
+        "position": "WR",
+        "slot": "WR",
+        "points": 5.0,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Brock Bowers",
+        "position": "TE",
+        "slot": "TE",
+        "points": 3.2,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-07T01:15:00"
+      },
+      {
+        "name": "Khalil Shakir",
+        "position": "WR",
+        "slot": "BE",
+        "points": 9.3,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Jordan Love",
+        "position": "QB",
+        "slot": "QB",
+        "points": 7.84,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Wan'Dale Robinson",
+        "position": "WR",
+        "slot": "RB/WR/TE",
+        "points": 9.2,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Kenneth Gainwell",
+        "position": "RB",
+        "slot": "BE",
+        "points": 1.4,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "David Montgomery",
+        "position": "RB",
+        "slot": "RB",
+        "points": 9.6,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Rachaad White",
+        "position": "RB",
+        "slot": "BE",
+        "points": 7.9,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Ladd McConkey",
+        "position": "WR",
+        "slot": "WR",
+        "points": 20.7,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      },
+      {
+        "name": "Jameson Williams",
+        "position": "WR",
+        "slot": "BE",
+        "points": 22.9,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Kyle Pitts Sr.",
+        "position": "TE",
+        "slot": "BE",
+        "points": 4.8,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Tyrone Tracy Jr.",
+        "position": "RB",
+        "slot": "RB",
+        "points": 7.6,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Eddy Pineiro",
+        "position": "K",
+        "slot": "K",
+        "points": 1.0,
+        "started": true,
+        "eligible_slots": [
+          "K",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Buccaneers D/ST",
+        "position": "D/ST",
+        "slot": "D/ST",
+        "points": -1.0,
+        "started": true,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Calvin Austin III",
+        "position": "WR",
+        "slot": "BE",
+        "points": 2.4,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-10T01:20:00"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "week": "10",
+    "manager": "Greg Wigton",
+    "players": [
+      {
+        "name": "Christian McCaffrey",
+        "position": "RB",
+        "slot": "RB",
+        "points": 13.6,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Lamar Jackson",
+        "position": "QB",
+        "slot": "QB",
+        "points": 16.64,
+        "started": true,
+        "eligible_slots": [
+          "QB",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Davante Adams",
+        "position": "WR",
+        "slot": "WR",
+        "points": 16.7,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Jaylen Waddle",
+        "position": "WR",
+        "slot": "BE",
+        "points": 16.9,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Kyren Williams",
+        "position": "RB",
+        "slot": "RB",
+        "points": 21.4,
+        "started": true,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T21:25:00"
+      },
+      {
+        "name": "Quinshon Judkins",
+        "position": "RB",
+        "slot": "RB/WR/TE",
+        "points": 9.5,
+        "started": true,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Travis Etienne Jr.",
+        "position": "RB",
+        "slot": "BE",
+        "points": 14.7,
+        "started": false,
+        "eligible_slots": [
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Chris Godwin Jr.",
+        "position": "WR",
+        "slot": "IR",
+        "points": 0.0,
+        "started": false,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Woody Marks",
+        "position": "RB",
+        "slot": "BE",
+        "points": 15.1,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Packers D/ST",
+        "position": "D/ST",
+        "slot": "BE",
+        "points": 8.0,
+        "started": false,
+        "eligible_slots": [
+          "D/ST",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-11T01:15:00"
+      },
+      {
+        "name": "Jake Ferguson",
+        "position": "TE",
+        "slot": "BE",
+        "points": 0,
+        "started": false,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": null
+      },
+      {
+        "name": "Drake London",
+        "position": "WR",
+        "slot": "WR",
+        "points": 23.4,
+        "started": true,
+        "eligible_slots": [
+          "RB/WR",
+          "WR",
+          "WR/TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T14:30:00"
+      },
+      {
+        "name": "Bhayshul Tuten",
+        "position": "RB",
+        "slot": "BE",
+        "points": 1.5,
+        "started": false,
+        "eligible_slots": [
+          "Rookie",
+          "RB",
+          "RB/WR",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Panthers D/ST",
         "position": "D/ST",
         "slot": "D/ST",
         "points": 5.0,
@@ -2935,20 +3017,36 @@
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T20:25:00"
+        "game_date": "2025-11-09T18:00:00"
       },
       {
-        "name": "Tyler Loop",
+        "name": "Dalton Schultz",
+        "position": "TE",
+        "slot": "TE",
+        "points": 14.8,
+        "started": true,
+        "eligible_slots": [
+          "WR/TE",
+          "TE",
+          "RB/WR/TE",
+          "OP",
+          "BE",
+          "IR"
+        ],
+        "game_date": "2025-11-09T18:00:00"
+      },
+      {
+        "name": "Harrison Mevis",
         "position": "K",
         "slot": "K",
-        "points": 14.0,
+        "points": 6.0,
         "started": true,
         "eligible_slots": [
           "K",
           "BE",
           "IR"
         ],
-        "game_date": "2026-09-13T17:00:00"
+        "game_date": "2025-11-09T21:25:00"
       }
     ]
   }

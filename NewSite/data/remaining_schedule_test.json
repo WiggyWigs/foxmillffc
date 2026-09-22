@@ -1,342 +1,108 @@
 {
-  "year": 2026,
+  "year": 2025,
   "weeks": {
-    "2": [
-      {
-        "away_manager": "Brian Kleinhenz",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Jason Carlton"
-      },
-      {
-        "away_manager": "Jay Nelson",
-        "home_manager": "Daniel Bahamonde"
-      },
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Eddie McCumiskey"
-      },
-      {
-        "away_manager": "Greg Wigton",
-        "home_manager": "Blake Pratt"
-      },
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Carl Bruce"
-      }
-    ],
-    "3": [
-      {
-        "away_manager": "Josh Davis",
-        "home_manager": "Jason Carlton"
-      },
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Brian Kleinhenz"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Brian Harris"
-      },
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Greg Wigton"
-      }
-    ],
-    "4": [
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Eddie McCumiskey"
-      },
-      {
-        "away_manager": "Brian Kleinhenz",
-        "home_manager": "Blake Pratt"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Carl Bruce"
-      },
-      {
-        "away_manager": "Jay Nelson",
-        "home_manager": "Kevin Mallon"
-      },
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Greg Wigton"
-      }
-    ],
-    "5": [
-      {
-        "away_manager": "Josh Davis",
-        "home_manager": "Eddie McCumiskey"
-      },
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Daniel Bahamonde"
-      },
-      {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Jason Carlton"
-      },
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Brian Kleinhenz"
-      },
-      {
-        "away_manager": "Greg Wigton",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Jay Nelson"
-      }
-    ],
-    "6": [
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
-        "home_manager": "Carl Bruce"
-      },
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Kevin Mallon"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Greg Wigton"
-      },
-      {
-        "away_manager": "Brian Kleinhenz",
-        "home_manager": "Brian Harris"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Jay Nelson"
-      }
-    ],
-    "7": [
-      {
-        "away_manager": "Josh Davis",
-        "home_manager": "Carl Bruce"
-      },
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Blake Pratt"
-      },
-      {
-        "away_manager": "Greg Wigton",
-        "home_manager": "Eddie McCumiskey"
-      },
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Daniel Bahamonde"
-      },
-      {
-        "away_manager": "Jay Nelson",
-        "home_manager": "Jason Carlton"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Brian Kleinhenz"
-      }
-    ],
-    "8": [
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Greg Wigton"
-      },
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Brian Harris"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Brian Kleinhenz"
-      }
-    ],
-    "9": [
-      {
-        "away_manager": "Josh Davis",
-        "home_manager": "Greg Wigton"
-      },
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Kevin Mallon"
-      },
-      {
-        "away_manager": "Jay Nelson",
-        "home_manager": "Carl Bruce"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Blake Pratt"
-      },
-      {
-        "away_manager": "Brian Kleinhenz",
-        "home_manager": "Eddie McCumiskey"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Daniel Bahamonde"
-      }
-    ],
-    "10": [
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Greg Wigton",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Brian Kleinhenz"
-      },
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Jason Carlton"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
-        "home_manager": "Daniel Bahamonde"
-      }
-    ],
     "11": [
       {
-        "away_manager": "Josh Davis",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Brian Harris"
+        "away_manager": "Carl Bruce",
+        "home_manager": "Daniel Bahamonde"
       },
       {
         "away_manager": "Brian Kleinhenz",
-        "home_manager": "Greg Wigton"
+        "home_manager": "Erik Servinsky"
       },
       {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Kevin Mallon"
+        "away_manager": "Brian Harris",
+        "home_manager": "Jason Carlton"
       },
       {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Carl Bruce"
+        "away_manager": "Kevin Mallon",
+        "home_manager": "Blake Pratt"
+      },
+      {
+        "away_manager": "Greg Wigton",
+        "home_manager": "Jay Nelson"
       },
       {
         "away_manager": "Eddie McCumiskey",
-        "home_manager": "Blake Pratt"
+        "home_manager": "John Schauder"
       }
     ],
     "12": [
       {
-        "away_manager": "John Schauder",
-        "home_manager": "Josh Davis"
+        "away_manager": "Brian Kleinhenz",
+        "home_manager": "Carl Bruce"
       },
       {
-        "away_manager": "Jay Nelson",
-        "home_manager": "Brian Kleinhenz"
+        "away_manager": "Daniel Bahamonde",
+        "home_manager": "Brian Harris"
       },
       {
-        "away_manager": "Brian Harris",
-        "home_manager": "Jason Carlton"
+        "away_manager": "Erik Servinsky",
+        "home_manager": "Kevin Mallon"
       },
       {
-        "away_manager": "Greg Wigton",
-        "home_manager": "Daniel Bahamonde"
+        "away_manager": "Jason Carlton",
+        "home_manager": "Greg Wigton"
       },
       {
-        "away_manager": "Kevin Mallon",
+        "away_manager": "Blake Pratt",
         "home_manager": "Eddie McCumiskey"
       },
       {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Blake Pratt"
+        "away_manager": "Jay Nelson",
+        "home_manager": "John Schauder"
       }
     ],
     "13": [
       {
-        "away_manager": "Josh Davis",
-        "home_manager": "Brian Kleinhenz"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
+        "away_manager": "Carl Bruce",
         "home_manager": "Brian Harris"
       },
       {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Greg Wigton"
+        "away_manager": "Kevin Mallon",
+        "home_manager": "Brian Kleinhenz"
       },
       {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Kevin Mallon"
-      }
-    ],
-    "14": [
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Brian Kleinhenz",
+        "away_manager": "Greg Wigton",
         "home_manager": "Daniel Bahamonde"
       },
       {
+        "away_manager": "Eddie McCumiskey",
+        "home_manager": "Erik Servinsky"
+      },
+      {
         "away_manager": "John Schauder",
-        "home_manager": "Eddie McCumiskey"
+        "home_manager": "Jason Carlton"
       },
       {
         "away_manager": "Jay Nelson",
         "home_manager": "Blake Pratt"
-      },
+      }
+    ],
+    "14": [
       {
-        "away_manager": "Brian Harris",
+        "away_manager": "Kevin Mallon",
         "home_manager": "Carl Bruce"
       },
       {
-        "away_manager": "Greg Wigton",
-        "home_manager": "Kevin Mallon"
+        "away_manager": "Brian Harris",
+        "home_manager": "Greg Wigton"
+      },
+      {
+        "away_manager": "Brian Kleinhenz",
+        "home_manager": "Eddie McCumiskey"
+      },
+      {
+        "away_manager": "Daniel Bahamonde",
+        "home_manager": "John Schauder"
+      },
+      {
+        "away_manager": "Erik Servinsky",
+        "home_manager": "Jay Nelson"
+      },
+      {
+        "away_manager": "Jason Carlton",
+        "home_manager": "Blake Pratt"
       }
     ]
   }
