@@ -211,7 +211,6 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   // lowest team, highest player) can share the Honorable Mention
   // format while sentence/record cards keep their existing look.
   const entries = [];
-  if (callouts.last_gotw_result) entries.push({ item: callouts.last_gotw_result, kind: "sentence" });
   if (Array.isArray(callouts.new_records)) {
     callouts.new_records.forEach((item) => entries.push({ item, kind: "record" }));
   }
