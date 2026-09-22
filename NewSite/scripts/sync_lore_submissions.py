@@ -13,6 +13,10 @@ Tracks progress via lore_sync_state.json (just a row count) so each
 run only processes rows it hasn't seen before — safe to run as often
 as you like.
 
+Each manager's entry in manager_lore.json is a LIST of individual facts
+(one per form submission), not a single string — generate_recap.py
+rotates through them so the same fact isn't used every single week.
+
 Credentials: expects the full service-account JSON key in the
 GOOGLE_SHEETS_CREDENTIALS environment variable (set from a GitHub
 Secret — see setup steps). The service account only needs Viewer
@@ -110,8 +114,11 @@ def main():
             rejected.append(f"Row {row_num}: '{manager}' isn't a recognized manager — skipped.")
             continue
 
-        existing = lore.get(manager, "").strip()
-        lore[manager] = f"{existing} Also: {lore_text}" if existing else lore_text
+        existing = lore.get(manager, [])
+        if isinstance(existing, str):  # migrate an old-format single string on first touch
+            existing = [existing] if existing.strip() else []
+        existing.append(lore_text)
+        lore[manager] = existing
         added_count += 1
         print(f"Row {row_num}: added lore for {manager}.")
 
