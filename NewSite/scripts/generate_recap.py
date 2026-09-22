@@ -696,7 +696,16 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
         "outshining the weak one (or vice versa) — never as two flat, "
         "separate statements listing each player's score. Vary the "
         "verb and the adjective each time rather than reusing the same "
-        "phrasing. If you mention "
+        "phrasing. EVERY player field is prefixed 'away_' or 'home_' — "
+        "that prefix is the ONLY source of truth for which manager that "
+        "player belongs to: away_top_scorer and away_bottom_scorer belong "
+        f"to {away} ({away_team}), and home_top_scorer and home_bottom_scorer "
+        f"belong to {home} ({home_team}). Before writing a sentence that "
+        "names a player, re-check which prefix their field had and confirm "
+        "you're crediting or blaming the correct manager — do NOT swap a "
+        "player to the other manager's side, and do not guess a player's "
+        "team from your own general knowledge of the NFL; the away_/home_ "
+        "prefix is the only fact that matters here. If you mention "
         "playoff chances or probability for a manager, you MUST cite "
         "both their previous_week_pct and current_week_pct numbers from "
         "their season_playoff_probability_trend field if it's present — never "
@@ -873,12 +882,16 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         game, week, year, stats, lore, old_stats
     )
 
-    reason_text = {
-        "top6_matchup": "Both managers are ranked in the top 6 of the current standings (real win-loss rank) — this was the closest margin among such matchups this week.",
-        "next_closest_margin": "No matchup between two top-6 managers existed this week, so this is simply the next-closest game by margin.",
-        "biggest_blowout": "Nothing else this week was decided by fewer than 15 points either, so this is the week's biggest blowout instead.",
+    # A short, casual TAG only — deliberately NOT the mechanical
+    # reasoning (standings rank, margin thresholds, "next-closest by
+    # margin," etc.). The write-up should gesture at the vibe of why
+    # this game stood out, never explain the selection process itself.
+    selection_hook = {
+        "top6_matchup": "a genuine top-6 showdown",
+        "next_closest_margin": "the next-closest game of the week",
+        "biggest_blowout": "the week's biggest blowout",
     }[reason]
-    context["why_this_game_was_selected"] = reason_text
+    context["selection_hook"] = selection_hook
 
     # Only one player total gets mentioned per team here, and it's not
     # "top and bottom for each team" like the Impact Game — it's
@@ -915,9 +928,16 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "each other for years and enjoy busting each other's chops. "
         "This one is the week's HONORABLE MENTION game — a second "
         "featured game, distinct from the week's main Impact Game. "
-        "You can reference why_this_game_was_selected briefly if it "
-        "fits naturally, but don't just recite it — weave it in, or "
-        "skip it if the game's own story is more interesting.\n\n"
+        "selection_hook is a short phrase for the vibe of why this game "
+        "stood out — you may work it into ONE casual, offhand clause "
+        "near the top of the write-up (e.g. 'These two top-6 teams "
+        "collided...' or 'this game was a blowout we had to write "
+        "about...'), or skip it entirely if the game's own story is "
+        "more interesting. NEVER explain the actual selection process — "
+        "no mention of standings rank, margin thresholds, 'closest "
+        "matchup among top-6 teams,' or why the Impact Game wasn't "
+        "picked instead. A passing reference to the vibe, not a "
+        "justification.\n\n"
         f"{tone}\n\n"
         "The recap must be between 90 "
         "and 110 words — this is a hard requirement, not a suggestion. "
@@ -955,7 +975,16 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "dramatic contrast in one sentence — the big performance "
         "against the weak one. Vary the "
         "verb and the adjective each time rather than reusing the same "
-        "phrasing. If you mention "
+        "phrasing. EVERY player field is prefixed 'away_' or 'home_' — "
+        "that prefix is the ONLY source of truth for which manager that "
+        "player belongs to: an away_ field belongs to "
+        f"{away} ({away_team}), and a home_ field belongs to {home} "
+        f"({home_team}). Before writing a sentence that names a player, "
+        "re-check which prefix their field had and confirm you're "
+        "crediting or blaming the correct manager — do NOT swap a player "
+        "to the other manager's side, and do not guess a player's team "
+        "from your own general knowledge of the NFL; the away_/home_ "
+        "prefix is the only fact that matters here. If you mention "
         "playoff chances or probability for a manager, you MUST cite "
         "both their previous_week_pct and current_week_pct numbers from "
         "their season_playoff_probability_trend field if it's present — never "
