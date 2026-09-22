@@ -38,6 +38,7 @@ GitHub Secret in the automated workflow).
 
 import json
 import os
+import random
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -99,6 +100,94 @@ def load_manager_lore():
         return json.load(f)
 
 
+LORE_ROTATION_STATE_PATH = SCRIPT_DIR / "lore_rotation_state.json"
+
+
+def load_lore_rotation_state():
+    """
+    Bookkeeping for manager-lore rotation: for each manager with more than
+    one lore fact, tracks a shuffled queue of fact indices not yet used
+    this cycle, plus the index used last time (so a fresh reshuffle never
+    repeats the same fact back-to-back). Missing or corrupt state is
+    treated as empty — worst case, that manager's next pick is unweighted
+    for one run, not a failure of the whole script.
+    """
+    if not LORE_ROTATION_STATE_PATH.exists():
+        return {}
+    try:
+        with open(LORE_ROTATION_STATE_PATH) as f:
+            return json.load(f)
+    except (ValueError, OSError):
+        return {}
+
+
+def save_lore_rotation_state(state):
+    with open(LORE_ROTATION_STATE_PATH, "w") as f:
+        json.dump(state, f, indent=2)
+
+
+# Facts already dealt out THIS run, keyed by manager -> list of up to 2
+# facts. A manager can be looked up more than once in a single run — most
+# commonly, once for last week's recap (Impact Game / Honorable Mention)
+# and again for an upcoming-matchup preview (Game of the Week). Dealing 2
+# distinct facts up front and cycling through them per-appearance means
+# those write-ups don't all repeat the exact same line, while a single
+# call (or a manager with only 1 fact total) still reads consistently.
+_flavor_picks_this_run = {}
+
+# How many times get_manager_flavor has been called for each manager THIS
+# run — used to pick which of that manager's dealt facts to hand out this
+# specific appearance (0, then 1, then wraps back to 0 if they somehow
+# show up a 3rd time).
+_flavor_call_count_this_run = {}
+
+FACTS_PER_RUN = 2  # how many distinct facts to deal a manager per run, when they have that many
+
+
+def pick_lore_facts(manager, facts, rotation_state, count=FACTS_PER_RUN):
+    """
+    Returns up to `count` DISTINCT facts for `manager` from their `facts`
+    list (a plain list of strings, one per past lore submission) — or
+    just the one fact they have, if that's all there is. Draws from the
+    same rotating queue every week, so across runs every fact gets used
+    before any repeat, and a fresh reshuffle never repeats the
+    immediately-previous fact back-to-back. Mutates rotation_state in
+    place — the caller persists it once, at the end of the run, via
+    save_lore_rotation_state().
+    """
+    if manager in _flavor_picks_this_run:
+        return _flavor_picks_this_run[manager]
+
+    if len(facts) == 1:
+        picks = [facts[0]]
+        _flavor_picks_this_run[manager] = picks
+        return picks
+
+    want = min(count, len(facts))
+    entry = rotation_state.setdefault(manager, {"queue": [], "last_used": None})
+    picked_idx = []
+    while len(picked_idx) < want:
+        if not entry["queue"]:
+            pool = list(range(len(facts)))
+            random.shuffle(pool)
+            if pool[0] == entry["last_used"]:
+                # swap so a fresh reshuffle doesn't repeat the last pick
+                swap_with = 1 if len(pool) > 1 else 0
+                pool[0], pool[swap_with] = pool[swap_with], pool[0]
+            entry["queue"] = pool
+        idx = entry["queue"].pop(0)
+        if idx in picked_idx:
+            # can only happen right at an old-queue/new-queue reshuffle
+            # boundary within one call — just draw again
+            continue
+        picked_idx.append(idx)
+        entry["last_used"] = idx
+
+    picks = [facts[i] for i in picked_idx]
+    _flavor_picks_this_run[manager] = picks
+    return picks
+
+
 def load_narrative_tone():
     """Edit narrative_tone.txt directly to change the voice/tone both
     narratives are written in — no code changes needed. Falls back to
@@ -109,7 +198,7 @@ def load_narrative_tone():
     return NARRATIVE_TONE_PATH.read_text().strip()
 
 
-def get_manager_flavor(manager, stats, lore):
+def get_manager_flavor(manager, stats, lore, rotation_state):
     """Real, verified career facts for one manager — actual roast
     material, not invented. Blends two sources deliberately, because
     different stat types have different correct answers mid-season:
@@ -152,9 +241,14 @@ def get_manager_flavor(manager, stats, lore):
     if h2h.get("rs_win_pct") is not None:
         flavor["career_win_pct"] = h2h["rs_win_pct"]
 
-    note = lore.get(manager)
-    if note:
-        flavor["background_note"] = note
+    facts = lore.get(manager)
+    if isinstance(facts, str):  # defensive: tolerate an old-format single string
+        facts = [facts] if facts else None
+    if facts:
+        picks = pick_lore_facts(manager, facts, rotation_state)
+        appearance = _flavor_call_count_this_run.get(manager, 0)
+        flavor["background_note"] = picks[appearance % len(picks)]
+        _flavor_call_count_this_run[manager] = appearance + 1
     return flavor
 
 
@@ -550,7 +644,7 @@ def find_best_bench_swap(losing_lineup, points_needed):
     return best
 
 
-def build_game_narrative_context(game, week, year, stats, lore, old_stats):
+def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotation_state):
     """Shared context-gathering for ANY single-game narrative (Impact
     Game, Honorable Mention, or any future one) — all the real,
     verified facts (H2H record, top/bottom scorer, bench swap, MNF
@@ -636,8 +730,8 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats):
             context["final_game_type"] = "Monday Night Football" if is_monday_night else "the final game of the week"
 
     # Real, verified career context — this is the actual roast material.
-    away_flavor = get_manager_flavor(away, stats, lore)
-    home_flavor = get_manager_flavor(home, stats, lore)
+    away_flavor = get_manager_flavor(away, stats, lore, rotation_state)
+    home_flavor = get_manager_flavor(home, stats, lore, rotation_state)
     if away_flavor:
         context["away_manager_background"] = away_flavor
     if home_flavor:
@@ -655,9 +749,9 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats):
     return context, away, home, away_team, home_team, loser
 
 
-def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
+def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, rotation_state):
     context, away, home, away_team, home_team, loser = build_game_narrative_context(
-        closest_game, week, year, stats, lore, old_stats
+        closest_game, week, year, stats, lore, old_stats, rotation_state
     )
 
     system = (
@@ -769,7 +863,7 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone):
 
 # --- Game of the Week (AI both picks and writes) ---------------------------
 
-def build_enriched_matchups(upcoming, stats, lore, old_stats):
+def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
     """Shared data-gathering for both the selection and writing steps —
     computed once, used by whichever step needs it."""
     matchups = upcoming.get("matchups", [])
@@ -826,7 +920,7 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats):
             "season_schedule_difficulty": schedule_difficulty,
             "season_playoff_probability_pct": playoff_prob.get(name),
         }
-        flavor = get_manager_flavor(name, stats, lore)
+        flavor = get_manager_flavor(name, stats, lore, rotation_state)
         if flavor:
             ctx["background"] = flavor
         pp_trend = get_playoff_probability_trend(name, old_stats, stats)
@@ -872,14 +966,14 @@ def add_selection_only_context(enriched, stats):
     return augmented
 
 
-def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, tone, reason, blowout_detail):
+def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, tone, reason, blowout_detail, rotation_state):
     """The week's Honorable Mention narrative — reuses the exact same
     shared fact-gathering as the Impact Game (build_game_narrative_context),
     just with its own framing and, in the blowout fallback tier, an
     instruction to drill into whichever team hit a real scoring
     extreme."""
     context, away, home, away_team, home_team, loser = build_game_narrative_context(
-        game, week, year, stats, lore, old_stats
+        game, week, year, stats, lore, old_stats, rotation_state
     )
 
     # A short, casual TAG only — deliberately NOT the mechanical
@@ -1582,6 +1676,7 @@ def main():
 
     criteria = load_recap_criteria()
     lore = load_manager_lore()
+    rotation_state = load_lore_rotation_state()
     tone = load_narrative_tone()
     week_games, week, year = get_week_games(stats)
 
@@ -1602,7 +1697,7 @@ def main():
         if week_games:
             closest_game = min(week_games, key=lambda g: g["margin"])
             system, user, recap_away_team, recap_home_team = build_recap_prompt(
-                closest_game, week, year, stats, lore, old_stats, tone
+                closest_game, week, year, stats, lore, old_stats, tone, rotation_state
             )
             recap_text = call_claude(system, user)
             print("Generated Previous Weekend Recap.")
@@ -1624,7 +1719,7 @@ def main():
                 honorable_mention_away_score = hm_game["away_score"]
                 honorable_mention_home_score = hm_game["home_score"]
                 hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
-                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail
+                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state
                 )
                 honorable_mention_text = call_claude(hm_system, hm_user)
                 print(f"Generated Honorable Mention ({hm_reason}): "
@@ -1646,7 +1741,7 @@ def main():
         if UPCOMING_MATCHUPS_PATH.exists():
             with open(UPCOMING_MATCHUPS_PATH) as f:
                 upcoming = json.load(f)
-            enriched = build_enriched_matchups(upcoming, stats, lore, old_stats)
+            enriched = build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state)
             if enriched:
                 week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
 
@@ -1778,6 +1873,13 @@ def main():
     with open(STATS_PATH, "w") as f:
         json.dump(stats, f, indent=2)
     print(f"Saved recap content to {STATS_PATH}.")
+
+    # Only persist rotation progress once content actually got written —
+    # if the early "Nothing generated this run" return fired above, any
+    # picks made along the way were never shown to anyone and should be
+    # discarded, not counted against the rotation.
+    save_lore_rotation_state(rotation_state)
+    print(f"Saved lore rotation state to {LORE_ROTATION_STATE_PATH}.")
 
 
 if __name__ == "__main__":
