@@ -1274,6 +1274,364 @@ def compute_playoff_status(records, games_played, schedule=None,
     return clinched, eliminated, method
 
 
+def _all_time_score_margin_leaderboards(all_games):
+    """
+    Top/bottom-5 all-time individual regular-season scores, and top/bottom-5
+    all-time margins of victory (ties excluded from margins). Used by
+    compute_week_in_history below. Deliberately a SEPARATE computation from
+    compute_records' similar top-15/bottom-15 lists rather than a refactor
+    of that function — a little duplicated O(n) work, zero risk to the
+    already-working Record Books.
+    """
+    score_entries = []
+    for g in all_games:
+        if g["game_type"] != "Regular":
+            continue
+        for mgr, score, team_name in ((g["away_manager"], g["away_score"], g["away_team"]),
+                                       (g["home_manager"], g["home_score"], g["home_team"])):
+            score_entries.append({"manager": mgr, "team_name": team_name, "year": g["year"],
+                                   "week": g["week"], "score": score})
+    top_scores = sorted(score_entries, key=lambda e: -e["score"])[:5]
+    bottom_scores = sorted(score_entries, key=lambda e: e["score"])[:5]
+
+    margin_entries = []
+    for g in all_games:
+        if g["game_type"] != "Regular" or g["tie"]:
+            continue
+        winner_score = max(g["away_score"], g["home_score"])
+        loser_score = min(g["away_score"], g["home_score"])
+        margin_entries.append({"winner": g["winner"], "loser": g["loser"],
+                                "winner_score": winner_score, "loser_score": loser_score,
+                                "margin": round(winner_score - loser_score, 2),
+                                "year": g["year"], "week": g["week"]})
+    smallest_margins = sorted(margin_entries, key=lambda e: e["margin"])[:5]
+    largest_margins = sorted(margin_entries, key=lambda e: -e["margin"])[:5]
+    return {"top_scores": top_scores, "bottom_scores": bottom_scores,
+            "smallest_margins": smallest_margins, "largest_margins": largest_margins}
+
+
+def _regular_games_at_week(all_games, week_num, before_year):
+    """Every completed regular-season game at week_num, from years strictly
+    before before_year — the historical candidate pool for "This Week in
+    Club History," which never includes the current season."""
+    return [g for g in all_games
+            if g["game_type"] == "Regular"
+            and _week_sort_key(g["week"]) == week_num
+            and g["year"] < before_year]
+
+
+def _game_margin(g):
+    if g["tie"]:
+        return 0.0
+    return round(max(g["away_score"], g["home_score"]) - min(g["away_score"], g["home_score"]), 2)
+
+
+def _score_in_leaderboard(mgr, score, year, week, leaderboard, n=5):
+    """1-based rank if this exact (manager, year, week, score) is within
+    the top-n of leaderboard, else None."""
+    for i, e in enumerate(leaderboard[:n]):
+        if e["manager"] == mgr and e["year"] == year and e["week"] == week and e["score"] == score:
+            return i + 1
+    return None
+
+
+def _margin_in_leaderboard(winner, loser, year, week, leaderboard, n=5):
+    for i, e in enumerate(leaderboard[:n]):
+        if e["winner"] == winner and e["loser"] == loser and e["year"] == year and e["week"] == week:
+            return i + 1
+    return None
+
+
+def _week_in_history_candidate(g, reason, detail=None):
+    return {
+        "year": g["year"], "week": g["week"],
+        "away_manager": g["away_manager"], "away_team": g["away_team"], "away_score": g["away_score"],
+        "home_manager": g["home_manager"], "home_team": g["home_team"], "home_score": g["home_score"],
+        "winner": g["winner"], "loser": g["loser"], "tie": g["tie"],
+        "margin": _game_margin(g),
+        "selection_reason": reason,
+        "selection_detail": detail or {},
+    }
+
+
+def _pick_by_score_leaderboard(pool, leaderboard, n=5):
+    """Among pool games, is EITHER score one of the top/bottom-n on
+    leaderboard? If several qualify, the one whose qualifying score has
+    the best (lowest) rank wins; ties broken by most recent year."""
+    best = None
+    for g in pool:
+        for side_mgr, side_score in ((g["away_manager"], g["away_score"]),
+                                      (g["home_manager"], g["home_score"])):
+            rank = _score_in_leaderboard(side_mgr, side_score, g["year"], g["week"], leaderboard, n)
+            if rank is None:
+                continue
+            key = (rank, -g["year"])
+            if best is None or key < best[0]:
+                best = (key, g, {"manager": side_mgr, "score": side_score, "rank": rank})
+    if best is None:
+        return None, None
+    return best[1], best[2]
+
+
+def _pick_by_margin_leaderboard(pool, leaderboard, n=5):
+    best = None
+    for g in pool:
+        if g["tie"]:
+            continue
+        rank = _margin_in_leaderboard(g["winner"], g["loser"], g["year"], g["week"], leaderboard, n)
+        if rank is None:
+            continue
+        key = (rank, -g["year"])
+        if best is None or key < best[0]:
+            best = (key, g, {"rank": rank, "margin": _game_margin(g)})
+    if best is None:
+        return None, None
+    return best[1], best[2]
+
+
+def _pick_smallest_margin(pool):
+    if not pool:
+        return None
+    decisive = [g for g in pool if not g["tie"]]
+    candidates = decisive if decisive else pool
+    return min(candidates, key=lambda g: (_game_margin(g), -g["year"]))
+
+
+def _pick_largest_margin(pool):
+    if not pool:
+        return None
+    decisive = [g for g in pool if not g["tie"]]
+    candidates = decisive if decisive else pool
+    return max(candidates, key=lambda g: (_game_margin(g), g["year"]))
+
+
+def _select_week_in_history_week1(pool, lb):
+    if not pool:
+        return None
+    g, detail = _pick_by_score_leaderboard(pool, lb["top_scores"][:1])  # THE all-time high, rank 1 only
+    if g:
+        return _week_in_history_candidate(g, "week1_all_time_high_score", detail)
+    g, detail = _pick_by_score_leaderboard(pool, lb["top_scores"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_score", detail)
+    g, detail = _pick_by_margin_leaderboard(pool, lb["smallest_margins"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_smallest_margin", detail)
+    return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
+
+
+def _select_week_in_history_weeks2_4(pool, lb):
+    if not pool:
+        return None
+    g, detail = _pick_by_score_leaderboard(pool, lb["top_scores"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_score", detail)
+    g, detail = _pick_by_margin_leaderboard(pool, lb["smallest_margins"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_smallest_margin", detail)
+    g, detail = _pick_by_margin_leaderboard(pool, lb["largest_margins"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_largest_margin", detail)
+    return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
+
+
+def _select_week_in_history_week5(pool, all_games):
+    """Rule 1 is a milestone check unique to week 5: did any week-5 game
+    that season push its winner to 5-0, or its loser to 0-5, using that
+    manager's ACTUAL record through week 5 of that specific season (not
+    the all-time leaderboards)."""
+    if not pool:
+        return None
+    for g in pool:
+        year = g["year"]
+        season_games = [gg for gg in all_games if gg["game_type"] == "Regular" and gg["year"] == year
+                        and _week_sort_key(gg["week"]) <= 5]
+        for mgr in (g["away_manager"], g["home_manager"]):
+            wins = sum(1 for gg in season_games if not gg["tie"] and gg["winner"] == mgr)
+            losses = sum(1 for gg in season_games if not gg["tie"] and gg["loser"] == mgr)
+            if wins == 5 or losses == 5:
+                return _week_in_history_candidate(g, "milestone_5_0_or_0_5",
+                                                   {"manager": mgr, "wins": wins, "losses": losses})
+    lb = _all_time_score_margin_leaderboards(all_games)
+    g, detail = _pick_by_margin_leaderboard(pool, lb["smallest_margins"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_smallest_margin", detail)
+    g, detail = _pick_by_margin_leaderboard(pool, lb["largest_margins"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_largest_margin", detail)
+    return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
+
+
+def _select_week_in_history_weeks6_9(pool, lb):
+    if not pool:
+        return None
+    g, detail = _pick_by_score_leaderboard(pool, lb["top_scores"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_score", detail)
+    g, detail = _pick_by_score_leaderboard(pool, lb["bottom_scores"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_bottom5_score", detail)
+    g, detail = _pick_by_margin_leaderboard(pool, lb["largest_margins"])
+    if g:
+        return _week_in_history_candidate(g, "all_time_top5_largest_margin", detail)
+    return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
+
+
+def _select_week_in_history_week10(all_games, current_year, roster_names):
+    """Not a tiered pick — deterministic: whoever finished LAST in the
+    final regular-season standings two seasons before the current one,
+    and their week-10 game that season."""
+    target_year = current_year - 2
+    season_games = [g for g in all_games if g["game_type"] == "Regular" and g["year"] == target_year]
+    if not season_games:
+        return None
+    standings = compute_standings(season_games, roster_names)
+    if not standings or not standings.get("standings"):
+        return None
+    last_place_mgr = standings["standings"][-1]["manager"]
+
+    week10_games = [g for g in season_games if _week_sort_key(g["week"]) == 10
+                    and (g["away_manager"] == last_place_mgr or g["home_manager"] == last_place_mgr)]
+    if not week10_games:
+        return None
+    g = week10_games[0]
+    return _week_in_history_candidate(g, "last_place_two_seasons_ago", {
+        "manager": last_place_mgr, "won": g["winner"] == last_place_mgr, "season": target_year,
+        "final_record": (standings["standings"][-1]["wins"], standings["standings"][-1]["losses"]),
+    })
+
+
+def _wih_records_and_games_played_through(season_games, week_cutoff):
+    """(wins, losses) and games-played-so-far for every manager, counting
+    only games with week <= week_cutoff (ties excluded from win/loss, but
+    still count as a game played — matches the standings convention)."""
+    records = defaultdict(lambda: [0, 0])
+    played = defaultdict(int)
+    for g in season_games:
+        if _week_sort_key(g["week"]) > week_cutoff:
+            continue
+        for mgr in (g["away_manager"], g["home_manager"]):
+            played[mgr] += 1
+        if g["tie"]:
+            continue
+        records[g["winner"]][0] += 1
+        records[g["loser"]][1] += 1
+    return {m: tuple(v) for m, v in records.items()}, dict(played)
+
+
+def _wih_schedule_after(season_games, week_cutoff):
+    """[(mgr_a, mgr_b), ...] per week for every week strictly after
+    week_cutoff, in week order — the exact-check format
+    compute_playoff_status expects."""
+    by_week = defaultdict(list)
+    for g in season_games:
+        wk = _week_sort_key(g["week"])
+        if wk > week_cutoff:
+            by_week[wk].append((g["away_manager"], g["home_manager"]))
+    return [by_week[wk] for wk in sorted(by_week)]
+
+
+def _select_week_in_history_weeks11_14(pool, all_games, week_num, roster_names):
+    """A win/loss in this week's games is a candidate if it was THE thing
+    that pushed that manager from not-yet-clinched to clinched (or
+    not-yet-eliminated to eliminated), using that season's ACTUAL
+    (fully-known, since it's history) remaining schedule — reusing
+    compute_playoff_status exactly as the live current-season page does."""
+    if not pool:
+        return None
+
+    by_year = defaultdict(list)
+    for g in pool:
+        by_year[g["year"]].append(g)
+
+    candidates = []
+    for year, games in by_year.items():
+        season_games = [g for g in all_games if g["game_type"] == "Regular" and g["year"] == year]
+        active = [m for m in roster_names
+                  if any(g["away_manager"] == m or g["home_manager"] == m for g in season_games)]
+        if not active:
+            continue
+
+        total_games_this_season = max(
+            (_week_sort_key(g["week"]) for g in season_games), default=0
+        )
+
+        records_before, played_before = _wih_records_and_games_played_through(season_games, week_num - 1)
+        records_before = {m: records_before.get(m, (0, 0)) for m in active}
+        played_before = {m: played_before.get(m, 0) for m in active}
+        schedule_before = _wih_schedule_after(season_games, week_num - 1)
+        clinched_before, eliminated_before, _ = compute_playoff_status(
+            records_before, played_before, schedule_before, total_games=total_games_this_season
+        )
+
+        records_after, played_after = _wih_records_and_games_played_through(season_games, week_num)
+        records_after = {m: records_after.get(m, (0, 0)) for m in active}
+        played_after = {m: played_after.get(m, 0) for m in active}
+        schedule_after = _wih_schedule_after(season_games, week_num)
+        clinched_after, eliminated_after, _ = compute_playoff_status(
+            records_after, played_after, schedule_after, total_games=total_games_this_season
+        )
+
+        newly_clinched = clinched_after - clinched_before
+        newly_eliminated = eliminated_after - eliminated_before
+
+        for g in games:
+            if g["winner"] in newly_clinched:
+                candidates.append((year, g, "clinched_playoffs", {"manager": g["winner"]}))
+            if g["loser"] in newly_eliminated:
+                candidates.append((year, g, "eliminated_playoffs", {"manager": g["loser"]}))
+
+    if candidates:
+        # Most recent year first; a clinch takes priority over an
+        # elimination when both happened in the same week (rule 1 before
+        # rule 2), matching the stated priority order.
+        candidates.sort(key=lambda c: (-c[0], 0 if c[2] == "clinched_playoffs" else 1))
+        _, g, reason, detail = candidates[0]
+        return _week_in_history_candidate(g, reason, detail)
+
+    return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
+
+
+def compute_week_in_history(all_games, roster_names):
+    """
+    Selects one game from a PRIOR season, at the same week number as the
+    current week, to feature as "This Week in Club History." Selection
+    rules vary by week range (see the _select_week_in_history_* helpers
+    above). Returns None if there's no eligible candidate yet — e.g. this
+    is the league's first time reaching this week number, or the current
+    season has no games yet, or the current week is past week 14
+    (playoffs — this feature is regular-season only).
+    """
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    current_year = max(years)
+    current_season_games = [g for g in all_games
+                            if g["year"] == current_year and g["game_type"] == "Regular"]
+    if not current_season_games:
+        return None
+    current_week = max(_week_sort_key(g["week"]) for g in current_season_games)
+    if current_week > 14:
+        return None
+
+    pool = _regular_games_at_week(all_games, current_week, current_year)
+    lb = _all_time_score_margin_leaderboards(all_games)
+
+    if current_week == 1:
+        return _select_week_in_history_week1(pool, lb)
+    if 2 <= current_week <= 4:
+        return _select_week_in_history_weeks2_4(pool, lb)
+    if current_week == 5:
+        return _select_week_in_history_week5(pool, all_games)
+    if 6 <= current_week <= 9:
+        return _select_week_in_history_weeks6_9(pool, lb)
+    if current_week == 10:
+        return _select_week_in_history_week10(all_games, current_year, roster_names)
+    if 11 <= current_week <= 14:
+        return _select_week_in_history_weeks11_14(pool, all_games, current_week, roster_names)
+    return None
+
+
 def compute_playoff_probability_model(all_games, roster_names):
     """
     Historical baseline: for every completed past season (one that has
@@ -1677,6 +2035,7 @@ def main():
     stats["power_rankings"] = compute_power_rankings(stats["games"], roster_names)
     stats["current_streaks"] = compute_current_streaks(stats["games"], roster_names)
     stats["current_standings"] = compute_standings(stats["games"], roster_names)
+    stats["week_in_history"] = compute_week_in_history(stats["games"], roster_names)
     stats["playoff_probability_model"] = compute_playoff_probability_model(stats["games"], roster_names)
     stats["playoff_probabilities"] = compute_playoff_probabilities(
         stats["games"], roster_names, stats["playoff_probability_model"]
