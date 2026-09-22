@@ -1,13 +1,43 @@
 {
-  "Brian Kleinhenz": "Loves making absurd, lopsided trade proposals and trying to shake up the league's rosters.",
-  "John Schauder": "Always the bridesmaid, good teams, tough schedules. Also: Has a 100 inch tv, obviously compensating for something else.",
-  "Brian Harris": "Drink of choice: Miller Lite.  Average consumption: 10+.  You know hes ready for a good time when he turns his hat backwards. Also: Once tried to break Wade Boggs recrod of drinking 64 Miller Lites in a night, ended up passing out in the comissioners driveway Also: Often misplaces his keys. Love everything Disney.",
-  "Kevin Mallon": "Exercises 20 minutes everyday.  Runs triathlons and stuff like that.",
-  "Jay Nelson": "The trusted commissioner.",
-  "Daniel Bahamonde": "The loveable loser.  Two time last place in standings.  Likes to take adult pictures with santa clause.",
-  "Josh Davis": "The Stand Up Comedian.",
-  "Blake Pratt": "can't eat gluten Also: One of his nicknames is Meatloaf",
-  "Jason Carlton": "Loves to rip trading card packs, always chasing the next hit",
-  "Greg Wigton": "Really really good looking",
-  "Erik Servinsky": "complains about every trade."
+  "Brian Kleinhenz": [
+    "Loves making absurd, lopsided trade proposals and trying to shake up the league's rosters."
+  ],
+  "John Schauder": [
+    "Always the bridesmaid, good teams, tough schedules.",
+    "Has a 100 inch tv, obviously compensating for something else."
+  ],
+  "Brian Harris": [
+    "Drink of choice: Miller Lite.  Average consumption: 10+.",
+    "You know hes ready for a good time when he turns his hat backwards.",
+    "Once tried to break Wade Boggs record of drinking 64 Miller Lites in a night, ended up passing out in the commissioners driveway",
+    "Often misplaces his keys.",
+    "Love everything Disney."
+  ],
+  "Kevin Mallon": [
+    "Exercises 20 minutes everyday.",
+    "Runs triathlons and stuff like that."
+  ],
+  "Jay Nelson": [
+    "The trusted commissioner."
+  ],
+  "Daniel Bahamonde": [
+    "The loveable loser.  Two time last place in standings.",
+    "Likes to take adult pictures with santa clause."
+  ],
+  "Josh Davis": [
+    "The Stand Up Comedian."
+  ],
+  "Blake Pratt": [
+    "can't eat gluten",
+    "One of his nicknames is Meatloaf"
+  ],
+  "Jason Carlton": [
+    "Loves to rip trading card packs, always chasing the next hit"
+  ],
+  "Greg Wigton": [
+    "Really really good looking"
+  ],
+  "Erik Servinsky": [
+    "complains about every trade."
+  ]
 }
