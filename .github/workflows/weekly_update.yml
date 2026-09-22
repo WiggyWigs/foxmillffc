@@ -50,6 +50,11 @@ jobs:
           # Separate + fault-tolerant: if the schedule pull failed and the file never existed,
           # a missing path must not abort the whole commit of stats.json.
           git add NewSite/data/remaining_schedule.json 2>/dev/null || true
+          # Same treatment: the lore rotation state is only written once
+          # generate_recap.py reaches its final write (see the code comment
+          # there), so a run that hit "Nothing generated this run" or ran
+          # with skip_recap won't have touched this file at all.
+          git add NewSite/scripts/lore_rotation_state.json 2>/dev/null || true
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "Automated weekly stats update"
           git push
