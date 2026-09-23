@@ -607,7 +607,10 @@ function renderRecordBooks(data) {
     (byKind[e.kind] = byKind[e.kind] || []).push(e);
   });
 
-  const items = [];
+  // One label per kind, not per entry — every sentence for the same
+  // record type (e.g. multiple different ranks in "Top 15 R/S Game
+  // Score") is grouped under a single header instead of repeating it.
+  const kindGroups = [];
   RECORD_BOOKS_ORDER.forEach((kind) => {
     const kindEntries = byKind[kind];
     if (!kindEntries) return;
@@ -617,17 +620,17 @@ function renderRecordBooks(data) {
       (byValue[String(e.value)] = byValue[String(e.value)] || []).push(e);
     });
 
-    Object.values(byValue)
+    const sentences = Object.values(byValue)
       .sort((a, b) => a[0].rank - b[0].rank)
-      .forEach((group) => {
-        items.push({ kind, sentence: recordBooksSentence(kind, group) });
-      });
+      .map((group) => recordBooksSentence(kind, group));
+
+    kindGroups.push({ kind, sentences });
   });
 
-  wrap.innerHTML = items.map((item) => `
+  wrap.innerHTML = kindGroups.map((kg) => `
     <div class="sentence-item">
-      <span class="sentence-label sentence-label-lg">${RECORD_BOOKS_LABELS[item.kind]}</span>
-      <p class="sentence-text">${item.sentence}</p>
+      <span class="sentence-label sentence-label-lg">${RECORD_BOOKS_LABELS[kg.kind]}</span>
+      ${kg.sentences.map((s) => `<p class="sentence-text">${s}</p>`).join("")}
     </div>
   `).join("");
 
