@@ -429,11 +429,18 @@ def get_week_games(stats):
     return enriched, latest_week, current_year
 
 
-def find_honorable_mention(week_games, impact_game, stats):
+def find_honorable_mention(week_games, impact_game, stats, excluded_managers=None):
     """
     Picks the week's Honorable Mention game, distinct from the Impact
-    Game (the closest margin overall). Selection order, per the
-    site's actual rules:
+    Game (the closest margin overall) and from every manager already
+    featured elsewhere this run (excluded_managers — Impact Game's two
+    managers plus Game of the Week's two, so the three narrative
+    sections cover six different managers, never a repeat). If
+    excluding those leaves no candidates at all, falls back to
+    considering every game again rather than showing nothing — a
+    repeat manager beats no Honorable Mention.
+
+    Selection order, per the site's actual rules:
       1. Among games where BOTH managers are ranked top-6 in the
          current standings (real win-loss rank, not power score),
          pick the closest margin. Multiple qualifying games ->
@@ -461,6 +468,14 @@ def find_honorable_mention(week_games, impact_game, stats):
                 == {impact_game["away_manager"], impact_game["home_manager"]})
 
     candidates = [g for g in week_games if not is_same_game(g)]
+    if excluded_managers:
+        narrowed = [g for g in candidates
+                   if g["away_manager"] not in excluded_managers
+                   and g["home_manager"] not in excluded_managers]
+        if narrowed:
+            candidates = narrowed
+        # else: excluding those managers left nothing — fall back to the
+        # full candidate list rather than skip Honorable Mention entirely.
     if not candidates:
         return None, None, None
 
@@ -2088,28 +2103,18 @@ def main():
     except Exception as e:
         print(f"WARNING: recap generation failed: {e}")
 
-    # --- Honorable Mention: a second featured game, distinct from
-    # the Impact Game above. Selection is fully deterministic
-    # (find_honorable_mention) — only the write-up itself is AI.
-    try:
-        if week_games and closest_game:
-            hm_game, hm_reason, hm_blowout_detail = find_honorable_mention(week_games, closest_game, stats)
-            if hm_game:
-                honorable_mention_week = week  # deterministic — known regardless of whether the AI call below succeeds
-                honorable_mention_away_manager = hm_game["away_manager"]
-                honorable_mention_home_manager = hm_game["home_manager"]
-                honorable_mention_away_score = hm_game["away_score"]
-                honorable_mention_home_score = hm_game["home_score"]
-                hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
-                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state
-                )
-                honorable_mention_text = call_claude(hm_system, hm_user)
-                print(f"Generated Honorable Mention ({hm_reason}): "
-                      f"{hm_game['away_manager']} vs {hm_game['home_manager']}.")
-            else:
-                print("Only one game this week — no separate Honorable Mention possible.")
-    except Exception as e:
-        print(f"WARNING: Honorable Mention generation failed: {e}")
+    # Selection priority across the three narrative sections, so the
+    # page touches six different managers rather than repeating anyone:
+    # Impact Game (above) has no constraint and always wins first pick.
+    # Game of the Week goes next, avoiding Impact Game's two managers.
+    # Honorable Mention goes last, avoiding both Impact Game's AND Game
+    # of the Week's managers. This is why Game of the Week now runs
+    # BEFORE Honorable Mention, even though it prints/displays after it
+    # on the page — selection order and display order are different
+    # things.
+    impact_game_managers = set()
+    if closest_game:
+        impact_game_managers = {closest_game["away_manager"], closest_game["home_manager"]}
 
     # --- Game of the Week: two separate calls, selection then writing ---
     # Splitting this into two focused calls (rather than one call doing
@@ -2119,11 +2124,23 @@ def main():
     # words following a dozen style rules" was consistently the
     # slowest, least reliable part of this whole pipeline.
     upcoming = None
+    gotw_managers = set()
     try:
         if UPCOMING_MATCHUPS_PATH.exists():
             with open(UPCOMING_MATCHUPS_PATH) as f:
                 upcoming = json.load(f)
             enriched = build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state)
+
+            # Avoid repeating an Impact Game manager here too, if at all
+            # possible — but never let this filter leave zero candidates;
+            # showing a repeat manager beats skipping Game of the Week.
+            if enriched and impact_game_managers:
+                narrowed = [m for m in enriched
+                           if m.get("away_manager") not in impact_game_managers
+                           and m.get("home_manager") not in impact_game_managers]
+                if narrowed:
+                    enriched = narrowed
+
             if enriched:
                 week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
 
@@ -2143,6 +2160,7 @@ def main():
                     "manager_a": chosen["away_manager"], "manager_b": chosen["home_manager"],
                     "week": upcoming.get("week"), "year": upcoming.get("year"),
                 }
+                gotw_managers = {chosen["away_manager"], chosen["home_manager"]}
                 print(f"Game of the Week selected: {chosen['away_manager']} vs {chosen['home_manager']}.")
                 print(f"Reason: {selection_reasoning or '(no reasoning line returned)'}")
 
@@ -2157,6 +2175,33 @@ def main():
             print("No upcoming_matchups.json found — skipping Game of the Week.")
     except Exception as e:
         print(f"WARNING: Game of the Week generation failed: {e}")
+
+    # --- Honorable Mention: a second featured game, distinct from the
+    # Impact Game AND from Game of the Week's managers (see the
+    # selection-priority note above). Selection is fully deterministic
+    # (find_honorable_mention) — only the write-up itself is AI.
+    try:
+        if week_games and closest_game:
+            excluded_managers = impact_game_managers | gotw_managers
+            hm_game, hm_reason, hm_blowout_detail = find_honorable_mention(
+                week_games, closest_game, stats, excluded_managers
+            )
+            if hm_game:
+                honorable_mention_week = week  # deterministic — known regardless of whether the AI call below succeeds
+                honorable_mention_away_manager = hm_game["away_manager"]
+                honorable_mention_home_manager = hm_game["home_manager"]
+                honorable_mention_away_score = hm_game["away_score"]
+                honorable_mention_home_score = hm_game["home_score"]
+                hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
+                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state
+                )
+                honorable_mention_text = call_claude(hm_system, hm_user)
+                print(f"Generated Honorable Mention ({hm_reason}): "
+                      f"{hm_game['away_manager']} vs {hm_game['home_manager']}.")
+            else:
+                print("Only one game this week — no separate Honorable Mention possible.")
+    except Exception as e:
+        print(f"WARNING: Honorable Mention generation failed: {e}")
 
     # --- Callouts: each independent, each fails softly on its own ---
     callouts = {}
