@@ -1797,3 +1797,10 @@ main {
 .sentence-label.sentence-label-lg {
   font-size: 0.85rem;
 }
+
+/* Analytics Deep Dive: a single Honorable Mention-style box, centered
+   rather than left-aligned in a 2-column grid built for four. */
+.callout-grid-single {
+  grid-template-columns: 1fr;
+  max-width: 320px;
+}
