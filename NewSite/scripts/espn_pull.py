@@ -353,6 +353,12 @@ def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
         real_matchups = [
             m for m in matchups
             if getattr(m, "away_team", None) and getattr(m, "home_team", None)
+            # Same filter pull_all_scores uses: a playoff week's schedule
+            # includes every team, not just the ones who made the bracket
+            # — drop anything that isn't a real WINNERS_BRACKET game so a
+            # consolation-ladder matchup never gets shown as next week's
+            # "Game of the Week" preview.
+            and not (m.is_playoff and m.matchup_type != REAL_PLAYOFF_TYPE)
         ]
         if not real_matchups:
             continue
