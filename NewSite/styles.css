@@ -1797,3 +1797,10 @@ main {
 .sentence-label.sentence-label-lg {
   font-size: 0.85rem;
 }
+/* Deep Dive box: single box, centered rather than left-aligned in the
+   2-column grid shared with This Week's Notes. */
+#analytics-grid {
+  grid-template-columns: 1fr;
+  max-width: 320px;
+  margin: 0 auto;
+}
