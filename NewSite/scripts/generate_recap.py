@@ -1156,6 +1156,234 @@ def build_matchup_selection_prompt(enriched, criteria):
     return system, user
 
 
+# --- Playoffs (Quarterfinal / Semifinal / Championship) ------------------
+
+REGULAR_SEASON_WEEKS = 14  # matches ingest_csv.py's REGULAR_SEASON_GAMES convention
+
+
+def _local_week_sort_key(week):
+    """Local copy of ingest_csv.py's _week_sort_key — this file doesn't
+    import ingest_csv.py, so a small duplicate is simpler than a
+    cross-file import for one helper."""
+    w = str(week)
+    if w.startswith("P"):
+        return 100 + int(w[1:])
+    return int(w)
+
+
+def determine_recap_phase(all_games, year):
+    """
+    Which of the 5 page-states this run should produce, based on the
+    most recently completed week's game_type for `year` — not a
+    calendar date, so this holds regardless of how long a round takes
+    to finish. Returns one of:
+      "regular"            — any regular-season week except the 14th
+      "week14_done"         — Week 14 (last regular week) just finished
+      "qf_done"             — Quarterfinals (P1) just finished
+      "sf_done"             — Semifinals (P2) just finished
+      "championship_done"   — Championship (P3) just finished (season over)
+    """
+    year_games = [g for g in all_games if g["year"] == year]
+    if not year_games:
+        return "regular"
+    last = max(year_games, key=lambda g: _local_week_sort_key(g["week"]))
+    if last["game_type"] == "Championship":
+        return "championship_done"
+    if last["game_type"] == "Semifinal":
+        return "sf_done"
+    if last["game_type"] == "Quarterfinal":
+        return "qf_done"
+    if last["week"] == str(REGULAR_SEASON_WEEKS):
+        return "week14_done"
+    return "regular"
+
+
+def build_playoff_recap_prompt(game, round_label, week, year, stats, lore, old_stats, tone, rotation_state):
+    """
+    Recaps ONE already-played playoff game (a Quarterfinal or Semifinal —
+    the Championship uses build_championship_prompt instead, since that
+    one has a different word count and a second focus). Reuses the same
+    shared context-gathering as the regular-season Impact Game recap;
+    only the framing differs — every playoff game gets its own write-up
+    here, not just the closest one.
+    """
+    context, away, home, away_team, home_team, loser = build_game_narrative_context(
+        game, week, year, stats, lore, old_stats, rotation_state
+    )
+    context["round"] = round_label
+
+    system = (
+        "You write short fantasy football playoff recap blurbs for a "
+        "private league's website — a group of 40-something guys who "
+        "have known each other for years and enjoy busting each "
+        "other's chops.\n\n"
+        f"{tone}\n\n"
+        f"This is a {round_label} game — real playoff stakes, treat it "
+        "with more weight than a regular-season recap. "
+        "The recap must be between 140 and 160 words — a hard "
+        "requirement, not a suggestion. Use ONLY the facts given — "
+        "never invent player names, stats, plays, or background "
+        "details beyond what's provided. Do not use markdown "
+        "formatting. Do NOT start with the manager names or a "
+        "'ManagerA vs ManagerB:' prefix — that's shown separately on "
+        "the page. Just start straight into the recap itself. EVERY "
+        "field given is prefixed with either 'season_' or 'career_' to "
+        "show its scope — whenever you state ANY number from a "
+        "season_ or career_ field, you MUST include a matching word in "
+        "the sentence itself so a reader always knows which scope it's "
+        "from. Whenever you state a player's point total, always "
+        "write it as 'X points' or 'X.X points' — never a bare number "
+        "alone. Mention AT MOST one standout and ONE disappointing "
+        "performance per team, and ONLY the specific players named in "
+        "the top/bottom scorer fields given. EVERY player field is "
+        "prefixed 'away_' or 'home_' — that prefix is the ONLY source "
+        f"of truth for which manager that player belongs to: away_ "
+        f"fields belong to {away} ({away_team}), and home_ fields "
+        f"belong to {home} ({home_team}). Before writing a sentence "
+        "that names a player, re-check which prefix their field had — "
+        "do NOT swap a player to the other manager's side. If "
+        "away_manager_background or home_manager_background is "
+        f"present (especially for {loser or 'the loser'}), use it as "
+        "real ammunition, not just optional color."
+    )
+    user = (
+        f"Write the recap of this {round_label} game, Week {week}, "
+        f"{year}:\n{json.dumps(context, indent=2)}\n\n"
+        f"Mention the final score and margin. This is a real playoff "
+        f"elimination game (or the path to the championship) — the "
+        f"stakes matter, make that clear."
+    )
+    return system, user, away_team, home_team
+
+
+def get_champion_season_summary(manager, year, all_games):
+    """
+    Factual season-long trajectory for the CHAMPION, for the
+    Championship write-up's second half. Purely computed from the game
+    log — regular-season record, and the path through the playoff
+    bracket to get here. Nothing here is AI-invented.
+    """
+    season_games = [g for g in all_games if g["year"] == year]
+    reg = [g for g in season_games if g["game_type"] == "Regular"
+          and (g["away_manager"] == manager or g["home_manager"] == manager)]
+    wins = sum(1 for g in reg if not g["tie"] and g["winner"] == manager)
+    losses = sum(1 for g in reg if not g["tie"] and g["loser"] == manager)
+
+    playoff_games = [g for g in season_games if g["game_type"] != "Regular"
+                     and (g["away_manager"] == manager or g["home_manager"] == manager)]
+    path = []
+    for g in sorted(playoff_games, key=lambda g: _local_week_sort_key(g["week"])):
+        opponent = g["home_manager"] if g["away_manager"] == manager else g["away_manager"]
+        own_score = g["away_score"] if g["away_manager"] == manager else g["home_score"]
+        opp_score = g["home_score"] if g["away_manager"] == manager else g["away_score"]
+        path.append({"round": g["game_type"], "opponent": opponent,
+                     "own_score": own_score, "opponent_score": opp_score})
+
+    return {
+        "regular_season_record": f"{wins}-{losses}",
+        "path_to_championship": path,
+    }
+
+
+def build_championship_prompt(game, week, year, stats, lore, old_stats, tone, rotation_state):
+    """
+    The Championship write-up — the only playoff piece with a second
+    focus (the champion's season), so it gets its own prompt rather than
+    reusing build_playoff_recap_prompt. Deliberately does NOT include
+    the loser's manager_flavor/background at all — this write-up is
+    about the champion, not a recap of who lost.
+    """
+    context, away, home, away_team, home_team, loser = build_game_narrative_context(
+        game, week, year, stats, lore, old_stats, rotation_state
+    )
+    champion = game["winner"]
+    champion_team = away_team if champion == away else home_team
+    context["champion_season_summary"] = get_champion_season_summary(champion, year, stats["games"])
+    # This write-up is about the champion's title, not the runner-up's
+    # background — drop the loser's flavor so it isn't used as filler.
+    loser_side = "away_manager_background" if loser == away else "home_manager_background"
+    context.pop(loser_side, None)
+
+    system = (
+        "You write the season-ending CHAMPIONSHIP write-up for a "
+        "private fantasy football league's website — a group of "
+        "40-something guys who have known each other for years and "
+        "enjoy busting each other's chops. This is the single biggest "
+        "piece of the season.\n\n"
+        f"{tone}\n\n"
+        "The write-up must be between 270 and 300 words — a hard "
+        "requirement, not a suggestion. Split it into two clear "
+        "parts: roughly the first half recaps the Championship game "
+        "itself (final score, margin, standout/weak performances if "
+        "given), and the second half recaps the CHAMPION's season as "
+        "a whole — champion_season_summary gives their real regular "
+        "season record and their actual path through the playoff "
+        "bracket (round by round, real opponents and scores) to reach "
+        "this game. Use ONLY those facts to tell that story — don't "
+        "invent what any game 'must have' looked like beyond what's "
+        "given. Use ONLY the facts given elsewhere too — never invent "
+        "player names, stats, or background details not provided. Do "
+        "not use markdown formatting. Do NOT start with the manager "
+        "names or a prefix — that's shown separately on the page. "
+        f"{champion} ({champion_team}) is this season's champion — "
+        "the tone should reflect that, triumphant rather than a "
+        "neutral recap. EVERY player field is prefixed 'away_' or "
+        "'home_' — that prefix is the ONLY source of truth for which "
+        "manager a player belongs to; do not swap sides."
+    )
+    user = (
+        f"Write the Championship write-up for the {year} season, Week "
+        f"{week}:\n{json.dumps(context, indent=2)}"
+    )
+    return system, user, away_team, home_team
+
+
+def build_playoff_preview_prompt(away, home, all_games, stats, lore, old_stats,
+                                 tone, rotation_state, round_label, word_min, word_max):
+    """
+    Previews an UPCOMING playoff matchup (the pairing is already fully
+    determined by the bracket — no selection step needed, unlike the
+    regular-season Game of the Week). Deliberately simpler than the
+    regular-season preview prompt: no playoff-probability-trend or
+    schedule-difficulty framing, since those stop meaning anything once
+    a manager is already in the bracket.
+    """
+    away_flavor = get_manager_flavor(away, stats, lore, rotation_state)
+    home_flavor = get_manager_flavor(home, stats, lore, rotation_state)
+    away_wins, home_wins, ties = h2h_record(away, home, all_games)
+
+    context = {
+        "round": round_label,
+        "away_manager": away, "home_manager": home,
+        "away_manager_background": away_flavor, "home_manager_background": home_flavor,
+        "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
+                     else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
+                     else f"{away_wins}-{home_wins} all-time" if (away_wins or home_wins) else None,
+        "all_time_meetings": away_wins + home_wins + ties,
+    }
+
+    system = (
+        f"{tone}\n\n"
+        f"You are writing a short preview of an upcoming {round_label} "
+        "matchup for a private fantasy football league's website — "
+        "real playoff stakes, not a regular-season game. The preview "
+        f"must be between {word_min} and {word_max} words — a hard "
+        "requirement, not a suggestion. Use ONLY the facts given — "
+        "never invent player names, projections, stats, or background "
+        "details not provided. Do not use markdown formatting. If "
+        "manager_background is present for either side, that's real "
+        "ammunition — a bad career record, personality trait, etc. — "
+        "fair game and encouraged. If h2h_record is present, use it "
+        "for real color (don't invent anything beyond what's given). "
+        "You MUST start your response with the two manager names in "
+        "the exact format 'ManagerA vs ManagerB: ' (this prefix is for "
+        "internal tracking and will be removed before anyone sees it, "
+        "so it does not count toward the word limit)."
+    )
+    user = f"Write the preview for this {round_label} matchup:\n{json.dumps(context, indent=2)}"
+    return system, user
+
+
 # --- This Week in Club History (a flashback callout — deliberately no lore) ---
 
 
