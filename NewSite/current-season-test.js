@@ -409,7 +409,7 @@ function weekInHistoryToCalloutItem(wih) {
   const winnerScore = wih.tie ? wih.away_score : (wih.winner === wih.away_manager ? wih.away_score : wih.home_score);
   const loserScore = wih.tie ? wih.home_score : (wih.winner === wih.away_manager ? wih.home_score : wih.away_score);
   return {
-    label: "This Week in Club History",
+    label: "",
     headline: wih.tie
       ? `${wih.away_manager} tied ${wih.home_manager}`
       : `${wih.winner} def. ${wih.loser}`,
@@ -449,7 +449,7 @@ function renderCalloutHmCard(item, kind) {
 
   return `
     <div class="callout-hm">
-      <span class="box-score-eyebrow">${label}</span>
+      ${label ? `<span class="box-score-eyebrow">${label}</span>` : ""}
       <div class="callout-hm-headline">${headline}</div>
       ${subtitle ? `<div class="callout-hm-subtitle">${subtitle}</div>` : ""}
       <div class="callout-hm-value">${valueDisplay}</div>
