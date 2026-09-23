@@ -1592,15 +1592,55 @@ def _select_week_in_history_weeks11_14(pool, all_games, week_num, roster_names):
     return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
 
 
-def compute_week_in_history(all_games, roster_names):
+def _historical_playoff_odds_after_start(all_games, start_wins, start_losses, through_week, exclude_year):
     """
-    Selects one game from a PRIOR season, at the same week number as the
-    current week, to feature as "This Week in Club History." Selection
-    rules vary by week range (see the _select_week_in_history_* helpers
-    above). Returns None if there's no eligible candidate yet — e.g. this
-    is the league's first time reaching this week number, or the current
-    season has no games yet, or the current week is past week 14
-    (playoffs — this feature is regular-season only).
+    Across every PAST season (year < exclude_year), what fraction of
+    managers whose record was exactly start_wins-start_losses after
+    `through_week` games went on to make the playoffs that season?
+    Returns (percentage, sample_size); (None, 0) if no season in
+    history has ever produced a qualifying manager.
+    """
+    years = sorted({g["year"] for g in all_games if g["year"] < exclude_year})
+    qualifying = 0
+    made_playoffs = 0
+    for year in years:
+        season_games = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+        if not season_games:
+            continue
+        weeks_played = {_week_sort_key(g["week"]) for g in season_games}
+        if through_week not in weeks_played:
+            continue  # this season never reached that week (shouldn't normally happen)
+
+        records = defaultdict(lambda: [0, 0])
+        for g in season_games:
+            if _week_sort_key(g["week"]) > through_week or g["tie"]:
+                continue
+            records[g["winner"]][0] += 1
+            records[g["loser"]][1] += 1
+
+        playoff_managers = {
+            g[side] for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+            for side in ("away_manager", "home_manager")
+        }
+        for mgr, (w, l) in records.items():
+            if (w, l) == (start_wins, start_losses):
+                qualifying += 1
+                if mgr in playoff_managers:
+                    made_playoffs += 1
+
+    if qualifying == 0:
+        return None, 0
+    return round(100 * made_playoffs / qualifying, 1), qualifying
+
+
+def compute_more_you_know(all_games, roster_names):
+    """
+    Selects this week's "The More You Know" fact for the Deep Dive
+    section. Dispatches by the MOST RECENTLY COMPLETED week (not the
+    week ahead, unlike compute_week_in_history) — this fact is about the
+    season as it stands right now, not a preview of what's coming.
+    Returns None if nothing is defined for this week yet, or there's no
+    historical sample to compute from.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -1610,25 +1650,69 @@ def compute_week_in_history(all_games, roster_names):
                             if g["year"] == current_year and g["game_type"] == "Regular"]
     if not current_season_games:
         return None
-    current_week = max(_week_sort_key(g["week"]) for g in current_season_games)
-    if current_week > 14:
+    last_completed_week = max(_week_sort_key(g["week"]) for g in current_season_games)
+
+    if last_completed_week == 2:
+        pct, sample_size = _historical_playoff_odds_after_start(all_games, 0, 3, 3, current_year)
+        if pct is None:
+            return None
+        records = defaultdict(lambda: [0, 0])
+        for g in current_season_games:
+            if g["tie"]:
+                continue
+            records[g["winner"]][0] += 1
+            records[g["loser"]][1] += 1
+        on_watch = sorted(m for m, (w, l) in records.items() if (w, l) == (0, 2))
+        return {
+            "reason": "playoff_odds_after_0_3_start",
+            "value": pct, "sample_size": sample_size, "on_watch_teams": on_watch,
+        }
+
+    return None  # Week 1, and weeks 3+, are TBD
+
+
+def compute_week_in_history(all_games, roster_names):
+    """
+    Selects one game from a PRIOR season, at the SAME week number as the
+    week ahead — one past the most recently completed week, so it pairs
+    with the forward-looking Game of the Week section rather than the
+    backward-looking Impact Game recap. If Week 6 just finished, this
+    looks at history for Week 7, not Week 6.
+
+    Selection rules vary by week range (see the _select_week_in_history_*
+    helpers above). Returns None if there's no eligible candidate yet —
+    e.g. this is the league's first time reaching that week number, the
+    current season has no completed games yet, or the week ahead is past
+    week 14 (playoffs — this feature is regular-season only).
+    """
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    current_year = max(years)
+    current_season_games = [g for g in all_games
+                            if g["year"] == current_year and g["game_type"] == "Regular"]
+    if not current_season_games:
+        return None
+    last_completed_week = max(_week_sort_key(g["week"]) for g in current_season_games)
+    target_week = last_completed_week + 1  # the week AHEAD, not the one just played
+    if target_week > 14:
         return None
 
-    pool = _regular_games_at_week(all_games, current_week, current_year)
+    pool = _regular_games_at_week(all_games, target_week, current_year)
     lb = _all_time_score_margin_leaderboards(all_games)
 
-    if current_week == 1:
+    if target_week == 1:
         return _select_week_in_history_week1(pool, lb)
-    if 2 <= current_week <= 4:
+    if 2 <= target_week <= 4:
         return _select_week_in_history_weeks2_4(pool, lb)
-    if current_week == 5:
+    if target_week == 5:
         return _select_week_in_history_week5(pool, all_games)
-    if 6 <= current_week <= 9:
+    if 6 <= target_week <= 9:
         return _select_week_in_history_weeks6_9(pool, lb)
-    if current_week == 10:
+    if target_week == 10:
         return _select_week_in_history_week10(all_games, current_year, roster_names)
-    if 11 <= current_week <= 14:
-        return _select_week_in_history_weeks11_14(pool, all_games, current_week, roster_names)
+    if 11 <= target_week <= 14:
+        return _select_week_in_history_weeks11_14(pool, all_games, target_week, roster_names)
     return None
 
 
@@ -2036,6 +2120,13 @@ def main():
     stats["current_streaks"] = compute_current_streaks(stats["games"], roster_names)
     stats["current_standings"] = compute_standings(stats["games"], roster_names)
     stats["week_in_history"] = compute_week_in_history(stats["games"], roster_names)
+    stats["more_you_know"] = compute_more_you_know(stats["games"], roster_names)
+    if stats["more_you_know"]:
+        mtk = stats["more_you_know"]
+        print(f"The More You Know: {mtk['reason']} -> {mtk['value']} "
+              f"(sample size {mtk.get('sample_size')})")
+    else:
+        print("The More You Know: nothing defined for this week yet.")
     if stats["week_in_history"]:
         wih = stats["week_in_history"]
         print(f"This Week in Club History: picked {wih['year']} Week {wih['week']} — "
