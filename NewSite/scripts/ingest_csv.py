@@ -2036,6 +2036,13 @@ def main():
     stats["current_streaks"] = compute_current_streaks(stats["games"], roster_names)
     stats["current_standings"] = compute_standings(stats["games"], roster_names)
     stats["week_in_history"] = compute_week_in_history(stats["games"], roster_names)
+    if stats["week_in_history"]:
+        wih = stats["week_in_history"]
+        print(f"This Week in Club History: picked {wih['year']} Week {wih['week']} — "
+              f"{wih['away_manager']} {wih['away_score']} @ {wih['home_manager']} {wih['home_score']} "
+              f"— reason: {wih['selection_reason']} {wih['selection_detail']}")
+    else:
+        print("This Week in Club History: no eligible candidate this week.")
     stats["playoff_probability_model"] = compute_playoff_probability_model(stats["games"], roster_names)
     stats["playoff_probabilities"] = compute_playoff_probabilities(
         stats["games"], roster_names, stats["playoff_probability_model"]
