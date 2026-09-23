@@ -79,7 +79,8 @@ function renderRecap(data) {
     gotwWrap.innerHTML = `<p class="load-state">No preview yet — check back closer to kickoff.</p>`;
   }
 
-  renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams, data.week_in_history);
+  renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams);
+  renderAnalyticsDeepDive(data.week_in_history);
   renderBoxScores(recap.box_scores || []);
   renderHonorableMention(recap);
 }
@@ -240,14 +241,13 @@ function setupBoxScoreModal() {
   });
 }
 
-function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams, weekInHistory) {
+function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   const section = document.getElementById("callouts-section");
   const grid = document.getElementById("callout-grid");
 
   // Each entry carries a "kind" so the popup-style boxes (streaks,
-  // lowest team, highest player, this-week-in-history) can share the
-  // Honorable Mention format while sentence/record cards keep their
-  // existing look.
+  // lowest team, highest player) can share the Honorable Mention format
+  // while sentence/record cards keep their existing look.
   const entries = [];
   if (Array.isArray(callouts.new_records)) {
     callouts.new_records.forEach((item) => entries.push({ item, kind: "record" }));
@@ -256,9 +256,6 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams, wee
   if (callouts.longest_loss_streak) entries.push({ item: callouts.longest_loss_streak, kind: "streak" });
   if (callouts.lowest_scoring_team) entries.push({ item: callouts.lowest_scoring_team, kind: "lowest" });
   if (callouts.highest_scoring_player) entries.push({ item: callouts.highest_scoring_player, kind: "highest" });
-  if (weekInHistory) {
-    entries.push({ item: weekInHistoryToCalloutItem(weekInHistory), kind: "history", raw: weekInHistory });
-  }
 
   if (entries.length === 0) {
     section.style.display = "none";
@@ -267,7 +264,7 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams, wee
 
   section.style.display = "";
   grid.innerHTML = entries.map((e) =>
-    ["streak", "lowest", "highest", "history"].includes(e.kind)
+    ["streak", "lowest", "highest"].includes(e.kind)
       ? renderCalloutHmCard(e.item, e.kind)
       : renderCalloutCard(e.item)
   ).join("");
@@ -283,7 +280,7 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams, wee
     && lowestScoringTeams.weeks.length > 0;
 
   Array.from(grid.children).forEach((el, i) => {
-    const { item, kind, raw } = entries[i];
+    const { item, kind } = entries[i];
     let onClick = null;
     if (kind === "streak" && item.streak_details) {
       onClick = () => openStreakModal(item);
@@ -291,14 +288,38 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams, wee
       onClick = () => openHighestScoringPlayerModal(highestScoringPlayers);
     } else if (kind === "lowest" && hasWeeklyLowest) {
       onClick = () => openLowestScoringTeamModal(lowestScoringTeams);
-    } else if (kind === "history" && raw && raw.narrative) {
-      onClick = () => openWeekInHistoryModal(raw);
     }
     if (onClick) {
       el.classList.add(el.classList.contains("callout-hm") ? "callout-hm-clickable" : "callout-clickable");
       el.addEventListener("click", onClick);
     }
   });
+}
+
+// Analytics Deep Dive — its own section, holding just the "This Week in
+// Club History" box, moved out of the This Week's Notes callout grid.
+function renderAnalyticsDeepDive(weekInHistory) {
+  const divider = document.getElementById("analytics-divider");
+  const section = document.getElementById("analytics-section");
+  const grid = document.getElementById("analytics-grid");
+  if (!section || !grid) return;
+
+  if (!weekInHistory) {
+    section.style.display = "none";
+    if (divider) divider.style.display = "none";
+    grid.innerHTML = "";
+    return;
+  }
+
+  section.style.display = "";
+  if (divider) divider.style.display = "";
+  grid.innerHTML = renderCalloutHmCard(weekInHistoryToCalloutItem(weekInHistory), "history");
+
+  const el = grid.firstElementChild;
+  if (el && weekInHistory.narrative) {
+    el.classList.add("callout-hm-clickable");
+    el.addEventListener("click", () => openWeekInHistoryModal(weekInHistory));
+  }
 }
 
 // Builds the compact callout-box display fields for "This Week in Club
