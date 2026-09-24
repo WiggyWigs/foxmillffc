@@ -355,23 +355,38 @@ function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
     section.style.display = "none";
     if (divider) divider.style.display = "none";
     grid.innerHTML = "";
+    const image = document.getElementById("deep-dive-image");
+    if (image) image.style.display = "none";
     return;
   }
 
   section.style.display = "";
   if (divider) divider.style.display = "";
+
   grid.innerHTML = entries.map((e) => renderCalloutHmCard(e.item, e.kind)).join("");
 
-  Array.from(grid.children).forEach((el, i) => {
-    const { raw, kind } = entries[i];
-    if (kind === "history" && raw.narrative) {
+  // Wire clicks directly to each box by kind (order-matched against
+  // entries; simpler and more robust than matching on rendered text).
+  const boxes = Array.from(grid.querySelectorAll(".callout-hm"));
+  entries.forEach((e, i) => {
+    const el = boxes[i];
+    if (!el) return;
+    if (e.kind === "history" && e.raw.narrative) {
       el.classList.add("callout-hm-clickable");
-      el.addEventListener("click", () => openWeekInHistoryModal(raw));
-    } else if (kind === "mtk") {
+      el.addEventListener("click", () => openWeekInHistoryModal(e.raw));
+    } else if (e.kind === "mtk") {
       el.classList.add("callout-hm-clickable");
-      el.addEventListener("click", () => openMoreYouKnowModal(raw));
+      el.addEventListener("click", () => openMoreYouKnowModal(e.raw));
     }
   });
+
+  // The club-history image lives outside the box grid entirely — a
+  // fixed element spanning the full section height (heading through
+  // box) on the right, shown only when there's a history entry.
+  const image = document.getElementById("deep-dive-image");
+  if (image) {
+    image.style.display = weekInHistory ? "" : "none";
+  }
 }
 
 // Builds the compact callout-box display fields for "The More You Know"
