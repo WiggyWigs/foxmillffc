@@ -1797,10 +1797,45 @@ main {
 .sentence-label.sentence-label-lg {
   font-size: 0.85rem;
 }
-/* Deep Dive box: single box, centered rather than left-aligned in the
-   2-column grid shared with This Week's Notes. */
+/* Deep Dive: heading + box on the left, club-history image on the
+   right spanning the FULL section height (top NBL to bottom NBL),
+   not just sitting beside the box below the heading. */
+.deep-dive-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+}
+
+.deep-dive-content {
+  flex: 1;
+  min-width: 0;
+}
+
 #analytics-grid {
-  grid-template-columns: 1fr;
+  grid-template-columns: none;
+  display: flex;
+  justify-content: center;
   max-width: 320px;
   margin: 0 auto;
+}
+
+/* No card, no border — sits directly on the panel's own beige
+   background, stretched to match the height of the content column. */
+.deep-dive-image {
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+  align-self: stretch;
+  object-fit: contain;
+}
+
+@media (max-width: 640px) {
+  .deep-dive-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .deep-dive-image {
+    align-self: center;
+    height: 180px;
+  }
 }
