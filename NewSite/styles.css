@@ -1824,8 +1824,8 @@ main {
 .deep-dive-image {
   flex-shrink: 0;
   width: auto;
-  height: auto;
-  align-self: stretch;
+  height: 110px;
+  align-self: center;
   object-fit: contain;
 }
 
@@ -1835,7 +1835,6 @@ main {
     align-items: center;
   }
   .deep-dive-image {
-    align-self: center;
-    height: 180px;
+    height: 90px;
   }
 }
