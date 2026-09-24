@@ -9,9 +9,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupHonorableMentionModal();
   setupHighestScoringPlayerModal();
   setupLowestScoringTeamModal();
+  setupWeekInHistoryModal();
+  setupMoreYouKnowModal();
   let data;
   try {
-    const res = await fetch("data/stats.json");
+    const res = await fetch("data/stats_test.json");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (err) {
@@ -79,6 +81,7 @@ function renderRecap(data) {
   }
 
   renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams);
+  renderAnalyticsDeepDive(data.week_in_history, data.more_you_know);
   renderBoxScores(recap.box_scores || []);
   renderHonorableMention(recap);
 }
@@ -126,6 +129,78 @@ function closeHonorableMentionModal() {
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+}
+
+function openWeekInHistoryModal(wih) {
+  const modal = document.getElementById("weekInHistoryModal");
+  const body = document.getElementById("weekInHistoryModalBody");
+  const closeBtn = document.getElementById("weekInHistoryModalClose");
+  if (!modal || !body) return;
+
+  body.textContent = wih.narrative || "No write-up available yet.";
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeWeekInHistoryModal() {
+  const modal = document.getElementById("weekInHistoryModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupWeekInHistoryModal() {
+  const overlay = document.getElementById("weekInHistoryModal");
+  const closeBtn = document.getElementById("weekInHistoryModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeWeekInHistoryModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeWeekInHistoryModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeWeekInHistoryModal();
+  });
+}
+
+function openMoreYouKnowModal(mtk) {
+  const modal = document.getElementById("moreYouKnowModal");
+  const body = document.getElementById("moreYouKnowModalBody");
+  const closeBtn = document.getElementById("moreYouKnowModalClose");
+  if (!modal || !body) return;
+
+  body.textContent = moreYouKnowModalText(mtk);
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeMoreYouKnowModal() {
+  const modal = document.getElementById("moreYouKnowModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupMoreYouKnowModal() {
+  const overlay = document.getElementById("moreYouKnowModal");
+  const closeBtn = document.getElementById("moreYouKnowModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeMoreYouKnowModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeMoreYouKnowModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) closeMoreYouKnowModal();
+  });
 }
 
 function setupHonorableMentionModal() {
@@ -207,9 +282,9 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   const section = document.getElementById("callouts-section");
   const grid = document.getElementById("callout-grid");
 
-  // Each entry carries a "kind" so the four popup boxes (streaks,
-  // lowest team, highest player) can share the Honorable Mention
-  // format while sentence/record cards keep their existing look.
+  // Each entry carries a "kind" so the popup-style boxes (streaks,
+  // lowest team, highest player) can share the Honorable Mention format
+  // while sentence/record cards keep their existing look.
   const entries = [];
   if (Array.isArray(callouts.new_records)) {
     callouts.new_records.forEach((item) => entries.push({ item, kind: "record" }));
@@ -258,6 +333,106 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   });
 }
 
+// Deep Dive — its own section, holding the "This Week in Club History"
+// and "The More You Know" boxes, moved out of the This Week's Notes grid.
+// Either can be present or absent independently; the section itself
+// hides only when NEITHER has anything to show.
+function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
+  const divider = document.getElementById("analytics-divider");
+  const section = document.getElementById("analytics-section");
+  const grid = document.getElementById("analytics-grid");
+  if (!section || !grid) return;
+
+  const entries = [];
+  if (weekInHistory) entries.push({ item: weekInHistoryToCalloutItem(weekInHistory), raw: weekInHistory, kind: "history" });
+  // "The More You Know" is intentionally not shown yet — still fully
+  // computed and passed in by ingest_csv.py, just not rendered while
+  // its weekly content plan gets worked out. Flip this back on by
+  // restoring the block below.
+  // if (moreYouKnow) entries.push({ item: moreYouKnowToCalloutItem(moreYouKnow), raw: moreYouKnow, kind: "mtk" });
+
+  if (entries.length === 0) {
+    section.style.display = "none";
+    if (divider) divider.style.display = "none";
+    grid.innerHTML = "";
+    const image = document.getElementById("deep-dive-image");
+    if (image) image.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  if (divider) divider.style.display = "";
+
+  grid.innerHTML = entries.map((e) => renderCalloutHmCard(e.item, e.kind)).join("");
+
+  // Wire clicks directly to each box by kind (order-matched against
+  // entries; simpler and more robust than matching on rendered text).
+  const boxes = Array.from(grid.querySelectorAll(".callout-hm"));
+  entries.forEach((e, i) => {
+    const el = boxes[i];
+    if (!el) return;
+    if (e.kind === "history" && e.raw.narrative) {
+      el.classList.add("callout-hm-clickable");
+      el.addEventListener("click", () => openWeekInHistoryModal(e.raw));
+    } else if (e.kind === "mtk") {
+      el.classList.add("callout-hm-clickable");
+      el.addEventListener("click", () => openMoreYouKnowModal(e.raw));
+    }
+  });
+
+  // The club-history image lives outside the box grid entirely — a
+  // fixed element spanning the full section height (heading through
+  // box) on the right, shown only when there's a history entry.
+  const image = document.getElementById("deep-dive-image");
+  if (image) {
+    image.style.display = weekInHistory ? "" : "none";
+  }
+}
+
+// Builds the compact callout-box display fields for "The More You Know"
+// from the raw object ingest_csv.py wrote to stats.json.
+function moreYouKnowToCalloutItem(mtk) {
+  if (mtk.reason === "playoff_odds_after_0_3_start") {
+    return {
+      label: "The More You Know",
+      headline: "Odds of making the playoffs after an 0-3 start",
+      value: `${mtk.value}%`,
+    };
+  }
+  return { label: "The More You Know", headline: "", value: mtk.value };
+}
+
+// Plain templated text (not AI-written) for the popup — deterministic,
+// so this needs no narrative field or API call at all.
+function moreYouKnowModalText(mtk) {
+  if (mtk.reason === "playoff_odds_after_0_3_start") {
+    const teams = mtk.on_watch_teams && mtk.on_watch_teams.length
+      ? mtk.on_watch_teams.join(", ")
+      : "No teams are currently 0-2.";
+    return `${mtk.value}% probability of making the playoffs if your team starts out 0-3. `
+      + `The following teams are on watch: ${teams}`;
+  }
+  return "";
+}
+
+// Builds the compact callout-box display fields for "This Week in Club
+// History" from the raw selected-game object ingest_csv.py wrote to
+// stats.json — same {label, headline, subtitle, value} shape every other
+// Honorable Mention-style box uses, so renderCalloutHmCard needs no
+// history-specific rendering code of its own.
+function weekInHistoryToCalloutItem(wih) {
+  const winnerScore = wih.tie ? wih.away_score : (wih.winner === wih.away_manager ? wih.away_score : wih.home_score);
+  const loserScore = wih.tie ? wih.home_score : (wih.winner === wih.away_manager ? wih.home_score : wih.away_score);
+  return {
+    label: "",
+    headline: wih.tie
+      ? `${wih.away_manager} tied ${wih.home_manager}`
+      : `${wih.winner} def. ${wih.loser}`,
+    subtitle: `${wih.year} \u00b7 Week ${wih.week}`,
+    value: `${winnerScore} - ${loserScore}`,
+  };
+}
+
 // Honorable Mention-style callout box: centered eyebrow label, name,
 // optional italic subtitle, big number. Display wording is adjusted
 // here (not in the generator) so the live page's data stays untouched.
@@ -289,7 +464,7 @@ function renderCalloutHmCard(item, kind) {
 
   return `
     <div class="callout-hm">
-      <span class="box-score-eyebrow">${label}</span>
+      ${label ? `<span class="box-score-eyebrow">${label}</span>` : ""}
       <div class="callout-hm-headline">${headline}</div>
       ${subtitle ? `<div class="callout-hm-subtitle">${subtitle}</div>` : ""}
       <div class="callout-hm-value">${valueDisplay}</div>
@@ -447,7 +622,10 @@ function renderRecordBooks(data) {
     (byKind[e.kind] = byKind[e.kind] || []).push(e);
   });
 
-  const items = [];
+  // One label per kind, not per entry — every sentence for the same
+  // record type (e.g. multiple different ranks in "Top 15 R/S Game
+  // Score") is grouped under a single header instead of repeating it.
+  const kindGroups = [];
   RECORD_BOOKS_ORDER.forEach((kind) => {
     const kindEntries = byKind[kind];
     if (!kindEntries) return;
@@ -457,17 +635,17 @@ function renderRecordBooks(data) {
       (byValue[String(e.value)] = byValue[String(e.value)] || []).push(e);
     });
 
-    Object.values(byValue)
+    const sentences = Object.values(byValue)
       .sort((a, b) => a[0].rank - b[0].rank)
-      .forEach((group) => {
-        items.push({ kind, sentence: recordBooksSentence(kind, group) });
-      });
+      .map((group) => recordBooksSentence(kind, group));
+
+    kindGroups.push({ kind, sentences });
   });
 
-  wrap.innerHTML = items.map((item) => `
+  wrap.innerHTML = kindGroups.map((kg) => `
     <div class="sentence-item">
-      <span class="sentence-label sentence-label-lg">${RECORD_BOOKS_LABELS[item.kind]}</span>
-      <p class="sentence-text">${item.sentence}</p>
+      <span class="sentence-label sentence-label-lg">${RECORD_BOOKS_LABELS[kg.kind]}</span>
+      ${kg.sentences.map((s) => `<p class="sentence-text">${s}</p>`).join("")}
     </div>
   `).join("");
 
