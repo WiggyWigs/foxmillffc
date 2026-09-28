@@ -1804,3 +1804,15 @@ main {
   max-width: 320px;
   margin: 0 auto;
 }
+
+/* Record Books page: history-book image between the page title and the
+   intro line. Centered, never cropped, capped so it can't overflow on
+   narrow screens. */
+.record-books-page-image {
+  display: block;
+  margin: 0.5rem auto 1rem;
+  height: 160px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
