@@ -1732,11 +1732,22 @@ def _fmt_team_years(entries):
     return ", ".join(f"{e['manager']} ({e['year']})" for e in entries)
 
 
-def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, include_champions):
+def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, include_champions,
+                             list_historical_names=True):
     """Stat of the Week for "started W-L" — the number is the historical
     share of such teams that made the playoffs. The narrative is written
     deterministically from the real cohort (no AI), so every name, year and
-    count in it is exactly what the game log says."""
+    count in it is exactly what the game log says. Rendered with
+    white-space: pre-line on the frontend, so the \n's below are real
+    line breaks, not literal text.
+
+    list_historical_names=False switches the basis sentence to counts
+    only, with no per-team names — for a common record like 1-2, the
+    historical cohort can run long enough that naming every one of them
+    is more clutter than signal. The CURRENT year's list (this_year_teams)
+    always lists names regardless — that list is short by definition
+    (it's whoever's playing right now) and is the actual point of the box.
+    """
     label = f"{wins}-{losses}"
     n = len(cohort)
     made = [c for c in cohort if c["made_playoffs"]]
@@ -1744,27 +1755,39 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
     pct = round(100 * len(made) / n, 1)
     first_year = cohort[0]["year"]
 
-    parts = [
-        f"This probability is based on previous seasons. Since {first_year}, "
-        f"{n} {'team has' if n == 1 else 'teams have'} started {label}: {_fmt_team_years(cohort)}."
-    ]
-    if made:
-        parts.append(f"{len(made)} of them went on to make the playoffs: {_fmt_team_years(made)}.")
-    else:
-        parts.append("None of them went on to make the playoffs.")
-    if include_champions:
-        if champs:
-            parts.append(f"{len(champs)} of them went on to win the Championship: {_fmt_team_years(champs)}.")
+    if list_historical_names:
+        basis = [
+            f"This probability is based on previous seasons. Since {first_year}, "
+            f"{n} {'team has' if n == 1 else 'teams have'} started {label}: {_fmt_team_years(cohort)}."
+        ]
+        if made:
+            basis.append(f"{len(made)} of them went on to make the playoffs: {_fmt_team_years(made)}.")
         else:
-            parts.append("None of them went on to win the Championship.")
-    parts.append(
-        f"This year, {_join_and(this_year_teams)} "
-        f"{'is' if len(this_year_teams) == 1 else 'are'} {label}."
-    )
+            basis.append("None of them went on to make the playoffs.")
+        if include_champions:
+            if champs:
+                basis.append(f"{len(champs)} of them went on to win the Championship: {_fmt_team_years(champs)}.")
+            else:
+                basis.append("None of them went on to win the Championship.")
+    else:
+        basis = [
+            f"This probability is based on previous seasons. Since {first_year}, "
+            f"{n} {'team has' if n == 1 else 'teams have'} started {label}, "
+            f"{len(made)} of them went on to make the playoffs."
+        ]
+        if include_champions:
+            basis[0] = basis[0][:-1] + f", and {len(champs)} of them went on to win the Championship."
+
+    lines = [
+        f"The probability of making the playoffs if you are {label}.",
+        " ".join(basis),
+        f"Managers that are {label} this year:",
+        *this_year_teams,
+    ]
     return {
         "reason": reason, "value": pct, "sample_size": n,
         "made_playoffs": len(made), "champions": len(champs),
-        "this_year_teams": this_year_teams, "narrative": " ".join(parts),
+        "this_year_teams": this_year_teams, "narrative": "\n".join(lines),
     }
 
 
@@ -1793,16 +1816,19 @@ def compute_stat_of_the_week(all_games, roster_names):
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
     if last_completed_week == 3:
-        for wins, losses, reason, champs in ((0, 3, "start_0_3", False),
-                                             (3, 0, "start_3_0", True),
-                                             (1, 2, "start_1_2", False)):
+        # (wins, losses, reason, include_champions, list_historical_names)
+        for wins, losses, reason, champs, list_names in (
+            (0, 3, "start_0_3", False, True),
+            (3, 0, "start_3_0", True, True),
+            (1, 2, "start_1_2", False, False),  # too common a record to name every past team
+        ):
             this_year = _teams_with_record_now(season_games, 3, wins, losses)
             if not this_year:
                 continue
             cohort = _historical_start_cohort(all_games, wins, losses, 3, current_year)
             if not cohort:
                 continue
-            return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs)
+            return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
         return None
 
     return None  # other weeks: not defined yet
