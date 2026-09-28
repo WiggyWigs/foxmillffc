@@ -94,9 +94,17 @@ function renderRecap(data) {
   renderHonorableMention(recap);
 }
 
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
 // Stat of the Week — a big number plus a short narrative, both written
 // by ingest_csv.py (compute_stat_of_the_week). The section hides
-// entirely on weeks where no stat is defined/applicable.
+// entirely on weeks where no stat is defined/applicable. The "this
+// year" manager names are rendered here (not baked into the narrative
+// string) specifically so each one can be colored separately.
 function renderStatOfTheWeek(stat) {
   const divider = document.getElementById("stat-divider");
   const section = document.getElementById("stat-section");
@@ -111,7 +119,15 @@ function renderStatOfTheWeek(stat) {
   }
 
   valueEl.textContent = `${stat.value}%`;
-  textEl.textContent = stat.narrative || "";
+
+  const teams = Array.isArray(stat.this_year_teams) ? stat.this_year_teams : [];
+  const parts = [escapeHtml(stat.narrative || "")];
+  if (teams.length) {
+    const names = teams.map((t) => `<span class="stat-of-week-manager">${escapeHtml(t)}</span>`).join("\n");
+    parts.push(`Managers that are ${escapeHtml(stat.record_label || "")} this year:\n${names}`);
+  }
+  textEl.innerHTML = parts.join("\n");
+
   section.style.display = "";
   if (divider) divider.style.display = "";
 }
