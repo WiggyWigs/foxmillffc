@@ -1671,6 +1671,143 @@ def compute_more_you_know(all_games, roster_names):
     return None  # Week 1, and weeks 3+, are TBD
 
 
+def _historical_start_cohort(all_games, start_wins, start_losses, through_week, exclude_year):
+    """
+    Every (manager, year) from PAST seasons (year < exclude_year) whose
+    record after `through_week` games was exactly start_wins-start_losses,
+    each with whether that team went on to make the playoffs and whether
+    it won the Championship. Sorted by year, then manager.
+    """
+    cohort = []
+    for year in sorted({g["year"] for g in all_games if g["year"] < exclude_year}):
+        season_games = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+        if not season_games:
+            continue
+        if through_week not in {_week_sort_key(g["week"]) for g in season_games}:
+            continue  # this season never reached that week
+
+        records = defaultdict(lambda: [0, 0])
+        for g in season_games:
+            if _week_sort_key(g["week"]) > through_week or g["tie"]:
+                continue
+            records[g["winner"]][0] += 1
+            records[g["loser"]][1] += 1
+
+        playoff_managers = {
+            g[side] for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+            for side in ("away_manager", "home_manager")
+        }
+        champions = {g["winner"] for g in all_games
+                     if g["year"] == year and g["game_type"] == "Championship" and not g["tie"]}
+
+        for mgr, (w, l) in records.items():
+            if (w, l) == (start_wins, start_losses):
+                cohort.append({"manager": mgr, "year": year,
+                               "made_playoffs": mgr in playoff_managers,
+                               "champion": mgr in champions})
+    cohort.sort(key=lambda c: (c["year"], c["manager"]))
+    return cohort
+
+
+def _teams_with_record_now(current_season_games, through_week, wins, losses):
+    """Managers in the current season whose record after `through_week`
+    games is exactly wins-losses."""
+    records = defaultdict(lambda: [0, 0])
+    for g in current_season_games:
+        if _week_sort_key(g["week"]) > through_week or g["tie"]:
+            continue
+        records[g["winner"]][0] += 1
+        records[g["loser"]][1] += 1
+    return sorted(m for m, (w, l) in records.items() if (w, l) == (wins, losses))
+
+
+def _join_and(items):
+    items = list(items)
+    if len(items) <= 1:
+        return "".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def _fmt_team_years(entries):
+    return ", ".join(f"{e['manager']} ({e['year']})" for e in entries)
+
+
+def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, include_champions):
+    """Stat of the Week for "started W-L" — the number is the historical
+    share of such teams that made the playoffs. The narrative is written
+    deterministically from the real cohort (no AI), so every name, year and
+    count in it is exactly what the game log says."""
+    label = f"{wins}-{losses}"
+    n = len(cohort)
+    made = [c for c in cohort if c["made_playoffs"]]
+    champs = [c for c in cohort if c["champion"]]
+    pct = round(100 * len(made) / n, 1)
+    first_year = cohort[0]["year"]
+
+    parts = [
+        f"This probability is based on previous seasons. Since {first_year}, "
+        f"{n} {'team has' if n == 1 else 'teams have'} started {label}: {_fmt_team_years(cohort)}."
+    ]
+    if made:
+        parts.append(f"{len(made)} of them went on to make the playoffs: {_fmt_team_years(made)}.")
+    else:
+        parts.append("None of them went on to make the playoffs.")
+    if include_champions:
+        if champs:
+            parts.append(f"{len(champs)} of them went on to win the Championship: {_fmt_team_years(champs)}.")
+        else:
+            parts.append("None of them went on to win the Championship.")
+    parts.append(
+        f"This year, {_join_and(this_year_teams)} "
+        f"{'is' if len(this_year_teams) == 1 else 'are'} {label}."
+    )
+    return {
+        "reason": reason, "value": pct, "sample_size": n,
+        "made_playoffs": len(made), "champions": len(champs),
+        "this_year_teams": this_year_teams, "narrative": " ".join(parts),
+    }
+
+
+def compute_stat_of_the_week(all_games, roster_names):
+    """
+    "Stat of the Week": one big number plus a short narrative, different
+    every week. Dispatches on the most recently completed week; only
+    Week 3 is defined so far (more to come from the league), every other
+    week returns None so the section stays hidden.
+
+    Week 3, in priority order — the first one that applies wins:
+      1. Playoff odds after an 0-3 start (only if someone is 0-3 now)
+      2. Playoff odds after a 3-0 start, with Championships (only if
+         someone is 3-0 now)
+      3. Playoff odds after a 1-2 start (only if someone is 1-2 now)
+    Each also needs at least one past team with that start, otherwise
+    there is no probability to show and it falls through to the next.
+    """
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    current_year = max(years)
+    season_games = [g for g in all_games if g["year"] == current_year and g["game_type"] == "Regular"]
+    if not season_games:
+        return None
+    last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
+
+    if last_completed_week == 3:
+        for wins, losses, reason, champs in ((0, 3, "start_0_3", False),
+                                             (3, 0, "start_3_0", True),
+                                             (1, 2, "start_1_2", False)):
+            this_year = _teams_with_record_now(season_games, 3, wins, losses)
+            if not this_year:
+                continue
+            cohort = _historical_start_cohort(all_games, wins, losses, 3, current_year)
+            if not cohort:
+                continue
+            return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs)
+        return None
+
+    return None  # other weeks: not defined yet
+
+
 def compute_week_in_history(all_games, roster_names):
     """
     Selects one game from a PRIOR season, at the SAME week number as the
@@ -2127,6 +2264,14 @@ def main():
               f"(sample size {mtk.get('sample_size')})")
     else:
         print("The More You Know: nothing defined for this week yet.")
+    stats["stat_of_the_week"] = compute_stat_of_the_week(stats["games"], roster_names)
+    if stats["stat_of_the_week"]:
+        sotw = stats["stat_of_the_week"]
+        print(f"Stat of the Week: {sotw['reason']} -> {sotw['value']}% "
+              f"({sotw['made_playoffs']} of {sotw['sample_size']} made the playoffs; "
+              f"this year: {sotw['this_year_teams']})")
+    else:
+        print("Stat of the Week: nothing defined/applicable for this week.")
     if stats["week_in_history"]:
         wih = stats["week_in_history"]
         print(f"This Week in Club History: picked {wih['year']} Week {wih['week']} — "
