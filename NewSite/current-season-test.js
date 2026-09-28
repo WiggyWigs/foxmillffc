@@ -80,10 +80,40 @@ function renderRecap(data) {
     gotwWrap.innerHTML = `<p class="load-state">No preview yet — check back closer to kickoff.</p>`;
   }
 
+  const highsLowsHeading = document.getElementById("callouts-heading");
+  if (highsLowsHeading) {
+    highsLowsHeading.textContent = recap.previous_weekend_week != null
+      ? `Week ${recap.previous_weekend_week} Highs and Lows`
+      : "Highs and Lows";
+  }
+
   renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams);
   renderAnalyticsDeepDive(data.week_in_history, data.more_you_know);
+  renderStatOfTheWeek(data.stat_of_the_week);
   renderBoxScores(recap.box_scores || []);
   renderHonorableMention(recap);
+}
+
+// Stat of the Week — a big number plus a short narrative, both written
+// by ingest_csv.py (compute_stat_of_the_week). The section hides
+// entirely on weeks where no stat is defined/applicable.
+function renderStatOfTheWeek(stat) {
+  const divider = document.getElementById("stat-divider");
+  const section = document.getElementById("stat-section");
+  const valueEl = document.getElementById("stat-value");
+  const textEl = document.getElementById("stat-narrative");
+  if (!section || !valueEl || !textEl) return;
+
+  if (!stat || stat.value == null) {
+    section.style.display = "none";
+    if (divider) divider.style.display = "none";
+    return;
+  }
+
+  valueEl.textContent = `${stat.value}%`;
+  textEl.textContent = stat.narrative || "";
+  section.style.display = "";
+  if (divider) divider.style.display = "";
 }
 
 function renderHonorableMention(recap) {
@@ -334,7 +364,7 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
 }
 
 // Deep Dive — its own section, holding the "This Week in Club History"
-// and "The More You Know" boxes, moved out of the This Week's Notes grid.
+// and "The More You Know" boxes, moved out of the Highs and Lows grid.
 // Either can be present or absent independently; the section itself
 // hides only when NEITHER has anything to show.
 function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
@@ -355,8 +385,6 @@ function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
     section.style.display = "none";
     if (divider) divider.style.display = "none";
     grid.innerHTML = "";
-    const image = document.getElementById("deep-dive-image");
-    if (image) image.style.display = "none";
     return;
   }
 
@@ -379,14 +407,6 @@ function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
       el.addEventListener("click", () => openMoreYouKnowModal(e.raw));
     }
   });
-
-  // The club-history image lives outside the box grid entirely — a
-  // fixed element spanning the full section height (heading through
-  // box) on the right, shown only when there's a history entry.
-  const image = document.getElementById("deep-dive-image");
-  if (image) {
-    image.style.display = weekInHistory ? "" : "none";
-  }
 }
 
 // Builds the compact callout-box display fields for "The More You Know"
