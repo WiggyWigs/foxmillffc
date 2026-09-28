@@ -1833,6 +1833,12 @@ main {
   font-size: 0.92rem;
   line-height: 1.6;
   white-space: pre-line;
+  text-align: center;
+}
+
+.stat-of-week-manager {
+  color: var(--rust);
+  font-weight: 600;
 }
 
 @media (max-width: 480px) {
