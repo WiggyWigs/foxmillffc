@@ -1781,7 +1781,7 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
     # renders that itself from this_year_teams, so it can color each name
     # separately (see renderStatOfTheWeek). This field is just the two
     # narrative sentences.
-    narrative = f"The probability of making the playoffs if you are {label}. " + " ".join(basis)
+    narrative = f"The historical chance of making the playoffs if you are {label}. " + " ".join(basis)
     return {
         "reason": reason, "value": pct, "sample_size": n,
         "made_playoffs": len(made), "champions": len(champs),
