@@ -1832,6 +1832,7 @@ main {
 .stat-of-week-text {
   font-size: 0.92rem;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 @media (max-width: 480px) {
