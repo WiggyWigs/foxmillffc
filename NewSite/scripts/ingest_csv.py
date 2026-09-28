@@ -1757,8 +1757,8 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
 
     if list_historical_names:
         basis = [
-            f"This probability is based on previous seasons. Since {first_year}, "
-            f"{n} {'team has' if n == 1 else 'teams have'} started {label}: {_fmt_team_years(cohort)}."
+            f"Since {first_year}, {n} {'team has' if n == 1 else 'teams have'} "
+            f"started {label}: {_fmt_team_years(cohort)}."
         ]
         if made:
             basis.append(f"{len(made)} of them went on to make the playoffs: {_fmt_team_years(made)}.")
@@ -1771,23 +1771,21 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
                 basis.append("None of them went on to win the Championship.")
     else:
         basis = [
-            f"This probability is based on previous seasons. Since {first_year}, "
-            f"{n} {'team has' if n == 1 else 'teams have'} started {label}, "
-            f"{len(made)} of them went on to make the playoffs."
+            f"Since {first_year}, {n} {'team has' if n == 1 else 'teams have'} "
+            f"started {label}, {len(made)} of them went on to make the playoffs."
         ]
         if include_champions:
             basis[0] = basis[0][:-1] + f", and {len(champs)} of them went on to win the Championship."
 
-    lines = [
-        f"The probability of making the playoffs if you are {label}.",
-        " ".join(basis),
-        f"Managers that are {label} this year:",
-        *this_year_teams,
-    ]
+    # "Managers that are X this year" is NOT included here — the frontend
+    # renders that itself from this_year_teams, so it can color each name
+    # separately (see renderStatOfTheWeek). This field is just the two
+    # narrative sentences.
+    narrative = f"The probability of making the playoffs if you are {label}. " + " ".join(basis)
     return {
         "reason": reason, "value": pct, "sample_size": n,
         "made_playoffs": len(made), "champions": len(champs),
-        "this_year_teams": this_year_teams, "narrative": "\n".join(lines),
+        "record_label": label, "this_year_teams": this_year_teams, "narrative": narrative,
     }
 
 
