@@ -1,1806 +1,551 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:wght@400;500;600;700&display=swap');
-
-:root {
-  --ink: #2A2420;
-  --ink-soft: #5B5148;
-  --panel: rgba(255, 252, 246, 0.88);
-  --panel-solid: #FFFCF6;
-  --navy: #1C2B3A;
-  --navy-light: #2E4359;
-  --rust: #B8501F;
-  --hairline: rgba(42, 36, 32, 0.14);
-  --radius: 3px;
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-}
-
-body {
-  font-family: 'EB Garamond', system-ui, serif;
-  color: var(--ink);
-  font-size: 17px;
-  line-height: 1.55;
-  background-image: url('images/bg-desktop.jpg');
-  background-repeat: repeat;
-  background-size: 220px auto;
-  background-attachment: fixed;
-}
-
-@media (orientation: portrait) {
-  body {
-    background-image: url('images/bg-mobile.jpg');
-  }
-}
-
-h1, h2, h3, .display {
-  font-family: 'Cinzel Decorative', system-ui, serif;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--navy);
-  margin: 0 0 0.4em 0;
-}
-
-/* --- Top nav --- */
-.site-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #000;
-  padding: 0.9rem 1.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-.nav-home {
-  display: flex;
-  align-items: center;
-  color: #FFFCF6;
-  flex-shrink: 0;
-  opacity: 0.9;
-  transition: opacity 0.2s ease, color 0.2s ease;
-}
-
-.nav-home:hover {
-  opacity: 1;
-  color: var(--rust);
-}
-
-.nav-home svg {
-  width: 22px;
-  height: 22px;
-  display: block;
-}
-
-/* Landing page only: nav floats fixed over the full-bleed hero image
-   instead of pushing it down in normal document flow, and the whole
-   body is locked to exactly one viewport with nothing to scroll. */
-body.landing-page .site-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
-
-body.landing-page {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-}
-
-.site-nav-links {
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  gap: clamp(1rem, 4vw, 3rem);
-}
-
-.site-nav a {
-  color: #D8DEE6;
-  text-decoration: none;
-  font-family: 'EB Garamond', serif;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 0.3rem 0;
-  border-bottom: 2px solid transparent;
-  transition: border-color 0.15s ease, color 0.15s ease;
-  white-space: nowrap;
-}
-
-.site-nav a:hover,
-.site-nav a.active {
-  color: #FFFCF6;
-  border-bottom-color: var(--rust);
-}
-
-.site-nav .nav-disabled {
-  font-family: 'EB Garamond', serif;
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: #6D7A88;
-  white-space: nowrap;
-  cursor: default;
-}
-
-/* Hamburger button — hidden on desktop, shown only at the mobile
-   breakpoint below, same mechanics as the golf site's nav toggle. */
-.nav-toggle {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  margin-left: auto;
-  height: 22px;
-  appearance: none;
-  -webkit-appearance: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 0.5rem;
-  z-index: 101;
-}
-
-.nav-toggle span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: #FFFCF6;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-toggle.open span:nth-child(2) { opacity: 0; }
-.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-@media (max-width: 600px) {
-  .site-nav {
-    justify-content: space-between;
-  }
-
-  .nav-toggle {
-    display: flex;
-  }
-
-  .site-nav-links {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.1rem;
-    padding: 1.25rem 1.5rem 1.5rem;
-    background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(4px);
-
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transition: max-height 0.3s ease, opacity 0.25s ease;
-  }
-
-  .site-nav-links.open {
-    max-height: 400px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
-/* --- Page shell --- */
-main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 5rem;
-}
-
-.panel {
-  background: var(--panel);
-  border-radius: var(--radius);
-  padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  border: 1px solid var(--hairline);
-}
-
-/* --- Landing hero: three layers, golf-site pattern ---
-   hero-bg: croppable ambient stadium scene, background-size: cover,
-            aspect-ratio locked, swaps by orientation.
-   hero-crest: real <img>, never cropped, centered ~1/3 from top.
-   hero-players: real <img>, never cropped, anchored 50px from bottom. */
-.hero {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-  background: var(--navy);
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url('images/hero-bg-desktop.jpg');
-  background-size: cover;
-  background-position: center 75%;
-  background-repeat: no-repeat;
-}
-
-@media (orientation: portrait) {
-  .hero-bg {
-    background-image: url('images/hero-bg-mobile.jpg');
-  }
-
-  .hero-crest {
-    /* Mobile-only: base offset (33.333% + 20px) plus an additional 15% down */
-    top: calc(48.333% + 20px);
-  }
-
-  .hero-players {
-    /* Mobile-only: base offset (8px) plus an additional 5% up from the bottom */
-    bottom: calc(8px + 5%);
-  }
-}
-
-.hero-crest {
-  position: absolute;
-  top: calc(33.333% + 20px);
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(247px, min(33vw, 46vh), 575px);
-  height: auto;
-  z-index: 7;
-}
-
-.hero-players {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  /* translateY(15%) compensates for ~14.9% of transparent padding baked
-     into the bottom of players.png itself — see conversation: the file's
-     own canvas has empty space below the players' feet, so without this
-     the visible artwork sits ~15% of the image's height above where
-     "bottom: 8px" alone would suggest. Percentage in transform scales
-     with the element's own rendered size, so this stays correct as the
-     clamp()-driven width changes across screen sizes — a fixed px
-     compensation would only be right at one specific size. */
-  transform: translate(-50%, 15%);
-  width: clamp(293px, min(47vw, 45vh), 765px);
-  height: auto;
-  z-index: 6;
-}
-
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-  margin-top: 2rem;
-}
-
-.card {
-  background: var(--panel);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  text-decoration: none;
-  color: var(--ink);
-  display: block;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(28,43,58,0.12);
-}
-
-.card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.35rem;
-}
-
-.card .card-meta {
-  color: var(--ink-soft);
-  font-size: 0.92rem;
-}
-
-.card.disabled {
-  opacity: 0.55;
-  pointer-events: none;
-}
-
-/* --- Manager Score Index table --- */
-.msi-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: 'EB Garamond', serif;
-  font-size: 0.92rem;
-}
-
-.msi-table th {
-  text-align: center;
-  font-weight: 700;
-  color: var(--navy);
-  padding: 0.6rem 0.6rem;
-  border-bottom: 2px solid var(--navy);
-  white-space: nowrap;
-}
-
-.msi-table td {
-  text-align: center;
-  padding: 0.65rem 0.6rem;
-  border-bottom: 1px solid var(--hairline);
-}
-
-.msi-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.msi-table tr:nth-child(1) td { font-weight: 700; }
-
-.msi-table .rank-cell {
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-  width: 2.2rem;
-}
-
-.msi-table .msi-score {
-  font-weight: 700;
-  color: var(--rust);
-  font-variant-numeric: tabular-nums;
-}
-
-.msi-table td.num {
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.msi-meta {
-  color: var(--ink-soft);
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-}
-
-.load-state {
-  color: var(--ink-soft);
-  font-style: italic;
-}
-
-@media (max-width: 640px) {
-  main { padding: 2rem 1rem 3rem; }
-  .panel { padding: 1.25rem; }
-  .msi-table { font-size: 0.8rem; }
-  .msi-table th, .msi-table td { padding: 0.5rem 0.35rem; }
-}
-
-/* ============================================
-   HALL OF CHAMPIONS
-   Adapted from the golf site's championship-history page —
-   same structure (reigning champion + past champions grid +
-   click-to-open stat modal), re-themed to Fox Mill's palette
-   and fonts instead of duplicating a separate inline stylesheet.
-============================================ */
-.champ-header {
-  text-align: center;
-  padding: 2rem 1.5rem 2rem;
-  border-bottom: 2px solid var(--hairline);
-  margin-bottom: 2.5rem;
-}
-
-.champ-eyebrow {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 0.6rem;
-}
-
-.champ-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--navy);
-}
-
-.champ-subtitle {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 1.05rem;
-  color: var(--ink-soft);
-  margin-top: 0.5rem;
-}
-
-.champ-hint {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  opacity: 0.75;
-  margin-top: 0.9rem;
-}
-
-.reigning {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 3.5rem;
-}
-
-.reigning-badge {
-  font-family: 'EB Garamond', serif;
-  font-size: 1.3rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 0.9rem;
-}
-
-.portrait-frame {
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-  aspect-ratio: 4 / 5;
-  overflow: visible;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  display: block;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.portrait-frame:hover,
-.portrait-frame:focus-visible {
-  transform: translateY(-4px) scale(1.015);
-  box-shadow: 0 14px 28px rgba(0,0,0,0.28);
-}
-
-.portrait-frame:focus-visible {
-  outline: 2px solid var(--rust);
-  outline-offset: 4px;
-}
-
-.reigning .portrait-frame {
-  width: min(360px, 100%);
-}
-
-.portrait-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  pointer-events: none;
-}
-
-.past-heading {
-  font-family: 'EB Garamond', serif;
-  font-size: 1.3rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  text-align: center;
-  margin-top: 1.75rem;
-  margin-bottom: 1.75rem;
-  padding-top: 0.6rem;
-  border-top: 2px solid var(--hairline);
-}
-
-.past-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.75rem 1.75rem;
-  max-width: 560px;
-  margin: 0 auto;
-}
-
-.past-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.past-card .portrait-frame {
-  width: min(260px, 100%);
-}
-
-@media (max-width: 640px) {
-  .champ-title { font-size: 1.8rem; }
-  .past-grid { grid-template-columns: 1fr; max-width: 300px; }
-}
-
-/* --- Stat modal --- */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  z-index: 1000;
-}
-
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal-card {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  max-height: 88vh;
-  overflow-y: auto;
-  background: var(--panel-solid);
-  border-radius: 12px;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.35), 0 2px 0 var(--rust) inset;
-  padding: 2rem 1.75rem 1.75rem;
-  text-align: center;
-  transform: translateY(16px) scale(0.96);
-  opacity: 0;
-  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.22s ease;
-}
-
-/* Honorable Mention's narrative is longer prose than the other modals'
-   stat grids — a bit more width means less scrolling to read it. */
-#honorableMentionModal .modal-card {
-  max-width: 540px;
-}
-
-/* Highest Scoring Player's weekly table needs more horizontal room
-   than the stat-grid modals (Week / Manager / Player / Points, four
-   columns) — same reasoning as Honorable Mention above. */
-#highestScoringPlayerModal .modal-card {
-  max-width: 480px;
-}
-
-/* Lowest Scoring Team's weekly table is narrower still (Week /
-   Manager / Score, three columns). */
-#lowestScoringTeamModal .modal-card {
-  max-width: 420px;
-}
-
-.modal-overlay.active .modal-card {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-.modal-close {
-  position: absolute;
-  top: 0.9rem;
-  right: 0.9rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--ink-soft);
-  font-family: 'EB Garamond', serif;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.modal-close:hover {
-  background: rgba(184, 80, 31, 0.1);
-  color: var(--rust);
-}
-
-.modal-badge {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 0.3rem;
-}
-
-.modal-name {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--navy);
-}
-
-.modal-year {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: var(--ink-soft);
-  margin-top: 0.25rem;
-  margin-bottom: 1.4rem;
-}
-
-.modal-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.1rem 1.5rem;
-  border-top: 1px solid var(--hairline);
-  padding-top: 1.25rem;
-}
-
-.modal-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.modal-stat-full {
-  grid-column: 1 / -1;
-}
-
-.modal-stat-label {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.modal-stat-value {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1.35;
-}
-
-@media (max-width: 480px) {
-  .modal-card { padding: 1.6rem 1.2rem 1.4rem; }
-  .modal-name { font-size: 1.3rem; }
-}
-
-/* --- Championship Game score display: left team/vs/right team --- */
-.champ-game-score {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.3rem;
-}
-
-.champ-game-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
-.champ-game-team {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.85rem;
-  color: var(--ink);
-  text-align: center;
-  max-width: 120px;
-}
-
-.champ-game-score-val {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--navy);
-}
-
-.champ-game-vs {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.8rem;
-  color: var(--ink-soft);
-  flex-shrink: 0;
-}
-
-@media (max-width: 480px) {
-  .champ-game-team { max-width: 90px; font-size: 0.78rem; }
-  .champ-game-score-val { font-size: 1.1rem; }
-}
-
-/* --- Manager Score Index: title centering + criteria list --- */
-.panel > h2 {
-  text-align: center;
-}
-
-.msi-meta {
-  text-align: center;
-}
-
-.msi-criteria {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--hairline);
-}
-
-.msi-criteria h3 {
-  font-size: 0.8rem;
-  font-style: italic;
-  font-weight: 600;
-  color: var(--ink-soft);
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-.msi-criteria ol {
-  max-width: 720px;
-  margin: 0.4rem auto;
-  padding-left: 0;
-  list-style-position: inside;
-  text-align: center;
-  color: var(--ink-soft);
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.75rem;
-  line-height: 1.3;
-}
-
-.criteria-inline {
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: center;
-  color: var(--ink-soft);
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.75rem;
-  line-height: 1.6;
-}
-
-.msi-updated {
-  display: block;
-  font-size: 0.7rem;
-  color: var(--ink-soft);
-  margin-top: 0.2rem;
-}
-
-/* --- Average Joe Line divider row --- */
-.average-joe-row td {
-  padding: 0.5rem 0.6rem;
-  text-align: center;
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.8rem;
-  color: #B8231F;
-  background: rgba(184, 35, 31, 0.06);
-  border-top: 3px solid #B8231F;
-  border-bottom: 3px solid #B8231F;
-}
-
-/* --- Mobile: collapse to Rank / Name / MSI, tap name for stat modal --- */
-@media (max-width: 640px) {
-  .msi-table .col-extra {
-    display: none;
-  }
-
-  .msi-name-cell {
-    cursor: pointer;
-    text-decoration: underline dotted;
-    text-underline-offset: 3px;
-  }
-}
-
-/* --- Record Books --- */
-.record-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 2rem;
-  margin-top: 2.5rem;
-}
-
-.record-row:first-child {
-  margin-top: 1.5rem;
-}
-
-.record-row.single {
-  grid-template-columns: 1fr;
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.record-section h3 {
-  font-size: 1.05rem;
-  line-height: 1.3;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 3.4rem;
-  margin-bottom: 0.9rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--hairline);
-}
-
-.record-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: 'EB Garamond', serif;
-  font-size: 0.88rem;
-}
-
-.record-table th {
-  text-align: center;
-  font-weight: 700;
-  color: var(--navy);
-  padding: 0.4rem 0.35rem;
-  border-bottom: 2px solid var(--navy);
-  white-space: nowrap;
-}
-
-.record-table td {
-  text-align: center;
-  padding: 0.4rem 0.35rem;
-  border-bottom: 1px solid var(--hairline);
-}
-
-.record-table tr.rank-first td {
-  font-weight: 700;
-}
-
-/* Rank column stays tight — it's a single short number, not prose */
-.record-table th:first-child,
-.record-table td:first-child {
-  padding-right: 0.15rem;
-  width: 1.6em;
-  color: var(--ink-soft);
-}
-
-/* Manager names should never wrap — other columns can compress instead */
-.record-table th:nth-child(2),
-.record-table td:nth-child(2) {
-  white-space: nowrap;
-}
-
-/* Mobile: back to one column per row, fully linear */
-@media (max-width: 640px) {
-  .record-row,
-  .record-row.single {
-    grid-template-columns: 1fr;
-    max-width: none;
-  }
-
-  .record-section + .record-section {
-    margin-top: 2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .record-table { font-size: 0.82rem; }
-  .record-table th, .record-table td { padding: 0.35rem 0.3rem; }
-}
-
-.record-footnote {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.78rem;
-  color: var(--ink-soft);
-  text-align: center;
-  margin-top: 0.6rem;
-}
-
-.power-explainer {
-  max-width: 720px;
-  margin: 0.4rem auto;
-  text-align: center;
-  color: var(--ink-soft);
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.68rem;
-  line-height: 1.3;
-}
-
-/* --- Current Season: standings table column widths ---
-   Team Name and Manager get most of the space; Record/Points For/
-   Points Against are short values that don't need much room. */
-.standings-table th:nth-child(1),
-.standings-table td:nth-child(1),
-.standings-table th:nth-child(2),
-.standings-table td:nth-child(2) {
-  width: 35%;
-}
-
-.standings-table th:nth-child(3),
-.standings-table td:nth-child(3) {
-  width: 12%;
-  white-space: nowrap;
-}
-
-.standings-table th:nth-child(4),
-.standings-table td:nth-child(4),
-.standings-table th:nth-child(5),
-.standings-table td:nth-child(5) {
-  width: 9%;
-  white-space: nowrap;
-}
-
-.col-name {
-  white-space: nowrap;
-}
-
-/* Streak tables: widen Manager column so names never wrap */
-.streak-table th:first-child,
-.streak-table td:first-child {
-  width: 65%;
-}
-
-/* Highest Scoring Player modal table: Week stays tight, Manager and
-   Player get the room, Points stays tight too. */
-.highest-scoring-table th:first-child,
-.highest-scoring-table td:first-child {
-  width: 14%;
-}
-
-.highest-scoring-table th:last-child,
-.highest-scoring-table td:last-child {
-  width: 18%;
-}
-
-/* Lowest Scoring Team modal table: Week stays tight, Manager gets
-   the room, Score stays tight too. */
-.lowest-scoring-table th:first-child,
-.lowest-scoring-table td:first-child {
-  width: 18%;
-}
-
-.lowest-scoring-table th:last-child,
-.lowest-scoring-table td:last-child {
-  width: 22%;
-}
-
-/* --- Thick section divider between major stat sections --- */
-.section-divider {
-  border: none;
-  border-top: 5px solid var(--navy);
-  margin: 2.5rem 0;
-}
-
-/* Current Season page: bigger page title and bigger subsection headers */
-#page-season-header {
-  font-size: clamp(2rem, 5vw, 2.8rem);
-}
-
-.record-section h3.season-subhead {
-  font-size: 1.5rem;
-}
-
-/* Current in-progress season's data entries, highlighted burnt orange */
-.record-table tr.current-season-entry td {
-  color: var(--rust);
-}
-
-/* --- "Welcome to the Record Books" narrative sentence list --- */
-.sentence-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.1rem;
-}
-
-.sentence-item {
-  text-align: center;
-  max-width: 520px;
-}
-
-.sentence-label {
-  display: block;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  color: var(--rust);
-  margin-bottom: 0.25rem;
-}
-
-.sentence-text {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--ink);
-}
-
-.sentence-text b {
-  color: var(--navy);
-}
-
-/* --- Head-to-Head page --- */
-.h2h-picker {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1.5rem 0 2rem;
-  flex-wrap: wrap;
-}
-
-.h2h-select {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.95rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius);
-  background: var(--panel-solid);
-  color: var(--ink);
-  min-width: 200px;
-}
-
-.h2h-vs-label {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  color: var(--ink-soft);
-  font-style: italic;
-}
-
-.h2h-compare-table {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 1rem;
-}
-
-.h2h-compare-table th:nth-child(1),
-.h2h-compare-table td:nth-child(1),
-.h2h-compare-table th:nth-child(3),
-.h2h-compare-table td:nth-child(3) {
-  width: 30%;
-  font-weight: 700;
-  color: var(--navy);
-  text-align: center;
-}
-
-.h2h-stat-label {
-  width: 40%;
-  text-align: center;
-  color: var(--ink-soft);
-  font-style: italic;
-}
-
-.h2h-games-heading {
-  text-align: center;
-  font-size: 0.95rem;
-  margin: 1.5rem 0 0.75rem;
-  color: var(--ink-soft);
-}
-
-.h2h-games-table {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.h2h-winner {
-  font-weight: 700;
-  color: var(--rust);
-}
-
-/* Mobile: Standings table drops Points For / Points Against — the
-   two widest columns forced horizontal stretch on narrow screens. */
-@media (max-width: 640px) {
-  .standings-table th:nth-child(4),
-  .standings-table td:nth-child(4),
-  .standings-table th:nth-child(5),
-  .standings-table td:nth-child(5) {
-    display: none;
-  }
-}
-
-/* Mobile: H2H picker stacks cleanly (dropdown / vs / dropdown)
-   instead of wrapping mid-row, which could leave "vs" stranded next
-   to one dropdown awkwardly. */
-@media (max-width: 640px) {
-  .h2h-picker {
-    flex-direction: column;
-  }
-
-  .h2h-select {
-    width: 100%;
-    max-width: 280px;
-  }
-}
-
-.h2h-hero-image {
-  display: block;
-  width: min(200px, 50%);
-  height: auto;
-  margin: 0 auto 0.5rem;
-}
-
-.record-banner-image {
-  display: block;
-  max-width: 320px;
-  width: 100%;
-  height: auto;
-  margin: 0 auto;
-}
-
-.rafters-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1.5rem;
-}
-
-.rafters-banner {
-  max-width: 320px;
-  width: 100%;
-  height: auto;
-}
-
-.rafters-panel {
-  padding-bottom: 0.75rem;
-}
-
-.recap-section {
-  text-align: center;
-}
-
-.recap-text {
-  max-width: 640px;
-  margin: 0 auto;
-  font-family: 'EB Garamond', serif;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--ink);
-}
-
-.recap-game-label {
-  font-weight: 700;
-  color: var(--rust);
-}
-
-.callout-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-@media (max-width: 640px) {
-  .callout-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.callout-item {
-  background: var(--panel-solid);
-  border: 1px solid var(--hairline);
-  border-left: 4px solid var(--rust);
-  border-radius: var(--radius);
-  padding: 0.85rem 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  text-align: left;
-}
-
-.callout-item-text {
-  min-width: 0; /* allow truncation/wrap without pushing the number off */
-}
-
-.callout-label {
-  display: block;
-  font-family: 'EB Garamond', serif;
-  font-weight: 700;
-  font-size: 0.68rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 0.2rem;
-}
-
-.callout-headline {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--navy);
-  line-height: 1.25;
-}
-
-.callout-subtitle {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.78rem;
-  color: var(--ink-soft);
-  margin-top: 0.15rem;
-}
-
-.callout-value-wrap {
-  flex-shrink: 0;
-  text-align: right;
-}
-
-.callout-value {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: var(--rust);
-  line-height: 1;
-}
-
-.callout-unit {
-  display: block;
-  font-family: 'EB Garamond', serif;
-  font-size: 0.7rem;
-  color: var(--ink-soft);
-  margin-top: 0.15rem;
-}
-
-/* Sentence-style callouts (e.g. last week's featured-game result) —
-   no big number, just a label and a line of text. */
-.callout-item.callout-sentence {
-  display: block;
-}
-
-.callout-item.callout-sentence .callout-headline {
-  font-family: 'EB Garamond', serif;
-  font-weight: 400;
-  font-size: 0.85rem;
-  color: var(--ink);
-  line-height: 1.5;
-}
-
-.test-banner {
-  background: #b8501f;
-  color: #fff;
-  text-align: center;
-  font-family: 'EB Garamond', serif;
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
-  padding: 0.5rem 1rem;
-}
-
-.recap-matchup-subtitle {
-  text-align: center;
-  font-family: 'EB Garamond', serif;
-  font-weight: 600;
-  font-size: 1.15rem;
-  color: var(--ink-soft);
-  margin: -0.3rem 0 0.75rem;
-}
-
-/* Condensed recap header block: thick divider, title, thin divider,
-   subtitle, thick divider — all tightly spaced with minimal blank
-   space between elements. */
-.recap-tight-divider {
-  margin: 0.75rem 0;
-}
-
-.recap-header-block {
-  text-align: center;
-}
-
-.recap-header-block .season-subhead {
-  margin-bottom: 0.35rem;
-}
-
-.recap-thin-divider {
-  border: none;
-  border-top: 1.5px solid var(--hairline);
-  width: 40%;
-  max-width: 260px;
-  margin: 0.35rem auto;
-}
-
-.recap-header-block .recap-matchup-subtitle {
-  margin: 0.35rem 0 0;
-}
-
-.recap-tight-wrap {
-  margin: 0.75rem 0;
-}
-
-/* Box Scores: compact winner/loser cards, styled like the callout
-   boxes and clickable to open that game's own narrative. */
-.box-score-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.6rem;
-  max-width: 700px;
-  margin: 0.75rem auto 0;
-}
-
-@media (max-width: 640px) {
-  .box-score-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.box-score-card {
-  background: var(--panel-solid);
-  border: 1px solid var(--hairline);
-  border-left: 4px solid var(--navy);
-  border-radius: var(--radius);
-  padding: 0.7rem 1rem;
-  text-align: left;
-  cursor: pointer;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.box-score-card:hover {
-  box-shadow: 0 2px 10px rgba(42, 36, 32, 0.12);
-  transform: translateY(-1px);
-}
-
-.box-score-winner {
-  font-family: 'EB Garamond', serif;
-  font-weight: 700;
-  color: var(--navy);
-  font-size: 0.95rem;
-}
-
-.box-score-winner .box-score-score {
-  color: var(--rust);
-}
-
-.box-score-loser {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  margin-top: 0.15rem;
-}
-
-.box-score-score {
-  font-weight: 700;
-}
-
-/* --- Input page: manager lore submission form --- */
-.input-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 560px;
-  margin: 1.5rem auto 0;
-}
-
-.input-label {
-  font-family: 'EB Garamond', serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--ink);
-  margin-top: 0.75rem;
-}
-
-.input-select,
-.input-textarea {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.95rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius);
-  background: var(--panel-solid);
-  color: var(--ink);
-  width: 100%;
-}
-
-.input-select {
-  min-width: unset;
-}
-
-.input-textarea {
-  resize: vertical;
-  line-height: 1.5;
-}
-
-.input-submit {
-  align-self: center;
-  margin-top: 1rem;
-  font-family: 'EB Garamond', serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.03em;
-  color: #FFFCF6;
-  background: var(--navy);
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.7rem 2rem;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.input-submit:hover {
-  background: var(--rust);
-}
-
-/* Callout cards that open a detail modal (streaks, Highest Scoring
-   Player) */
-.callout-item.callout-clickable {
-  cursor: pointer;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.callout-item.callout-clickable:hover {
-  box-shadow: 0 2px 10px rgba(42, 36, 32, 0.12);
-  transform: translateY(-1px);
-}
-
-.streak-modal-body {
-  text-align: left;
-  margin-top: 1rem;
-  border-top: 1px solid var(--hairline);
-  padding-top: 1rem;
-}
-
-.streak-modal-manager {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--navy);
-  margin: 0.75rem 0 0.4rem;
-}
-
-.streak-modal-manager:first-child {
-  margin-top: 0;
-}
-
-.streak-game-line {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: 'EB Garamond', serif;
-  font-size: 0.9rem;
-  color: var(--ink);
-  padding: 0.35rem 0;
-  border-bottom: 1px solid var(--hairline);
-}
-
-.streak-game-line:last-child {
-  border-bottom: none;
-}
-
-.streak-game-yearweek {
-  flex-shrink: 0;
-  color: var(--ink-soft);
-  font-size: 0.82rem;
-  font-style: italic;
-}
-
-/* --- Honorable Mention box score card --- */
-.honorable-mention-card {
-  background: var(--panel-solid);
-  border: 2px solid var(--rust);
-  border-radius: var(--radius);
-  padding: 0.6rem 1rem;
-  max-width: 460px;
-  margin: 0 auto;
-  cursor: pointer;
-  text-align: center;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.honorable-mention-card:hover {
-  box-shadow: 0 2px 10px rgba(42, 36, 32, 0.12);
-  transform: translateY(-1px);
-}
-
-.box-score-eyebrow {
-  display: block;
-  font-family: 'EB Garamond', serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 0.25rem;
-}
-
-.box-score-matchup {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.box-score-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.05rem;
-  min-width: 0;
-  flex: 1;
-}
-
-.box-score-team-name {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: var(--navy);
-  line-height: 1.15;
-}
-
-.box-score-manager-name {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.72rem;
-  color: var(--ink-soft);
-}
-
-.box-score-score {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 1.35rem;
-  color: var(--rust);
-  margin-top: 0.05rem;
-}
-
-.box-score-vs {
-  flex-shrink: 0;
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-}
-
-@media (max-width: 480px) {
-  .box-score-matchup {
-    gap: 0.75rem;
-  }
-  .box-score-team-name {
-    font-size: 0.88rem;
-  }
-  .box-score-score {
-    font-size: 1.4rem;
-  }
-}
-
-/* --- Highest Scoring Player modal body: table with the same
-   top-divider treatment as the streak modal's body. --- */
-.highest-scoring-modal-body {
-  text-align: left;
-  margin-top: 1rem;
-  border-top: 1px solid var(--hairline);
-  padding-top: 1rem;
-}
-
-/* ============================================
-   PARLAY PAGE
-   These rules were missing from the first Parlay build — the HTML/JS
-   already referenced these classes, but nothing here defined them,
-   which is exactly why the filter <select> boxes rendered at full
-   width (they were just inheriting .input-select's width: 100% with
-   nothing to constrain them). Fixed now.
-============================================ */
-.parlay-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin: 0.75rem 0 1.5rem;
-}
-
-.parlay-filter {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-}
-
-.parlay-filter-label {
-  font-family: 'EB Garamond', serif;
-  font-weight: 600;
-  font-size: 0.78rem;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-/* Fixed, uniform width across every filter dropdown on this page —
-   sized to comfortably fit the longest manager name as an option,
-   not stretched to the table's width. Same specificity as
-   .input-select's width: 100%, but declared later, so this wins. */
-.parlay-filter-select {
-  width: 13rem;
-  min-width: 13rem;
-  max-width: 13rem;
-}
-
-.sortable-th {
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.15s ease;
-}
-
-.sortable-th:hover {
-  color: var(--rust);
-}
-
-.sort-indicator {
-  font-size: 0.7em;
-  color: var(--rust);
-  margin-left: 0.15em;
-}
-
-.table-scroll {
-  overflow-x: auto;
-}
-
-/* Standings table: fixed layout so the 6 columns (Manager/W/L/W%/Avg
-   Odds/ASSWIPE) don't each size to their own content (that's what
-   left an oversized gap around the narrower numeric columns) — but
-   an equal 1/6 share for every column wasn't enough room for Manager,
-   whose names (via .col-name's white-space: nowrap) were overflowing
-   into the W column. Manager gets a wider fixed share; the other five
-   columns split what's left evenly. Scoped only to the rollup table,
-   not All Picks, since All Picks' free-text Bet column needs to flex. */
-.parlay-rollup-table {
-  table-layout: fixed;
-}
-
-.parlay-rollup-table th:nth-child(1),
-.parlay-rollup-table td:nth-child(1) {
-  width: 32%;
-}
-
-.parlay-rollup-table th:nth-child(2),
-.parlay-rollup-table td:nth-child(2),
-.parlay-rollup-table th:nth-child(3),
-.parlay-rollup-table td:nth-child(3),
-.parlay-rollup-table th:nth-child(4),
-.parlay-rollup-table td:nth-child(4),
-.parlay-rollup-table th:nth-child(5),
-.parlay-rollup-table td:nth-child(5),
-.parlay-rollup-table th:nth-child(6),
-.parlay-rollup-table td:nth-child(6) {
-  width: 13.6%;
-}
-
-.parlay-picks-table td.parlay-bet-cell {
-  text-align: left;
-  max-width: 260px;
-}
-
-@media (max-width: 640px) {
-  .parlay-filter-select {
-    width: 11rem;
-    min-width: 11rem;
-    max-width: 11rem;
-  }
-}
-
-/* Avg Odds / ASSWIPE headers each carry two versions: a one-line
-   ".th-label-desktop" span and a stacked ".th-label-mobile" span
-   ("Avg" / "Odds" and "ASS-" / "WIPE" on two lines, via <br> in the
-   markup). Only one is shown at a time — the stacked version only in
-   narrow portrait view, where the one-line text was wide enough to
-   overlap the neighboring column. */
-.parlay-rollup-table .th-label-mobile {
-  display: none;
-}
-
-@media (max-width: 640px) and (orientation: portrait) {
-  .parlay-rollup-table .th-label-desktop {
-    display: none;
-  }
-
-  .parlay-rollup-table .th-label-mobile {
-    display: inline-block;
-    line-height: 1.1;
-  }
-}
-
-
-/* ===== Current Season TEST: Honorable Mention-format callout boxes ===== */
-.callout-hm {
-  background: var(--panel-solid);
-  border: 2px solid var(--rust);
-  border-radius: var(--radius);
-  padding: 0.6rem 1rem;
-  text-align: center;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.callout-hm.callout-hm-clickable {
-  cursor: pointer;
-}
-
-.callout-hm.callout-hm-clickable:hover {
-  box-shadow: 0 2px 10px rgba(42, 36, 32, 0.12);
-  transform: translateY(-1px);
-}
-
-.callout-hm-headline {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: var(--navy);
-  line-height: 1.15;
-}
-
-.callout-hm-subtitle {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.72rem;
-  color: var(--ink-soft);
-}
-
-.callout-hm-value {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: 1.35rem;
-  color: var(--rust);
-  margin-top: 0.05rem;
-}
-
-.callout-hm-unit {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.7rem;
-  color: var(--ink-soft);
-}
-
-/* Tiny "Click for Recap" hint at the bottom of the Honorable Mention card */
-.hm-click-hint {
-  display: block;
-  margin-top: 0.4rem;
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-}
-
-/* Streak popup: one block per manager (header, name, games) */
-.streak-modal-block + .streak-modal-block {
-  margin-top: 1.75rem;
-}
-
-
-/* Lower-section headings on the TEST page: drop the full-width underline
-   and use the same short centered TGL as the recap headers. */
-.record-section h3.tgl-heading {
-  border-bottom: none;
-  min-height: 0;
-  padding-bottom: 0;
-  margin-bottom: 0.35rem;
-}
-
-.tgl-heading + .recap-thin-divider {
-  margin-bottom: 0.9rem;
-}
-
-/* Player name + manager on one line in the Superstar box */
-.callout-hm-inline-mgr {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-weight: 400;
-  font-size: 0.72rem;
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-
-.streak-modal-block:first-of-type {
-  margin-top: 0.25rem;
-}
-
-
-/* Record Books topic label: slightly larger on the TEST page */
-.sentence-label.sentence-label-lg {
-  font-size: 0.85rem;
-}
-/* Deep Dive box: single box, centered rather than left-aligned in the
-   2-column grid shared with This Week's Notes. */
-#analytics-grid {
-  grid-template-columns: 1fr;
-  max-width: 320px;
-  margin: 0 auto;
-}
+#!/usr/bin/env python3
+"""
+Full pipeline: pulls matchup scores from ESPN's (unofficial, undocumented)
+fantasy football API, maps team names to managers, writes the CSV
+ingest_csv.py expects, then runs ingest_csv.py against it — producing an
+updated stats.json and banner in one shot.
+
+Designed to run two ways:
+  1. Locally, for testing — credentials come from espn_config.py
+     (never committed to the repo).
+  2. In GitHub Actions on a schedule — credentials come from environment
+     variables (set from GitHub Secrets, never written to any file).
+
+KNOWN LIMITATIONS (read before relying on this)
+-------------------------------------------------
+- Uses ESPN's PRIVATE, undocumented API — not officially supported,
+  could change or break without notice, sits in a gray area of ESPN's
+  terms of service. Low practical risk for a small private league,
+  zero guarantee of continued access.
+- The team-name mapping (team_mapping.json) only knows names we've
+  already seen. A new season, or a mid-season rename, produces an
+  unmapped name UNLESS exactly one team is unrecognized and exactly
+  one manager is otherwise unaccounted for that week — in that case,
+  process of elimination resolves it automatically and saves the
+  result back to team_mapping.json for future runs. Two simultaneous
+  unknowns in the same week can't be resolved this way and require a
+  manual edit to team_mapping.json.
+- Playoff filtering keeps only matchup_type == "WINNERS_BRACKET",
+  confirmed correct against 2023-2025 real data (5 playoff games/year,
+  matching this league's 6-team/2-bye bracket). Not guaranteed to hold
+  if the league's bracket structure ever changes.
+"""
+
+from espn_api.football import League
+import csv
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).parent
+CSV_OUTPUT_PATH = SCRIPT_DIR / os.environ.get("CSV_OUTPUT_FILENAME", "espn_pull_latest.csv")
+UPCOMING_MATCHUPS_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("UPCOMING_MATCHUPS_FILENAME", "upcoming_matchups.json")
+
+# Test-cutoff mode: when both are set, the pull pretends the season only
+# progressed through this year/week — everything after is excluded, and
+# the "upcoming matchups" file is built from the real schedule for the
+# week right after the cutoff (using ESPN's own real historical data,
+# just ignoring its scores). This is what lets a full pipeline test run
+# safely in GitHub Actions against real past data without ever touching
+# live current-season files, by pointing every *_FILENAME env var above
+# at test-only names.
+TEST_CUTOFF_YEAR = os.environ.get("TEST_CUTOFF_YEAR")
+TEST_CUTOFF_WEEK = os.environ.get("TEST_CUTOFF_WEEK")
+if TEST_CUTOFF_YEAR:
+    TEST_CUTOFF_YEAR = int(TEST_CUTOFF_YEAR)
+if TEST_CUTOFF_WEEK:
+    TEST_CUTOFF_WEEK = int(TEST_CUTOFF_WEEK)
+INGEST_SCRIPT_PATH = SCRIPT_DIR / "ingest_csv.py"
+
+LEAGUE_ID = 1222412013
+YEARS = [2023, 2024, 2025, 2026]
+
+# Games with a 0-0 score are ESPN placeholders for not-yet-played weeks —
+# never real results, always excluded regardless of year.
+EXCLUDE_ZERO_ZERO = True
+
+REAL_PLAYOFF_TYPE = "WINNERS_BRACKET"
+
+TEAM_MAPPING_PATH = SCRIPT_DIR / "team_mapping.json"
+
+
+def load_team_mapping():
+    """(Year, Team_Name) -> Manager, loaded from team_mapping.json.
+    This file is the single source of truth — edit it directly for
+    manual corrections, or let auto-resolution (see below) append to
+    it automatically."""
+    if not TEAM_MAPPING_PATH.exists():
+        return {}
+    with open(TEAM_MAPPING_PATH) as f:
+        entries = json.load(f)
+    return {(e["year"], e["team_name"]): e["manager"] for e in entries}
+
+
+def save_team_mapping(mapping):
+    """Writes the full mapping back out, sorted for a clean diff each
+    time — so `git diff` on this file only ever shows genuinely new
+    entries, not reordering noise."""
+    entries = [
+        {"year": year, "team_name": name, "manager": manager}
+        for (year, name), manager in mapping.items()
+    ]
+    entries.sort(key=lambda e: (e["year"], e["team_name"]))
+    with open(TEAM_MAPPING_PATH, "w") as f:
+        json.dump(entries, f, indent=2)
+
+
+def load_credentials():
+    """Environment variables first (GitHub Actions / CI), local config
+    file second (your own machine). Never both required at once."""
+    env_league = os.environ.get("ESPN_LEAGUE_ID")
+    env_swid = os.environ.get("ESPN_SWID")
+    env_s2 = os.environ.get("ESPN_S2")
+    if env_swid and env_s2:
+        return int(env_league or LEAGUE_ID), env_swid, env_s2
+
+    try:
+        from espn_config import LEAGUE_ID as cfg_league, SWID as cfg_swid, ESPN_S2 as cfg_s2
+        return cfg_league, cfg_swid, cfg_s2
+    except ImportError:
+        sys.exit(
+            "No credentials found. Either set ESPN_SWID / ESPN_S2 environment "
+            "variables, or save espn_config_template.py as espn_config.py "
+            "with your values filled in."
+        )
+
+
+def playoff_week_label(matchup, week, regular_season_weeks):
+    if not matchup.is_playoff:
+        return str(week)
+    playoff_week_index = week - regular_season_weeks
+    return f"P{playoff_week_index}"
+
+
+def pull_all_scores(league_id, swid, espn_s2):
+    rows = []
+    unmapped = set()
+
+    # Working copy that grows during the run: when exactly one name is
+    # unrecognized in a week AND exactly one manager (from that year's
+    # known roster) isn't otherwise accounted for that same week, we
+    # infer the rename and remember it for all subsequent weeks too.
+    # Two simultaneous unknowns in the same week can't be resolved this
+    # way — those fall through to the hard failure below, same as any
+    # other unmapped name.
+    resolved = load_team_mapping()
+    any_new_resolutions = False
+
+    for year in YEARS:
+        if TEST_CUTOFF_YEAR and year > TEST_CUTOFF_YEAR:
+            continue  # test-cutoff mode: pretend later years haven't happened
+
+        year_str = str(year)
+        league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+        regular_season_weeks = league.settings.reg_season_count
+        total_weeks = regular_season_weeks + 4
+
+        # Full expected roster for this year, from whatever's mapped
+        # so far (grows if auto-resolution adds a new name this year).
+        year_roster = {mgr for (y, _), mgr in resolved.items() if y == year_str}
+
+        for week in range(1, total_weeks + 1):
+            if TEST_CUTOFF_YEAR and year == TEST_CUTOFF_YEAR and TEST_CUTOFF_WEEK and week > TEST_CUTOFF_WEEK:
+                break  # test-cutoff mode: pretend later weeks haven't happened
+
+            try:
+                matchups = league.scoreboard(week=week)
+            except Exception as e:
+                print(f"WARNING: fetching week {week} failed: {e}")
+                break
+            if not matchups:
+                break
+
+            # Filter down to real, playable, non-placeholder matchups
+            # once, up front — everything below works off this list.
+            week_matchups = []
+            for m in matchups:
+                away = getattr(m, "away_team", None)
+                home = getattr(m, "home_team", None)
+                if away is None or home is None:
+                    continue
+                if m.is_playoff and m.matchup_type != REAL_PLAYOFF_TYPE:
+                    continue
+                if EXCLUDE_ZERO_ZERO and m.away_score == 0 and m.home_score == 0:
+                    continue
+                week_matchups.append((m, away, home))
+            if not week_matchups:
+                continue
+
+            # Pass 1: who's resolved this week, who isn't.
+            unresolved_names_this_week = set()
+            matched_managers_this_week = set()
+            for m, away, home in week_matchups:
+                for side in (away, home):
+                    mgr = resolved.get((year_str, side.team_name))
+                    if mgr is None:
+                        unresolved_names_this_week.add(side.team_name)
+                    else:
+                        matched_managers_this_week.add(mgr)
+
+            # Process-of-elimination: exactly one gap on each side.
+            missing_managers = year_roster - matched_managers_this_week
+            if len(unresolved_names_this_week) == 1 and len(missing_managers) == 1:
+                new_name = next(iter(unresolved_names_this_week))
+                inferred_manager = next(iter(missing_managers))
+                resolved[(year_str, new_name)] = inferred_manager
+                year_roster.add(inferred_manager)
+                any_new_resolutions = True
+                print(f"AUTO-RESOLVED: {year_str} {new_name!r} -> {inferred_manager} "
+                      f"(process of elimination, week {week})")
+                unresolved_names_this_week = set()
+
+            for name in unresolved_names_this_week:
+                unmapped.add((year_str, name))
+
+            # Pass 2: build the actual rows.
+            for m, away, home in week_matchups:
+                week_label = playoff_week_label(m, week, regular_season_weeks)
+                away_mgr = resolved.get((year_str, away.team_name))
+                home_mgr = resolved.get((year_str, home.team_name))
+                rows.append({
+                    "Year": year_str, "Week": week_label,
+                    "Away Team": away.team_name, "Home Team": home.team_name,
+                    "Away Score": m.away_score, "Home Score": m.home_score,
+                    "Away Manager": away_mgr or "", "Home Manager": home_mgr or "",
+                })
+
+    if any_new_resolutions:
+        save_team_mapping(resolved)
+        print(f"Saved updated mapping to {TEAM_MAPPING_PATH}")
+
+    return rows, unmapped
+
+
+PLAYER_LINEUPS_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
+REMAINING_SCHEDULE_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
+
+
+def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
+    """
+    Pulls individual player lineup data (starters + bench, each player's
+    points that week) for EVERY completed week of the current year that
+    isn't already captured — appended to player_lineups.json
+    incrementally, same de-duplication approach as the score data
+    itself. Self-healing: a week skipped between runs gets filled in on
+    the next run. Historical seasons are NOT backfilled by this (see
+    backfill_player_lineups.py for those).
+
+    In test-cutoff mode, "most recently completed" means TEST_CUTOFF_WEEK
+    specifically, not whatever the real season's actual final week was.
+    """
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    regular_season_weeks = league.settings.reg_season_count
+
+    existing = []
+    if PLAYER_LINEUPS_PATH.exists():
+        with open(PLAYER_LINEUPS_PATH) as f:
+            existing = json.load(f)
+    existing_keys = {(e["year"], e["week"], e["manager"]) for e in existing}
+
+    if TEST_CUTOFF_WEEK:
+        latest_completed_week = TEST_CUTOFF_WEEK
+    else:
+        # Find the most recently completed week (last one with real scores).
+        latest_completed_week = None
+        for week in range(1, regular_season_weeks + 5):
+            try:
+                matchups = league.scoreboard(week=week)
+            except Exception as e:
+                print(f"WARNING: fetching week {week} failed: {e}")
+                break
+            real = [m for m in matchups if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
+            if not real:
+                break
+            if any(m.away_score != 0 or m.home_score != 0 for m in real):
+                latest_completed_week = week
+            else:
+                break  # first unplayed week — stop, we found the latest completed one already
+
+    if latest_completed_week is None:
+        print("No completed weeks found — skipping lineup capture.")
+        return
+
+    # Self-healing: capture EVERY completed week of this season that's
+    # missing, not just the latest. Capturing only the newest week meant
+    # any week skipped between runs (manual runs, a cron that didn't fire)
+    # was lost for good — and the historical backfill script deliberately
+    # excludes the in-progress season — which left features like the
+    # Superstar popup with only the most recent week to show. A week
+    # already fully captured is skipped without an API call.
+    expected_per_week = len(league.teams)
+    managers_captured_by_week = {}
+    for (yr, wk, mgr) in existing_keys:
+        if yr == year_str:
+            managers_captured_by_week.setdefault(wk, set()).add(mgr)
+
+    new_entries = []
+    for wk in range(1, latest_completed_week + 1):
+        if len(managers_captured_by_week.get(str(wk), set())) >= expected_per_week:
+            continue  # this week is already complete — no API call needed
+
+        try:
+            box_scores = league.box_scores(week=wk)
+        except Exception as e:
+            print(f"WARNING: couldn't fetch box scores for week {wk}: {e}")
+            continue  # don't let one bad week block the others
+
+        week_added = 0
+        for bs in box_scores:
+            for team, lineup in ((bs.away_team, bs.away_lineup), (bs.home_team, bs.home_lineup)):
+                if team is None:
+                    continue
+                manager = resolved_mapping.get((year_str, team.team_name))
+                if manager is None:
+                    continue  # unmapped team name — same safety net as the score pull
+                key = (year_str, str(wk), manager)
+                if key in existing_keys:
+                    continue
+
+                players = [
+                    {
+                        "name": p.name,
+                        "position": p.position,
+                        "slot": p.slot_position,
+                        "points": p.points,
+                        "started": p.slot_position not in ("BE", "IR"),
+                        "eligible_slots": getattr(p, "eligibleSlots", []),
+                        "game_date": getattr(p, "game_date", None).isoformat() if getattr(p, "game_date", None) else None,
+                    }
+                    for p in lineup
+                ]
+                new_entries.append({
+                    "year": year_str, "week": str(wk),
+                    "manager": manager, "players": players,
+                })
+                existing_keys.add(key)
+                week_added += 1
+        if week_added:
+            print(f"Captured {week_added} manager-lineups for week {wk}.")
+
+    if not new_entries:
+        print(f"No new lineup entries through week {latest_completed_week} (all already captured, or nothing mapped).")
+        return
+
+    existing.extend(new_entries)
+    with open(PLAYER_LINEUPS_PATH, "w") as f:
+        json.dump(existing, f, indent=2)
+    print(f"Added {len(new_entries)} manager-lineups through week {latest_completed_week} to {PLAYER_LINEUPS_PATH}")
+
+
+def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
+    """
+    Finds the current (max) year's next unplayed week and saves just the
+    matchup pairings (manager names, no scores — they haven't happened
+    yet) to upcoming_matchups.json. This is the schedule data that gets
+    thrown away by the 0-0 filter in pull_all_scores, but the "Game of
+    the Week" preview needs to know who's playing whom next week.
+
+    In test-cutoff mode, "next week" means TEST_CUTOFF_WEEK + 1 —
+    grabbing that week's real pairings from ESPN's history and
+    deliberately ignoring that it already has a real score, since
+    we're pretending the season only got as far as the cutoff.
+    """
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    regular_season_weeks = league.settings.reg_season_count
+
+    if TEST_CUTOFF_WEEK:
+        target_weeks = [TEST_CUTOFF_WEEK + 1]
+    else:
+        target_weeks = range(1, regular_season_weeks + 5)
+
+    for week in target_weeks:
+        try:
+            matchups = league.scoreboard(week=week)
+        except Exception as e:
+            print(f"WARNING: fetching week {week} failed: {e}")
+            break
+        if not matchups:
+            break
+
+        real_matchups = [
+            m for m in matchups
+            if getattr(m, "away_team", None) and getattr(m, "home_team", None)
+            # Same filter pull_all_scores uses: a playoff week's schedule
+            # includes every team, not just the ones who made the bracket
+            # — drop anything that isn't a real WINNERS_BRACKET game so a
+            # consolation-ladder matchup never gets shown as next week's
+            # "Game of the Week" preview.
+            and not (m.is_playoff and m.matchup_type != REAL_PLAYOFF_TYPE)
+        ]
+        if not real_matchups:
+            continue
+
+        # Outside test mode, an unplayed week is identified by every
+        # game showing 0-0 — skip weeks that have already happened.
+        if not TEST_CUTOFF_WEEK and any(m.away_score != 0 or m.home_score != 0 for m in real_matchups):
+            continue
+
+        pairings = []
+        for m in real_matchups:
+            away_mgr = resolved_mapping.get((year_str, m.away_team.team_name))
+            home_mgr = resolved_mapping.get((year_str, m.home_team.team_name))
+            if away_mgr and home_mgr:
+                pairings.append({
+                    "away_manager": away_mgr, "away_team": m.away_team.team_name,
+                    "home_manager": home_mgr, "home_team": m.home_team.team_name,
+                })
+            else:
+                print(f"WARNING: couldn't map team name(s) for week {week}: "
+                      f"{m.away_team.team_name!r} / {m.home_team.team_name!r}")
+
+        output = {"year": year, "week": week, "matchups": pairings}
+        with open(UPCOMING_MATCHUPS_PATH, "w") as f:
+            json.dump(output, f, indent=2)
+        print(f"Wrote {len(pairings)} upcoming matchups (Week {week}, {year}) to {UPCOMING_MATCHUPS_PATH}")
+        return
+
+    print("No upcoming unplayed week found — skipping upcoming_matchups.json.")
+    # Clear any stale file from a previous run rather than silently
+    # leaving old data behind pretending to be current — this is
+    # exactly what caused a week=12 test run to keep showing week 9's
+    # leftover matchups after a failed fetch.
+    if UPCOMING_MATCHUPS_PATH.exists():
+        UPCOMING_MATCHUPS_PATH.unlink()
+        print(f"Removed stale {UPCOMING_MATCHUPS_PATH} so it doesn't show outdated data.")
+
+
+def capture_remaining_schedule(league_id, swid, espn_s2, resolved_mapping):
+    """
+    Saves EVERY not-yet-played regular-season matchup for the current year
+    (manager pairings only, no scores) to remaining_schedule.json. This is
+    what lets ingest_csv.py check every possible outcome of the games that
+    are left and decide exactly who has clinched a playoff spot or been
+    eliminated, instead of falling back to a schedule-blind bound.
+
+    Runs BEFORE ingest_csv.py (which reads the file). All-or-nothing on
+    purpose: if any week can't be fetched or any team name can't be mapped
+    to a manager, no file is written (and any stale one is removed), so
+    ingest_csv.py quietly falls back to the schedule-blind bound rather than
+    reasoning from a partial schedule.
+
+    In test-cutoff mode, "remaining" means every week after TEST_CUTOFF_WEEK,
+    read from ESPN's real historical schedule (scores ignored).
+    """
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    regular_season_weeks = league.settings.reg_season_count
+
+    def discard(reason):
+        print(f"Remaining schedule NOT saved: {reason}")
+        if REMAINING_SCHEDULE_PATH.exists():
+            REMAINING_SCHEDULE_PATH.unlink()
+            print(f"Removed stale {REMAINING_SCHEDULE_PATH}.")
+
+    weeks_out = {}
+    for week in range(1, regular_season_weeks + 1):
+        if TEST_CUTOFF_WEEK and week <= TEST_CUTOFF_WEEK:
+            continue
+        try:
+            matchups = league.scoreboard(week=week)
+        except Exception as e:
+            discard(f"fetching week {week} failed: {e}")
+            return
+
+        real = [m for m in matchups
+                if getattr(m, "away_team", None) and getattr(m, "home_team", None)]
+        if not real:
+            discard(f"week {week} returned no matchups")
+            return
+
+        # Outside test mode, a week that already has scores has been played.
+        if not TEST_CUTOFF_WEEK and any(m.away_score != 0 or m.home_score != 0 for m in real):
+            continue
+
+        pairings = []
+        for m in real:
+            away_mgr = resolved_mapping.get((year_str, m.away_team.team_name))
+            home_mgr = resolved_mapping.get((year_str, m.home_team.team_name))
+            if not (away_mgr and home_mgr):
+                discard(f"couldn't map team name(s) in week {week}: "
+                        f"{m.away_team.team_name!r} / {m.home_team.team_name!r}")
+                return
+            pairings.append({"away_manager": away_mgr, "home_manager": home_mgr})
+        weeks_out[str(week)] = pairings
+
+    with open(REMAINING_SCHEDULE_PATH, "w") as f:
+        json.dump({"year": year, "weeks": weeks_out}, f, indent=2)
+    print(f"Wrote remaining schedule ({len(weeks_out)} week(s), {year}) to {REMAINING_SCHEDULE_PATH}")
+
+
+def main():
+    league_id, swid, espn_s2 = load_credentials()
+
+    rows, unmapped = pull_all_scores(league_id, swid, espn_s2)
+
+    if unmapped:
+        print("FAILED: unmapped team names found (more than one gap in the same "
+              "week, so process-of-elimination couldn't resolve it) — refusing "
+              "to produce output.")
+        print(f"Add these to {TEAM_MAPPING_PATH.name}, then re-run:")
+        for year, name in sorted(unmapped):
+            print(f'  {{"year": "{year}", "team_name": "{name}", "manager": "???"}},')
+        sys.exit(1)
+
+    with open(CSV_OUTPUT_PATH, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "Year", "Week", "Away Team", "Home Team",
+            "Away Score", "Home Score", "Away Manager", "Home Manager",
+        ])
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"Wrote {len(rows)} rows to {CSV_OUTPUT_PATH}")
+
+    # Snapshot the current stats.json BEFORE ingest_csv.py overwrites it —
+    # this is what lets generate_recap.py detect "new record set this
+    # week" by comparing before/after. Scratch file, not committed.
+    stats_path = SCRIPT_DIR.parent / "data" / os.environ.get("STATS_FILENAME", "stats.json")
+    stats_snapshot_path = SCRIPT_DIR.parent / "data" / os.environ.get("STATS_SNAPSHOT_FILENAME", "stats_previous_run.json")
+    if stats_path.exists():
+        import shutil
+        shutil.copy(stats_path, stats_snapshot_path)
+
+    # Full remaining schedule for the clinch/elimination check. Must happen
+    # BEFORE ingest_csv.py below, which reads it. Non-fatal: without it the
+    # check falls back to a schedule-blind (but still safe) bound.
+    try:
+        capture_remaining_schedule(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        print(f"WARNING: couldn't capture remaining schedule: {e}")
+
+    # Chain straight into ingest_csv.py — one script run, one result.
+    result = subprocess.run(
+        [sys.executable, str(INGEST_SCRIPT_PATH), str(CSV_OUTPUT_PATH)],
+        cwd=SCRIPT_DIR,
+    )
+    if result.returncode != 0:
+        sys.exit("ingest_csv.py failed — see output above.")
+
+    try:
+        capture_upcoming_matchups(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        # Non-fatal — the recap step downstream just won't have a
+        # "Game of the Week" preview this run if this fails.
+        print(f"WARNING: couldn't capture upcoming matchups: {e}")
+
+    try:
+        capture_latest_lineups(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        # Non-fatal — the "highest scoring player" callout just won't
+        # have data this run if this fails.
+        print(f"WARNING: couldn't capture lineups: {e}")
+
+
+if __name__ == "__main__":
+    main()
