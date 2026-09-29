@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Head-to-Head — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<main>
+  <div class="panel">
+    <img src="images/helmets.png" alt="Two football helmets colliding" class="h2h-hero-image">
+    <h2>Head-to-Head</h2>
+    <p class="msi-meta">Pick any two managers to compare their careers and their history against each other.</p>
+
+    <div class="h2h-picker">
+      <select id="mgrA" class="h2h-select"><option value="">Select a manager…</option></select>
+      <span class="h2h-vs-label">vs</span>
+      <select id="mgrB" class="h2h-select"><option value="">Select a manager…</option></select>
+    </div>
+
+    <div id="h2h-output"></div>
+  </div>
+</main>
+
+<script src="h2h.js"></script>
+
+</body>
+</html>

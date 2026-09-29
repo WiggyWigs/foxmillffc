@@ -3,8 +3,9 @@ name: TEST weekly update (historical cutoff)
 # Manual trigger ONLY — never runs on a schedule. Lets you pick any
 # past year/week and run the full real pipeline (real ESPN data, real
 # Claude API calls, using your real secrets) as if the season had only
-# gotten that far — without ever touching your live stats.json or any
-# other production file. Everything this writes uses "_test" filenames.
+# gotten that far — without ever touching your live site. It runs the
+# TestSite/ copy of every script, and those scripts find their data via
+# their own folder, so everything this writes lands in TestSite/data/.
 
 on:
   workflow_dispatch:
@@ -25,18 +26,17 @@ jobs:
   test-update:
     runs-on: ubuntu-latest
     env:
-      STATS_FILENAME: stats_test.json
-      STATS_SNAPSHOT_FILENAME: stats_previous_run_test.json
-      UPCOMING_MATCHUPS_FILENAME: upcoming_matchups_test.json
-      PLAYER_LINEUPS_FILENAME: player_lineups_test.json
-      REMAINING_SCHEDULE_FILENAME: remaining_schedule_test.json
-      CSV_OUTPUT_FILENAME: espn_pull_test.csv
-      BANNER_FILENAME: fastest-to-25-wins-banner-test.png
       TEST_CUTOFF_YEAR: ${{ inputs.cutoff_year }}
       TEST_CUTOFF_WEEK: ${{ inputs.cutoff_week }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+
+      - name: Sync shared inputs from live (other workflows only update NewSite)
+        run: |
+          cp NewSite/data/manager_roster.json TestSite/data/manager_roster.json
+          cp NewSite/scripts/team_mapping.json TestSite/scripts/team_mapping.json
+          cp NewSite/scripts/manager_lore.json TestSite/scripts/manager_lore.json
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -48,12 +48,12 @@ jobs:
 
       - name: Clear previous test data (test mode must start clean every run)
         run: |
-          rm -f NewSite/data/stats_test.json
-          rm -f NewSite/data/stats_previous_run_test.json
-          rm -f NewSite/data/upcoming_matchups_test.json
-          rm -f NewSite/data/player_lineups_test.json
-          rm -f NewSite/data/remaining_schedule_test.json
-          rm -f NewSite/scripts/espn_pull_test.csv
+          rm -f TestSite/data/stats.json
+          rm -f TestSite/data/stats_previous_run.json
+          rm -f TestSite/data/upcoming_matchups.json
+          rm -f TestSite/data/player_lineups.json
+          rm -f TestSite/data/remaining_schedule.json
+          rm -f TestSite/scripts/espn_pull_latest.csv
           echo "Cleared stale test files — this run starts from a genuinely clean slate."
 
       - name: Run ESPN pull + ingest pipeline (test-cutoff mode)
@@ -61,20 +61,24 @@ jobs:
           ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
           ESPN_SWID: ${{ secrets.ESPN_SWID }}
           ESPN_S2: ${{ secrets.ESPN_S2 }}
-        run: python NewSite/scripts/espn_pull.py
+        run: python TestSite/scripts/espn_pull.py
 
       - name: Generate weekly recap narratives (test-cutoff mode)
         continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python NewSite/scripts/generate_recap.py
+        run: python TestSite/scripts/generate_recap.py
 
-      - name: Commit and push TEST-only files
+      - name: Commit and push TestSite data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add NewSite/data/stats_test.json NewSite/data/upcoming_matchups_test.json NewSite/data/player_lineups_test.json
-          git add NewSite/data/remaining_schedule_test.json 2>/dev/null || true
+          # Only TestSite/data/ is committed. TestSite/scripts/ stays a
+          # byte-for-byte twin of NewSite/scripts/ (refresh_testsite.yml
+          # owns that), so run-time edits to state files there are dropped.
+          git add TestSite/data/stats.json TestSite/data/upcoming_matchups.json TestSite/data/player_lineups.json TestSite/data/manager_roster.json
+          git add TestSite/data/remaining_schedule.json 2>/dev/null || true
+          git add TestSite/data/fastest-to-25-wins-banner.png 2>/dev/null || true
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "TEST update: cutoff ${{ inputs.cutoff_year }} week ${{ inputs.cutoff_week }}"
           git push
