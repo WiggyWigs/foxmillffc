@@ -1,0 +1,33 @@
+name: Refresh TestSite from live
+
+# Manual trigger ONLY. Makes every page, script, style and image in
+# TestSite/ identical to NewSite/ again — files that exist only in
+# TestSite/ are removed — while leaving TestSite/data/ untouched, so
+# test data survives a refresh.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Mirror NewSite/ into TestSite/ (except data/)
+        run: |
+          mkdir -p TestSite
+          rsync -a --delete --exclude='/data/' NewSite/ TestSite/
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A TestSite/
+          git diff --cached --quiet && echo "TestSite already matches NewSite" && exit 0
+          git commit -m "Refresh TestSite from live (NewSite)"
+          git push

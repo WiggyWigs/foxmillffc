@@ -1,0 +1,44 @@
+{
+  "Kevin Mallon": {
+    "queue": [],
+    "last_used": 0
+  },
+  "Daniel Bahamonde": {
+    "queue": [
+      2
+    ],
+    "last_used": 1
+  },
+  "Josh Davis": {
+    "queue": [],
+    "last_used": 0
+  },
+  "Eddie McCumiskey": {
+    "queue": [
+      1
+    ],
+    "last_used": 2
+  },
+  "Brian Kleinhenz": {
+    "queue": [],
+    "last_used": 0
+  },
+  "Blake Pratt": {
+    "queue": [],
+    "last_used": 0
+  },
+  "John Schauder": {
+    "queue": [
+      0
+    ],
+    "last_used": 2
+  },
+  "Brian Harris": {
+    "queue": [
+      1,
+      2,
+      0
+    ],
+    "last_used": 4
+  }
+}

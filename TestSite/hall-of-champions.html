@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hall of Champions — Fox Mill Fantasy Football Club</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<main>
+  <div class="champ-header">
+    <div class="champ-title">Hall of Champions</div>
+    <div class="champ-subtitle">Every ring, every season, every legend.</div>
+    <div class="champ-hint">Click a portrait for season stats</div>
+  </div>
+
+  <!-- ============= REIGNING CHAMPION (2025) ============= -->
+  <div class="reigning">
+    <div class="reigning-badge">Reigning Champion</div>
+    <button class="portrait-frame" data-year="2025" aria-label="View 2025 champion stats">
+      <img src="images/2025.jpg" alt="2025 Fox Mill champion">
+    </button>
+  </div>
+
+  <!-- ============= PAST CHAMPIONS ============= -->
+  <div class="past-heading">Past Champions</div>
+  <div class="past-grid">
+    <div class="past-card">
+      <button class="portrait-frame" data-year="2024" aria-label="View 2024 champion stats">
+        <img src="images/2024.jpg" alt="2024 Fox Mill champion">
+      </button>
+    </div>
+    <div class="past-card">
+      <button class="portrait-frame" data-year="2023" aria-label="View 2023 champion stats">
+        <img src="images/2023.jpg" alt="2023 Fox Mill champion">
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- ============= STAT MODAL ============= -->
+<div class="modal-overlay" id="statModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge">Season Champion</div>
+    <div class="modal-name" id="modalName"></div>
+    <div class="modal-year" id="modalYear"></div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <span class="modal-stat-label">Average R/S Score</span>
+        <span class="modal-stat-value" id="modalAvg"></span>
+      </div>
+      <div class="modal-stat">
+        <span class="modal-stat-label">Overall Record</span>
+        <span class="modal-stat-value" id="modalRecord"></span>
+      </div>
+      <div class="modal-stat modal-stat-full">
+        <span class="modal-stat-label">Championship Game</span>
+        <div class="champ-game-score">
+          <div class="champ-game-side">
+            <span class="champ-game-team" id="modalWinTeam"></span>
+            <span class="champ-game-score-val" id="modalWinScore"></span>
+          </div>
+          <span class="champ-game-vs">vs</span>
+          <div class="champ-game-side">
+            <span class="champ-game-team" id="modalLoseTeam"></span>
+            <span class="champ-game-score-val" id="modalLoseScore"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="champions.js"></script>
+
+</body>
+</html>

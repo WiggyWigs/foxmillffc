@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupMoreYouKnowModal();
   let data;
   try {
-    const res = await fetch("data/stats_test.json");
+    const res = await fetch("data/stats.json");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (err) {
