@@ -63,9 +63,24 @@
 
     <div class="record-section" id="callouts-section" style="display:none;">
       <hr class="section-divider recap-tight-divider">
-      <h3 class="season-subhead tgl-heading">This Week's Notes</h3>
+      <h3 class="season-subhead tgl-heading" id="callouts-heading">Highs and Lows</h3>
       <hr class="recap-thin-divider">
       <div class="callout-grid" id="callout-grid"></div>
+    </div>
+
+    <hr class="section-divider" id="analytics-divider" style="display:none;">
+    <div class="record-section" id="analytics-section" style="display:none;">
+      <h3 class="season-subhead tgl-heading">This Week In Club History</h3>
+      <hr class="recap-thin-divider">
+      <div class="callout-grid" id="analytics-grid"></div>
+    </div>
+
+    <hr class="section-divider" id="stat-divider" style="display:none;">
+    <div class="record-section" id="stat-section" style="display:none;">
+      <h3 class="season-subhead tgl-heading">Stat of the Week</h3>
+      <hr class="recap-thin-divider">
+      <div class="stat-of-week-value" id="stat-value"></div>
+      <p class="recap-text stat-of-week-text" id="stat-narrative"></p>
     </div>
 
     <hr class="section-divider" id="record-books-divider" style="display:none;">
@@ -184,6 +199,22 @@
     <button class="modal-close" id="honorableMentionModalClose" aria-label="Close">&times;</button>
     <div class="modal-badge" id="honorableMentionModalBadge">Honorable Mention</div>
     <p class="recap-text" id="honorableMentionModalBody"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="weekInHistoryModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="weekInHistoryModalBadge">
+    <button class="modal-close" id="weekInHistoryModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge" id="weekInHistoryModalBadge">This Week in Club History</div>
+    <p class="recap-text" id="weekInHistoryModalBody"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="moreYouKnowModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="moreYouKnowModalBadge">
+    <button class="modal-close" id="moreYouKnowModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge" id="moreYouKnowModalBadge">The More You Know</div>
+    <p class="recap-text" id="moreYouKnowModalBody"></p>
   </div>
 </div>
 
