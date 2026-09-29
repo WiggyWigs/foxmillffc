@@ -602,37 +602,41 @@ function recordBooksSentence(kind, group) {
   const names = group.map((e) => `<b>${e.manager}</b>`);
   const value = group[0].value;
   const tied = group.length > 1;
+  // A lone manager can still be tied with someone from an earlier
+  // season — tied_count is how many rows on the full leaderboard share
+  // this value, so anything beyond this group means "tied for the".
+  const the = (group[0].tied_count || 1) > group.length ? "tied for the" : "the";
 
   switch (kind) {
     case "top_game_score":
       return tied
         ? `${joinNames(names)} share the ${rank}-highest R/S game score in league history — ${fmtRecordNumber(value)} points.`
-        : `${names[0]}'s ${fmtRecordNumber(value)} points is the ${rank}-highest R/S game score in league history.`;
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is ${the} ${rank}-highest R/S game score in league history.`;
 
     case "bottom_game_score":
       return tied
         ? `${joinNames(names)} share the ${rank}-lowest R/S game score in league history — ${fmtRecordNumber(value)} points.`
-        : `${names[0]}'s ${fmtRecordNumber(value)} points is now the ${rank}-lowest R/S game score in league history.`;
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is now ${the} ${rank}-lowest R/S game score in league history.`;
 
     case "top_win_streak":
       return tied
         ? `${joinNames(names)} are tied for the ${rank}-longest R/S winning streak in league history, each at ${value} games.`
-        : `${names[0]}'s active winning streak has reached ${value} games — the ${rank}-longest in league history.`;
+        : `${names[0]}'s active winning streak has reached ${value} games — ${the} ${rank}-longest in league history.`;
 
     case "top_loss_streak":
       return tied
         ? `${joinNames(names)} are tied for the ${rank}-longest R/S losing streak in league history, each at ${value} games.`
-        : `${names[0]}'s losing streak has reached ${value} games — the ${rank}-longest in league history.`;
+        : `${names[0]}'s losing streak has reached ${value} games — ${the} ${rank}-longest in league history.`;
 
     case "25th_win":
       return tied
         ? `${joinNames(names)} both just reached their 25th career win, tied for the ${rank}-fastest anyone has ever gotten there.`
-        : `${names[0]} just picked up their 25th career win — the ${rank}-fastest anyone has ever reached that mark.`;
+        : `${names[0]} just picked up their 25th career win — ${the} ${rank}-fastest anyone has ever reached that mark.`;
 
     case "25th_loss":
       return tied
         ? `${joinNames(names)} both just picked up their 25th career loss, tied for the ${rank}-fastest anyone has ever gotten there.`
-        : `${names[0]} just picked up their 25th career loss — the ${rank}-fastest anyone has ever reached that mark.`;
+        : `${names[0]} just picked up their 25th career loss — ${the} ${rank}-fastest anyone has ever reached that mark.`;
 
     default:
       return "";

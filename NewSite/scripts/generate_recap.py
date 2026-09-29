@@ -40,6 +40,7 @@ import json
 import os
 import random
 import sys
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -2019,35 +2020,58 @@ def build_record_books_entries(week_games, week, year, stats):
     records = stats.get("records", {})
     entries = []
 
+    def tie_ranks(rows, value_key):
+        # Competition-style ranking, matching tieAwareRanks() in
+        # records.js: a row whose value equals the row above it shares
+        # that row's rank (so 6, 6, 6 at positions 3-5 all rank 3rd).
+        # Also returns how many rows on the leaderboard share each
+        # value, so the frontend can say "tied for" even when only one
+        # of the tied managers did it this week.
+        ranks = []
+        last_value, last_rank = None, None
+        for i, row in enumerate(rows):
+            val = row.get(value_key)
+            if i == 0 or val != last_value:
+                last_value, last_rank = val, i + 1
+            ranks.append(last_rank)
+        counts = Counter(row.get(value_key) for row in rows)
+        return ranks, [counts[row.get(value_key)] for row in rows]
+
     def check_game_score_list(list_key, kind):
-        for i, e in enumerate(records.get(list_key) or []):
+        rows = records.get(list_key) or []
+        ranks, tied_counts = tie_ranks(rows, "score")
+        for i, e in enumerate(rows):
             if e.get("year") == year and week_num(e.get("week")) == week_num(week):
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
-                    "value": e["score"], "rank": i + 1,
+                    "value": e["score"], "rank": ranks[i], "tied_count": tied_counts[i],
                 })
 
     check_game_score_list("top_regular_season_games", "top_game_score")
     check_game_score_list("bottom_regular_season_games", "bottom_game_score")
 
     def check_streak_list(list_key, kind):
-        for i, e in enumerate(records.get(list_key) or []):
+        rows = records.get(list_key) or []
+        ranks, tied_counts = tie_ranks(rows, "streak")
+        for i, e in enumerate(rows):
             end_week = e.get("end_week")
             if e.get("end_year") == year and end_week is not None and week_num(end_week) == week_num(week):
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
-                    "value": e["streak"], "rank": i + 1,
+                    "value": e["streak"], "rank": ranks[i], "tied_count": tied_counts[i],
                 })
 
     check_streak_list("top_winning_streaks", "top_win_streak")
     check_streak_list("top_losing_streaks", "top_loss_streak")
 
     def check_milestone(list_key, kind):
-        for i, e in enumerate(records.get(list_key) or []):
+        rows = records.get(list_key) or []
+        ranks, tied_counts = tie_ranks(rows, "games")
+        for i, e in enumerate(rows):
             if e.get("year") == year and week_num(e.get("week")) == week_num(week):
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
-                    "value": e.get("games"), "rank": i + 1,
+                    "value": e.get("games"), "rank": ranks[i], "tied_count": tied_counts[i],
                 })
 
     check_milestone("fastest_to_25_wins", "25th_win")
