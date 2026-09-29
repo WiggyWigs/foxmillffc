@@ -8050,14 +8050,16 @@
         "manager": "Jason Carlton",
         "team_name": "Open Mic Night Contestant",
         "value": 64.34,
-        "rank": 15
+        "rank": 15,
+        "tied_count": 1
       },
       {
         "kind": "top_loss_streak",
         "manager": "Jason Carlton",
         "team_name": "Open Mic Night Contestant",
         "value": 6,
-        "rank": 5
+        "rank": 3,
+        "tied_count": 3
       }
     ]
   },
