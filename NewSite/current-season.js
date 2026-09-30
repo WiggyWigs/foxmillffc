@@ -961,13 +961,18 @@ function renderPowerRankings(data) {
 
   const rows = pr.rankings; // already sorted by power_score descending
 
+  // Competition-style ranks (1, 1, 3). The table leaves tied rows
+  // blank; the modal shows the shared number.
   const ranks = [];
+  const sharedRanks = [];
   let lastValue = null;
   rows.forEach((row, i) => {
     if (lastValue !== null && row.power_score === lastValue) {
       ranks.push("");
+      sharedRanks.push(sharedRanks[i - 1]);
     } else {
       ranks.push(String(i + 1));
+      sharedRanks.push(i + 1);
       lastValue = row.power_score;
     }
   });
@@ -1011,10 +1016,10 @@ function renderPowerRankings(data) {
   html += `</tbody></table>`;
   wrap.innerHTML = html;
 
-  setupModal(rows, fmtPct, fmtDiff);
+  setupModal(rows, sharedRanks, fmtPct, fmtDiff);
 }
 
-function setupModal(rows, fmtPct, fmtDiff) {
+function setupModal(rows, sharedRanks, fmtPct, fmtDiff) {
   const overlay = document.getElementById("statModal");
   const closeBtn = document.getElementById("modalClose");
   let lastFocused = null;
@@ -1044,7 +1049,7 @@ function setupModal(rows, fmtPct, fmtDiff) {
   }
 
   document.querySelectorAll(".msi-name-cell").forEach((cell, i) => {
-    const openThis = () => openModal(i + 1, rows[i]);
+    const openThis = () => openModal(sharedRanks[i], rows[i]);
     cell.addEventListener("click", openThis);
     cell.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {

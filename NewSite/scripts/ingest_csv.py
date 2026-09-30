@@ -696,10 +696,12 @@ def compute_power_rankings(all_games, roster_names):
     for mgr in active_managers:
         a = actual[mgr]
         b = breakdown[mgr]
-        a_decided = a["wins"] + a["losses"]
-        actual_wp = (a["wins"] / a_decided) if a_decided else 0.0
-        b_decided = b["wins"] + b["losses"]
-        breakdown_wp = (b["wins"] / b_decided) if b_decided else 0.0
+        # Win % = wins / (wins + losses + ties): a tie is a game played
+        # with no win (LEAGUE_RULES.md section 4).
+        a_played = a["wins"] + a["losses"] + a["ties"]
+        actual_wp = (a["wins"] / a_played) if a_played else 0.0
+        b_played = b["wins"] + b["losses"] + b["ties"]
+        breakdown_wp = (b["wins"] / b_played) if b_played else 0.0
 
         results.append({
             "manager": mgr,
@@ -746,7 +748,8 @@ def compute_power_rankings(all_games, roster_names):
         r["power_score"] = round(r["win_pct_points"] + r["points_scored_points"]
                                   + r["schedule_difficulty_points"], 2)
 
-    results.sort(key=lambda x: -x["power_score"])
+    # Tied power scores are listed alphabetically (LEAGUE_RULES.md section 7).
+    results.sort(key=lambda x: (-x["power_score"], x["manager"]))
 
     return {"season": current_year, "rankings": results}
 
@@ -845,9 +848,10 @@ def compute_current_streaks(all_games, roster_names):
 def compute_standings(all_games, roster_names):
     """
     Current-season regular-season standings: Team Name, Manager, Record,
-    Points For, Points Against. Sorted by win % (ties don't count in the
-    decided-games denominator, same convention as everywhere else on
-    this site). Ties in win % break by:
+    Points For, Points Against. Sorted by win % = wins / (wins + losses
+    + ties): a tied game counts as a game played with no win, same
+    convention as everywhere else on this site (LEAGUE_RULES.md
+    section 4). Ties in win % break by:
       1. Head-to-head record *among just the tied managers* (not the
          manager's overall record — specifically how they did against
          each other).
@@ -902,8 +906,8 @@ def compute_standings(all_games, roster_names):
     active_managers = [m for m in roster_names if m in per_mgr]
     for m in active_managers:
         s = per_mgr[m]
-        decided = s["wins"] + s["losses"]
-        s["win_pct"] = (s["wins"] / decided) if decided else 0.0
+        played = s["wins"] + s["losses"] + s["ties"]
+        s["win_pct"] = (s["wins"] / played) if played else 0.0
 
     ordered = sorted(active_managers, key=lambda m: -per_mgr[m]["win_pct"])
 
@@ -1020,27 +1024,26 @@ def compute_tie_adjustments(group):
 def _manager_week_by_week_records(season_games, week_range):
     """
     For one season's regular-season games, returns
-    {manager: {week: (wins, losses)}} — cumulative record through each
-    week. Ties don't move wins/losses but the week still counts as
-    played.
+    {manager: {week: (wins, losses, ties)}} — cumulative record through
+    each week.
     """
     by_week = defaultdict(list)
     for g in season_games:
         by_week[_week_sort_key(g["week"])].append(g)
 
-    record = defaultdict(lambda: [0, 0])  # manager -> [wins, losses]
+    record = defaultdict(lambda: [0, 0, 0])  # manager -> [wins, losses, ties]
     out = defaultdict(dict)
     for wk in week_range:
         for g in by_week.get(wk, []):
             for mgr in (g["away_manager"], g["home_manager"]):
                 if g["tie"]:
-                    continue
-                if g["winner"] == mgr:
+                    record[mgr][2] += 1
+                elif g["winner"] == mgr:
                     record[mgr][0] += 1
                 else:
                     record[mgr][1] += 1
-        for mgr, (w, l) in record.items():
-            out[mgr][wk] = (w, l)
+        for mgr, (w, l, t) in record.items():
+            out[mgr][wk] = (w, l, t)
     return out
 
 
@@ -1055,9 +1058,10 @@ def compute_clinched_playoffs(records, games_played,
     Which managers have mathematically clinched a playoff spot regardless
     of who plays whom, what anyone scores, or how tiebreakers resolve.
 
-    records:      {manager: (wins, losses)} (ties are excluded, matching
-                  the standings' win% convention)
-    games_played: {manager: games played, ties included}
+    records:      {manager: (wins, losses)}
+    games_played: {manager: games played, ties included}. Win % is
+                  wins / (games played + games remaining), so a past tie
+                  counts as a game with no win, matching the standings.
 
     For each manager X, assume the WORST case for X (loses every remaining
     game) and the BEST case for every rival Y (wins every remaining game).
@@ -1075,9 +1079,11 @@ def compute_clinched_playoffs(records, games_played,
     worst = {}
     best = {}
     for mgr, (w, l) in records.items():
-        remaining = max(0, total_games - games_played.get(mgr, 0))
-        worst[mgr] = Fraction(w, w + l + remaining) if (w + l + remaining) else Fraction(0)
-        best[mgr] = Fraction(w + remaining, w + l + remaining) if (w + l + remaining) else Fraction(0)
+        played = games_played.get(mgr, 0)
+        remaining = max(0, total_games - played)
+        denom = played + remaining
+        worst[mgr] = Fraction(w, denom) if denom else Fraction(0)
+        best[mgr] = Fraction(w + remaining, denom) if denom else Fraction(0)
 
     clinched = set()
     for mgr in records:
@@ -1102,8 +1108,9 @@ def compute_eliminated_playoffs(records, games_played,
     worst = {}
     best = {}
     for mgr, (w, l) in records.items():
-        remaining = max(0, total_games - games_played.get(mgr, 0))
-        denom = w + l + remaining
+        played = games_played.get(mgr, 0)
+        remaining = max(0, total_games - played)
+        denom = played + remaining
         worst[mgr] = Fraction(w, denom) if denom else Fraction(0)
         best[mgr] = Fraction(w + remaining, denom) if denom else Fraction(0)
 
@@ -1177,7 +1184,7 @@ def load_remaining_schedule(managers, games_played, current_year, current_week,
         return reject(f"unreadable: {e}")
 
 
-def _exact_playoff_status(records, schedule, targets, spots=PLAYOFF_SPOTS):
+def _exact_playoff_status(records, games_played, schedule, targets, spots=PLAYOFF_SPOTS):
     """
     Exhaustively plays out every win/loss combination of the remaining games
     in `schedule` (list of weeks of (a, b) pairs) and, for each manager in
@@ -1190,7 +1197,7 @@ def _exact_playoff_status(records, schedule, targets, spots=PLAYOFF_SPOTS):
 
     Assumes every remaining game produces a winner (a tied game is
     practically impossible with two-decimal scoring). Past ties are handled:
-    win% excludes ties, as the standings do. Unresolvable tiebreaks are
+    they count as games played with no win, as the standings do. Unresolvable tiebreaks are
     treated as unresolved both ways, so a manager stuck in a tie for the last
     spot is reported as neither clinched nor eliminated.
     """
@@ -1204,7 +1211,7 @@ def _exact_playoff_status(records, schedule, targets, spots=PLAYOFF_SPOTS):
         remaining[a] += 1
         remaining[b] += 1
     base_w = [records[m][0] for m in names]
-    denom = [records[m][0] + records[m][1] + remaining[i] for i, m in enumerate(names)]
+    denom = [games_played.get(m, 0) + remaining[i] for i, m in enumerate(names)]
     # pct[i][k]: win% if team i wins k of its remaining games. Identical
     # fractions give bit-identical floats (correctly rounded division), so
     # equality comparisons below are exact.
@@ -1267,7 +1274,7 @@ def compute_playoff_status(records, games_played, schedule=None,
         n_games = sum(len(week) for week in schedule)
         if n_games <= MAX_EXACT_GAMES:
             undecided = [m for m in records if m not in clinched and m not in eliminated]
-            c2, e2 = _exact_playoff_status(records, schedule, undecided, spots)
+            c2, e2 = _exact_playoff_status(records, games_played, schedule, undecided, spots)
             clinched |= c2
             eliminated |= e2
             method = "exact"
@@ -1503,8 +1510,9 @@ def _select_week_in_history_week10(all_games, current_year, roster_names):
 
 def _wih_records_and_games_played_through(season_games, week_cutoff):
     """(wins, losses) and games-played-so-far for every manager, counting
-    only games with week <= week_cutoff (ties excluded from win/loss, but
-    still count as a game played — matches the standings convention)."""
+    only games with week <= week_cutoff. A tie is neither a win nor a loss
+    but still counts as a game played, so it lowers win % — matches the
+    standings convention."""
     records = defaultdict(lambda: [0, 0])
     played = defaultdict(int)
     for g in season_games:
@@ -1916,11 +1924,11 @@ def compute_playoff_probability_model(all_games, roster_names):
             for wk in range(3, 14):
                 if wk not in week_records:
                     continue
-                w, l = week_records[wk]
+                w, l, t = week_records[wk]
                 exact_samples[(wk, w, l)].append(made_playoffs)
-                decided = w + l
-                if decided:
-                    bucket = round((w / decided) * 10) / 10  # nearest 0.1
+                played = w + l + t
+                if played:
+                    bucket = round((w / played) * 10) / 10  # nearest 0.1
                     winpct_samples[bucket].append(made_playoffs)
 
     exact_buckets = {}
@@ -2009,14 +2017,14 @@ def compute_playoff_probabilities(all_games, roster_names, model):
     exact_buckets = model["exact_buckets"]
     winpct_fallback = model["winpct_fallback"]
 
-    def base_rate(w, l):
+    def base_rate(w, l, t):
         key = f"{current_week}_{w}_{l}"
         if key in exact_buckets:
             b = exact_buckets[key]
             return b["rate"], f"exact ({b['n']} historical samples)"
-        decided = w + l
-        if decided:
-            bucket = round((w / decided) * 10) / 10
+        played = w + l + t
+        if played:
+            bucket = round((w / played) * 10) / 10
             fb = winpct_fallback.get(str(bucket))
             if fb:
                 return fb["rate"], f"win% fallback ({fb['n']} historical samples)"
@@ -2026,8 +2034,8 @@ def compute_playoff_probabilities(all_games, roster_names, model):
     for mgr in roster_names:
         if mgr not in weekly or current_week not in weekly[mgr]:
             continue
-        w, l = weekly[mgr][current_week]
-        rate, basis = base_rate(w, l)
+        w, l, t = weekly[mgr][current_week]
+        rate, basis = base_rate(w, l, t)
         entries.append({
             "manager": mgr, "wins": w, "losses": l,
             "base_rate": rate, "basis": basis,
@@ -2175,17 +2183,17 @@ def compute_h2h_summary(all_games, roster_names):
             else:
                 cur_streak = 0
 
-        decided = wins + losses
-        rs_decided = rs_wins + rs_losses
-        po_decided = po_wins + po_losses
+        played = wins + losses + ties
+        rs_played = rs_wins + rs_losses + rs_ties
+        po_played = po_wins + po_losses + po_ties
         out[mgr] = {
             "seasons_played": seasons_played,
             "wins": wins, "losses": losses, "ties": ties,
-            "win_pct": round(wins / decided, 4) if decided else 0.0,
+            "win_pct": round(wins / played, 4) if played else 0.0,
             "rs_wins": rs_wins, "rs_losses": rs_losses, "rs_ties": rs_ties,
-            "rs_win_pct": round(rs_wins / rs_decided, 4) if rs_decided else 0.0,
+            "rs_win_pct": round(rs_wins / rs_played, 4) if rs_played else 0.0,
             "po_wins": po_wins, "po_losses": po_losses, "po_ties": po_ties,
-            "po_win_pct": round(po_wins / po_decided, 4) if po_decided else 0.0,
+            "po_win_pct": round(po_wins / po_played, 4) if po_played else 0.0,
             "rs_avg_score": round(rs_points / rs_games, 2) if rs_games else 0.0,
             "longest_win_streak": best_streak,
             "playoff_appearances": playoff_appearances,
