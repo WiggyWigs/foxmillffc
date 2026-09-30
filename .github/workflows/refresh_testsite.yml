@@ -2,7 +2,8 @@ name: Refresh TestSite from live
 
 # Manual trigger ONLY. Makes every page, script, style and image in
 # TestSite/ identical to NewSite/ again — files that exist only in
-# TestSite/ are removed — while leaving TestSite/data/ untouched, so
+# TestSite/ are removed — while leaving TestSite/data/ and
+# TestSite/IN_PROGRESS.md untouched, so
 # test data survives a refresh.
 
 on:
@@ -18,10 +19,10 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
 
-      - name: Mirror NewSite/ into TestSite/ (except data/)
+      - name: Mirror NewSite/ into TestSite/ (except data/ and IN_PROGRESS.md)
         run: |
           mkdir -p TestSite
-          rsync -a --delete --exclude='/data/' NewSite/ TestSite/
+          rsync -a --delete --exclude='/data/' --exclude='/IN_PROGRESS.md' NewSite/ TestSite/
 
       - name: Commit and push
         run: |

@@ -1,0 +1,103 @@
+name: Promote TestSite to live
+
+# Manual trigger ONLY. Copies the listed files whole from TestSite/ to
+# the same path under NewSite/, then commits and pushes. It never
+# touches NewSite/data/: the whole run fails before copying anything if
+# any path is under data/, is IN_PROGRESS.md, or doesn't exist in
+# TestSite/. Run "Show TestSite changes" first to get the file list.
+
+on:
+  workflow_dispatch:
+    inputs:
+      files:
+        description: 'Comma-separated paths relative to TestSite/ (e.g. records.js, scripts/ingest_csv.py)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Validate file list
+        env:
+          FILES: ${{ inputs.files }}
+        run: |
+          test_root="$(realpath TestSite)"
+          errors=0
+          paths=()
+          IFS=',' read -ra raw <<< "$FILES"
+          for p in "${raw[@]}"; do
+            # Trim whitespace and any leading "./" or "TestSite/"
+            p="$(printf '%s' "$p" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            p="${p#./}"
+            p="${p#TestSite/}"
+            [ -z "$p" ] && continue
+
+            # Resolve the real location so "..", "./data" or a symlink can't sneak past the checks
+            real="$(realpath -m "TestSite/$p")"
+            case "$real" in
+              "$test_root"/*) rel="${real#"$test_root"/}" ;;
+              *) echo "::error::$p is outside TestSite/"; errors=1; continue ;;
+            esac
+
+            if [ "$rel" = "data" ] || [[ "$rel" == data/* ]]; then
+              echo "::error::$p is under data/ — data is never promoted"; errors=1
+            elif [ "$rel" = "IN_PROGRESS.md" ]; then
+              echo "::error::$p is IN_PROGRESS.md — it stays in TestSite/"; errors=1
+            elif [ ! -f "TestSite/$rel" ]; then
+              echo "::error::$p does not exist in TestSite/ (or is not a file)"; errors=1
+            else
+              paths+=("$rel")
+            fi
+          done
+
+          if [ "$errors" -ne 0 ]; then
+            echo "Nothing was promoted. Fix the file list and run again."
+            exit 1
+          fi
+          if [ "${#paths[@]}" -eq 0 ]; then
+            echo "::error::No files given"
+            exit 1
+          fi
+
+          # De-duplicate, keep order, hand the clean list to the next step
+          printf '%s\n' "${paths[@]}" | awk '!seen[$0]++' > "$RUNNER_TEMP/promote_list.txt"
+          echo "Will promote:"
+          cat "$RUNNER_TEMP/promote_list.txt"
+
+      - name: Copy files TestSite/ -> NewSite/
+        run: |
+          while IFS= read -r f; do
+            mkdir -p "$(dirname "NewSite/$f")"
+            cp "TestSite/$f" "NewSite/$f"
+            echo "Copied $f"
+          done < "$RUNNER_TEMP/promote_list.txt"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mapfile -t files < "$RUNNER_TEMP/promote_list.txt"
+          git add -- "${files[@]/#/NewSite/}"
+          if git diff --cached --quiet; then
+            echo "Every listed file already matches live. Nothing to commit."
+            exit 0
+          fi
+          # Belt and braces: refuse to commit anything outside the listed files or anything in NewSite/data/
+          if git diff --cached --name-only | grep -q '^NewSite/data/'; then
+            echo "::error::NewSite/data/ is staged — aborting"
+            exit 1
+          fi
+          list="$(paste -sd, "$RUNNER_TEMP/promote_list.txt" | sed 's/,/, /g')"
+          git commit -m "Promote from TestSite: $list"
+          git push
+          {
+            echo "## Promoted to live"
+            git show --stat --format= HEAD | sed 's/^/    /'
+          } >> "$GITHUB_STEP_SUMMARY"

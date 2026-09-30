@@ -1,0 +1,50 @@
+name: Show TestSite changes
+
+# Manual trigger ONLY. Read-only: compares every file in TestSite/ with
+# the same path in NewSite/ and lists what differs in the run summary.
+# data/ and IN_PROGRESS.md are ignored — data never gets promoted, and
+# IN_PROGRESS.md exists only in TestSite/. Nothing is committed.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Compare TestSite/ to NewSite/ (except data/ and IN_PROGRESS.md)
+        run: |
+          list_files() {
+            (cd "$1" && find . \( -path ./data -o -path ./IN_PROGRESS.md \) -prune -o \( -type f -o -type l \) -print | sed 's|^\./||' | LC_ALL=C sort)
+          }
+          list_files TestSite > test.txt
+          list_files NewSite > live.txt
+
+          changed=()
+          while IFS= read -r f; do
+            cmp -s "TestSite/$f" "NewSite/$f" || changed+=("$f")
+          done < <(LC_ALL=C comm -12 test.txt live.txt)
+          mapfile -t new < <(LC_ALL=C comm -23 test.txt live.txt)
+          mapfile -t deleted < <(LC_ALL=C comm -13 test.txt live.txt)
+
+          section() {
+            local title="$1"; shift
+            echo "### $title ($#)"
+            if [ "$#" -eq 0 ]; then echo "_none_"; else printf -- '- `%s`\n' "$@"; fi
+            echo
+          }
+          {
+            echo "## TestSite vs NewSite (live)"
+            echo
+            echo "Paths are relative to \`TestSite/\` — paste them into \"Promote TestSite to live\". \`data/\` and \`IN_PROGRESS.md\` are not compared."
+            echo
+            section "CHANGED — differs from live" "${changed[@]}"
+            section "NEW — only in TestSite" "${new[@]}"
+            section "DELETED — only in NewSite" "${deleted[@]}"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
