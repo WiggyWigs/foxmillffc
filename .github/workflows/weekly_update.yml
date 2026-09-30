@@ -33,6 +33,10 @@ jobs:
           ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
           ESPN_SWID: ${{ secrets.ESPN_SWID }}
           ESPN_S2: ${{ secrets.ESPN_S2 }}
+          # With "Skip narrative generation" checked, ingest_csv.py keeps the
+          # existing This Week in Club History entry instead of rebuilding it
+          # without its write-up.
+          KEEP_NARRATIVES: ${{ github.event.inputs.skip_recap }}
         run: python NewSite/scripts/espn_pull.py
 
       - name: Generate weekly recap narratives

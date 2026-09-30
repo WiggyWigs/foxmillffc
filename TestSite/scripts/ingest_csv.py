@@ -42,6 +42,10 @@ DATA_DIR = SCRIPT_DIR.parent / "data"
 ROSTER_PATH = DATA_DIR / "manager_roster.json"
 STATS_PATH = DATA_DIR / os.environ.get("STATS_FILENAME", "stats.json")
 REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
+# Set to "true" by the weekly workflow when "Skip narrative generation" is
+# checked. generate_recap.py won't run, so any AI-written narrative this
+# script would otherwise rebuild or drop is carried over unchanged.
+KEEP_NARRATIVES = os.environ.get("KEEP_NARRATIVES", "").lower() == "true"
 ASSETS_DIR = SCRIPT_DIR.parent / "assets"
 BANNER_BLANK_PATH = ASSETS_DIR / "banner_blank_25wins.png"
 BANNER_OUTPUT_PATH = DATA_DIR / os.environ.get("BANNER_FILENAME", "fastest-to-25-wins-banner.png")  # local working copy only —
@@ -2288,7 +2292,13 @@ def main():
     stats["power_rankings"] = compute_power_rankings(stats["games"], roster_names)
     stats["current_streaks"] = compute_current_streaks(stats["games"], roster_names)
     stats["current_standings"] = compute_standings(stats["games"], roster_names)
-    stats["week_in_history"] = compute_week_in_history(stats["games"], roster_names)
+    if KEEP_NARRATIVES and "week_in_history" in stats:
+        # Keep the whole entry, not just its narrative: the write-up
+        # describes that specific game, so re-picking the game while
+        # keeping the old text could pair them wrongly.
+        print("KEEP_NARRATIVES: keeping the existing This Week in Club History entry.")
+    else:
+        stats["week_in_history"] = compute_week_in_history(stats["games"], roster_names)
     stats["more_you_know"] = compute_more_you_know(stats["games"], roster_names)
     if stats["more_you_know"]:
         mtk = stats["more_you_know"]
