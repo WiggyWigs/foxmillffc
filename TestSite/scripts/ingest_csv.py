@@ -748,7 +748,8 @@ def compute_power_rankings(all_games, roster_names):
         r["power_score"] = round(r["win_pct_points"] + r["points_scored_points"]
                                   + r["schedule_difficulty_points"], 2)
 
-    results.sort(key=lambda x: -x["power_score"])
+    # Tied power scores are listed alphabetically (LEAGUE_RULES.md section 7).
+    results.sort(key=lambda x: (-x["power_score"], x["manager"]))
 
     return {"season": current_year, "rankings": results}
 

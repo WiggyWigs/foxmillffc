@@ -54,11 +54,14 @@ MSI = 2.0 × (playoff appearances / seasons)
 * Schedule difficulty = actual win % minus breakdown win %.
 * A lower value means a harder schedule. The lowest value (hardest schedule) earns the most power-ranking points.
 * Within each category (win %, points scored, schedule difficulty), tied managers share the average of the positions they occupy. Example: two managers tied for 2nd in win % each get the points for position 2.5.
-* Final displayed rank (after all category points are added up): competition-style. Tied totals share a rank and the next manager skips ahead (1, 1, 3).
+* Final rank (after all category points are added up): competition-style. Tied totals share a rank and the next manager skips ahead.
+   * The table shows the shared rank on the first tied row only and leaves the other tied rows blank (1, blank, 3).
+   * Tied managers are listed alphabetically by name.
+   * The manager pop-up shows the shared rank for every tied manager (both show "Rank #1").
 
 ## 8. Record Books leaderboards
 
-* Ranks are competition-style: tied values share the rank of the first row with that value (1, 1, 3), matching `tieAwareRanks()` in `records.js`.
+* Ranks are competition-style: tied values share the rank of the first row with that value, and the next row skips ahead. The shared rank is shown on the first tied row only; the other tied rows are blank (1, blank, 3), matching `tieAwareRanks()` in `records.js`.
 * The "Welcome to the Record Books" write-ups must use the same ranks as the Record Books page. When a mark ties one from an earlier season, the sentence says "tied for".
 
 ## 9. Playoff Probability
@@ -101,17 +104,3 @@ Picked by code, never the same game as the Impact Game:
 * Don't describe one manager's schedule as easier or harder than another's unless their schedule-difficulty values differ by at least 0.15.
 * Don't mention a scoring average until a manager has played at least 2 games, or schedule difficulty until at least 3 games.
 * Career playoff and championship counts are only used for roasting once a manager has at least 3 complete seasons.
-
-## Known code fixes needed
-
-Greg has decided these rules. The code must be changed to match them.
-
-1. Win % with ties (section 4): only career stats (`regular_win_pct` / `playoff_win_pct` around line 261 of `ingest_csv.py`) include ties in the denominator. These exclude them and must be fixed:
-   * standings, `compute_standings()` (around line 905)
-   * actual and breakdown win % used for schedule difficulty (around line 699)
-   * playoff-probability model buckets (around lines 1921 and 2017)
-   * `h2h_summary` win %, rs_win_pct and po_win_pct (around line 2178)
-   * the comment around line 849 that says ties are excluded "everywhere else on this site"
-
-   League history has one tie (2023 Week 9, Brian Kleinhenz vs John Schauder), so the fix changes 2023 numbers and those two managers' career head-to-head figures. It does not change any 2026 numbers. After the fix, regenerate `stats.json` from the full game log and show Greg a before/after of every value that changed.
-2. Power-ranking ties (section 7): confirm the per-category points use averaged positions for ties and the final display uses 1, 1, 3. Report what the code does now before changing anything.
