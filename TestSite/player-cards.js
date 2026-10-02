@@ -13,9 +13,6 @@
 const BADGES = {
   longest_win_streak: {
     name: "Longest Win Streak", file: "longest-win-streak.png", numbered: true,
-    // Earned with the first win, but a "1" on the badge reads as a
-    // knock, so the number only shows from a 2-game streak.
-    minNumber: 2,
     rule: "This manager's longest run of straight wins this season.",
   },
   weekly_high_score: {
@@ -126,7 +123,7 @@ function stampHtml(rank) {
 function badgeHtml(badge, cls) {
   const meta = BADGES[badge.id];
   if (!meta) return "";
-  const number = showsNumber(meta, badge)
+  const number = meta.numbered && badge.count != null
     ? `<span class="pc-badge-num">${badge.count}</span>` : "";
   return `
     <span class="${cls}" data-badge="${badge.id}" title="${escapeHtml(meta.name)}">
@@ -199,7 +196,7 @@ function setupModal() {
 function badgeDetailHtml(badge, isFocus) {
   const meta = BADGES[badge.id];
   if (!meta) return "";
-  const title = showsNumber(meta, badge) ? `${meta.name} ×${badge.count}` : meta.name;
+  const title = meta.numbered && badge.count != null ? `${meta.name} ×${badge.count}` : meta.name;
   const lines = badgeEventLines(badge).map((l) => `<li>${l}</li>`).join("");
   return `
     <div class="pc-detail${isFocus ? " is-focus" : ""}">
@@ -240,10 +237,6 @@ function badgeEventLines(badge) {
 }
 
 // --- Helpers ---
-
-function showsNumber(meta, badge) {
-  return meta.numbered && badge.count != null && badge.count >= (meta.minNumber || 1);
-}
 
 function badgeCountLabel(card) {
   const n = card.badges.length;
