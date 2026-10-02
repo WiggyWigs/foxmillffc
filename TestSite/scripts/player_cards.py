@@ -31,9 +31,10 @@ Badge rules (all regular season only, Weeks 1-14):
   Giant Killer       - Week 5 or later, using standings entering the
                        week: the loser was ranked 1st-5th and the
                        winner was ranked at least 5 spots below them.
-  High Point Club    - scored 150 or more in a game.
+  High Point Club    - count of games scoring 150 or more.
   The Punisher       - won by more than 50 points.
-  Ice Cold           - lost 5 games in a row (a tie ends the run).
+  Ice Cold           - lost 5+ games in a row (a tie ends the run). The
+                       number is the longest such losing streak.
   Businessman        - not computed yet (needs transaction data).
 """
 
@@ -195,11 +196,11 @@ def compute_season_cards(all_games, lineups, roster_names, year):
                 }
 
         # Ice Cold: every run of 5+ losses. Earned at the 5th loss of
-        # the first such run.
+        # the first such run; the number is the longest run.
         cold_runs = [r for r in _runs(glist, m, "L") if len(r) >= ICE_COLD_LOSSES]
         if cold_runs:
             badges[m]["ice_cold"] = {
-                "count": None,
+                "count": max(len(r) for r in cold_runs),
                 "earned_week": _week(cold_runs[0][ICE_COLD_LOSSES - 1]),
                 "events": [{"start_week": _week(r[0]), "end_week": _week(r[-1]),
                             "length": len(r)} for r in cold_runs],
@@ -224,7 +225,8 @@ def compute_season_cards(all_games, lineups, roster_names, year):
             }
         if high_point:
             badges[m]["high_point_club"] = {
-                "count": None, "earned_week": high_point[0]["week"], "events": high_point,
+                "count": len(high_point), "earned_week": high_point[0]["week"],
+                "events": high_point,
             }
         if punisher:
             badges[m]["the_punisher"] = {
