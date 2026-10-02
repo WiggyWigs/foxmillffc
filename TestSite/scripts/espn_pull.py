@@ -58,6 +58,7 @@ if TEST_CUTOFF_YEAR:
 if TEST_CUTOFF_WEEK:
     TEST_CUTOFF_WEEK = int(TEST_CUTOFF_WEEK)
 INGEST_SCRIPT_PATH = SCRIPT_DIR / "ingest_csv.py"
+PLAYER_CARDS_SCRIPT_PATH = SCRIPT_DIR / "player_cards.py"
 
 LEAGUE_ID = 1222412013
 YEARS = [2023, 2024, 2025, 2026]
@@ -545,6 +546,13 @@ def main():
         # Non-fatal — the "highest scoring player" callout just won't
         # have data this run if this fails.
         print(f"WARNING: couldn't capture lineups: {e}")
+
+    # Player Cards badges. Runs after the lineup capture above because
+    # Superstar needs this week's lineups. Non-fatal: the cards just
+    # keep last week's badges if this fails.
+    result = subprocess.run([sys.executable, str(PLAYER_CARDS_SCRIPT_PATH)], cwd=SCRIPT_DIR)
+    if result.returncode != 0:
+        print("WARNING: player_cards.py failed — see output above.")
 
 
 if __name__ == "__main__":
