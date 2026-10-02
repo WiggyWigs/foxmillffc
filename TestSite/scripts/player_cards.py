@@ -21,7 +21,7 @@ is recomputed, which keeps past seasons available for an archive page.
 
 Badge rules (all regular season only, Weeks 1-14):
   Longest Win Streak - every manager's longest run of consecutive wins
-                       this season (a tie ends the run). Shown at 2+.
+                       this season (a tie ends the run). Shown at 1+.
                        Season only: unlike the site's streak displays,
                        it does not carry over from the previous season.
   Weekly High Score  - count of weeks with the league's top score.
@@ -53,7 +53,7 @@ PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "play
 FIRST_CARD_SEASON = 2026
 REGULAR_SEASON_WEEKS = 14
 
-MIN_WIN_STREAK = 2
+MIN_WIN_STREAK = 1
 GIANT_KILLER_FIRST_WEEK = 5
 GIANT_KILLER_MAX_LOSER_RANK = 5
 GIANT_KILLER_RANK_GAP = 5
