@@ -10,9 +10,7 @@ Status: NOT READY        <!-- READY or NOT READY -->
 Waiting on: the real card, badge and rank-stamp artwork, and a
 "TEST weekly update" run to fill stats.json's player_cards.
 Scripts change: promote after a Tuesday live run, never Mon night/Tue morning.
-Do not promote images/cards/card-placeholder.jpg or
-images/badges/badge-placeholder.png until the real artwork is in.
-(They are still needed as fallbacks, so keep them in the list once real art exists.)
+images/cards/card-placeholder.jpg is the stand-in for missing cards: promote it.
 
 Files (paths relative to TestSite/, paste into "Promote TestSite to live"):
 - player-cards.html
@@ -24,6 +22,5 @@ Files (paths relative to TestSite/, paste into "Promote TestSite to live"):
 - scripts/ingest_csv.py
 - images/cards/card-placeholder.jpg
 - images/cards/<each manager>-2026.jpg
-- images/badges/badge-placeholder.png
 - images/badges/<each badge>.png
 - images/badges/rank-01.png ... rank-12.png

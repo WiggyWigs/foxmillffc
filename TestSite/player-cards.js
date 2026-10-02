@@ -23,6 +23,8 @@ const BADGES = {
   },
   superstar: {
     name: "Superstar", file: "superstar.png", numbered: true,
+    // Trophy: the number goes in the cup, not the middle of the image.
+    numberTop: "30%",
     rule: "Weeks with the league's highest-scoring starter.",
   },
   giant_killer: {
@@ -148,9 +150,14 @@ function stampImageMissing(img) {
   img.closest(".pc-stamp").classList.add("is-placeholder");
 }
 function badgeImageMissing(img) {
-  img.onerror = null;
-  img.src = BADGE_PLACEHOLDER;
   img.parentElement.classList.add("is-placeholder");
+  if (img.src.endsWith(BADGE_PLACEHOLDER)) {
+    // No stand-in image either: keep the space, show just the initials.
+    img.onerror = null;
+    img.style.visibility = "hidden";
+    return;
+  }
+  img.src = BADGE_PLACEHOLDER;
 }
 
 // --- Pop-up ---
