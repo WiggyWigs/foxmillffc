@@ -13,6 +13,8 @@
 const BADGES = {
   longest_win_streak: {
     name: "Longest Win Streak", file: "longest-win-streak.png", numbered: true,
+    // Orange banner, no cream centre: light number, a little higher up.
+    numberStyle: "light", numberTop: "44%",
     rule: "This manager's longest run of straight wins this season.",
   },
   weekly_high_score: {
@@ -124,7 +126,8 @@ function badgeHtml(badge, cls) {
   const meta = BADGES[badge.id];
   if (!meta) return "";
   const number = meta.numbered && badge.count != null
-    ? `<span class="pc-badge-num">${badge.count}</span>` : "";
+    ? `<span class="pc-badge-num${meta.numberStyle === "light" ? " is-light" : ""}"${meta.numberTop ? ` style="top:${meta.numberTop}"` : ""}>${badge.count}</span>`
+    : "";
   return `
     <span class="${cls}" data-badge="${badge.id}" title="${escapeHtml(meta.name)}">
       <img src="images/badges/${meta.file}" alt="${escapeHtml(meta.name)}"
