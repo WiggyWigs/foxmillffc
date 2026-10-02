@@ -1920,8 +1920,8 @@ main {
 }
 
 .pc-stamp img {
-  width: 92%;
-  height: 92%;
+  width: 69%;
+  height: 69%;
   object-fit: contain;
 }
 
@@ -1929,7 +1929,7 @@ main {
   display: none;
   font-family: 'Cinzel Decorative', serif;
   font-weight: 900;
-  font-size: 5cqw;
+  font-size: 3.75cqw;
   color: #F2C14E;
   text-shadow: 0 1px 0 #7A5400, 0 0 4px rgba(0, 0, 0, 0.5);
 }

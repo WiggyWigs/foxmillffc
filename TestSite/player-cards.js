@@ -32,9 +32,8 @@ const BADGES = {
     rule: "Week 5 or later: beat a top-5 team ranked at least 5 spots higher going into the week.",
   },
   high_point_club: {
-    name: "High Point Club", file: "high-point-club.png", numbered: true,
-    numberTop: "42%",
-    rule: "Games with 150 or more points.",
+    name: "High Point Club", file: "high-point-club.png", numbered: false,
+    rule: "Scored 150 or more points in a game.",
   },
   the_punisher: {
     name: "The Punisher", file: "the-punisher.png", numbered: false,
@@ -114,16 +113,36 @@ function cardHtml(card) {
       <img class="pc-card-img" src="${src}" alt="" loading="lazy"
            onerror="cardImageMissing(this)">
       <div class="pc-placeholder-name">${escapeHtml(card.manager)}</div>
-      <div class="pc-stamp">${stampHtml(card.rank)}</div>
+      <div class="pc-stamp">${stampHtml(card)}</div>
       <div class="pc-badges">${badges}</div>
     </div>`;
 }
 
-function stampHtml(rank) {
+// The stamp is meant to look hand-pressed: each card gets its own tilt
+// (up to 5 degrees either way) and a small nudge off centre. It comes
+// from a hash of the manager, season and rank rather than Math.random(),
+// so a stamp sits the same way on every visit and in the pop-up, and
+// only moves when the rank changes.
+function stampHtml(card) {
+  const rank = card.rank;
   const n = season.managers_in_league;
   const file = `images/badges/rank-${String(rank).padStart(2, "0")}.png`;
-  return `<img src="${file}" alt="${rank} of ${n}" onerror="stampImageMissing(this)">
-          <span class="pc-stamp-text">${rank}/${n}</span>`;
+  const h = hashString(`${card.slug}-${season.season}-${rank}`);
+  const tilt = ((h % 1001) / 1000 * 10 - 5).toFixed(1);
+  const dx = ((h >>> 10) % 13) - 6;
+  const dy = ((h >>> 20) % 13) - 6;
+  const style = `transform: translate(${dx}%, ${dy}%) rotate(${tilt}deg)`;
+  return `<img src="${file}" alt="${rank} of ${n}" style="${style}" onerror="stampImageMissing(this)">
+          <span class="pc-stamp-text" style="${style}">${rank}/${n}</span>`;
+}
+
+function hashString(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
 }
 
 function badgeHtml(badge, cls) {
