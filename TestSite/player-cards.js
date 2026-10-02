@@ -23,6 +23,8 @@ const BADGES = {
   },
   superstar: {
     name: "Superstar", file: "superstar.png", numbered: true,
+    // Trophy: the number goes in the cup, not the middle of the image.
+    numberTop: "30%",
     rule: "Weeks with the league's highest-scoring starter.",
   },
   giant_killer: {
@@ -30,16 +32,18 @@ const BADGES = {
     rule: "Week 5 or later: beat a top-5 team ranked at least 5 spots higher going into the week.",
   },
   high_point_club: {
-    name: "High Point Club", file: "high-point-club.png", numbered: false,
-    rule: "Scored 150 or more points in a game.",
+    name: "High Point Club", file: "high-point-club.png", numbered: true,
+    numberTop: "42%",
+    rule: "Games with 150 or more points.",
   },
   the_punisher: {
     name: "The Punisher", file: "the-punisher.png", numbered: false,
     rule: "Won a game by more than 50 points.",
   },
   ice_cold: {
-    name: "Ice Cold", file: "ice-cold.png", numbered: false,
-    rule: "Lost 5 games in a row.",
+    name: "Ice Cold", file: "ice-cold.png", numbered: true,
+    numberTop: "50%",
+    rule: "Lost 5 or more games in a row. The number is the longest losing streak.",
   },
   businessman: {
     name: "Businessman", file: "businessman.png", numbered: false,
@@ -148,9 +152,14 @@ function stampImageMissing(img) {
   img.closest(".pc-stamp").classList.add("is-placeholder");
 }
 function badgeImageMissing(img) {
-  img.onerror = null;
-  img.src = BADGE_PLACEHOLDER;
   img.parentElement.classList.add("is-placeholder");
+  if (img.src.endsWith(BADGE_PLACEHOLDER)) {
+    // No stand-in image either: keep the space, show just the initials.
+    img.onerror = null;
+    img.style.visibility = "hidden";
+    return;
+  }
+  img.src = BADGE_PLACEHOLDER;
 }
 
 // --- Pop-up ---
