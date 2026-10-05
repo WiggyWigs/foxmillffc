@@ -1,4 +1,4 @@
-// Player Cards page — one trading card per manager, with the standings
+// Trading Cards page — one trading card per manager, with the standings
 // stamp and earned badges layered on top. Everything comes precomputed
 // from stats.json's "player_cards" (scripts/player_cards.py); this file
 // only lays it out. Add ?season=2026 to the URL to show a past season.
@@ -7,8 +7,9 @@
 //   images/cards/<first>-<last>-<year>.jpg   e.g. daniel-bahamonde-2026.jpg
 //   images/badges/<badge-file>.png           see BADGES below
 //   images/badges/rank-01.png … rank-12.png  standings stamps
-// A missing image falls back to a placeholder, so a card or badge can
-// go live before its artwork is finished.
+// A missing card falls back to images/cards/template.jpg (the blank card)
+// with the manager's name and season printed into its banners. A
+// missing badge keeps its space and shows its initials.
 
 const BADGES = {
   longest_win_streak: {
@@ -44,13 +45,25 @@ const BADGES = {
     numberTop: "50%",
     rule: "Lost 5 or more games in a row. The number is the longest losing streak.",
   },
+  monday_night_miracle: {
+    name: "Monday Night Miracle", file: "monday-night-miracle.png", numbered: false,
+    initials: "MIR",
+    rule: "Led going into Monday night with fewer players left, and held on to win.",
+    detail: "The lead could be no more than 10 points per extra player the opponent had left.",
+  },
+  monday_night_master: {
+    name: "Monday Night Master", file: "monday-night-master.png", numbered: false,
+    initials: "MAS",
+    rule: "Trailed going into Monday night and came back to win.",
+    detail: "Had to be down at least 15 points per extra player they had left (at least 15 with no extra players).",
+  },
   businessman: {
     name: "Businessman", file: "businessman.png", numbered: false,
     rule: "Most transactions (adds, drops and trades) in the regular season.",
   },
 };
 
-const CARD_PLACEHOLDER = "images/cards/card-placeholder.jpg";
+const CARD_PLACEHOLDER = "images/cards/template.jpg";
 const BADGE_PLACEHOLDER = "images/badges/badge-placeholder.png";
 
 // Badges are clicked straight off the card only where there's a mouse.
@@ -77,11 +90,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const wanted = new URLSearchParams(location.search).get("season");
   season = pc?.seasons?.[wanted || pc?.current_season];
   if (!season) {
-    grid.innerHTML = `<p class="load-state">No player cards yet.</p>`;
+    grid.innerHTML = `<p class="load-state">No trading cards yet.</p>`;
     return;
   }
 
-  document.getElementById("pc-title").textContent = `${season.season} Player Cards`;
+  document.getElementById("pc-title").textContent = `${season.season} Trading Cards`;
   const through = season.regular_season_complete
     ? "Final regular-season cards."
     : `Through Week ${season.through_week}.`;
@@ -112,7 +125,8 @@ function cardHtml(card) {
     <div class="pc-card">
       <img class="pc-card-img" src="${src}" alt="" loading="lazy"
            onerror="cardImageMissing(this)">
-      <div class="pc-placeholder-name">${escapeHtml(card.manager)}</div>
+      <div class="pc-placeholder-name" style="font-size:${placeholderNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
+      <div class="pc-placeholder-year">${season.season}</div>
       <div class="pc-stamp">${stampHtml(card)}</div>
       <div class="pc-badges">${badges}</div>
     </div>`;
@@ -156,7 +170,7 @@ function badgeHtml(badge, cls) {
       <img src="images/badges/${meta.file}" alt="${escapeHtml(meta.name)}"
            onerror="badgeImageMissing(this)">
       ${number}
-      <span class="pc-badge-initials">${initials(meta.name)}</span>
+      <span class="pc-badge-initials">${meta.initials || initials(meta.name)}</span>
     </span>`;
 }
 
@@ -185,7 +199,7 @@ function badgeImageMissing(img) {
 
 function openModal(card, focusBadgeId) {
   const modal = document.getElementById("pcModal");
-  document.getElementById("pcModalBadge").textContent = `${season.season} Player Card`;
+  document.getElementById("pcModalBadge").textContent = `${season.season} Trading Card`;
   document.getElementById("pcModalName").textContent = card.manager;
   const record = card.ties > 0 ? `${card.wins}-${card.losses}-${card.ties}` : `${card.wins}-${card.losses}`;
   document.getElementById("pcModalMeta").textContent =
@@ -234,7 +248,7 @@ function badgeDetailHtml(badge, isFocus) {
       ${badgeHtml(badge, "pc-detail-badge")}
       <div class="pc-detail-text">
         <div class="pc-detail-name">${escapeHtml(title)}</div>
-        <div class="pc-detail-rule">${escapeHtml(meta.rule)}</div>
+        <div class="pc-detail-rule">${escapeHtml(meta.rule)}${meta.detail ? ` ${escapeHtml(meta.detail)}` : ""}</div>
         <ul class="pc-detail-events">${lines}</ul>
       </div>
     </div>`;
@@ -262,12 +276,26 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: beat ${opp(e)} by ${e.margin.toFixed(2)} (${score(e)})`);
     case "ice_cold":
       return ev.map((e) => `${e.length} straight losses, Weeks ${e.start_week}–${e.end_week}`);
+    case "monday_night_miracle":
+    case "monday_night_master": {
+      const players = (n) => (n === 1 ? "1 player" : `${n} players`);
+      return ev.map((e) =>
+        `Week ${e.week}: ${e.manager_before_monday.toFixed(2)}–${e.opponent_before_monday.toFixed(2)} going into Monday `
+        + `(${players(e.manager_monday_players)} left vs ${players(e.opponent_monday_players)}), `
+        + `beat ${opp(e)} ${score(e)}`);
+    }
     default:
       return [];
   }
 }
 
 // --- Helpers ---
+
+// The template's name banner is 48% of the card wide. Big Shoulders
+// capitals average a little over half an em, so long names shrink to fit.
+function placeholderNameSize(name) {
+  return Math.min(7.2, 48 / (name.length * 0.58)).toFixed(2);
+}
 
 function badgeCountLabel(card) {
   const n = card.badges.length;
