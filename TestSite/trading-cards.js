@@ -74,6 +74,7 @@ const BADGE_PLACEHOLDER = "images/badges/badge-placeholder.png";
 const canClickBadges = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 let season = null;
+let allGames = [];   // stats.json game log, for the back of the card
 
 document.addEventListener("DOMContentLoaded", async () => {
   setupModal();
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch("data/stats.json");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
+    allGames = data.games || [];
   } catch (err) {
     grid.innerHTML = `<p class="load-state">Couldn't load stats.json (${escapeHtml(err.message)}).</p>`;
     return;
@@ -199,6 +201,120 @@ function badgeImageMissing(img) {
   img.src = BADGE_PLACEHOLDER;
 }
 
+// --- Back of the card (pop-up only) ---
+//
+// images/cards/back-<year>.jpg is the blank back; the manager's name goes
+// in its red header and the season's numbers in the cream body, worked
+// out here from the game log so they change every week. Summary lines
+// are regular season only (same as the standings); the game list also
+// includes playoff games once there are any.
+
+function backHtml(card) {
+  const yr = Number(season.season);
+  const mine = allGames
+    .filter((g) => g.year === yr && (g.away_manager === card.manager || g.home_manager === card.manager))
+    .sort((a, b) => weekOrder(a.week) - weekOrder(b.week));
+  const rows = mine.map((g) => {
+    const away = g.away_manager === card.manager;
+    const own = away ? g.away_score : g.home_score;
+    const opp = away ? g.home_score : g.away_score;
+    const result = g.tie ? "T" : g.winner === card.manager ? "W" : "L";
+    return { regular: g.game_type === "Regular", week: g.week, oppTeam: away ? g.home_team : g.away_team,
+             own, opp, result, gameType: g.game_type };
+  });
+  const reg = rows.filter((r) => r.regular);
+  const w = reg.filter((r) => r.result === "W").length;
+  const l = reg.filter((r) => r.result === "L").length;
+  const t = reg.filter((r) => r.result === "T").length;
+  const pf = reg.reduce((sum, r) => sum + r.own, 0);
+  const pa = reg.reduce((sum, r) => sum + r.opp, 0);
+  const streak = (res) => {
+    let best = 0, run = 0;
+    for (const r of reg) { run = r.result === res ? run + 1 : 0; best = Math.max(best, run); }
+    return best;
+  };
+
+  const stats = [
+    ["Record", t ? `${w}-${l}-${t}` : `${w}-${l}`],
+    ["Average Score", reg.length ? (pf / reg.length).toFixed(2) : "—"],
+    ["Points For", pf.toFixed(2)],
+    ["Points Against", pa.toFixed(2)],
+    ["Longest Winning Streak", String(streak("W"))],
+    ["Longest Losing Streak", String(streak("L"))],
+  ].map(([k, v]) => `<div class="pc-back-stat"><span>${k}:</span><span>${escapeHtml(v)}</span></div>`).join("");
+
+  const games = rows.map((r) => {
+    const label = r.regular ? "" : ` (${escapeHtml(r.gameType)})`;
+    return `<div class="pc-back-game">
+        <span class="pc-back-game-name">vs. ${escapeHtml(r.oppTeam)}${label}:</span>
+        <span class="pc-back-game-score">${r.own.toFixed(2)} - ${r.opp.toFixed(2)}</span>
+        <span class="pc-back-game-result is-${r.result}">${r.result}</span>
+      </div>`;
+  }).join("");
+
+  return `
+    <div class="pc-back">
+      <img class="pc-back-img" src="images/cards/back-${season.season}.jpg" alt=""
+           onerror="this.onerror=null;this.style.visibility='hidden'">
+      <div class="pc-back-name">${escapeHtml(card.manager)}</div>
+      <div class="pc-back-body">
+        <div class="pc-back-stats">${stats}</div>
+        <hr class="pc-back-rule">
+        <div class="pc-back-games" style="font-size:${backGameFontSize(rows.length)}cqw">${games || '<div class="pc-back-game">No games yet.</div>'}</div>
+      </div>
+    </div>`;
+}
+
+// The game list has about 64% of the card's width in height to work
+// with (cqw units, line-height 1.32). 14 games fit at full size; a
+// playoff run (up to 17) shrinks the text just enough to fit.
+function backGameFontSize(n) {
+  return Math.min(3.3, 64 / (Math.max(n, 1) * 1.32)).toFixed(2);
+}
+
+function weekOrder(week) {
+  const w = String(week);
+  return w.startsWith("P") ? 100 + Number(w.slice(1)) : Number(w);
+}
+
+function flipCardHtml(card) {
+  return `
+    <button type="button" class="pc-flip" aria-label="Flip card" aria-pressed="false">
+      <div class="pc-flip-face pc-flip-front">${cardHtml(card, false)}</div>
+      <div class="pc-flip-face pc-flip-back" hidden>${backHtml(card)}</div>
+    </button>
+    <div class="pc-flip-hint">Tap the card to flip it</div>`;
+}
+
+// The flip runs in two halves: turn to edge-on, swap faces while the
+// card is invisible, turn back. Nothing is left rotated afterwards, which
+// keeps clear of the iPhone Safari repaint bug (see #pcModal in
+// styles.css). Reduced-motion users get an instant swap.
+function setupFlip(wrap) {
+  const btn = wrap.querySelector(".pc-flip");
+  const front = wrap.querySelector(".pc-flip-front");
+  const back = wrap.querySelector(".pc-flip-back");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let busy = false;
+  const swap = () => {
+    const showBack = back.hidden;
+    back.hidden = !showBack;
+    front.hidden = showBack;
+    btn.setAttribute("aria-pressed", String(showBack));
+  };
+  btn.addEventListener("click", () => {
+    if (busy) return;
+    if (reduce) { swap(); return; }
+    busy = true;
+    btn.classList.add("is-turning");
+    setTimeout(() => {
+      swap();
+      btn.classList.remove("is-turning");
+      setTimeout(() => { busy = false; }, 220);
+    }, 220);
+  });
+}
+
 // --- Pop-up ---
 
 function openModal(card, focusBadgeId) {
@@ -208,7 +324,8 @@ function openModal(card, focusBadgeId) {
   const record = card.ties > 0 ? `${card.wins}-${card.losses}-${card.ties}` : `${card.wins}-${card.losses}`;
   document.getElementById("pcModalMeta").textContent =
     `${card.team_name} · ${ordinal(card.rank)} place · ${record} · ${card.points_for.toFixed(2)} points`;
-  document.getElementById("pcModalCard").innerHTML = cardHtml(card, false);
+  document.getElementById("pcModalCard").innerHTML = flipCardHtml(card);
+  setupFlip(document.getElementById("pcModalCard"));
 
   const list = document.getElementById("pcModalBadges");
   list.innerHTML = card.badges.length
