@@ -118,9 +118,7 @@ function renderStatOfTheWeek(stat) {
     return;
   }
 
-  // Most stats are a percentage; "points" stats (Week 4's playoff pace)
-  // show the number as-is.
-  valueEl.textContent = stat.unit === "points" ? Number(stat.value).toFixed(2) : `${stat.value}%`;
+  valueEl.textContent = `${stat.value}%`;
 
   const teams = Array.isArray(stat.this_year_teams) ? stat.this_year_teams : [];
   const parts = [escapeHtml(stat.narrative || "")];
@@ -131,6 +129,7 @@ function renderStatOfTheWeek(stat) {
   } else if (stat.teams_label) {
     parts.push(`${escapeHtml(label)}: none.`);
   }
+  if (stat.footnote) parts.push(`<span class="stat-of-week-footnote">${escapeHtml(stat.footnote)}</span>`);
   textEl.innerHTML = parts.join("\n");
 
   section.style.display = "";

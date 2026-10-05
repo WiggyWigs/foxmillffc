@@ -1841,6 +1841,12 @@ main {
   font-weight: 600;
 }
 
+.stat-of-week-footnote {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
 @media (max-width: 480px) {
   .stat-of-week-value { font-size: 3rem; }
 }
