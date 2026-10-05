@@ -2193,22 +2193,23 @@ main {
   object-fit: cover;
 }
 
+/* Starts just right of the '26 circle (its edge is at x 260 of 1060),
+   in the circle's own cream (#E5C799, sampled from back-2026.jpg). */
 .pc-back-name {
   position: absolute;
-  left: 27%;
-  width: 68%;
+  left: 26.5%;
+  width: 68.5%;
   top: 2%;
   height: 17.3%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-family: 'Big Shoulders', 'EB Garamond', sans-serif;
   font-weight: 700;
-  font-size: 8cqw;
   line-height: 1.05;
   text-transform: uppercase;
-  text-align: center;
-  color: #FFFCF6;
+  white-space: nowrap;
+  color: #E5C799;
   letter-spacing: 0.02em;
 }
 

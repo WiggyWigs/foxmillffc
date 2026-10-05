@@ -256,13 +256,19 @@ function backHtml(card) {
     <div class="pc-back">
       <img class="pc-back-img" src="images/cards/back-${season.season}.jpg" alt=""
            onerror="this.onerror=null;this.style.visibility='hidden'">
-      <div class="pc-back-name">${escapeHtml(card.manager)}</div>
+      <div class="pc-back-name" style="font-size:${backNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
       <div class="pc-back-body">
         <div class="pc-back-stats">${stats}</div>
         <hr class="pc-back-rule">
         <div class="pc-back-games" style="font-size:${backGameFontSize(rows.length)}cqw">${games || '<div class="pc-back-game">No games yet.</div>'}</div>
       </div>
     </div>`;
+}
+
+// The back's name area is 68.5% of the card wide; long names shrink to
+// stay on one line (same idea as placeholderNameSize on the front).
+function backNameSize(name) {
+  return Math.min(8, 66 / (name.length * 0.56)).toFixed(2);
 }
 
 // The game list has about 64% of the card's width in height to work
