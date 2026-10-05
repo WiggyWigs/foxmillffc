@@ -41,6 +41,10 @@ Badge rules (all regular season only, Weeks 1-14):
   Monday Night Master  - trailed going into Monday by at least 15 points
                        per extra player they had left (at least 15 if
                        they had no extra players), and came back to win.
+  Lineup King        - count of weeks the starters scored as much as the
+                       best lineup the roster allowed: no bench player
+                       (or reshuffle of the flex) would have added a
+                       point. Ties with the best lineup count.
   Businessman        - not computed yet (needs transaction data).
 
 "Going into Monday" is each team's final score minus the points of its
@@ -86,7 +90,7 @@ EASTERN = ZoneInfo("America/New_York")
 BADGE_ORDER = [
     "longest_win_streak", "weekly_high_score", "superstar", "giant_killer",
     "high_point_club", "the_punisher", "ice_cold",
-    "monday_night_miracle", "monday_night_master", "businessman",
+    "monday_night_miracle", "monday_night_master", "lineup_king", "businessman",
 ]
 
 
@@ -230,6 +234,44 @@ def _monday_night_badges(g, monday):
     return []
 
 
+def _best_lineup_points(players, slots):
+    """Highest total the roster could have started, filling each slot in
+    `slots` with at most one player whose eligible_slots include it.
+    A slot may be left empty. IR players can't start. Exact search over
+    which slots are filled (9 slots -> 512 states)."""
+    best = {0: 0.0}
+    for p in players:
+        if p.get("slot") == "IR":
+            continue
+        options = [i for i, s in enumerate(slots) if s in p.get("eligible_slots", [])]
+        nxt = dict(best)
+        for mask, total in best.items():
+            for i in options:
+                if not mask & (1 << i):
+                    m2, t2 = mask | (1 << i), total + p["points"]
+                    if t2 > nxt.get(m2, float("-inf")):
+                        nxt[m2] = t2
+        best = nxt
+    return max(best.values())
+
+
+def _lineup_kings(lineups, year):
+    """{(week, manager): started_points} for every captured lineup whose
+    starters matched the best possible lineup."""
+    out = {}
+    for entry in lineups:
+        if entry["year"] != str(year):
+            continue
+        starters = [p for p in entry["players"] if p.get("slot") not in ("BE", "IR")]
+        if not starters:
+            continue
+        started = round(sum(p["points"] for p in starters), 2)
+        best = round(_best_lineup_points(entry["players"], [p["slot"] for p in starters]), 2)
+        if started >= best - 0.005:
+            out[(int(entry["week"]), entry["manager"])] = started
+    return out
+
+
 def compute_season_cards(all_games, lineups, roster_names, year):
     season_games = sorted(
         (g for g in all_games if g["year"] == year and g["game_type"] == "Regular"),
@@ -247,6 +289,7 @@ def compute_season_cards(all_games, lineups, roster_names, year):
     ranks_entering = _ranks_entering_each_week(season_games, roster_names, weeks)
     top_starters = _top_starters_by_week(lineups, year, weeks)
     monday = _monday_split(lineups, year)
+    kings = _lineup_kings(lineups, year)
 
     top_score_by_week = {}
     for wk in weeks:
@@ -317,6 +360,14 @@ def compute_season_cards(all_games, lineups, roster_names, year):
                 continue
             b = badges[mgr].setdefault(bid, {"count": None, "earned_week": ev["week"], "events": []})
             b["events"].append(ev)
+
+    # Lineup King
+    for (wk, mgr), pts in sorted(kings.items()):
+        if mgr not in badges or wk not in weeks:
+            continue
+        b = badges[mgr].setdefault("lineup_king", {"count": 0, "earned_week": wk, "events": []})
+        b["count"] += 1
+        b["events"].append({"week": wk, "points": pts})
 
     # Superstar
     for wk in weeks:
