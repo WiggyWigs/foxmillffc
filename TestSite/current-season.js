@@ -118,13 +118,18 @@ function renderStatOfTheWeek(stat) {
     return;
   }
 
-  valueEl.textContent = `${stat.value}%`;
+  // Most stats are a percentage; "points" stats (Week 4's playoff pace)
+  // show the number as-is.
+  valueEl.textContent = stat.unit === "points" ? Number(stat.value).toFixed(2) : `${stat.value}%`;
 
   const teams = Array.isArray(stat.this_year_teams) ? stat.this_year_teams : [];
   const parts = [escapeHtml(stat.narrative || "")];
+  const label = stat.teams_label || `Managers that are ${stat.record_label || ""} this year`;
   if (teams.length) {
     const names = teams.map((t) => `<span class="stat-of-week-manager">${escapeHtml(t)}</span>`).join("\n");
-    parts.push(`Managers that are ${escapeHtml(stat.record_label || "")} this year:\n${names}`);
+    parts.push(`${escapeHtml(label)}:\n${names}`);
+  } else if (stat.teams_label) {
+    parts.push(`${escapeHtml(label)}: none.`);
   }
   textEl.innerHTML = parts.join("\n");
 

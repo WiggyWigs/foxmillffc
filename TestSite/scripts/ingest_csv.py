@@ -1811,6 +1811,61 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
     }
 
 
+def _playoff_pace_stat(all_games, season_games, current_year, through_week):
+    """Stat of the Week for "playoff pace": the big number is the average
+    weekly score, over Weeks 1..through_week, of every past team that went
+    on to make the playoffs (each game counts once). The list is this
+    season's managers averaging MORE than that over the same weeks,
+    highest first. None if no past season reached that week."""
+    pace = []  # (manager, year, average) for each past playoff team
+    scores = []
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        past = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+                and _week_sort_key(g["week"]) <= through_week]
+        if through_week not in {_week_sort_key(g["week"]) for g in past}:
+            continue
+        playoff_managers = {
+            g[side] for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+            for side in ("away_manager", "home_manager")
+        }
+        for mgr in sorted(playoff_managers):
+            own = [g["away_score"] if g["away_manager"] == mgr else g["home_score"]
+                   for g in past if mgr in (g["away_manager"], g["home_manager"])]
+            if own:
+                scores.extend(own)
+                pace.append((mgr, year, sum(own) / len(own)))
+    if not scores:
+        return None
+    benchmark = round(sum(scores) / len(scores), 2)
+
+    now = defaultdict(list)
+    for g in season_games:
+        if _week_sort_key(g["week"]) <= through_week:
+            now[g["away_manager"]].append(g["away_score"])
+            now[g["home_manager"]].append(g["home_score"])
+    averages = {m: sum(v) / len(v) for m, v in now.items()}
+    above = sorted((m for m, a in averages.items() if round(a, 2) > benchmark),
+                   key=lambda m: -averages[m])
+
+    first_year = min(y for _, y, _ in pace)
+    fastest = max(pace, key=lambda t: t[2])
+    slowest = min(pace, key=lambda t: t[2])
+    narrative = (
+        f"The average weekly score through Week {through_week} of every team that went on to "
+        f"make the playoffs. Since {first_year}, {len(pace)} teams have made the playoffs; "
+        f"through Week {through_week} they averaged {benchmark:.2f} points a week. "
+        f"The fastest start was {fastest[0]} ({fastest[1]}) at {fastest[2]:.2f}, "
+        f"the slowest {slowest[0]} ({slowest[1]}) at {slowest[2]:.2f}."
+    )
+    return {
+        "reason": f"playoff_pace_week_{through_week}", "value": benchmark, "unit": "points",
+        "sample_size": len(pace),
+        "this_year_teams": [f"{m} ({averages[m]:.2f})" for m in above],
+        "teams_label": "Managers averaging more than that this year",
+        "narrative": narrative,
+    }
+
+
 def compute_stat_of_the_week(all_games, roster_names):
     """
     "Stat of the Week": one big number plus a short narrative, different
@@ -1825,6 +1880,10 @@ def compute_stat_of_the_week(all_games, roster_names):
       3. Playoff odds after a 1-2 start (only if someone is 1-2 now)
     Each also needs at least one past team with that start, otherwise
     there is no probability to show and it falls through to the next.
+
+    Week 4: the average weekly score through Week 4 of every past team
+    that made the playoffs, and this season's managers averaging more
+    (see _playoff_pace_stat).
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -1850,6 +1909,9 @@ def compute_stat_of_the_week(all_games, roster_names):
                 continue
             return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
         return None
+
+    if last_completed_week == 4:
+        return _playoff_pace_stat(all_games, season_games, current_year, 4)
 
     return None  # other weeks: not defined yet
 
