@@ -1841,6 +1841,12 @@ main {
   font-weight: 600;
 }
 
+.stat-of-week-footnote {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
 @media (max-width: 480px) {
   .stat-of-week-value { font-size: 3rem; }
 }
@@ -2055,6 +2061,20 @@ main {
 #pcModal .modal-card.pc-modal-card {
   max-width: 820px;
   text-align: left;
+}
+
+/* iPhone Safari draws a scrolling pop-up in tiles and can leave parts of
+   it unpainted while scrolling (badges cut off at the old screen edge)
+   when the scroller keeps a transform or contains filtered images. So:
+   no transform once the pop-up has opened (it still animates in), and
+   no drop-shadow filter on images inside it. */
+#pcModal.modal-overlay.active .modal-card.pc-modal-card {
+  transform: none;
+}
+
+#pcModal .pc-badge img,
+#pcModal .pc-detail-badge img {
+  filter: none;
 }
 
 #pcModal .modal-badge,

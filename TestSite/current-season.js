@@ -122,10 +122,14 @@ function renderStatOfTheWeek(stat) {
 
   const teams = Array.isArray(stat.this_year_teams) ? stat.this_year_teams : [];
   const parts = [escapeHtml(stat.narrative || "")];
+  const label = stat.teams_label || `Managers that are ${stat.record_label || ""} this year`;
   if (teams.length) {
     const names = teams.map((t) => `<span class="stat-of-week-manager">${escapeHtml(t)}</span>`).join("\n");
-    parts.push(`Managers that are ${escapeHtml(stat.record_label || "")} this year:\n${names}`);
+    parts.push(`${escapeHtml(label)}:\n${names}`);
+  } else if (stat.teams_label) {
+    parts.push(`${escapeHtml(label)}: none.`);
   }
+  if (stat.footnote) parts.push(`<span class="stat-of-week-footnote">${escapeHtml(stat.footnote)}</span>`);
   textEl.innerHTML = parts.join("\n");
 
   section.style.display = "";
