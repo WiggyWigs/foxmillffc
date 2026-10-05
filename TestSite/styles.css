@@ -2222,14 +2222,21 @@ main {
   overflow: hidden;
 }
 
+.pc-back-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 5cqw;
+}
+
 .pc-back-stat {
   display: flex;
   justify-content: space-between;
-  gap: 2cqw;
+  gap: 1.5cqw;
+  white-space: nowrap;
   font-family: 'Big Shoulders', 'EB Garamond', sans-serif;
   font-weight: 700;
-  font-size: 4.3cqw;
-  line-height: 1.25;
+  font-size: 4cqw;
+  line-height: 1.3;
   text-transform: uppercase;
 }
 

@@ -234,14 +234,16 @@ function backHtml(card) {
     return best;
   };
 
+  // Two per row: Record | Average Score, Points For | Points Against,
+  // Winning Streak | Losing Streak (the longest of each this season).
   const stats = [
     ["Record", t ? `${w}-${l}-${t}` : `${w}-${l}`],
     ["Average Score", reg.length ? (pf / reg.length).toFixed(2) : "—"],
     ["Points For", pf.toFixed(2)],
     ["Points Against", pa.toFixed(2)],
-    ["Longest Winning Streak", String(streak("W"))],
-    ["Longest Losing Streak", String(streak("L"))],
-  ].map(([k, v]) => `<div class="pc-back-stat"><span>${k}:</span><span>${escapeHtml(v)}</span></div>`).join("");
+    ["Winning Streak", String(streak("W"))],
+    ["Losing Streak", String(streak("L"))],
+  ].map(([k, v]) => `<div class="pc-back-stat"><span>${k}</span><span>${escapeHtml(v)}</span></div>`).join("");
 
   const games = rows.map((r) => {
     const label = r.regular ? "" : ` (${escapeHtml(r.gameType)})`;
@@ -271,11 +273,11 @@ function backNameSize(name) {
   return Math.min(8, 66 / (name.length * 0.56)).toFixed(2);
 }
 
-// The game list has about 64% of the card's width in height to work
-// with (cqw units, line-height 1.32). 14 games fit at full size; a
-// playoff run (up to 17) shrinks the text just enough to fit.
+// With the stats two per row, the game list has about 80% of the card's
+// width in height (cqw units, line-height 1.32): a full 17-game playoff
+// season fits at full size, and anything longer shrinks to fit.
 function backGameFontSize(n) {
-  return Math.min(3.3, 64 / (Math.max(n, 1) * 1.32)).toFixed(2);
+  return Math.min(3.3, 80 / (Math.max(n, 1) * 1.32)).toFixed(2);
 }
 
 function weekOrder(week) {
