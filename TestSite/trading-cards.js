@@ -203,7 +203,8 @@ function badgeImageMissing(img) {
 
 // --- Back of the card (pop-up only) ---
 //
-// images/cards/back-<year>.jpg is the blank back; the manager's name goes
+// images/cards/back-<rank>-<year>.jpg (or the shared back-<year>.jpg) is
+// the blank back; the manager's name goes
 // in its red header and the season's numbers in the cream body, worked
 // out here from the game log so they change every week. Summary lines
 // are regular season only (same as the standings); the game list also
@@ -256,8 +257,8 @@ function backHtml(card) {
 
   return `
     <div class="pc-back">
-      <img class="pc-back-img" src="images/cards/back-${season.season}.jpg" alt=""
-           onerror="this.onerror=null;this.style.visibility='hidden'">
+      <img class="pc-back-img" src="images/cards/back-${String(card.rank).padStart(2, "0")}-${season.season}.jpg" alt=""
+           data-fallback="images/cards/back-${season.season}.jpg" onerror="backImageMissing(this)">
       <div class="pc-back-name" style="font-size:${backNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
       <div class="pc-back-body">
         <div class="pc-back-stats">${stats}</div>
@@ -278,6 +279,19 @@ function backNameSize(name) {
 // season fits at full size, and anything longer shrinks to fit.
 function backGameFontSize(n) {
   return Math.min(3.3, 80 / (Math.max(n, 1) * 1.32)).toFixed(2);
+}
+
+// Backs follow the standings: rank 1 gets back-01-<year>.jpg, rank 12
+// back-12-<year>.jpg. Until those exist, every card uses the shared
+// back-<year>.jpg; with neither, the back is plain cream.
+function backImageMissing(img) {
+  const fallback = img.dataset.fallback;
+  if (fallback && !img.src.endsWith(fallback)) {
+    img.src = fallback;
+    return;
+  }
+  img.onerror = null;
+  img.style.visibility = "hidden";
 }
 
 function weekOrder(week) {
