@@ -61,7 +61,7 @@ const BADGES = {
   },
   lineup_king: {
     name: "Lineup King", file: "lineup-king.png", numbered: false,
-    rule: "Started the best lineup the roster allowed: nobody on the bench would have scored more.",
+    rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
   },
   businessman: {
     name: "Businessman", file: "businessman.png", numbered: false,
@@ -283,7 +283,7 @@ function badgeEventLines(badge) {
     case "ice_cold":
       return ev.map((e) => `${e.length} straight losses, Weeks ${e.start_week}–${e.end_week}`);
     case "lineup_king":
-      return ev.map((e) => `Week ${e.week}: ${e.points.toFixed(2)} points, the most the roster could score`);
+      return ev.map((e) => `Week ${e.week}: ${e.points.toFixed(2)} points`);
     case "monday_night_miracle":
     case "monday_night_master":
       // "Week 1: Led by 14.66 points going into Monday with a two-player
