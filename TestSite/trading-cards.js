@@ -53,9 +53,6 @@ const BADGES = {
   monday_night_master: {
     name: "Monday Night Master", file: "monday-night-master.png", numbered: false,
     initials: "MAS",
-    // No rule line in the pop-up: each week's line already says how it
-    // was earned. The full rule is in scripts/player_cards.py.
-    hideRule: true,
     rule: "Trailed going into Monday night and came back to win.",
   },
   lineup_king: {
@@ -253,7 +250,7 @@ function badgeDetailHtml(badge, isFocus) {
       ${badgeHtml(badge, "pc-detail-badge")}
       <div class="pc-detail-text">
         <div class="pc-detail-name">${escapeHtml(title)}</div>
-        ${meta.hideRule ? "" : `<div class="pc-detail-rule">${escapeHtml(meta.rule)}</div>`}
+        <div class="pc-detail-rule">${escapeHtml(meta.rule)}</div>
         <ul class="pc-detail-events">${lines}</ul>
       </div>
     </div>`;
