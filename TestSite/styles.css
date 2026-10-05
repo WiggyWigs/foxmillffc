@@ -1845,7 +1845,7 @@ main {
   .stat-of-week-value { font-size: 3rem; }
 }
 
-/* --- Player Cards page ---
+/* --- Trading Cards page ---
    Every overlay is positioned in % of the card, measured off the
    1060 x 1484 card template, so it lines up at any card width:
      stamp square  x 848-1002, y 73-199
@@ -2004,26 +2004,50 @@ main {
   display: block;
 }
 
-.pc-placeholder-name {
+/* Missing card art: template.jpg is the blank card, and the manager's
+   name and the season are printed into its red and yellow banners in
+   the same condensed face as the card art (Big Shoulders). */
+@font-face {
+  font-family: 'Big Shoulders';
+  src: url('BigShoulders-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+.pc-placeholder-name,
+.pc-placeholder-year {
   display: none;
   position: absolute;
-  left: 22%;
-  width: 56%;
-  top: 4.5%;
-  height: 5.8%;
   align-items: center;
   justify-content: center;
-  background: #E84A1E;
-  color: #FFFCF6;
-  font-family: 'EB Garamond', serif;
+  font-family: 'Big Shoulders', 'EB Garamond', sans-serif;
   font-weight: 700;
-  font-size: 5.2cqw;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
+  line-height: 1;
 }
 
-.pc-card.is-placeholder .pc-placeholder-name { display: flex; }
+.pc-placeholder-name {
+  left: 26%;
+  width: 48%;
+  top: 4.9%;
+  height: 5.3%;
+  color: #FFFCF6;
+  letter-spacing: 0.02em;
+}
+
+.pc-placeholder-year {
+  left: 33%;
+  width: 34%;
+  top: 11.3%;
+  height: 3.1%;
+  color: #14213D;
+  font-size: 5.2cqw;
+}
+
+.pc-card.is-placeholder .pc-placeholder-name,
+.pc-card.is-placeholder .pc-placeholder-year { display: flex; }
 
 /* Pop-up: big card beside the badge list, stacked on phones. */
 #pcModal .modal-card.pc-modal-card {

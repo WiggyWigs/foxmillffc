@@ -35,14 +35,27 @@ Badge rules (all regular season only, Weeks 1-14):
   The Punisher       - won by more than 50 points.
   Ice Cold           - lost 5+ games in a row (a tie ends the run). The
                        number is the longest such losing streak.
+  Monday Night Miracle - led going into Monday with fewer players left
+                       than the opponent, by no more than 10 points per
+                       extra opponent player, and held on to win.
+  Monday Night Master  - trailed going into Monday by at least 15 points
+                       per extra player they had left (at least 15 if
+                       they had no extra players), and came back to win.
   Businessman        - not computed yet (needs transaction data).
+
+"Going into Monday" is each team's final score minus the points of its
+starters who played on Monday (Eastern time). Games with no Monday
+starters on either side are skipped. Both need player_lineups.json for
+that week; a week without lineups is skipped.
 """
 
 import json
 import os
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from ingest_csv import load_roster, rank_season_games, _week_sort_key
 
@@ -61,11 +74,19 @@ GIANT_KILLER_RANK_GAP = 5
 HIGH_POINT_CLUB_SCORE = 150
 PUNISHER_MARGIN = 50
 ICE_COLD_LOSSES = 5
+MNF_MIRACLE_POINTS_PER_PLAYER = 10
+MNF_MASTER_POINTS_PER_PLAYER = 15
+
+# player_lineups.json stores kickoff times in UTC (Sunday Night Football
+# reads as Monday 00:20, Monday Night Football as Tuesday 00:15), so
+# Monday is decided in Eastern time.
+EASTERN = ZoneInfo("America/New_York")
 
 # Display order on the card and in the pop-up.
 BADGE_ORDER = [
     "longest_win_streak", "weekly_high_score", "superstar", "giant_killer",
-    "high_point_club", "the_punisher", "ice_cold", "businessman",
+    "high_point_club", "the_punisher", "ice_cold",
+    "monday_night_miracle", "monday_night_master", "businessman",
 ]
 
 
@@ -154,6 +175,61 @@ def _top_starters_by_week(lineups, year, weeks):
     return out
 
 
+def _is_monday_eastern(game_date):
+    if not game_date:
+        return False
+    kickoff = datetime.fromisoformat(game_date).replace(tzinfo=timezone.utc)
+    return kickoff.astimezone(EASTERN).weekday() == 0
+
+
+def _monday_split(lineups, year):
+    """{(week, manager): (monday_starters, monday_points)} for every
+    captured lineup in this season."""
+    out = {}
+    for entry in lineups:
+        if entry["year"] != str(year):
+            continue
+        monday = [p for p in entry["players"]
+                  if p.get("started") and _is_monday_eastern(p.get("game_date"))]
+        out[(int(entry["week"]), entry["manager"])] = (
+            len(monday), round(sum(p["points"] for p in monday), 2))
+    return out
+
+
+def _monday_night_badges(g, monday):
+    """[(badge_id, manager, event)] that this game earns, if any."""
+    if g["tie"]:
+        return []
+    wk = _week(g)
+    winner, loser = g["winner"], g["loser"]
+    if (wk, winner) not in monday or (wk, loser) not in monday:
+        return []
+    w_players, w_monday_pts = monday[(wk, winner)]
+    l_players, l_monday_pts = monday[(wk, loser)]
+    if w_players + l_players == 0:
+        return []
+
+    w_final, _, l_final, _ = _side(g, winner)
+    w_before = round(w_final - w_monday_pts, 2)
+    l_before = round(l_final - l_monday_pts, 2)
+    event = _game_event(g, winner)
+    event.update({
+        "manager_before_monday": w_before, "opponent_before_monday": l_before,
+        "manager_monday_players": w_players, "opponent_monday_players": l_players,
+    })
+
+    lead = w_before - l_before
+    if lead > 0:
+        extra = l_players - w_players
+        if extra >= 1 and lead <= MNF_MIRACLE_POINTS_PER_PLAYER * extra:
+            return [("monday_night_miracle", winner, event)]
+    elif lead < 0:
+        extra = w_players - l_players
+        if -lead >= MNF_MASTER_POINTS_PER_PLAYER * max(extra, 1):
+            return [("monday_night_master", winner, event)]
+    return []
+
+
 def compute_season_cards(all_games, lineups, roster_names, year):
     season_games = sorted(
         (g for g in all_games if g["year"] == year and g["game_type"] == "Regular"),
@@ -170,6 +246,7 @@ def compute_season_cards(all_games, lineups, roster_names, year):
 
     ranks_entering = _ranks_entering_each_week(season_games, roster_names, weeks)
     top_starters = _top_starters_by_week(lineups, year, weeks)
+    monday = _monday_split(lineups, year)
 
     top_score_by_week = {}
     for wk in weeks:
@@ -232,6 +309,14 @@ def compute_season_cards(all_games, lineups, roster_names, year):
             badges[m]["the_punisher"] = {
                 "count": None, "earned_week": punisher[0]["week"], "events": punisher,
             }
+
+    # Monday Night Miracle / Master
+    for g in season_games:
+        for bid, mgr, ev in _monday_night_badges(g, monday):
+            if mgr not in badges:
+                continue
+            b = badges[mgr].setdefault(bid, {"count": None, "earned_week": ev["week"], "events": []})
+            b["events"].append(ev)
 
     # Superstar
     for wk in weeks:
