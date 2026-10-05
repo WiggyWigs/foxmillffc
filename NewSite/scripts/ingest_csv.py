@@ -1814,22 +1814,24 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
 TOP_POINTS_SPOTS = 6
 
 
-def _points_rank_stat(all_games, season_games, current_year, through_week, roster_names):
-    """Stat of the Week for "top 6 in points": the big number is the share
-    of past teams ranked in the top TOP_POINTS_SPOTS in points scored
-    after Week through_week that went on to make the playoffs. The list is
-    this season's top TOP_POINTS_SPOTS in points, highest first; a '*'
-    marks anyone not currently in the top TOP_POINTS_SPOTS of the
-    standings (same ranking and tiebreaks as the standings table). None if
-    no past season reached that week."""
-    def points_order(games):
-        totals = defaultdict(float)
-        for g in games:
-            totals[g["away_manager"]] += g["away_score"]
-            totals[g["home_manager"]] += g["home_score"]
-        return sorted(totals, key=lambda m: -totals[m])
+def _points_and_standings_top(games, roster_names, spots):
+    """(top `spots` managers by points scored, highest first; set of the
+    top `spots` in the standings) for a list of regular-season games.
+    Standings use rank_season_games(), the same order as the table."""
+    totals = defaultdict(float)
+    for g in games:
+        totals[g["away_manager"]] += g["away_score"]
+        totals[g["home_manager"]] += g["home_score"]
+    top_points = sorted(totals, key=lambda m: -totals[m])[:spots]
+    top_standings = {row["manager"] for row in rank_season_games(games, roster_names)[:spots]}
+    return top_points, top_standings
 
-    made = total = 0
+
+def _past_points_vs_standings(all_games, current_year, through_week, roster_names):
+    """For every past season that reached `through_week`:
+    (year, top TOP_POINTS_SPOTS by points, top TOP_POINTS_SPOTS standings set,
+    set of managers who made the playoffs)."""
+    out = []
     for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
         past = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
                 and _week_sort_key(g["week"]) <= through_week]
@@ -1839,16 +1841,72 @@ def _points_rank_stat(all_games, season_games, current_year, through_week, roste
             g[side] for g in all_games if g["year"] == year and g["game_type"] != "Regular"
             for side in ("away_manager", "home_manager")
         }
-        for mgr in points_order(past)[:TOP_POINTS_SPOTS]:
-            total += 1
-            made += mgr in playoff_managers
+        top_points, top_standings = _points_and_standings_top(past, roster_names, TOP_POINTS_SPOTS)
+        out.append((year, top_points, top_standings, playoff_managers))
+    return out
+
+
+def _points_not_standings_stat(all_games, season_games, current_year, through_week, roster_names):
+    """Stat of the Week, first choice after Week through_week: the
+    historical playoff odds of a team in the top TOP_POINTS_SPOTS in points
+    but NOT in the top TOP_POINTS_SPOTS of the standings. The list is this
+    season's teams in that spot. None if nobody is in that spot this year,
+    or no past team ever was (then the plain top-in-points stat is used)."""
+    now = [g for g in season_games if _week_sort_key(g["week"]) <= through_week]
+    top_points, top_standings = _points_and_standings_top(now, roster_names, TOP_POINTS_SPOTS)
+    this_year = [m for m in top_points if m not in top_standings]
+    if not this_year:
+        return None
+
+    cohort = []  # (manager, year, made_playoffs)
+    for year, past_points, past_standings, playoff_managers in _past_points_vs_standings(
+            all_games, current_year, through_week, roster_names):
+        cohort += [(m, year, m in playoff_managers) for m in past_points if m not in past_standings]
+    if not cohort:
+        return None
+    made = [(m, y) for m, y, ok in cohort if ok]
+    pct = round(100 * len(made) / len(cohort))
+    first_year = min(y for _, y, _ in cohort)
+    n = len(cohort)
+    if made:
+        made_text = (f"{len(made)} of them made the playoffs: "
+                     + ", ".join(f"{m} ({y})" for m, y in made) + ".")
+    else:
+        made_text = "None of them made the playoffs."
+
+    return {
+        "reason": f"top_{TOP_POINTS_SPOTS}_points_not_standings_week_{through_week}",
+        "value": pct, "sample_size": n, "made_playoffs": len(made),
+        "this_year_teams": this_year,
+        "teams_label": (f"In the top {TOP_POINTS_SPOTS} in points but not the top "
+                        f"{TOP_POINTS_SPOTS} in the standings this year"),
+        "narrative": (
+            f"The historical chance of making the playoffs if you are in the top {TOP_POINTS_SPOTS} "
+            f"in points but not in the top {TOP_POINTS_SPOTS} in the standings after Week {through_week}. "
+            f"Since {first_year}, {n} {'team has' if n == 1 else 'teams have'} been there. {made_text}"
+        ),
+    }
+
+
+def _points_rank_stat(all_games, season_games, current_year, through_week, roster_names):
+    """Stat of the Week fallback after Week through_week (used when this
+    season's top TOP_POINTS_SPOTS in points and in the standings are the
+    same teams): the share of past top-TOP_POINTS_SPOTS scorers who made
+    the playoffs, and this season's top TOP_POINTS_SPOTS in points. A '*'
+    marks anyone not in the top TOP_POINTS_SPOTS of the standings (only
+    possible if the first choice had no history to draw on). None if no
+    past season reached that week."""
+    made = total = 0
+    for _, past_points, _, playoff_managers in _past_points_vs_standings(
+            all_games, current_year, through_week, roster_names):
+        total += len(past_points)
+        made += sum(m in playoff_managers for m in past_points)
     if not total:
         return None
     pct = round(100 * made / total)
 
     now = [g for g in season_games if _week_sort_key(g["week"]) <= through_week]
-    top_points = points_order(now)[:TOP_POINTS_SPOTS]
-    top_standings = {row["manager"] for row in rank_season_games(now, roster_names)[:TOP_POINTS_SPOTS]}
+    top_points, top_standings = _points_and_standings_top(now, roster_names, TOP_POINTS_SPOTS)
     teams = [m if m in top_standings else f"{m}*" for m in top_points]
     any_starred = any(t.endswith("*") for t in teams)
 
@@ -1879,8 +1937,12 @@ def compute_stat_of_the_week(all_games, roster_names):
     Each also needs at least one past team with that start, otherwise
     there is no probability to show and it falls through to the next.
 
-    Week 4: how often past top-6 scorers after Week 4 made the playoffs,
-    and this season's top 6 in points (see _points_rank_stat).
+    Week 4, in priority order:
+      1. Playoff odds for a team in the top 6 in points but not the top 6
+         in the standings (only if someone is there now, and some past
+         team was) - _points_not_standings_stat
+      2. How often past top-6 scorers made the playoffs, and this
+         season's top 6 in points - _points_rank_stat
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -1908,7 +1970,8 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
 
     if last_completed_week == 4:
-        return _points_rank_stat(all_games, season_games, current_year, 4, roster_names)
+        return (_points_not_standings_stat(all_games, season_games, current_year, 4, roster_names)
+                or _points_rank_stat(all_games, season_games, current_year, 4, roster_names))
 
     return None  # other weeks: not defined yet
 
