@@ -120,12 +120,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // --- Card markup (used for the grid and the larger copy in the pop-up) ---
 
-function cardHtml(card) {
+// lazy: true for the grid. The pop-up copy loads straight away, because
+// iPhone Safari can fail to start a lazy image inside a scrolling pop-up.
+function cardHtml(card, lazy = true) {
   const src = `images/cards/${card.slug}-${season.season}.jpg`;
   const badges = card.badges.map((b) => badgeHtml(b, "pc-badge")).join("");
   return `
     <div class="pc-card">
-      <img class="pc-card-img" src="${src}" alt="" loading="lazy"
+      <img class="pc-card-img" src="${src}" alt=""${lazy ? ' loading="lazy"' : ""}
            onerror="cardImageMissing(this)">
       <div class="pc-placeholder-name" style="font-size:${placeholderNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
       <div class="pc-placeholder-year">${season.season}</div>
@@ -206,7 +208,7 @@ function openModal(card, focusBadgeId) {
   const record = card.ties > 0 ? `${card.wins}-${card.losses}-${card.ties}` : `${card.wins}-${card.losses}`;
   document.getElementById("pcModalMeta").textContent =
     `${card.team_name} · ${ordinal(card.rank)} place · ${record} · ${card.points_for.toFixed(2)} points`;
-  document.getElementById("pcModalCard").innerHTML = cardHtml(card);
+  document.getElementById("pcModalCard").innerHTML = cardHtml(card, false);
 
   const list = document.getElementById("pcModalBadges");
   list.innerHTML = card.badges.length
