@@ -1937,11 +1937,13 @@ main {
 .pc-stamp.is-placeholder img { display: none; }
 .pc-stamp.is-placeholder .pc-stamp-text { display: block; }
 
-/* Up to 4 badges per row, two rows max (8 badges). */
+/* Up to 6 badges per row, two rows max (12 badges; there are 11).
+   Row width = 6 x 9.5 badge + 5 x 1 gap = 62% of the card, centred.
+   A third row would reach the managers' faces. */
 .pc-badges {
   position: absolute;
-  left: 29.5%;
-  width: 41%;
+  left: 19%;
+  width: 62%;
   top: 17%;
   display: flex;
   flex-wrap: wrap;

@@ -49,17 +49,15 @@ const BADGES = {
     name: "Monday Night Miracle", file: "monday-night-miracle.png", numbered: false,
     initials: "MIR",
     rule: "Led going into Monday night with fewer players left, and held on to win.",
-    detail: "The lead could be no more than 10 points per extra player the opponent had left.",
   },
   monday_night_master: {
     name: "Monday Night Master", file: "monday-night-master.png", numbered: false,
     initials: "MAS",
     rule: "Trailed going into Monday night and came back to win.",
-    detail: "Had to be down at least 15 points per extra player they had left (at least 15 with no extra players).",
   },
   lineup_king: {
     name: "Lineup King", file: "lineup-king.png", numbered: false,
-    rule: "Started the best lineup the roster allowed: nobody on the bench would have scored more.",
+    rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
   },
   businessman: {
     name: "Businessman", file: "businessman.png", numbered: false,
@@ -252,7 +250,7 @@ function badgeDetailHtml(badge, isFocus) {
       ${badgeHtml(badge, "pc-detail-badge")}
       <div class="pc-detail-text">
         <div class="pc-detail-name">${escapeHtml(title)}</div>
-        <div class="pc-detail-rule">${escapeHtml(meta.rule)}${meta.detail ? ` ${escapeHtml(meta.detail)}` : ""}</div>
+        <div class="pc-detail-rule">${escapeHtml(meta.rule)}</div>
         <ul class="pc-detail-events">${lines}</ul>
       </div>
     </div>`;
@@ -281,21 +279,31 @@ function badgeEventLines(badge) {
     case "ice_cold":
       return ev.map((e) => `${e.length} straight losses, Weeks ${e.start_week}–${e.end_week}`);
     case "lineup_king":
-      return ev.map((e) => `Week ${e.week}: ${e.points.toFixed(2)} points, the most the roster could score`);
+      return ev.map((e) => `Week ${e.week}: ${e.points.toFixed(2)} points`);
     case "monday_night_miracle":
-    case "monday_night_master": {
-      const players = (n) => (n === 1 ? "1 player" : `${n} players`);
-      return ev.map((e) =>
-        `Week ${e.week}: ${e.manager_before_monday.toFixed(2)}–${e.opponent_before_monday.toFixed(2)} going into Monday `
-        + `(${players(e.manager_monday_players)} left vs ${players(e.opponent_monday_players)}), `
-        + `beat ${opp(e)} ${score(e)}`);
-    }
+    case "monday_night_master":
+      // "Week 1: Led by 14.66 points going into Monday with a two-player
+      // disadvantage, beat Kevin Mallon 79.16–78.84"
+      return ev.map((e) => {
+        const gap = e.manager_before_monday - e.opponent_before_monday;
+        const side = gap >= 0 ? `Led by ${gap.toFixed(2)}` : `Trailed by ${(-gap).toFixed(2)}`;
+        return `Week ${e.week}: ${side} points going into Monday `
+          + `${playerEdge(e.manager_monday_players - e.opponent_monday_players)}, beat ${opp(e)} ${score(e)}`;
+      });
     default:
       return [];
   }
 }
 
 // --- Helpers ---
+
+// Players-left difference going into Monday, from the badge winner's side.
+function playerEdge(diff) {
+  if (diff === 0) return "with the same number of players left";
+  const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+  const n = Math.abs(diff);
+  return `with a ${words[n] || n}-player ${diff > 0 ? "advantage" : "disadvantage"}`;
+}
 
 // The template's name banner is 48% of the card wide. Big Shoulders
 // capitals average a little over half an em, so long names shrink to fit.
