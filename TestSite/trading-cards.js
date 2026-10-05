@@ -48,14 +48,13 @@ const BADGES = {
   monday_night_miracle: {
     name: "Monday Night Miracle", file: "monday-night-miracle.png", numbered: false,
     initials: "MIR",
-    // No rule line in the pop-up: each week's line already says how it
-    // was earned. The full rule is in scripts/player_cards.py.
-    hideRule: true,
     rule: "Led going into Monday night with fewer players left, and held on to win.",
   },
   monday_night_master: {
     name: "Monday Night Master", file: "monday-night-master.png", numbered: false,
     initials: "MAS",
+    // No rule line in the pop-up: each week's line already says how it
+    // was earned. The full rule is in scripts/player_cards.py.
     hideRule: true,
     rule: "Trailed going into Monday night and came back to win.",
   },
