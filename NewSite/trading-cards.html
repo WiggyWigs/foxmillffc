@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Trading Cards — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<main class="pc-main">
+  <div class="panel">
+    <h2 id="pc-title">Trading Cards</h2>
+    <p class="msi-meta" id="pc-meta">Tap a card to see its badges.</p>
+    <div id="pc-grid" class="pc-grid"></div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="pcModal" aria-hidden="true">
+  <div class="modal-card pc-modal-card" role="dialog" aria-modal="true" aria-labelledby="pcModalName">
+    <button class="modal-close" id="pcModalClose" aria-label="Close">&times;</button>
+    <div class="modal-badge" id="pcModalBadge"></div>
+    <div class="modal-name" id="pcModalName"></div>
+    <div class="modal-year" id="pcModalMeta"></div>
+    <div class="pc-modal-layout">
+      <div class="pc-modal-card-wrap" id="pcModalCard"></div>
+      <div class="pc-modal-badges" id="pcModalBadges"></div>
+    </div>
+  </div>
+</div>
+
+<script src="trading-cards.js"></script>
+
+</body>
+</html>
