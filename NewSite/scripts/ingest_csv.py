@@ -882,6 +882,16 @@ def compute_standings(all_games, roster_names):
     if not season_games:
         return None
 
+    return {"season": current_year, "standings": rank_season_games(season_games, roster_names)}
+
+
+def rank_season_games(season_games, roster_names):
+    """
+    The standings rows for one season's regular-season games, sorted
+    with the tiebreaks described in compute_standings() above. Split
+    out so other code (player_cards.py's "standings entering week N")
+    ranks with exactly the same rules instead of a second copy.
+    """
     per_mgr = {}
     h2h = defaultdict(lambda: defaultdict(lambda: {"wins": 0, "losses": 0, "ties": 0}))
 
@@ -974,7 +984,7 @@ def compute_standings(all_games, roster_names):
             "points_against": round(s["points_against"], 2),
         })
 
-    return {"season": current_year, "standings": standings}
+    return standings
 
 
 MIN_HISTORICAL_SAMPLES = 4  # below this, an exact bucket is too noisy to trust
