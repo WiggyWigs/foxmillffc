@@ -8,7 +8,7 @@ Feature: Trading Cards page (trading-cards.html)
 Status: NOT READY        <!-- READY or NOT READY -->
 
 Waiting on: cards for Brian Kleinhenz and Eddie McCumiskey (template.jpg
-stands in), badge art for Monday Night Miracle / Monday Night Master, and a
+stands in), badge art for Monday Night Miracle / Monday Night Master / Lineup King, and a
 "TEST weekly update" run to recompute stats.json's player_cards.
 Scripts change: never promote on Monday night or Tuesday morning.
 

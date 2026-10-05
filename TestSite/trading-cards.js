@@ -57,6 +57,10 @@ const BADGES = {
     rule: "Trailed going into Monday night and came back to win.",
     detail: "Had to be down at least 15 points per extra player they had left (at least 15 with no extra players).",
   },
+  lineup_king: {
+    name: "Lineup King", file: "lineup-king.png", numbered: false,
+    rule: "Started the best lineup the roster allowed: nobody on the bench would have scored more.",
+  },
   businessman: {
     name: "Businessman", file: "businessman.png", numbered: false,
     rule: "Most transactions (adds, drops and trades) in the regular season.",
@@ -276,6 +280,8 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: beat ${opp(e)} by ${e.margin.toFixed(2)} (${score(e)})`);
     case "ice_cold":
       return ev.map((e) => `${e.length} straight losses, Weeks ${e.start_week}–${e.end_week}`);
+    case "lineup_king":
+      return ev.map((e) => `Week ${e.week}: ${e.points.toFixed(2)} points, the most the roster could score`);
     case "monday_night_miracle":
     case "monday_night_master": {
       const players = (n) => (n === 1 ? "1 player" : `${n} players`);
