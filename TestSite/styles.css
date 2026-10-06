@@ -2294,3 +2294,71 @@ main {
 
 .pc-back-game-result.is-W { color: #1F6B3A; }
 .pc-back-game-result.is-L { color: #B3262B; }
+
+/* --- Current Season: "Week N Badges" --- */
+.wb-list {
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.wb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.55rem 0.4rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.wb-row + .wb-row {
+  border-top: 1px solid var(--hairline);
+}
+
+.wb-row:hover {
+  background: rgba(184, 80, 31, 0.06);
+}
+
+.wb-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.wb-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wb-title {
+  font-size: 0.98rem;
+}
+
+.wb-tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+  vertical-align: 1px;
+}
+
+.wb-tag.is-new {
+  color: #FFFCF6;
+  background: var(--rust);
+  border-color: var(--rust);
+}
+
+.wb-line {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
