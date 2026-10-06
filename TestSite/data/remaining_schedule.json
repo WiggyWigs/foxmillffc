@@ -1,58 +1,6 @@
 {
   "year": 2026,
   "weeks": {
-    "3": [
-      {
-        "away_manager": "Josh Davis",
-        "home_manager": "Jason Carlton"
-      },
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Brian Kleinhenz"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Brian Harris"
-      },
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Greg Wigton"
-      }
-    ],
-    "4": [
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Eddie McCumiskey"
-      },
-      {
-        "away_manager": "Brian Kleinhenz",
-        "home_manager": "Blake Pratt"
-      },
-      {
-        "away_manager": "John Schauder",
-        "home_manager": "Carl Bruce"
-      },
-      {
-        "away_manager": "Jay Nelson",
-        "home_manager": "Kevin Mallon"
-      },
-      {
-        "away_manager": "Brian Harris",
-        "home_manager": "Greg Wigton"
-      }
-    ],
     "5": [
       {
         "away_manager": "Josh Davis",
