@@ -1888,6 +1888,7 @@ main {
   border: none;
   background: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   border-radius: 6px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -2156,6 +2157,18 @@ main {
   border: none;
   background: none;
   cursor: pointer;
+  /* Phones draw a grey tap highlight over a tapped button; on the light
+     card back it showed as a flash just before the flip. */
+  -webkit-tap-highlight-color: transparent;
+  /* Safari can flicker for a frame when a 3D turn starts; this is the
+     standard guard against that. */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* No focus ring after a tap or click; keyboard users still get one. */
+.pc-flip:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Both faces sit in the same grid cell and stay laid out; the hidden
