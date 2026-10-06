@@ -308,10 +308,15 @@ function flipCardHtml(card) {
     <div class="pc-flip-hint">Tap the card to flip it</div>`;
 }
 
-// The flip runs in two halves: turn to edge-on, swap faces while the
-// card is invisible, turn back. Nothing is left rotated afterwards, which
-// keeps clear of the iPhone Safari repaint bug (see #pcModal in
-// styles.css). Reduced-motion users get an instant swap.
+// The flip keeps turning one way, like a real card: 0 -> 90 degrees
+// (edge-on, neither face visible), swap faces, then -90 -> 0. Each half
+// is its own short animation with nothing held afterwards, so the card
+// is never left rotated, which keeps clear of the iPhone Safari repaint
+// bug (see #pcModal in styles.css). Each tap flips the same direction,
+// as if turning the card over in your hand. Reduced-motion users get an
+// instant swap.
+const FLIP_HALF_MS = 300;
+
 function setupFlip(wrap) {
   const btn = wrap.querySelector(".pc-flip");
   const front = wrap.querySelector(".pc-flip-front");
@@ -324,16 +329,23 @@ function setupFlip(wrap) {
     front.hidden = showBack;
     btn.setAttribute("aria-pressed", String(showBack));
   };
-  btn.addEventListener("click", () => {
+  const turn = (from, to, easing) => btn.animate(
+    [{ transform: `perspective(1200px) rotateY(${from}deg)` },
+     { transform: `perspective(1200px) rotateY(${to}deg)` }],
+    { duration: FLIP_HALF_MS, easing },
+  ).finished;
+
+  btn.addEventListener("click", async () => {
     if (busy) return;
-    if (reduce) { swap(); return; }
+    if (reduce || !btn.animate) { swap(); return; }
     busy = true;
-    btn.classList.add("is-turning");
-    setTimeout(() => {
+    try {
+      await turn(0, 90, "cubic-bezier(0.4, 0, 1, 1)");    // speed up into edge-on
       swap();
-      btn.classList.remove("is-turning");
-      setTimeout(() => { busy = false; }, 220);
-    }, 220);
+      await turn(-90, 0, "cubic-bezier(0, 0, 0.2, 1)");   // ease out as it lands
+    } finally {
+      busy = false;
+    }
   });
 }
 

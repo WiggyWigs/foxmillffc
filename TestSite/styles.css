@@ -2156,14 +2156,23 @@ main {
   border: none;
   background: none;
   cursor: pointer;
-  transition: transform 0.22s ease-in;
 }
 
-.pc-flip.is-turning {
-  transform: perspective(1200px) rotateY(90deg);
+/* Both faces sit in the same grid cell and stay laid out; the hidden
+   one is only invisible. That way the back (image, fonts, game list) is
+   drawn when the pop-up opens, not in the middle of the first flip. */
+.pc-flip {
+  display: grid;
 }
 
-.pc-flip-face[hidden] { display: none; }
+.pc-flip-face {
+  grid-area: 1 / 1;
+}
+
+.pc-flip-face[hidden] {
+  display: block;
+  visibility: hidden;
+}
 
 .pc-flip-hint {
   text-align: center;
