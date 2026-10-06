@@ -2363,12 +2363,22 @@ def main():
     week_in_history = stats.get("week_in_history")
     if week_in_history:
         try:
+            print(f"Club History selected: {week_in_history['year']} week {week_in_history['week']}, "
+                  f"{week_in_history['away_manager']} vs {week_in_history['home_manager']} "
+                  f"({week_in_history['away_score']}-{week_in_history['home_score']}).")
+            print(f"Reason: {week_in_history['selection_reason']}: "
+                  f"{describe_week_in_history_selection(week_in_history)}")
+        except Exception as e:
+            print(f"WARNING: couldn't describe the Club History pick: {e}")
+        try:
             wih_system, wih_user = build_week_in_history_prompt(week_in_history, stats["games"], tone)
             week_in_history_narrative = call_claude(wih_system, wih_user)
             week_in_history["narrative"] = week_in_history_narrative
         except Exception as e:
             print(f"WARNING: This Week in Club History narrative failed: {e}")
             week_in_history["narrative"] = None
+    else:
+        print("No Club History game selected this week (ingest_csv.py found no candidate).")
 
     if (recap_text is None and gotw_text is None and not any(callouts.values())
             and current_highest_scoring_players is None
