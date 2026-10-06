@@ -7,12 +7,20 @@
 //   images/cards/<first>-<last>-<year>.jpg   e.g. daniel-bahamonde-2026.jpg
 //   images/badges/<badge-file>.png           see BADGES in badges.js
 //   images/badges/rank-01.png … rank-12.png  standings stamps
+//   images/overlays/level-4.jpg … level-12.jpg  wear for ranks 4-12
 // A missing card falls back to images/cards/template.jpg (the blank card)
 // with the manager's name and season printed into its banners. A
-// missing badge keeps its space and shows its initials.
+// missing badge keeps its space and shows its initials. A missing wear
+// overlay just means that rank's card shows no wear.
 
 const CARD_PLACEHOLDER = "images/cards/template.jpg";
 const BADGE_PLACEHOLDER = "images/badges/badge-placeholder.png";
+
+// Cards ranked this high or better stay pristine; every rank below gets
+// images/overlays/level-<rank>.jpg. The overlays are drawn on pure white
+// and multiplied onto the card (see .pc-overlay), so white does nothing
+// and only the darker wear marks show.
+const PRISTINE_THROUGH_RANK = 3;
 
 // Badges are clicked straight off the card only where there's a mouse.
 // On touch screens they're too small to hit, so a tap anywhere on the
@@ -98,9 +106,19 @@ function cardHtml(card, lazy = true) {
            onerror="cardImageMissing(this)">
       <div class="pc-placeholder-name" style="font-size:${placeholderNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
       <div class="pc-placeholder-year">${season.season}</div>
+      ${overlayHtml(card)}
       <div class="pc-stamp">${stampHtml(card)}</div>
       <div class="pc-badges">${badges}</div>
     </div>`;
+}
+
+// Wear sits above the photo and printed name but under the stamp and
+// badges, so those stay readable and clickable. It follows the rank, not
+// the manager: whoever is 12th gets level-12.
+function overlayHtml(card) {
+  if (card.rank <= PRISTINE_THROUGH_RANK) return "";
+  return `<img class="pc-overlay" src="images/overlays/level-${card.rank}.jpg" alt=""
+               onerror="this.remove()">`;
 }
 
 // The stamp is meant to look hand-pressed: each card gets its own tilt

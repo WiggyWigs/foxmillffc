@@ -1915,6 +1915,18 @@ main {
   object-fit: cover;
 }
 
+/* Wear overlay for lower-ranked cards. Drawn on white, multiplied:
+   white leaves the card untouched, darker marks darken it. */
+.pc-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
 .pc-stamp {
   position: absolute;
   left: 80%;
