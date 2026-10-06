@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Each section renders independently — one section's bug should
   // never take down the rest of the page.
-  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings, renderRecordBooks];
+  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings, renderRecordBooks, renderWeekBadges];
   for (const renderFn of sections) {
     try {
       renderFn(data);
@@ -92,6 +92,41 @@ function renderRecap(data) {
   renderStatOfTheWeek(data.stat_of_the_week);
   renderBoxScores(recap.box_scores || []);
   renderHonorableMention(recap);
+}
+
+// "Week N Badges": every trading card badge added or increased in the
+// most recent week (weekBadgeHighlights in badges.js). Each row links to
+// the Trading Cards page. Hidden when nothing was earned that week, or
+// when the badge data isn't there yet.
+function renderWeekBadges(data) {
+  const divider = document.getElementById("week-badges-divider");
+  const section = document.getElementById("week-badges-section");
+  const list = document.getElementById("week-badges-list");
+  const pc = data.player_cards;
+  const season = pc?.seasons?.[pc.current_season];
+  if (!section || !list || !season || typeof weekBadgeHighlights !== "function") return;
+
+  const week = season.through_week;
+  const rows = weekBadgeHighlights(season, week);
+  if (!rows.length) return;
+
+  document.getElementById("week-badges-heading").textContent = `Week ${week} Badges`;
+  list.innerHTML = rows.map((r) => {
+    const meta = BADGES[r.badge.id] || { name: r.badge.id, file: "" };
+    const tag = r.isNew ? "New" : r.change;
+    return `
+      <a class="wb-row" href="trading-cards.html">
+        <img class="wb-icon" src="images/badges/${meta.file}" alt="" onerror="this.style.visibility='hidden'">
+        <span class="wb-text">
+          <span class="wb-title"><strong>${escapeHtml(r.manager)}</strong> · ${escapeHtml(meta.name)}
+            <span class="wb-tag${r.isNew ? " is-new" : ""}">${escapeHtml(tag)}</span></span>
+          <span class="wb-line">${r.line.replace(/^Week \d+: /, "")}</span>
+        </span>
+      </a>`;
+  }).join("");
+
+  section.style.display = "";
+  if (divider) divider.style.display = "";
 }
 
 function escapeHtml(s) {
