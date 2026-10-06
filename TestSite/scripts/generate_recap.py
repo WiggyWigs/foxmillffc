@@ -890,6 +890,19 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
 
 # --- Game of the Week (AI both picks and writes) ---------------------------
 
+def competition_ranks(values):
+    """{manager: rank}, highest value first, tied values sharing a rank
+    (1, 2, 2, 4), the same way the Power Rankings table numbers ties.
+    Managers with no value are left out."""
+    ordered = sorted(((v, m) for m, v in values.items() if v is not None), reverse=True)
+    ranks, prev = {}, None
+    for i, (v, m) in enumerate(ordered):
+        if v != prev:
+            rank, prev = i + 1, v
+        ranks[m] = rank
+    return ranks
+
+
 def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
     """Shared data-gathering for both the selection and writing steps —
     computed once, used by whichever step needs it."""
@@ -908,6 +921,12 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
     if stats.get("power_rankings"):
         for row in stats["power_rankings"]["rankings"]:
             power[row["manager"]] = row
+    # League-wide ranks over all teams, not just this week's matchups:
+    # the selection prompt only sees the matchups left after the Impact
+    # Game filter, so it can't rank the league itself (TEST run
+    # 2026-10-06 called a team tied for 7th "top 5" that way).
+    power_rank = competition_ranks({m: r.get("power_score") for m, r in power.items()})
+    points_rank = competition_ranks({m: r.get("points_scored") for m, r in power.items()})
 
     playoff_prob = {}
     pp = stats.get("playoff_probabilities")
@@ -943,7 +962,9 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             "season_wins": wins,
             "season_losses": losses,
             "season_power_score": p.get("power_score"),
+            "season_power_rank": power_rank.get(name),
             "season_points_avg": points_avg,
+            "season_points_rank": points_rank.get(name),
             "season_schedule_difficulty": schedule_difficulty,
             "season_playoff_probability_pct": playoff_prob.get(name),
         }
@@ -1174,7 +1195,14 @@ def build_matchup_selection_prompt(enriched, criteria):
         "use each manager's away_career_history / home_career_history "
         "field (career_championships > 0 means that manager has won "
         "a championship before) — this is the complete, real history "
-        "and should be used directly rather than any other field."
+        "and should be used directly rather than any other field. "
+        "season_standings_rank, season_power_rank and season_points_rank "
+        "are already computed across the WHOLE league (tied teams share "
+        "a rank) — use them as given; never re-rank teams from the "
+        "matchups listed, which may not include every team. When the "
+        "criteria are a numbered list, check each tier in order against "
+        "every matchup and pick from the first tier that any matchup "
+        "satisfies; name that tier in line 2."
     )
     user = (
         f"Selection criteria: {criteria}\n\n"
