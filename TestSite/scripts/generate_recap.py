@@ -430,6 +430,20 @@ def get_week_games(stats):
     return enriched, latest_week, current_year
 
 
+def standings_ranks(stats):
+    """{manager: 1-indexed rank} in the current real W/L standings order."""
+    ranks = {}
+    if stats.get("current_standings"):
+        for i, row in enumerate(stats["current_standings"]["standings"]):
+            ranks[row["manager"]] = i + 1
+    return ranks
+
+
+def describe_rank(ranks, manager):
+    rank = ranks.get(manager)
+    return f"{manager} (#{rank})" if rank else f"{manager} (unranked)"
+
+
 def find_honorable_mention(week_games, impact_game, stats, excluded_managers=None):
     """
     Picks the week's Honorable Mention game, distinct from the Impact
@@ -459,10 +473,7 @@ def find_honorable_mention(week_games, impact_game, stats, excluded_managers=Non
     "top6_matchup", "next_closest_margin", "biggest_blowout";
     blowout_detail is only set for the blowout tier.
     """
-    standings = {}
-    if stats.get("current_standings"):
-        for i, row in enumerate(stats["current_standings"]["standings"]):
-            standings[row["manager"]] = i + 1  # 1-indexed rank, real W/L standings order
+    standings = standings_ranks(stats)
 
     def is_same_game(g):
         return ({g["away_manager"], g["home_manager"]}
@@ -2117,6 +2128,14 @@ def main():
     try:
         if week_games:
             closest_game = min(week_games, key=lambda g: g["margin"])
+            tied = [g for g in week_games if g["margin"] == closest_game["margin"]]
+            others = sorted(g["margin"] for g in week_games if g is not closest_game)
+            print(f"Impact Game selected: {closest_game['away_manager']} vs {closest_game['home_manager']}.")
+            print(f"Reason: closest final margin of week {week} "
+                  f"({closest_game['margin']} pts; next closest "
+                  f"{others[0] if others else 'n/a'} pts)"
+                  + (f"; tied with {len(tied) - 1} other game(s), first in schedule order wins"
+                     if len(tied) > 1 else "") + ".")
             system, user, recap_away_team, recap_home_team = build_recap_prompt(
                 closest_game, week, year, stats, lore, old_stats, tone, rotation_state
             )
@@ -2158,12 +2177,18 @@ def main():
             # Avoid repeating an Impact Game manager here too, if at all
             # possible — but never let this filter leave zero candidates;
             # showing a repeat manager beats skipping Game of the Week.
+            gotw_filter_note = "no Impact Game managers to exclude"
             if enriched and impact_game_managers:
                 narrowed = [m for m in enriched
                            if m.get("away_manager") not in impact_game_managers
                            and m.get("home_manager") not in impact_game_managers]
                 if narrowed:
+                    gotw_filter_note = (f"{len(narrowed)} of {len(enriched)} matchups eligible "
+                                        f"after excluding Impact Game managers")
                     enriched = narrowed
+                else:
+                    gotw_filter_note = ("every matchup involves an Impact Game manager, "
+                                        "so the exclusion was waived")
 
             if enriched:
                 week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
@@ -2189,6 +2214,7 @@ def main():
                     print(f"WARNING: couldn't parse a valid selection from: {selection_text!r} — "
                           f"falling back to the first matchup.")
                     chosen = enriched[0]
+                    selection_reasoning = "fallback: AI selection failed, used the first eligible matchup"
 
                 gotw_away_team, gotw_home_team = chosen.get("away_team"), chosen.get("home_team")
                 gotw_matchup = {
@@ -2197,7 +2223,8 @@ def main():
                 }
                 gotw_managers = {chosen["away_manager"], chosen["home_manager"]}
                 print(f"Game of the Week selected: {chosen['away_manager']} vs {chosen['home_manager']}.")
-                print(f"Reason: {selection_reasoning or '(no reasoning line returned)'}")
+                print(f"Reason: week {upcoming.get('week')} criteria "
+                      f"({gotw_filter_note}): {selection_reasoning or '(no reasoning line returned)'}")
 
                 # Call 2: writing only, about the one already-chosen matchup.
                 write_system, write_user = build_gotw_writing_prompt(chosen, tone)
@@ -2230,9 +2257,25 @@ def main():
                 hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
                     hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state
                 )
+                ranks = standings_ranks(stats)
+                a, h = hm_game["away_manager"], hm_game["home_manager"]
+                matchup = f"{describe_rank(ranks, a)} vs {describe_rank(ranks, h)}"
+                if hm_reason == "top6_matchup":
+                    why = f"tier 1, closest top-6 vs top-6 game: {matchup}, margin {hm_game['margin']} pts"
+                elif hm_reason == "next_closest_margin":
+                    why = (f"tier 2, no top-6 vs top-6 game; next closest margin "
+                           f"{hm_game['margin']} pts (under 15): {matchup}")
+                else:
+                    flags = [k for k, v in (hm_blowout_detail or {}).items() if v]
+                    why = (f"tier 3, no other game within 15 pts; biggest blowout "
+                           f"{hm_game['margin']} pts: {matchup}"
+                           + (f" [{', '.join(flags)}]" if flags else ""))
+                if {a, h} & excluded_managers:
+                    why += "; manager exclusion waived (no game left without a featured manager)"
+                print(f"Honorable Mention selected: {a} vs {h}.")
+                print(f"Reason: {why}.")
                 honorable_mention_text = call_claude(hm_system, hm_user)
-                print(f"Generated Honorable Mention ({hm_reason}): "
-                      f"{hm_game['away_manager']} vs {hm_game['home_manager']}.")
+                print("Generated Honorable Mention.")
             else:
                 print("Only one game this week — no separate Honorable Mention possible.")
     except Exception as e:
