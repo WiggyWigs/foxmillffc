@@ -2306,7 +2306,6 @@ main {
 .wb-row {
   display: flex;
   align-items: center;
-  justify-content: center;   /* badge + text centred in its column */
   gap: 0.9rem;
   padding: 0.55rem 0.4rem;
   color: inherit;
