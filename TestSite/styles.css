@@ -2306,6 +2306,7 @@ main {
 .wb-row {
   display: flex;
   align-items: center;
+  justify-content: center;   /* badge + text centred in its column */
   gap: 0.9rem;
   padding: 0.55rem 0.4rem;
   color: inherit;
@@ -2361,4 +2362,26 @@ main {
 .wb-line {
   font-size: 0.86rem;
   color: var(--ink-soft);
+}
+
+/* 4+ badges: two columns, filled left to right, top to bottom. */
+.wb-list.wb-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1.5rem;
+  max-width: 920px;
+}
+
+.wb-list.wb-two .wb-row:nth-child(2) {
+  border-top: none;
+}
+
+@media (max-width: 640px) {
+  .wb-list.wb-two {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-list.wb-two .wb-row:nth-child(2) {
+    border-top: 1px solid var(--hairline);
+  }
 }

@@ -111,6 +111,9 @@ function renderWeekBadges(data) {
   if (!rows.length) return;
 
   document.getElementById("week-badges-heading").textContent = `Week ${week} Badges`;
+  // 1-3 badges: one column. 4 or more: two columns, so the section
+  // stays short (phones always get one column; see .wb-two in styles.css).
+  list.classList.toggle("wb-two", rows.length >= 4);
   list.innerHTML = rows.map((r) => {
     const meta = BADGES[r.badge.id] || { name: r.badge.id, file: "" };
     const tag = r.isNew ? "New" : r.change;
