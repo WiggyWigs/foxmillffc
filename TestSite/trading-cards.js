@@ -315,7 +315,7 @@ function flipCardHtml(card) {
 // bug (see #pcModal in styles.css). Each tap flips the same direction,
 // as if turning the card over in your hand. Reduced-motion users get an
 // instant swap.
-const FLIP_HALF_MS = 300;
+const FLIP_HALF_MS = 450;   // 0.9s for the whole flip
 
 function setupFlip(wrap) {
   const btn = wrap.querySelector(".pc-flip");
