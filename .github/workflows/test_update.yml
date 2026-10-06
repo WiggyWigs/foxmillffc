@@ -18,6 +18,11 @@ on:
         description: 'Pretend the season stopped after this week'
         required: true
         type: string
+      skip_narratives:
+        description: 'Skip AI narratives (no Claude API calls; for testing page changes)'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -63,11 +68,19 @@ jobs:
           ESPN_S2: ${{ secrets.ESPN_S2 }}
         run: python TestSite/scripts/espn_pull.py
 
+      # With skip_narratives checked, the API key is withheld, so no Claude
+      # call can be made. The script still runs: box scores, callouts and
+      # the Impact Game / Honorable Mention picks are computed without AI,
+      # and each narrative logs a "ANTHROPIC_API_KEY not set" warning.
       - name: Generate weekly recap narratives (test-cutoff mode)
         continue-on-error: true
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python TestSite/scripts/generate_recap.py
+          ANTHROPIC_API_KEY: ${{ !inputs.skip_narratives && secrets.ANTHROPIC_API_KEY || '' }}
+        run: |
+          if [ "${{ inputs.skip_narratives }}" = "true" ]; then
+            echo "skip_narratives is checked: no Claude API calls this run. Narrative text will be empty."
+          fi
+          python TestSite/scripts/generate_recap.py
 
       - name: Commit and push TestSite data
         run: |
