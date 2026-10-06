@@ -67,6 +67,8 @@ MSI = 2.0 × (playoff appearances / seasons)
 ## 9. Playoff Probability
 
 * Shown starting after Week 3.
+* Each record starts from its historical playoff rate (past teams with the same record after the same week).
+* A better record never starts below a worse one. If the history puts them out of order (e.g. 2-2 above 3-1), the worse record is first lowered to the better record's rate, then the better record gets +5% and the worse record −5%. The points and schedule bonuses below are applied after this, so individual managers can still cross.
 * For managers with identical records, bonus points are computed from total points (not per-game averages):
    * Points gap over 15 / 30 / 45 / 60 / 75 earns +1% / 2% / 3% / 4% / 5% (max 5%).
    * Schedule-difficulty gap over 4 / 7 / 10 / 13 / 16 points earns +1% / 2% / 3% / 4% / 5% (max 5%).

@@ -998,10 +998,47 @@ TIE_POINTS_THRESHOLDS = [15, 30, 45, 60, 75]   # total points scored -> 1%..5%
 TIE_SCHED_THRESHOLDS = [4, 7, 10, 13, 16]      # schedule-difficulty gap, in
                                                # percentage points -> 1%..5%
 
+# Record-order rule: a better record must never start with lower odds than
+# a worse one. With only a few past seasons, a record's historical rate can
+# come out backwards (e.g. 2-2 at 71% above 3-1 at 60%). When it does, the
+# worse record is brought down to the better record's rate, then the better
+# record gets +RECORD_ORDER_STEP and the worse record -RECORD_ORDER_STEP.
+RECORD_ORDER_STEP = 5.0
+
 
 def _tier_pct(gap, thresholds):
     """Number of thresholds the gap strictly exceeds (0-5) == percentage points."""
     return sum(1 for t in thresholds if gap > t)
+
+
+def enforce_record_order(rates):
+    """
+    rates: {(wins, losses, ties): base rate in percent} for the records
+    present this week. Returns a new dict where a better record (higher
+    win %, see LEAGUE_RULES.md section 4) never has a lower rate than a
+    worse one: for each out-of-order neighbouring pair, the worse record is
+    lowered to the better one's rate, then the better gets +5 and the worse
+    -5 (RECORD_ORDER_STEP). Repeats until nothing is out of order, since
+    one fix can push a record past its other neighbour. Clamped to 0-100.
+    """
+    def win_pct(rec):
+        w, l, t = rec
+        played = w + l + t
+        return (w / played) if played else 0.0
+
+    order = sorted(rates, key=lambda r: (-win_pct(r), -r[0]))
+    out = dict(rates)
+    for _ in range(100):  # each pass fixes at least one pair; this is a safety stop
+        changed = False
+        for better, worse in zip(order, order[1:]):
+            if out[worse] > out[better] + 1e-9:
+                out[worse] = out[better]
+                out[better] = min(100.0, out[better] + RECORD_ORDER_STEP)
+                out[worse] = max(0.0, out[worse] - RECORD_ORDER_STEP)
+                changed = True
+        if not changed:
+            break
+    return out
 
 
 def compute_tie_adjustments(group):
@@ -2178,6 +2215,21 @@ def compute_playoff_probabilities(all_games, roster_names, model):
             "points_scored": round(points_scored.get(mgr, 0.0), 2),
             "schedule_difficulty": sched_diff.get(mgr, 0.0),
         })
+
+    # Record-order rule (enforce_record_order above): keep a better record
+    # from starting below a worse one before any tie-break nudges.
+    weekly_ties = {e["manager"]: weekly[e["manager"]][current_week][2] for e in entries}
+    record_rates = {}
+    for e in entries:
+        record_rates[(e["wins"], e["losses"], weekly_ties[e["manager"]])] = e["base_rate"] * 100
+    ordered = enforce_record_order(record_rates)
+    for e in entries:
+        rec = (e["wins"], e["losses"], weekly_ties[e["manager"]])
+        new_rate = ordered[rec] / 100
+        if abs(new_rate - e["base_rate"]) > 1e-9:
+            e["historical_rate"] = e["base_rate"]
+            e["basis"] += f"; record-order rule {e['base_rate'] * 100:.1f}% -> {ordered[rec]:.1f}%"
+            e["base_rate"] = round(new_rate, 4)
 
     # Adjust for ties on identical (wins, losses) using the tiered
     # head-to-head comparisons in compute_tie_adjustments() above. A group
