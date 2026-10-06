@@ -2171,8 +2171,19 @@ def main():
                 # Call 1: selection only.
                 selection_enriched = add_selection_only_context(enriched, stats)
                 sel_system, sel_user = build_matchup_selection_prompt(selection_enriched, week_criteria)
-                selection_text = call_claude(sel_system, sel_user, max_tokens=1500)
-                chosen, selection_reasoning = parse_matchup_selection(selection_text, enriched)
+                # No small max_tokens here: the model thinks by default and
+                # its thinking counts against max_tokens, so a 1500 cap could
+                # be spent entirely on thinking and return no text at all
+                # (TEST run 2026-10-06: stop_reason='max_tokens'). The cap is
+                # only a ceiling; a normal selection uses a fraction of it.
+                try:
+                    selection_text = call_claude(sel_system, sel_user)
+                    chosen, selection_reasoning = parse_matchup_selection(selection_text, enriched)
+                except Exception as e:
+                    # Selection failing shouldn't cost the week its Game of
+                    # the Week: fall through to the first-matchup fallback.
+                    print(f"WARNING: Game of the Week selection failed: {e}")
+                    selection_text, chosen, selection_reasoning = None, None, None
 
                 if chosen is None:
                     print(f"WARNING: couldn't parse a valid selection from: {selection_text!r} — "
