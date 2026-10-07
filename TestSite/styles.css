@@ -1946,6 +1946,15 @@ main {
 
 body.pc-hide-badges .pc-badges { display: none; }
 
+.pc-intro {
+  max-width: 42rem;
+  margin: 0 auto 0.75rem;
+  color: var(--ink);
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .pc-toggle {
   display: flex;
   align-items: center;
