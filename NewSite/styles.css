@@ -1944,6 +1944,28 @@ main {
 .pc-stamp.is-placeholder img { display: none; }
 .pc-stamp.is-placeholder .pc-stamp-text { display: block; }
 
+body.pc-hide-badges .pc-badges { display: none; }
+
+.pc-intro {
+  max-width: 42rem;
+  margin: 0 auto 0.75rem;
+  color: var(--ink);
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.pc-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin: -0.75rem auto 1.25rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
 /* Up to 6 badges per row, two rows max (12 badges; there are 11).
    Row width = 6 x 9.5 badge + 5 x 1 gap = 62% of the card, centred.
    A third row would reach the managers' faces. */

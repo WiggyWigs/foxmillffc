@@ -24,6 +24,7 @@ let allGames = [];   // stats.json game log, for the back of the card
 
 document.addEventListener("DOMContentLoaded", async () => {
   setupModal();
+  setupBadgeToggle();
   const grid = document.getElementById("pc-grid");
   let data;
   try {
@@ -65,6 +66,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     openModal(season.cards[Number(btn.dataset.index)], badgeEl?.dataset.badge || null);
   });
 });
+
+// "Show badges" checkbox: hides the badge icons layered on the cards
+// (grid and pop-up) by toggling a class on <body>. The standings stamp
+// and the pop-up's badge list stay. The choice is remembered per browser.
+const SHOW_BADGES_KEY = "pc-show-badges";
+
+function setupBadgeToggle() {
+  const box = document.getElementById("pc-show-badges");
+  let saved = null;
+  try { saved = localStorage.getItem(SHOW_BADGES_KEY); } catch {}
+  box.checked = saved !== "false";
+  const apply = () => {
+    document.body.classList.toggle("pc-hide-badges", !box.checked);
+    try { localStorage.setItem(SHOW_BADGES_KEY, String(box.checked)); } catch {}
+  };
+  box.addEventListener("change", apply);
+  apply();
+}
 
 // --- Card markup (used for the grid and the larger copy in the pop-up) ---
 
