@@ -1959,6 +1959,87 @@ def _points_rank_stat(all_games, season_games, current_year, through_week, roste
     }
 
 
+def _past_last_place_teams(all_games, current_year, through_week, roster_names):
+    """For every past season with a full 14-week regular season:
+    {"year", "manager", "final": (w, l, t), "early": (w, l, t)} for the
+    team that finished last in the standings (rank_season_games, so the
+    league tiebreaks decide a tie for last), with its final record and
+    its record after `through_week`."""
+    out = []
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        season = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+        if not season or max(_week_sort_key(g["week"]) for g in season) < 14:
+            continue
+        last = rank_season_games(season, roster_names)[-1]
+        mgr = last["manager"]
+        early = [0, 0, 0]
+        for g in season:
+            if _week_sort_key(g["week"]) > through_week or mgr not in (g["away_manager"], g["home_manager"]):
+                continue
+            early[2 if g["tie"] else 0 if g["winner"] == mgr else 1] += 1
+        out.append({"year": year, "manager": mgr,
+                    "final": (last["wins"], last["losses"], last["ties"]),
+                    "early": tuple(early)})
+    return out
+
+
+def _fmt_record(wlt):
+    w, l, t = wlt
+    return f"{w}-{l}-{t}" if t else f"{w}-{l}"
+
+
+def _winless_start_stat(all_games, season_games, current_year, roster_names, through_week=5):
+    """Stat of the Week after Week 5 - a count, not a percentage:
+      1. How many past teams started 0-5.
+      2. If none ever did, how many past teams started 1-4.
+    The narrative adds each past last-place team's record after Week 5.
+    The list is this season's 0-5 teams, or its 1-4 teams if nobody is
+    0-5. None if no past season reached Week 5."""
+    winless = _historical_start_cohort(all_games, 0, through_week, through_week, current_year)
+    one_win = _historical_start_cohort(all_games, 1, through_week - 1, through_week, current_year)
+    reached = sorted({y for y in {g["year"] for g in all_games if g["year"] < current_year}
+                      if through_week in {_week_sort_key(g["week"]) for g in all_games
+                                          if g["year"] == y and g["game_type"] == "Regular"}})
+    if not reached:
+        return None
+    first_year = reached[0]
+    zero_label, one_label = f"0-{through_week}", f"1-{through_week - 1}"
+
+    if winless:
+        cohort, label, reason = winless, zero_label, f"start_{zero_label.replace('-', '_')}_count"
+        sentences = [f"The number of teams that have started {label} since {first_year}: "
+                     f"{_fmt_team_years(cohort)}."]
+    else:
+        cohort, label, reason = one_win, one_label, f"start_{one_label.replace('-', '_')}_count"
+        n = len(cohort)
+        sentences = [f"No team has started {zero_label} since {first_year}. "
+                     f"The number of teams that have started {label} since then: {n}."]
+
+    last_places = _past_last_place_teams(all_games, current_year, through_week, roster_names)
+    if last_places:
+        lines = [f"{lp['year']}: {lp['manager']} was {_fmt_record(lp['early'])} "
+                 f"(finished {_fmt_record(lp['final'])})" for lp in last_places]
+        sentences.append(f"Last-place teams after Week {through_week}:\n" + "\n".join(lines))
+        if not winless:
+            sunk = sum(lp["early"] == (1, through_week - 1, 0) for lp in last_places)
+            sentences.append(f"{sunk} of the {len(cohort)} teams that started {label} "
+                             f"finished last.")
+
+    this_year = _teams_with_record_now(season_games, through_week, 0, through_week)
+    now_label = zero_label
+    if not this_year:
+        this_year = _teams_with_record_now(season_games, through_week, 1, through_week - 1)
+        now_label = one_label
+
+    return {
+        "reason": reason, "value": len(cohort), "value_suffix": "",
+        "sample_size": len(cohort), "record_label": now_label,
+        "this_year_teams": this_year,
+        "teams_label": f"Managers that are {now_label} this year",
+        "narrative": "\n".join(sentences),
+    }
+
+
 def compute_stat_of_the_week(all_games, roster_names):
     """
     "Stat of the Week": one big number plus a short narrative, different
@@ -1980,6 +2061,11 @@ def compute_stat_of_the_week(all_games, roster_names):
          team was) - _points_not_standings_stat
       2. How often past top-6 scorers made the playoffs, and this
          season's top 6 in points - _points_rank_stat
+
+    Week 5 (a count, shown without a %) - _winless_start_stat:
+      1. Number of past teams that started 0-5
+      2. If there are none, number of past teams that started 1-4
+      Plus each past last-place team's record after Week 5.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2009,6 +2095,9 @@ def compute_stat_of_the_week(all_games, roster_names):
     if last_completed_week == 4:
         return (_points_not_standings_stat(all_games, season_games, current_year, 4, roster_names)
                 or _points_rank_stat(all_games, season_games, current_year, 4, roster_names))
+
+    if last_completed_week == 5:
+        return _winless_start_stat(all_games, season_games, current_year, roster_names)
 
     return None  # other weeks: not defined yet
 
@@ -2493,9 +2582,10 @@ def main():
     stats["stat_of_the_week"] = compute_stat_of_the_week(stats["games"], roster_names)
     if stats["stat_of_the_week"]:
         sotw = stats["stat_of_the_week"]
-        print(f"Stat of the Week: {sotw['reason']} -> {sotw['value']}% "
-              f"({sotw['made_playoffs']} of {sotw['sample_size']} made the playoffs; "
-              f"this year: {sotw['this_year_teams']})")
+        detail = (f"{sotw['made_playoffs']} of {sotw['sample_size']} made the playoffs"
+                  if "made_playoffs" in sotw else f"sample size {sotw['sample_size']}")
+        print(f"Stat of the Week: {sotw['reason']} -> {sotw['value']}{sotw.get('value_suffix', '%')} "
+              f"({detail}; this year: {sotw['this_year_teams']})")
     else:
         print("Stat of the Week: nothing defined/applicable for this week.")
     if stats["week_in_history"]:
