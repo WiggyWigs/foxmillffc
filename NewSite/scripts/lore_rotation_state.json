@@ -5,9 +5,11 @@
   },
   "Daniel Bahamonde": {
     "queue": [
-      0
+      0,
+      3,
+      1
     ],
-    "last_used": 3
+    "last_used": 2
   },
   "Josh Davis": {
     "queue": [],
@@ -15,7 +17,8 @@
   },
   "Eddie McCumiskey": {
     "queue": [
-      1
+      1,
+      2
     ],
     "last_used": 0
   },
@@ -29,14 +32,18 @@
   },
   "John Schauder": {
     "queue": [
-      0
+      0,
+      1
     ],
-    "last_used": 1
+    "last_used": 2
   },
   "Brian Harris": {
     "queue": [
-      4
+      4,
+      3,
+      2,
+      0
     ],
-    "last_used": 3
+    "last_used": 1
   }
 }
