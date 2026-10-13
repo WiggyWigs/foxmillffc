@@ -1820,11 +1820,31 @@ def parse_and_strip_gotw_prefix(gotw_text, upcoming):
 
 # --- Callout: last week's featured Game of the Week, actual result --------
 
-def callout_last_gotw_result(old_stats, new_games):
+def find_last_gotw_pick(old_stats, new_games):
+    """The Game of the Week pick made for the week that was just played.
+    Normally that's the pick in the before-this-run snapshot, but on a
+    re-run of the same week the snapshot's pick is already the one for
+    the week AHEAD, so the pick stored as game_of_the_week_last_pick is
+    used instead. Only a pick for the latest completed regular-season
+    week counts, so an old leftover pick is never reported."""
+    regular = [g for g in new_games if g.get("game_type") == "Regular"]
+    if not regular:
+        return None
+    year = max(g["year"] for g in regular)
+    played = max(week_num(g["week"]) for g in regular if g["year"] == year)
+    recap = (old_stats or {}).get("weekly_recap", {})
+    for pick in (recap.get("game_of_the_week_matchup"), recap.get("game_of_the_week_last_pick")):
+        if (pick and pick.get("manager_a") and pick.get("manager_b") and pick.get("week")
+                and pick.get("year") == year and week_num(pick["week"]) == played):
+            return pick
+    return None
+
+
+def callout_last_gotw_result(old_pick, new_games):
     """This one stays sentence-style rather than the name+number card
     format — a head-to-head result genuinely doesn't compress into a
-    single headline and number the way the others do."""
-    old_pick = (old_stats or {}).get("weekly_recap", {}).get("game_of_the_week_matchup")
+    single headline and number the way the others do. old_pick comes
+    from find_last_gotw_pick()."""
     if not old_pick:
         return None
     a, b = old_pick.get("manager_a"), old_pick.get("manager_b")
@@ -2348,9 +2368,15 @@ def main():
         print(f"WARNING: Honorable Mention generation failed: {e}")
 
     # --- Callouts: each independent, each fails softly on its own ---
+    try:
+        last_gotw_pick = find_last_gotw_pick(old_stats, stats.get("games", []))
+    except Exception as e:
+        print(f"WARNING: couldn't find last week's Game of the Week pick: {e}")
+        last_gotw_pick = None
+
     callouts = {}
     try:
-        callouts["last_gotw_result"] = callout_last_gotw_result(old_stats, stats.get("games", []))
+        callouts["last_gotw_result"] = callout_last_gotw_result(last_gotw_pick, stats.get("games", []))
     except Exception as e:
         print(f"WARNING: last_gotw_result callout failed: {e}")
 
@@ -2454,6 +2480,7 @@ def main():
         "game_of_the_week": gotw_text,
         "game_of_the_week_week": upcoming.get("week") if upcoming else None,
         "game_of_the_week_matchup": gotw_matchup,  # structured, for next week's result lookup
+        "game_of_the_week_last_pick": last_gotw_pick,  # the pick for the week just played; survives a re-run
         "game_of_the_week_away_team": gotw_away_team,
         "game_of_the_week_home_team": gotw_home_team,
         "callouts": callouts,
