@@ -288,7 +288,7 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
     # saved before those fields existed are fetched again and replaced.
     managers_captured_by_week = {}
     for e in existing:
-        if e["year"] == year_str and all("acquisition_type" in pl for pl in e["players"]):
+        if e["year"] == year_str and all("waiver_pickup" in pl for pl in e["players"]):
             managers_captured_by_week.setdefault(e["week"], set()).add(e["manager"])
 
     # Which players each team drafted this season, by ESPN team id. Keeper
@@ -300,6 +300,30 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
             drafted_by_team.setdefault(team_id, set()).add(pick.playerId)
     if not drafted_by_team:
         print("WARNING: no draft data from ESPN — drafted_by_manager will be unknown (null).")
+
+    # Executed waiver / free-agent adds this season: {(team_id, player_id):
+    # first scoring period added}. ESPN's box scores don't say how a player
+    # joined a roster (acquisitionType comes back empty), so the
+    # transaction log is the source. Trades aren't included on purpose.
+    waiver_adds = {}
+    transactions_ok = False
+    for sp in range(0, latest_completed_week + 1):
+        try:
+            txns = league.transactions(scoring_period=sp, types={"FREEAGENT", "WAIVER"})
+        except Exception as e:
+            if "No transactions found" not in str(e):
+                print(f"WARNING: couldn't fetch transactions for scoring period {sp}: {e}")
+            continue
+        transactions_ok = True
+        for t in txns:
+            if str(getattr(t, "status", "")).upper() != "EXECUTED":
+                continue
+            for item in t.items:
+                if item.type != "ADD":
+                    continue
+                key = (item.to_team_id if item.to_team_id is not None else t.team_id, item.playerId)
+                waiver_adds[key] = min(waiver_adds.get(key, sp), sp)
+    print(f"Waiver/free-agent adds found this season: {len(waiver_adds)}")
 
     new_entries = []
     for wk in range(1, latest_completed_week + 1):
@@ -339,12 +363,14 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
                         "eligible_slots": getattr(p, "eligibleSlots", []),
                         "game_date": getattr(p, "game_date", None).isoformat() if getattr(p, "game_date", None) else None,
                         "player_id": getattr(p, "playerId", None),
-                        # How the player joined this roster: "DRAFT", "ADD"
-                        # (waivers / free agency) or "TRADE"; None if ESPN
-                        # didn't say.
-                        "acquisition_type": getattr(p, "acquisitionType", None) or None,
                         "drafted_by_manager": (getattr(p, "playerId", None) in drafted
                                                if drafted is not None else None),
+                        # This team added him off waivers / free agency in or
+                        # before this week. None if the transaction log
+                        # couldn't be read.
+                        "waiver_pickup": ((team.team_id, getattr(p, "playerId", None)) in waiver_adds
+                                          and waiver_adds[(team.team_id, p.playerId)] <= wk
+                                          if transactions_ok else None),
                     }
                     for p in lineup
                 ]

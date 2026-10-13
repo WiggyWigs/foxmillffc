@@ -90,7 +90,6 @@ MNF_MASTER_POINTS_PER_PLAYER = 15
 # Diamond in the Rough: points a waiver/free-agent pickup must beat, by
 # position. Positions not listed (D/ST) can't earn it.
 DIAMOND_THRESHOLDS = {"QB": 24, "RB": 15, "WR": 15, "TE": 15, "K": 15}
-WAIVER_ACQUISITIONS = {"ADD", "WAIVER", "FREEAGENT"}
 
 # player_lineups.json stores kickoff times in UTC (Sunday Night Football
 # reads as Monday 00:20, Monday Night Football as Tuesday 00:15), so
@@ -296,7 +295,7 @@ def _diamond_hits(lineups, year):
             threshold = DIAMOND_THRESHOLDS.get(p.get("position"))
             if (threshold is None or not p.get("started")
                     or p.get("points", 0) <= threshold
-                    or p.get("acquisition_type") not in WAIVER_ACQUISITIONS
+                    or p.get("waiver_pickup") is not True
                     or p.get("drafted_by_manager") is not False):
                 continue
             hits.append((int(entry["week"]), entry["manager"],
