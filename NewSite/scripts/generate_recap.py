@@ -41,8 +41,9 @@ import os
 import random
 import sys
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -58,19 +59,6 @@ NARRATIVE_TONE_PATH = SCRIPT_DIR / "narrative_tone.txt"
 
 MODEL = "claude-sonnet-5"
 API_URL = "https://api.anthropic.com/v1/messages"
-
-# Each Record Books / Rafters leaderboard, mapped to the field name
-# that actually holds its ranking value (confirmed against
-# ingest_csv.py's real output structure — not guessed).
-RECORD_LIST_VALUE_FIELDS = {
-    "top_avg_regular_season": "avg_score", "bottom_avg_regular_season": "avg_score",
-    "top_regular_season_games": "score", "bottom_regular_season_games": "score",
-    "top_playoff_games": "score", "bottom_playoff_games": "score",
-    "top_winning_streaks": "streak", "top_losing_streaks": "streak",
-    "top_over100_streaks": "streak", "top_under100_streaks": "streak",
-    "fastest_to_25_wins": "games", "fastest_to_50_wins": "games",
-    "fastest_to_25_losses": "games", "fastest_to_50_losses": "games",
-}
 
 
 # --- Config loading ---------------------------------------------------
@@ -430,6 +418,20 @@ def get_week_games(stats):
     return enriched, latest_week, current_year
 
 
+def standings_ranks(stats):
+    """{manager: 1-indexed rank} in the current real W/L standings order."""
+    ranks = {}
+    if stats.get("current_standings"):
+        for i, row in enumerate(stats["current_standings"]["standings"]):
+            ranks[row["manager"]] = i + 1
+    return ranks
+
+
+def describe_rank(ranks, manager):
+    rank = ranks.get(manager)
+    return f"{manager} (#{rank})" if rank else f"{manager} (unranked)"
+
+
 def find_honorable_mention(week_games, impact_game, stats, excluded_managers=None):
     """
     Picks the week's Honorable Mention game, distinct from the Impact
@@ -459,10 +461,7 @@ def find_honorable_mention(week_games, impact_game, stats, excluded_managers=Non
     "top6_matchup", "next_closest_margin", "biggest_blowout";
     blowout_detail is only set for the blowout tier.
     """
-    standings = {}
-    if stats.get("current_standings"):
-        for i, row in enumerate(stats["current_standings"]["standings"]):
-            standings[row["manager"]] = i + 1  # 1-indexed rank, real W/L standings order
+    standings = standings_ranks(stats)
 
     def is_same_game(g):
         return ({g["away_manager"], g["home_manager"]}
@@ -533,12 +532,52 @@ def top_and_bottom_starter(lineup):
     return top, bottom
 
 
+# ESPN game_date values are UTC: Sunday Night Football reads as Monday
+# 00:20 and Monday Night Football as Tuesday 00:15. Game days are
+# decided in Eastern time, the same way player_cards.py does it.
+EASTERN = ZoneInfo("America/New_York")
+
+
+def eastern_kickoff(game_date):
+    return datetime.fromisoformat(game_date).replace(tzinfo=timezone.utc).astimezone(EASTERN)
+
+
+def game_day(game_date):
+    """'Thursday', 'Sunday', 'Monday'... in Eastern time, or None."""
+    return eastern_kickoff(game_date).strftime("%A") if game_date else None
+
+
+def in_final_game(player, final_date_str, is_monday_night):
+    """Did this starter play in the final game of the week? On a Monday
+    night that's every Monday (Eastern) game, so a Monday doubleheader
+    counts as one slate; otherwise it's the single latest kickoff."""
+    gd = player.get("game_date")
+    if not player.get("started") or not gd or not final_date_str:
+        return False
+    if is_monday_night:
+        return eastern_kickoff(gd).date() == eastern_kickoff(final_date_str).date()
+    return gd == final_date_str
+
+
+def is_sunday_night(game_date):
+    kickoff = eastern_kickoff(game_date)
+    return kickoff.weekday() == 6 and kickoff.hour >= 19
+
+
+def final_game_label(final_date_str, is_monday_night):
+    """What to call the final game in a write-up."""
+    return "Monday Night Football" if is_monday_night else "Sunday Night Football"
+
+
 def find_final_game_date(away_lineup, home_lineup):
-    """The date of the LAST real NFL game to finish that week among
-    all of both teams' starters (usually Monday Night Football, though
-    this checks the actual date rather than assuming it). Returns
-    (final_date_str, is_monday_night) or (None, False) if no dated
-    starters are available."""
+    """The last game of the week that counts for a comeback story: the
+    LATEST kickoff among both teams' starters, but only if it is Monday
+    Night Football or Sunday Night Football (Eastern time). If one team
+    has a Monday player, Monday is the last game; if nobody does but
+    someone has a Sunday night player, SNF is. If neither team started
+    anyone in SNF or MNF, there is no "last game" and no comeback or
+    final-game story at all. Returns (final_date_str, is_monday_night)
+    or (None, False)."""
     if not away_lineup or not home_lineup:
         return None, False
     all_dates = [
@@ -548,7 +587,9 @@ def find_final_game_date(away_lineup, home_lineup):
     if not all_dates:
         return None, False
     final_date_str = max(all_dates)
-    is_monday_night = datetime.fromisoformat(final_date_str).weekday() == 0  # Monday == 0
+    is_monday_night = eastern_kickoff(final_date_str).weekday() == 0  # Monday == 0
+    if not is_monday_night and not is_sunday_night(final_date_str):
+        return None, False  # last starter played Sunday afternoon or earlier
     return final_date_str, is_monday_night
 
 
@@ -570,8 +611,12 @@ def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final
     def score_before_final_game(lineup):
         return sum(
             p["points"] for p in lineup
-            if p.get("started") and p.get("game_date") != final_date_str
+            if p.get("started") and not in_final_game(p, final_date_str, is_monday_night)
         )
+
+    def final_game_players(lineup):
+        return [{"name": p["name"], "points": p["points"]} for p in lineup
+                if in_final_game(p, final_date_str, is_monday_night)]
 
     away_before = score_before_final_game(away_lineup)
     home_before = score_before_final_game(home_lineup)
@@ -586,15 +631,20 @@ def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final
         return None  # no real swing — same leader throughout, or a tie somewhere
 
     return {
-        "game_type": "Monday Night Football" if is_monday_night else "the final game of the week",
+        "game_type": final_game_label(final_date_str, is_monday_night),
         "leader_before_final_game": leader_before,
         "final_winner": leader_after,
         "away_score_before_final_game": round(away_before, 2),
         "home_score_before_final_game": round(home_before, 2),
+        # Every starter whose points came in that final game. The AI has
+        # to credit the comeback to these players, never to someone who
+        # played earlier (the Week 5 2026 recap gave it to a Sunday WR).
+        "away_final_game_players": final_game_players(away_lineup),
+        "home_final_game_players": final_game_players(home_lineup),
     }
 
 
-def find_final_game_heroics_or_bust(losing_lineup, final_date_str):
+def find_final_game_heroics_or_bust(losing_lineup, final_date_str, is_monday_night):
     """
     For the LOSING team's STARTERS who played in the last game of the
     week (usually MNF): flags any who scored 15+ points (genuinely
@@ -614,7 +664,7 @@ def find_final_game_heroics_or_bust(losing_lineup, final_date_str):
 
     results = []
     for p in losing_lineup:
-        if not p.get("started") or p.get("game_date") != final_date_str:
+        if not in_final_game(p, final_date_str, is_monday_night):
             continue
         if p["points"] >= GOOD_THRESHOLD:
             results.append({"name": p["name"], "points": p["points"], "category": "good_but_not_enough"})
@@ -680,11 +730,15 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
     # Does this game rank among the all-time smallest margins of
     # victory? Real, verified fact from the actual leaderboard — not
     # something left for the AI to judge or estimate itself.
+    # Competition-style rank (LEAGUE_RULES §8): tied margins share a rank.
     smallest_margins = stats.get("records", {}).get("smallest_margins", [])
-    for i, entry in enumerate(smallest_margins):
+    for entry in smallest_margins:
         if (entry["year"] == year and week_num(entry["week"]) == week_num(week)
                 and {entry["winner"], entry["loser"]} == {away, home}):
-            context["all_time_smallest_margin_rank"] = i + 1
+            context["all_time_smallest_margin_rank"] = 1 + sum(
+                e["margin"] < entry["margin"] for e in smallest_margins)
+            if sum(e["margin"] == entry["margin"] for e in smallest_margins) > 1:
+                context["all_time_smallest_margin_tied"] = True
             break
 
     # Player-level context, if lineup data was captured for this week.
@@ -702,15 +756,19 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
     if away_lineup:
         top, bottom = top_and_bottom_starter(away_lineup)
         if top and top["points"] > HIGH_SCORE_THRESHOLD:
-            context["away_top_scorer"] = {"name": top["name"], "points": top["points"]}
+            context["away_top_scorer"] = {"name": top["name"], "points": top["points"],
+                                         "played": game_day(top.get("game_date"))}
         if bottom and bottom["points"] < LOW_SCORE_THRESHOLD:
-            context["away_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
+            context["away_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"],
+                                            "played": game_day(bottom.get("game_date"))}
     if home_lineup:
         top, bottom = top_and_bottom_starter(home_lineup)
         if top and top["points"] > HIGH_SCORE_THRESHOLD:
-            context["home_top_scorer"] = {"name": top["name"], "points": top["points"]}
+            context["home_top_scorer"] = {"name": top["name"], "points": top["points"],
+                                         "played": game_day(top.get("game_date"))}
         if bottom and bottom["points"] < LOW_SCORE_THRESHOLD:
-            context["home_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
+            context["home_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"],
+                                            "played": game_day(bottom.get("game_date"))}
 
     # Bench-swap analysis for the losing team only (a winning team has
     # no "what if" story — they already won).
@@ -732,6 +790,10 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
         swing_display = dict(swing)
         swing_display["leader_before_final_game"] = away if swing["leader_before_final_game"] == "away" else home
         swing_display["final_winner"] = away if swing["final_winner"] == "away" else home
+        swing_display["final_game_players"] = {
+            away: swing_display.pop("away_final_game_players"),
+            home: swing_display.pop("home_final_game_players"),
+        }
         context["final_game_swing"] = swing_display
 
     # For the LOSING team's real starters who played the final game of
@@ -740,10 +802,10 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
     # Different from final_game_swing above — this fires even when the
     # result was never really in doubt.
     if losing_lineup:
-        heroics_or_bust = find_final_game_heroics_or_bust(losing_lineup, final_date_str)
+        heroics_or_bust = find_final_game_heroics_or_bust(losing_lineup, final_date_str, is_monday_night)
         if heroics_or_bust:
             context["losing_team_final_game_players"] = heroics_or_bust
-            context["final_game_type"] = "Monday Night Football" if is_monday_night else "the final game of the week"
+            context["final_game_type"] = final_game_label(final_date_str, is_monday_night)
 
     # Real, verified career context — this is the actual roast material.
     away_flavor = get_manager_flavor(away, stats, lore, rotation_state)
@@ -829,13 +891,16 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"{json.dumps(context, indent=2)}\n\n"
         f"Mention the final score and margin. If "
         f"all_time_smallest_margin_rank is present, this is a real, "
-        f"verified fact: state it as an ordinal only — e.g. rank 3 "
-        f"means 'the 3rd smallest margin of victory in league "
-        f"history' — do not mention any total count of how many "
-        f"games are being compared against, just the rank itself. "
-        f"This is a genuinely "
+        f"verified fact: state that number as an ordinal (rank N is "
+        f"'the Nth smallest margin of victory in league history', or "
+        f"'tied for the Nth' if all_time_smallest_margin_tied is true) "
+        f"— do not mention any total count of how many games are being "
+        f"compared against, just the rank itself. This is a genuinely "
         f"rare, notable event and should be called out prominently, "
-        f"not buried as an aside. If "
+        f"not buried as an aside. If all_time_smallest_margin_rank is "
+        f"absent, this margin is NOT among the smallest in league "
+        f"history: never give it a league-history rank or call it one "
+        f"of the closest games ever. If "
         f"all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
@@ -843,7 +908,13 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"details about those past games beyond what's given. If "
         f"top/bottom scorer fields are present, you can mention a "
         f"standout or disappointing individual performance if it fits "
-        f"naturally, following the one-per-team limit above. If "
+        f"naturally, following the one-per-team limit above. "
+        f"Never say when a player played, or in what order points came "
+        f"in (late, last slot, Monday, Sunday night...), unless a "
+        f"'played' day or the final_game_swing fields say so. If "
+        f"final_game_swing is absent, there was no comeback: never call "
+        f"the win a comeback or say who was ahead or behind going into "
+        f"a late game. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
@@ -855,7 +926,12 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"final_winner pulled off a genuine comeback, and "
         f"leader_before_final_game blew a lead they had going into that "
         f"last game. This is excellent, dramatic material and should "
-        f"usually be mentioned prominently. If "
+        f"usually be mentioned prominently. final_game_players lists, "
+        f"for each manager, EVERY starter who played in that final game "
+        f"with their points; an empty list means that manager had nobody "
+        f"left. Only those players' points came after the score_before "
+        f"numbers, so credit the comeback (or the collapse) only to them "
+        f"by name, and never to any other player. If "
         f"losing_team_final_game_players is present, these are real "
         f"starters from the LOSING team who played in the game named "
         f"by final_game_type — for each one, category "
@@ -879,6 +955,19 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
 
 # --- Game of the Week (AI both picks and writes) ---------------------------
 
+def competition_ranks(values):
+    """{manager: rank}, highest value first, tied values sharing a rank
+    (1, 2, 2, 4), the same way the Power Rankings table numbers ties.
+    Managers with no value are left out."""
+    ordered = sorted(((v, m) for m, v in values.items() if v is not None), reverse=True)
+    ranks, prev = {}, None
+    for i, (v, m) in enumerate(ordered):
+        if v != prev:
+            rank, prev = i + 1, v
+        ranks[m] = rank
+    return ranks
+
+
 def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
     """Shared data-gathering for both the selection and writing steps —
     computed once, used by whichever step needs it."""
@@ -897,6 +986,12 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
     if stats.get("power_rankings"):
         for row in stats["power_rankings"]["rankings"]:
             power[row["manager"]] = row
+    # League-wide ranks over all teams, not just this week's matchups:
+    # the selection prompt only sees the matchups left after the Impact
+    # Game filter, so it can't rank the league itself (TEST run
+    # 2026-10-06 called a team tied for 7th "top 5" that way).
+    power_rank = competition_ranks({m: r.get("power_score") for m, r in power.items()})
+    points_rank = competition_ranks({m: r.get("points_scored") for m, r in power.items()})
 
     playoff_prob = {}
     pp = stats.get("playoff_probabilities")
@@ -932,7 +1027,9 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             "season_wins": wins,
             "season_losses": losses,
             "season_power_score": p.get("power_score"),
+            "season_power_rank": power_rank.get(name),
             "season_points_avg": points_avg,
+            "season_points_rank": points_rank.get(name),
             "season_schedule_difficulty": schedule_difficulty,
             "season_playoff_probability_pct": playoff_prob.get(name),
         }
@@ -1112,7 +1209,13 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"details about those past games beyond what's given. If "
         f"a top_scorer or bottom_scorer field is present, mention it "
         f"following the winner-top-scorer / loser-bottom-scorer-only "
-        f"rule above. If "
+        f"rule above. "
+        f"Never say when a player played, or in what order points came "
+        f"in (late, last slot, Monday, Sunday night...), unless a "
+        f"'played' day or the final_game_swing fields say so. If "
+        f"final_game_swing is absent, there was no comeback: never call "
+        f"the win a comeback or say who was ahead or behind going into "
+        f"a late game. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
@@ -1120,7 +1223,11 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"final_game_swing is present, that's a real, verified fact: "
         f"the manager named in leader_before_final_game was actually "
         f"ahead before {swing['game_type'] if (swing := context.get('final_game_swing')) else 'the final game'} "
-        f"finished, but final_winner ended up taking the game. If "
+        f"finished, but final_winner ended up taking the game. "
+        f"final_game_players lists, for each manager, EVERY starter who "
+        f"played in that final game with their points (an empty list "
+        f"means nobody was left); credit the comeback or collapse only "
+        f"to those players, never to anyone else. If "
         f"away_manager_background or home_manager_background is present "
         f"(especially for {loser or 'the loser'}, who lost this game), "
         f"use it as real ammunition — a bad career record, zero playoff "
@@ -1163,7 +1270,14 @@ def build_matchup_selection_prompt(enriched, criteria):
         "use each manager's away_career_history / home_career_history "
         "field (career_championships > 0 means that manager has won "
         "a championship before) — this is the complete, real history "
-        "and should be used directly rather than any other field."
+        "and should be used directly rather than any other field. "
+        "season_standings_rank, season_power_rank and season_points_rank "
+        "are already computed across the WHOLE league (tied teams share "
+        "a rank) — use them as given; never re-rank teams from the "
+        "matchups listed, which may not include every team. When the "
+        "criteria are a numbered list, check each tier in order against "
+        "every matchup and pick from the first tier that any matchup "
+        "satisfies; name that tier in line 2."
     )
     user = (
         f"Selection criteria: {criteria}\n\n"
@@ -1724,64 +1838,6 @@ def callout_last_gotw_result(old_stats, new_games):
     }
 
 
-# --- Callout: new record set this week -------------------------------------
-
-RECORD_LIST_LABELS = {
-    "top_avg_regular_season": "Top Average Score",
-    "bottom_avg_regular_season": "Lowest Average Score",
-    "top_regular_season_games": "Highest R/S Game Score",
-    "bottom_regular_season_games": "Lowest R/S Game Score",
-    "top_playoff_games": "Highest Playoff Score",
-    "bottom_playoff_games": "Lowest Playoff Score",
-    "top_winning_streaks": "Longest Win Streak (All-Time)",
-    "top_losing_streaks": "Longest Losing Streak (All-Time)",
-    "top_over100_streaks": "Longest Streak Over 100",
-    "top_under100_streaks": "Longest Streak Under 100",
-    "fastest_to_25_wins": "Fastest to 25 Wins",
-    "fastest_to_50_wins": "Fastest to 50 Wins",
-    "fastest_to_25_losses": "Fastest to 25 Losses",
-    "fastest_to_50_losses": "Fastest to 50 Losses",
-}
-
-
-def detect_new_records(old_stats, new_stats):
-    """Compares each Record Books / Rafters leaderboard's TOP entry
-    (or tied-for-first group) before vs after this week's games. A
-    change means a new record was set. Deliberately looks only at the
-    top of each list — a shuffle further down isn't a new record."""
-    if not old_stats:
-        return []
-
-    old_records = old_stats.get("records", {})
-    new_records = new_stats.get("records", {})
-    callouts = []
-
-    for key, value_field in RECORD_LIST_VALUE_FIELDS.items():
-        old_list = old_records.get(key) or []
-        new_list = new_records.get(key) or []
-        if not new_list or not old_list:
-            continue  # nothing to compare, or list is new itself — not a "new record"
-
-        new_top_value = new_list[0][value_field]
-        old_top_value = old_list[0][value_field]
-        new_top_managers = {e["manager"] for e in new_list if e[value_field] == new_top_value}
-        old_top_managers = {e["manager"] for e in old_list if e[value_field] == old_top_value}
-
-        newly_added = new_top_managers - old_top_managers
-        if newly_added:
-            names = ", ".join(sorted(newly_added))
-            callouts.append({
-                "style": "card",
-                "label": "NEW RECORD",
-                "headline": names,
-                "subtitle": RECORD_LIST_LABELS.get(key, key.replace("_", " ")),
-                "value": new_top_value,
-                "unit": "",
-            })
-
-    return callouts
-
-
 # --- Callouts: streaks, margin, scores (straightforward data lookups) -----
 
 def callout_streaks(stats):
@@ -1993,17 +2049,17 @@ def build_record_books_entries(week_games, week, year, stats):
     "Welcome to the Record Books": every league record a manager
     touched during the most recently completed regular-season week —
     landing anywhere in the Top 15 / Bottom 15 all-time R/S game
-    scores, breaking into the Top 5 all-time R/S win/loss streaks, or
+    scores, breaking into or moving up the Top 5 all-time R/S win/loss
+    streaks (only when the streak's rank or tie changes), or
     crossing the 25th-career-win/loss milestone. Returns a list of
     entries (empty if nothing happened this week) — the frontend only
     shows this section at all when the list is non-empty.
 
     Deliberately keyed on identity (did THIS week's game/streak-ending
     game/milestone-game land in the list) rather than "is this the
-    new #1" — unlike detect_new_records() above (which only fires
-    when the very TOP of a leaderboard changes), this fires any time
-    a game from this week lands anywhere in a Top 15 / Top 5 list, so
-    e.g. the 9th-highest game ever still gets its moment. Every
+    new #1": this fires any time a game from this week lands anywhere
+    in a Top 15 / Top 5 list, so e.g. the 9th-highest game ever still
+    gets its moment. Every
     leaderboard checked here is a small, fixed-size list (top_regular_
     season_games etc. are already capped at 15/5 by ingest_csv.py),
     so this is cheap even run every single week.
@@ -2056,6 +2112,14 @@ def build_record_books_entries(week_games, week, year, stats):
         for i, e in enumerate(rows):
             end_week = e.get("end_week")
             if e.get("end_year") == year and end_week is not None and week_num(end_week) == week_num(week):
+                # Only when its place on the board changed: new to the
+                # list, a new rank, or gaining/losing a tie. A streak that
+                # grows but keeps its place (3rd -> 3rd) isn't mentioned.
+                # rank_last_week comes from ingest_csv.py; if it's missing
+                # entirely (older data), mention it as before.
+                if ("rank_last_week" in e and e["rank_last_week"]
+                        == {"rank": ranks[i], "tied": tied_counts[i] > 1}):
+                    continue
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
                     "value": e["streak"], "rank": ranks[i], "tied_count": tied_counts[i],
@@ -2117,6 +2181,14 @@ def main():
     try:
         if week_games:
             closest_game = min(week_games, key=lambda g: g["margin"])
+            tied = [g for g in week_games if g["margin"] == closest_game["margin"]]
+            others = sorted(g["margin"] for g in week_games if g is not closest_game)
+            print(f"Impact Game selected: {closest_game['away_manager']} vs {closest_game['home_manager']}.")
+            print(f"Reason: closest final margin of week {week} "
+                  f"({closest_game['margin']} pts; next closest "
+                  f"{others[0] if others else 'n/a'} pts)"
+                  + (f"; tied with {len(tied) - 1} other game(s), first in schedule order wins"
+                     if len(tied) > 1 else "") + ".")
             system, user, recap_away_team, recap_home_team = build_recap_prompt(
                 closest_game, week, year, stats, lore, old_stats, tone, rotation_state
             )
@@ -2158,12 +2230,18 @@ def main():
             # Avoid repeating an Impact Game manager here too, if at all
             # possible — but never let this filter leave zero candidates;
             # showing a repeat manager beats skipping Game of the Week.
+            gotw_filter_note = "no Impact Game managers to exclude"
             if enriched and impact_game_managers:
                 narrowed = [m for m in enriched
                            if m.get("away_manager") not in impact_game_managers
                            and m.get("home_manager") not in impact_game_managers]
                 if narrowed:
+                    gotw_filter_note = (f"{len(narrowed)} of {len(enriched)} matchups eligible "
+                                        f"after excluding Impact Game managers")
                     enriched = narrowed
+                else:
+                    gotw_filter_note = ("every matchup involves an Impact Game manager, "
+                                        "so the exclusion was waived")
 
             if enriched:
                 week_criteria = get_criteria_for_week(criteria, "game_of_the_week", upcoming.get("week"))
@@ -2189,6 +2267,7 @@ def main():
                     print(f"WARNING: couldn't parse a valid selection from: {selection_text!r} — "
                           f"falling back to the first matchup.")
                     chosen = enriched[0]
+                    selection_reasoning = "fallback: AI selection failed, used the first eligible matchup"
 
                 gotw_away_team, gotw_home_team = chosen.get("away_team"), chosen.get("home_team")
                 gotw_matchup = {
@@ -2197,7 +2276,8 @@ def main():
                 }
                 gotw_managers = {chosen["away_manager"], chosen["home_manager"]}
                 print(f"Game of the Week selected: {chosen['away_manager']} vs {chosen['home_manager']}.")
-                print(f"Reason: {selection_reasoning or '(no reasoning line returned)'}")
+                print(f"Reason: week {upcoming.get('week')} criteria "
+                      f"({gotw_filter_note}): {selection_reasoning or '(no reasoning line returned)'}")
 
                 # Call 2: writing only, about the one already-chosen matchup.
                 write_system, write_user = build_gotw_writing_prompt(chosen, tone)
@@ -2230,9 +2310,25 @@ def main():
                 hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
                     hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state
                 )
+                ranks = standings_ranks(stats)
+                a, h = hm_game["away_manager"], hm_game["home_manager"]
+                matchup = f"{describe_rank(ranks, a)} vs {describe_rank(ranks, h)}"
+                if hm_reason == "top6_matchup":
+                    why = f"tier 1, closest top-6 vs top-6 game: {matchup}, margin {hm_game['margin']} pts"
+                elif hm_reason == "next_closest_margin":
+                    why = (f"tier 2, no top-6 vs top-6 game; next closest margin "
+                           f"{hm_game['margin']} pts (under 15): {matchup}")
+                else:
+                    flags = [k for k, v in (hm_blowout_detail or {}).items() if v]
+                    why = (f"tier 3, no other game within 15 pts; biggest blowout "
+                           f"{hm_game['margin']} pts: {matchup}"
+                           + (f" [{', '.join(flags)}]" if flags else ""))
+                if {a, h} & excluded_managers:
+                    why += "; manager exclusion waived (no game left without a featured manager)"
+                print(f"Honorable Mention selected: {a} vs {h}.")
+                print(f"Reason: {why}.")
                 honorable_mention_text = call_claude(hm_system, hm_user)
-                print(f"Generated Honorable Mention ({hm_reason}): "
-                      f"{hm_game['away_manager']} vs {hm_game['home_manager']}.")
+                print("Generated Honorable Mention.")
             else:
                 print("Only one game this week — no separate Honorable Mention possible.")
     except Exception as e:
@@ -2244,11 +2340,6 @@ def main():
         callouts["last_gotw_result"] = callout_last_gotw_result(old_stats, stats.get("games", []))
     except Exception as e:
         print(f"WARNING: last_gotw_result callout failed: {e}")
-
-    try:
-        callouts["new_records"] = detect_new_records(old_stats, stats)
-    except Exception as e:
-        print(f"WARNING: new_records callout failed: {e}")
 
     try:
         win_streak, loss_streak = callout_streaks(stats)
@@ -2292,12 +2383,22 @@ def main():
     week_in_history = stats.get("week_in_history")
     if week_in_history:
         try:
+            print(f"Club History selected: {week_in_history['year']} week {week_in_history['week']}, "
+                  f"{week_in_history['away_manager']} vs {week_in_history['home_manager']} "
+                  f"({week_in_history['away_score']}-{week_in_history['home_score']}).")
+            print(f"Reason: {week_in_history['selection_reason']}: "
+                  f"{describe_week_in_history_selection(week_in_history)}")
+        except Exception as e:
+            print(f"WARNING: couldn't describe the Club History pick: {e}")
+        try:
             wih_system, wih_user = build_week_in_history_prompt(week_in_history, stats["games"], tone)
             week_in_history_narrative = call_claude(wih_system, wih_user)
             week_in_history["narrative"] = week_in_history_narrative
         except Exception as e:
             print(f"WARNING: This Week in Club History narrative failed: {e}")
             week_in_history["narrative"] = None
+    else:
+        print("No Club History game selected this week (ingest_csv.py found no candidate).")
 
     if (recap_text is None and gotw_text is None and not any(callouts.values())
             and current_highest_scoring_players is None
