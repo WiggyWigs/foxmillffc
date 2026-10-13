@@ -730,11 +730,15 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
     # Does this game rank among the all-time smallest margins of
     # victory? Real, verified fact from the actual leaderboard — not
     # something left for the AI to judge or estimate itself.
+    # Competition-style rank (LEAGUE_RULES §8): tied margins share a rank.
     smallest_margins = stats.get("records", {}).get("smallest_margins", [])
-    for i, entry in enumerate(smallest_margins):
+    for entry in smallest_margins:
         if (entry["year"] == year and week_num(entry["week"]) == week_num(week)
                 and {entry["winner"], entry["loser"]} == {away, home}):
-            context["all_time_smallest_margin_rank"] = i + 1
+            context["all_time_smallest_margin_rank"] = 1 + sum(
+                e["margin"] < entry["margin"] for e in smallest_margins)
+            if sum(e["margin"] == entry["margin"] for e in smallest_margins) > 1:
+                context["all_time_smallest_margin_tied"] = True
             break
 
     # Player-level context, if lineup data was captured for this week.
@@ -887,13 +891,16 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"{json.dumps(context, indent=2)}\n\n"
         f"Mention the final score and margin. If "
         f"all_time_smallest_margin_rank is present, this is a real, "
-        f"verified fact: state it as an ordinal only — e.g. rank 3 "
-        f"means 'the 3rd smallest margin of victory in league "
-        f"history' — do not mention any total count of how many "
-        f"games are being compared against, just the rank itself. "
-        f"This is a genuinely "
+        f"verified fact: state that number as an ordinal (rank N is "
+        f"'the Nth smallest margin of victory in league history', or "
+        f"'tied for the Nth' if all_time_smallest_margin_tied is true) "
+        f"— do not mention any total count of how many games are being "
+        f"compared against, just the rank itself. This is a genuinely "
         f"rare, notable event and should be called out prominently, "
-        f"not buried as an aside. If "
+        f"not buried as an aside. If all_time_smallest_margin_rank is "
+        f"absent, this margin is NOT among the smallest in league "
+        f"history: never give it a league-history rank or call it one "
+        f"of the closest games ever. If "
         f"all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
