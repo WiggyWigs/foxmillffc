@@ -1990,11 +1990,15 @@ def _fmt_record(wlt):
 
 def _winless_start_stat(all_games, season_games, current_year, roster_names, through_week=5):
     """Stat of the Week after Week 5 - a count, not a percentage:
-      1. How many past teams started 0-5.
-      2. If none ever did, how many past teams started 1-4.
-    The narrative adds each past last-place team's record after Week 5.
-    The list is this season's 0-5 teams, or its 1-4 teams if nobody is
-    0-5. None if no past season reached Week 5."""
+      1. If someone is 0-5 this season: how many teams in league history
+         (this season included) started 0-5, listed as year - manager -
+         team. "There's a first for everything" if they are all from this
+         season.
+      2. Otherwise, how many past teams started 0-5.
+      3. If none ever did, how many past teams started 1-4.
+    For 2 and 3 the narrative adds each past last-place team's record
+    after Week 5, and the list is this season's 1-4 teams. None if no
+    past season reached Week 5."""
     winless = _historical_start_cohort(all_games, 0, through_week, through_week, current_year)
     one_win = _historical_start_cohort(all_games, 1, through_week - 1, through_week, current_year)
     reached = sorted({y for y in {g["year"] for g in all_games if g["year"] < current_year}
@@ -2004,6 +2008,31 @@ def _winless_start_stat(all_games, season_games, current_year, roster_names, thr
         return None
     first_year = reached[0]
     zero_label, one_label = f"0-{through_week}", f"1-{through_week - 1}"
+
+    winless_now = _teams_with_record_now(season_games, through_week, 0, through_week)
+    if winless_now:
+        # Someone is 0-5 right now: count every 0-5 start in league
+        # history, this season included, and list them all. The names are
+        # in the narrative, so the separate "this year" list is left off.
+        def team_name(mgr, year):
+            games = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+                     and _week_sort_key(g["week"]) <= through_week
+                     and mgr in (g["away_manager"], g["home_manager"])]
+            last = max(games, key=lambda g: _week_sort_key(g["week"]))
+            return last["away_team"] if last["away_manager"] == mgr else last["home_team"]
+
+        everyone = ([(c["year"], c["manager"]) for c in winless]
+                    + [(current_year, m) for m in winless_now])
+        lines = [f"{y} - {m} - {team_name(m, y)}" for y, m in everyone]
+        narrative = (f"The number of teams in league history that have started {zero_label}:\n"
+                     + "\n".join(lines))
+        if not winless:
+            narrative += "\n“There’s a first for everything”"
+        return {
+            "reason": f"start_{zero_label.replace('-', '_')}_count_with_current",
+            "value": len(everyone), "value_suffix": "", "sample_size": len(everyone),
+            "record_label": zero_label, "this_year_teams": [], "narrative": narrative,
+        }
 
     if winless:
         cohort, label, reason = winless, zero_label, f"start_{zero_label.replace('-', '_')}_count"
@@ -2025,11 +2054,8 @@ def _winless_start_stat(all_games, season_games, current_year, roster_names, thr
             sentences.append(f"{sunk} of the {len(cohort)} teams that started {label} "
                              f"finished last.")
 
-    this_year = _teams_with_record_now(season_games, through_week, 0, through_week)
-    now_label = zero_label
-    if not this_year:
-        this_year = _teams_with_record_now(season_games, through_week, 1, through_week - 1)
-        now_label = one_label
+    this_year = _teams_with_record_now(season_games, through_week, 1, through_week - 1)
+    now_label = one_label
 
     return {
         "reason": reason, "value": len(cohort), "value_suffix": "",
@@ -2063,9 +2089,11 @@ def compute_stat_of_the_week(all_games, roster_names):
          season's top 6 in points - _points_rank_stat
 
     Week 5 (a count, shown without a %) - _winless_start_stat:
-      1. Number of past teams that started 0-5
-      2. If there are none, number of past teams that started 1-4
-      Plus each past last-place team's record after Week 5.
+      1. If someone is 0-5 now, number of teams ever to start 0-5,
+         this season included
+      2. Otherwise, number of past teams that started 0-5
+      3. If there are none, number of past teams that started 1-4,
+         plus each past last-place team's record after Week 5
     """
     years = {g["year"] for g in all_games}
     if not years:
