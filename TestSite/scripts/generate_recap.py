@@ -2042,7 +2042,8 @@ def build_record_books_entries(week_games, week, year, stats):
     "Welcome to the Record Books": every league record a manager
     touched during the most recently completed regular-season week —
     landing anywhere in the Top 15 / Bottom 15 all-time R/S game
-    scores, breaking into the Top 5 all-time R/S win/loss streaks, or
+    scores, breaking into or moving up the Top 5 all-time R/S win/loss
+    streaks (only when the streak's rank or tie changes), or
     crossing the 25th-career-win/loss milestone. Returns a list of
     entries (empty if nothing happened this week) — the frontend only
     shows this section at all when the list is non-empty.
@@ -2104,6 +2105,14 @@ def build_record_books_entries(week_games, week, year, stats):
         for i, e in enumerate(rows):
             end_week = e.get("end_week")
             if e.get("end_year") == year and end_week is not None and week_num(end_week) == week_num(week):
+                # Only when its place on the board changed: new to the
+                # list, a new rank, or gaining/losing a tie. A streak that
+                # grows but keeps its place (3rd -> 3rd) isn't mentioned.
+                # rank_last_week comes from ingest_csv.py; if it's missing
+                # entirely (older data), mention it as before.
+                if ("rank_last_week" in e and e["rank_last_week"]
+                        == {"rank": ranks[i], "tied": tied_counts[i] > 1}):
+                    continue
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
                     "value": e["streak"], "rank": ranks[i], "tied_count": tied_counts[i],
