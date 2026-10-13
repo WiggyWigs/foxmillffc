@@ -603,8 +603,8 @@ def compute_records(all_games, roster_names):
 
     win_streaks.sort(key=lambda e: -e["streak"])
     loss_streaks.sort(key=lambda e: -e["streak"])
-    top_win_streaks = win_streaks[:5]
-    top_loss_streaks = loss_streaks[:5]
+    top_win_streaks = top_n_with_ties(win_streaks, 5)
+    top_loss_streaks = top_n_with_ties(loss_streaks, 5)
 
     top_over100_streaks = top_n_with_ties(over100_streaks, 5)
     bottom_over100_streaks = bottom_n_with_ties(over100_streaks, 5)

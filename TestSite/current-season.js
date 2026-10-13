@@ -370,13 +370,11 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   const section = document.getElementById("callouts-section");
   const grid = document.getElementById("callout-grid");
 
-  // Each entry carries a "kind" so the popup-style boxes (streaks,
-  // lowest team, highest player) can share the Honorable Mention format
-  // while sentence/record cards keep their existing look.
+  // Each entry carries a "kind" so the boxes (streaks, lowest team,
+  // highest player) can share the Honorable Mention format and pick
+  // their own popup. New records are covered by "Welcome to the Record
+  // Books", not here.
   const entries = [];
-  if (Array.isArray(callouts.new_records)) {
-    callouts.new_records.forEach((item) => entries.push({ item, kind: "record" }));
-  }
   if (callouts.longest_win_streak) entries.push({ item: callouts.longest_win_streak, kind: "streak" });
   if (callouts.longest_loss_streak) entries.push({ item: callouts.longest_loss_streak, kind: "streak" });
   if (callouts.lowest_scoring_team) entries.push({ item: callouts.lowest_scoring_team, kind: "lowest" });
@@ -388,11 +386,7 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
   }
 
   section.style.display = "";
-  grid.innerHTML = entries.map((e) =>
-    ["streak", "lowest", "highest"].includes(e.kind)
-      ? renderCalloutHmCard(e.item, e.kind)
-      : renderCalloutCard(e.item)
-  ).join("");
+  grid.innerHTML = entries.map((e) => renderCalloutHmCard(e.item, e.kind)).join("");
 
   equalizeCalloutHeights();
   if (document.fonts && document.fonts.ready) {
@@ -560,38 +554,6 @@ function equalizeCalloutHeights() {
 }
 
 window.addEventListener("resize", equalizeCalloutHeights);
-
-function renderCalloutCard(item) {
-  if (item.style === "sentence") {
-    return `
-      <div class="callout-item callout-sentence">
-        <div class="callout-item-text">
-          <span class="callout-label">${item.label}</span>
-          <span class="callout-headline">${item.text}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  // Default: the name + big number "impact" card.
-  const valueDisplay = typeof item.value === "number"
-    ? (Number.isInteger(item.value) ? item.value : item.value.toFixed(2))
-    : item.value;
-
-  return `
-    <div class="callout-item">
-      <div class="callout-item-text">
-        <span class="callout-label">${item.label}</span>
-        <span class="callout-headline">${item.headline}</span>
-        ${item.subtitle ? `<span class="callout-subtitle">${item.subtitle}</span>` : ""}
-      </div>
-      <div class="callout-value-wrap">
-        <span class="callout-value">${valueDisplay}</span>
-        ${item.unit ? `<span class="callout-unit">${item.unit}</span>` : ""}
-      </div>
-    </div>
-  `;
-}
 
 // "Welcome to the Record Books" — plain narrative sentences, one per
 // achievement, non-clickable and centered (matching the tone of the

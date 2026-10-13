@@ -59,19 +59,6 @@ NARRATIVE_TONE_PATH = SCRIPT_DIR / "narrative_tone.txt"
 MODEL = "claude-sonnet-5"
 API_URL = "https://api.anthropic.com/v1/messages"
 
-# Each Record Books / Rafters leaderboard, mapped to the field name
-# that actually holds its ranking value (confirmed against
-# ingest_csv.py's real output structure — not guessed).
-RECORD_LIST_VALUE_FIELDS = {
-    "top_avg_regular_season": "avg_score", "bottom_avg_regular_season": "avg_score",
-    "top_regular_season_games": "score", "bottom_regular_season_games": "score",
-    "top_playoff_games": "score", "bottom_playoff_games": "score",
-    "top_winning_streaks": "streak", "top_losing_streaks": "streak",
-    "top_over100_streaks": "streak", "top_under100_streaks": "streak",
-    "fastest_to_25_wins": "games", "fastest_to_50_wins": "games",
-    "fastest_to_25_losses": "games", "fastest_to_50_losses": "games",
-}
-
 
 # --- Config loading ---------------------------------------------------
 
@@ -1763,64 +1750,6 @@ def callout_last_gotw_result(old_stats, new_games):
     }
 
 
-# --- Callout: new record set this week -------------------------------------
-
-RECORD_LIST_LABELS = {
-    "top_avg_regular_season": "Top Average Score",
-    "bottom_avg_regular_season": "Lowest Average Score",
-    "top_regular_season_games": "Highest R/S Game Score",
-    "bottom_regular_season_games": "Lowest R/S Game Score",
-    "top_playoff_games": "Highest Playoff Score",
-    "bottom_playoff_games": "Lowest Playoff Score",
-    "top_winning_streaks": "Longest Win Streak (All-Time)",
-    "top_losing_streaks": "Longest Losing Streak (All-Time)",
-    "top_over100_streaks": "Longest Streak Over 100",
-    "top_under100_streaks": "Longest Streak Under 100",
-    "fastest_to_25_wins": "Fastest to 25 Wins",
-    "fastest_to_50_wins": "Fastest to 50 Wins",
-    "fastest_to_25_losses": "Fastest to 25 Losses",
-    "fastest_to_50_losses": "Fastest to 50 Losses",
-}
-
-
-def detect_new_records(old_stats, new_stats):
-    """Compares each Record Books / Rafters leaderboard's TOP entry
-    (or tied-for-first group) before vs after this week's games. A
-    change means a new record was set. Deliberately looks only at the
-    top of each list — a shuffle further down isn't a new record."""
-    if not old_stats:
-        return []
-
-    old_records = old_stats.get("records", {})
-    new_records = new_stats.get("records", {})
-    callouts = []
-
-    for key, value_field in RECORD_LIST_VALUE_FIELDS.items():
-        old_list = old_records.get(key) or []
-        new_list = new_records.get(key) or []
-        if not new_list or not old_list:
-            continue  # nothing to compare, or list is new itself — not a "new record"
-
-        new_top_value = new_list[0][value_field]
-        old_top_value = old_list[0][value_field]
-        new_top_managers = {e["manager"] for e in new_list if e[value_field] == new_top_value}
-        old_top_managers = {e["manager"] for e in old_list if e[value_field] == old_top_value}
-
-        newly_added = new_top_managers - old_top_managers
-        if newly_added:
-            names = ", ".join(sorted(newly_added))
-            callouts.append({
-                "style": "card",
-                "label": "NEW RECORD",
-                "headline": names,
-                "subtitle": RECORD_LIST_LABELS.get(key, key.replace("_", " ")),
-                "value": new_top_value,
-                "unit": "",
-            })
-
-    return callouts
-
-
 # --- Callouts: streaks, margin, scores (straightforward data lookups) -----
 
 def callout_streaks(stats):
@@ -2039,10 +1968,9 @@ def build_record_books_entries(week_games, week, year, stats):
 
     Deliberately keyed on identity (did THIS week's game/streak-ending
     game/milestone-game land in the list) rather than "is this the
-    new #1" — unlike detect_new_records() above (which only fires
-    when the very TOP of a leaderboard changes), this fires any time
-    a game from this week lands anywhere in a Top 15 / Top 5 list, so
-    e.g. the 9th-highest game ever still gets its moment. Every
+    new #1": this fires any time a game from this week lands anywhere
+    in a Top 15 / Top 5 list, so e.g. the 9th-highest game ever still
+    gets its moment. Every
     leaderboard checked here is a small, fixed-size list (top_regular_
     season_games etc. are already capped at 15/5 by ingest_csv.py),
     so this is cheap even run every single week.
@@ -2315,11 +2243,6 @@ def main():
         callouts["last_gotw_result"] = callout_last_gotw_result(old_stats, stats.get("games", []))
     except Exception as e:
         print(f"WARNING: last_gotw_result callout failed: {e}")
-
-    try:
-        callouts["new_records"] = detect_new_records(old_stats, stats)
-    except Exception as e:
-        print(f"WARNING: new_records callout failed: {e}")
 
     try:
         win_streak, loss_streak = callout_streaks(stats)
