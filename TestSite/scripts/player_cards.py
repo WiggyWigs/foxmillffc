@@ -45,6 +45,11 @@ Badge rules (all regular season only, Weeks 1-14):
                        best lineup the roster allowed: no bench player
                        (or reshuffle of the flex) would have added a
                        point. Ties with the best lineup count.
+  Diamond in the Rough - count of starts where a player this manager
+                       did NOT draft that season, and who joined the
+                       roster off waivers or free agency (not a trade),
+                       scored more than 25 (QB) or 15 (RB, WR, TE, K).
+                       D/ST doesn't count. Each such player-week counts.
   Businessman        - not computed yet (needs transaction data).
 
 "Going into Monday" is each team's final score minus the points of its
@@ -80,6 +85,10 @@ PUNISHER_MARGIN = 50
 ICE_COLD_LOSSES = 5
 MNF_MIRACLE_POINTS_PER_PLAYER = 10
 MNF_MASTER_POINTS_PER_PLAYER = 15
+# Diamond in the Rough: points a waiver/free-agent pickup must beat, by
+# position. Positions not listed (D/ST) can't earn it.
+DIAMOND_THRESHOLDS = {"QB": 25, "RB": 15, "WR": 15, "TE": 15, "K": 15}
+WAIVER_ACQUISITIONS = {"ADD", "WAIVER", "FREEAGENT"}
 
 # player_lineups.json stores kickoff times in UTC (Sunday Night Football
 # reads as Monday 00:20, Monday Night Football as Tuesday 00:15), so
@@ -88,7 +97,7 @@ EASTERN = ZoneInfo("America/New_York")
 
 # Display order on the card and in the pop-up.
 BADGE_ORDER = [
-    "longest_win_streak", "weekly_high_score", "superstar", "giant_killer",
+    "longest_win_streak", "weekly_high_score", "superstar", "diamond_in_the_rough", "giant_killer",
     "high_point_club", "the_punisher", "ice_cold",
     "monday_night_miracle", "monday_night_master", "lineup_king", "businessman",
 ]
@@ -272,6 +281,27 @@ def _lineup_kings(lineups, year):
     return out
 
 
+def _diamond_hits(lineups, year):
+    """[(week, manager, event)] for every Diamond in the Rough start.
+    Needs the acquisition fields espn_pull.py records; a player missing
+    them (older captures) is skipped rather than guessed."""
+    hits = []
+    for entry in lineups:
+        if entry["year"] != str(year):
+            continue
+        for p in entry["players"]:
+            threshold = DIAMOND_THRESHOLDS.get(p.get("position"))
+            if (threshold is None or not p.get("started")
+                    or p.get("points", 0) <= threshold
+                    or p.get("acquisition_type") not in WAIVER_ACQUISITIONS
+                    or p.get("drafted_by_manager") is not False):
+                continue
+            hits.append((int(entry["week"]), entry["manager"],
+                         {"week": int(entry["week"]), "player": p["name"],
+                          "position": p["position"], "points": p["points"]}))
+    return sorted(hits, key=lambda h: (h[0], h[1], -h[2]["points"]))
+
+
 def compute_season_cards(all_games, lineups, roster_names, year):
     season_games = sorted(
         (g for g in all_games if g["year"] == year and g["game_type"] == "Regular"),
@@ -382,6 +412,15 @@ def compute_season_cards(all_games, lineups, roster_names, year):
             b["count"] += 1
             b["events"].append({"week": wk, "player": h["player"],
                                 "position": h["position"], "points": h["points"]})
+
+    # Diamond in the Rough
+    for wk, mgr, ev in _diamond_hits(lineups, year):
+        if mgr not in badges or wk not in weeks:
+            continue
+        b = badges[mgr].setdefault(
+            "diamond_in_the_rough", {"count": 0, "earned_week": wk, "events": []})
+        b["count"] += 1
+        b["events"].append(ev)
 
     # Giant Killer
     for g in season_games:

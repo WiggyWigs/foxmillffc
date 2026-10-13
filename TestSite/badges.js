@@ -24,6 +24,11 @@ const BADGES = {
     numberTop: "30%",
     rule: "Weeks with the league's highest-scoring starter.",
   },
+  diamond_in_the_rough: {
+    name: "Diamond in the Rough", file: "diamond-in-the-rough.png", numbered: true,
+    initials: "DIR",
+    rule: "Started a waiver or free-agent pickup (not drafted by them, not a trade) who scored more than 25 (QB) or 15 (RB, WR, TE, K).",
+  },
   giant_killer: {
     name: "Giant Killer", file: "giant-killer.png", numbered: false,
     rule: "Week 5 or later: beat a top-5 team ranked at least 5 spots higher going into the week.",
@@ -74,6 +79,8 @@ function badgeEventLines(badge) {
     case "weekly_high_score":
       return ev.map((e) => `Week ${e.week}: ${e.manager_score.toFixed(2)} points`);
     case "superstar":
+      return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
+    case "diamond_in_the_rough":
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
     case "giant_killer":
       return ev.map((e) => `Week ${e.week}: ranked ${ordinal(e.manager_rank)}, beat ${ordinal(e.opponent_rank)}-place ${opp(e)} ${score(e)}`);
