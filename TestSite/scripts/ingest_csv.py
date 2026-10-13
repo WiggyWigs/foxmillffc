@@ -1988,6 +1988,12 @@ def _fmt_record(wlt):
     return f"{w}-{l}-{t}" if t else f"{w}-{l}"
 
 
+def _last_place_lines(last_places, through_week):
+    lines = [f"{lp['year']}: {lp['manager']} was {_fmt_record(lp['early'])} "
+             f"(finished {_fmt_record(lp['final'])})" for lp in last_places]
+    return f"Last-place teams after Week {through_week}:\n" + "\n".join(lines)
+
+
 def _winless_start_stat(all_games, season_games, current_year, roster_names, through_week=5):
     """Stat of the Week after Week 5 - a count, not a percentage:
       1. If someone is 0-5 this season: how many teams in league history
@@ -1996,8 +2002,8 @@ def _winless_start_stat(all_games, season_games, current_year, roster_names, thr
          season.
       2. Otherwise, how many past teams started 0-5.
       3. If none ever did, how many past teams started 1-4.
-    For 2 and 3 the narrative adds each past last-place team's record
-    after Week 5, and the list is this season's 1-4 teams. None if no
+    Every case adds each past last-place team's record after Week 5.
+    For 2 and 3 the list is this season's 1-4 teams. None if no
     past season reached Week 5."""
     winless = _historical_start_cohort(all_games, 0, through_week, through_week, current_year)
     one_win = _historical_start_cohort(all_games, 1, through_week - 1, through_week, current_year)
@@ -2028,6 +2034,12 @@ def _winless_start_stat(all_games, season_games, current_year, roster_names, thr
                      + "\n".join(lines))
         if not winless:
             narrative += "\n“There’s a first for everything”"
+        last_places = _past_last_place_teams(all_games, current_year, through_week, roster_names)
+        if last_places:
+            narrative += "\n\n" + _last_place_lines(last_places, through_week)
+            if all(lp["early"][0] >= 1 for lp in last_places):
+                narrative += (f"\nEvery past last-place team had at least one win "
+                              f"by Week {through_week}.")
         return {
             "reason": f"start_{zero_label.replace('-', '_')}_count_with_current",
             "value": len(everyone), "value_suffix": "", "sample_size": len(everyone),
@@ -2046,9 +2058,7 @@ def _winless_start_stat(all_games, season_games, current_year, roster_names, thr
 
     last_places = _past_last_place_teams(all_games, current_year, through_week, roster_names)
     if last_places:
-        lines = [f"{lp['year']}: {lp['manager']} was {_fmt_record(lp['early'])} "
-                 f"(finished {_fmt_record(lp['final'])})" for lp in last_places]
-        sentences.append(f"Last-place teams after Week {through_week}:\n" + "\n".join(lines))
+        sentences.append(_last_place_lines(last_places, through_week))
         if not winless:
             sunk = sum(lp["early"] == (1, through_week - 1, 0) for lp in last_places)
             sentences.append(f"{sunk} of the {len(cohort)} teams that started {label} "
