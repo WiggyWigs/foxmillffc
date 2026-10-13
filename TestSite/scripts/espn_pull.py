@@ -283,10 +283,23 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
     # Superstar popup with only the most recent week to show. A week
     # already fully captured is skipped without an API call.
     expected_per_week = len(league.teams)
+    # A week counts as captured only if its entries also record how each
+    # player joined the roster (Diamond in the Rough needs that). Weeks
+    # saved before those fields existed are fetched again and replaced.
     managers_captured_by_week = {}
-    for (yr, wk, mgr) in existing_keys:
-        if yr == year_str:
-            managers_captured_by_week.setdefault(wk, set()).add(mgr)
+    for e in existing:
+        if e["year"] == year_str and all("acquisition_type" in pl for pl in e["players"]):
+            managers_captured_by_week.setdefault(e["week"], set()).add(e["manager"])
+
+    # Which players each team drafted this season, by ESPN team id. Keeper
+    # picks count as drafted.
+    drafted_by_team = {}
+    for pick in getattr(league, "draft", None) or []:
+        team_id = getattr(getattr(pick, "team", None), "team_id", None)
+        if team_id is not None and getattr(pick, "playerId", None) is not None:
+            drafted_by_team.setdefault(team_id, set()).add(pick.playerId)
+    if not drafted_by_team:
+        print("WARNING: no draft data from ESPN — drafted_by_manager will be unknown (null).")
 
     new_entries = []
     for wk in range(1, latest_completed_week + 1):
@@ -308,8 +321,13 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
                 if manager is None:
                     continue  # unmapped team name — same safety net as the score pull
                 key = (year_str, str(wk), manager)
-                if key in existing_keys:
+                if manager in managers_captured_by_week.get(str(wk), set()):
                     continue
+                if key in existing_keys:
+                    # Saved without acquisition data: replace it.
+                    existing = [e for e in existing
+                                if (e["year"], e["week"], e["manager"]) != key]
+                drafted = drafted_by_team.get(team.team_id) if drafted_by_team else None
 
                 players = [
                     {
@@ -320,6 +338,13 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
                         "started": p.slot_position not in ("BE", "IR"),
                         "eligible_slots": getattr(p, "eligibleSlots", []),
                         "game_date": getattr(p, "game_date", None).isoformat() if getattr(p, "game_date", None) else None,
+                        "player_id": getattr(p, "playerId", None),
+                        # How the player joined this roster: "DRAFT", "ADD"
+                        # (waivers / free agency) or "TRADE"; None if ESPN
+                        # didn't say.
+                        "acquisition_type": getattr(p, "acquisitionType", None) or None,
+                        "drafted_by_manager": (getattr(p, "playerId", None) in drafted
+                                               if drafted is not None else None),
                     }
                     for p in lineup
                 ]
