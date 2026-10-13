@@ -41,8 +41,9 @@ import os
 import random
 import sys
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -531,12 +532,52 @@ def top_and_bottom_starter(lineup):
     return top, bottom
 
 
+# ESPN game_date values are UTC: Sunday Night Football reads as Monday
+# 00:20 and Monday Night Football as Tuesday 00:15. Game days are
+# decided in Eastern time, the same way player_cards.py does it.
+EASTERN = ZoneInfo("America/New_York")
+
+
+def eastern_kickoff(game_date):
+    return datetime.fromisoformat(game_date).replace(tzinfo=timezone.utc).astimezone(EASTERN)
+
+
+def game_day(game_date):
+    """'Thursday', 'Sunday', 'Monday'... in Eastern time, or None."""
+    return eastern_kickoff(game_date).strftime("%A") if game_date else None
+
+
+def in_final_game(player, final_date_str, is_monday_night):
+    """Did this starter play in the final game of the week? On a Monday
+    night that's every Monday (Eastern) game, so a Monday doubleheader
+    counts as one slate; otherwise it's the single latest kickoff."""
+    gd = player.get("game_date")
+    if not player.get("started") or not gd or not final_date_str:
+        return False
+    if is_monday_night:
+        return eastern_kickoff(gd).date() == eastern_kickoff(final_date_str).date()
+    return gd == final_date_str
+
+
+def is_sunday_night(game_date):
+    kickoff = eastern_kickoff(game_date)
+    return kickoff.weekday() == 6 and kickoff.hour >= 19
+
+
+def final_game_label(final_date_str, is_monday_night):
+    """What to call the final game in a write-up."""
+    return "Monday Night Football" if is_monday_night else "Sunday Night Football"
+
+
 def find_final_game_date(away_lineup, home_lineup):
-    """The date of the LAST real NFL game to finish that week among
-    all of both teams' starters (usually Monday Night Football, though
-    this checks the actual date rather than assuming it). Returns
-    (final_date_str, is_monday_night) or (None, False) if no dated
-    starters are available."""
+    """The last game of the week that counts for a comeback story: the
+    LATEST kickoff among both teams' starters, but only if it is Monday
+    Night Football or Sunday Night Football (Eastern time). If one team
+    has a Monday player, Monday is the last game; if nobody does but
+    someone has a Sunday night player, SNF is. If neither team started
+    anyone in SNF or MNF, there is no "last game" and no comeback or
+    final-game story at all. Returns (final_date_str, is_monday_night)
+    or (None, False)."""
     if not away_lineup or not home_lineup:
         return None, False
     all_dates = [
@@ -546,7 +587,9 @@ def find_final_game_date(away_lineup, home_lineup):
     if not all_dates:
         return None, False
     final_date_str = max(all_dates)
-    is_monday_night = datetime.fromisoformat(final_date_str).weekday() == 0  # Monday == 0
+    is_monday_night = eastern_kickoff(final_date_str).weekday() == 0  # Monday == 0
+    if not is_monday_night and not is_sunday_night(final_date_str):
+        return None, False  # last starter played Sunday afternoon or earlier
     return final_date_str, is_monday_night
 
 
@@ -568,8 +611,12 @@ def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final
     def score_before_final_game(lineup):
         return sum(
             p["points"] for p in lineup
-            if p.get("started") and p.get("game_date") != final_date_str
+            if p.get("started") and not in_final_game(p, final_date_str, is_monday_night)
         )
+
+    def final_game_players(lineup):
+        return [{"name": p["name"], "points": p["points"]} for p in lineup
+                if in_final_game(p, final_date_str, is_monday_night)]
 
     away_before = score_before_final_game(away_lineup)
     home_before = score_before_final_game(home_lineup)
@@ -584,15 +631,20 @@ def find_final_game_swing(away_lineup, home_lineup, away_final_score, home_final
         return None  # no real swing — same leader throughout, or a tie somewhere
 
     return {
-        "game_type": "Monday Night Football" if is_monday_night else "the final game of the week",
+        "game_type": final_game_label(final_date_str, is_monday_night),
         "leader_before_final_game": leader_before,
         "final_winner": leader_after,
         "away_score_before_final_game": round(away_before, 2),
         "home_score_before_final_game": round(home_before, 2),
+        # Every starter whose points came in that final game. The AI has
+        # to credit the comeback to these players, never to someone who
+        # played earlier (the Week 5 2026 recap gave it to a Sunday WR).
+        "away_final_game_players": final_game_players(away_lineup),
+        "home_final_game_players": final_game_players(home_lineup),
     }
 
 
-def find_final_game_heroics_or_bust(losing_lineup, final_date_str):
+def find_final_game_heroics_or_bust(losing_lineup, final_date_str, is_monday_night):
     """
     For the LOSING team's STARTERS who played in the last game of the
     week (usually MNF): flags any who scored 15+ points (genuinely
@@ -612,7 +664,7 @@ def find_final_game_heroics_or_bust(losing_lineup, final_date_str):
 
     results = []
     for p in losing_lineup:
-        if not p.get("started") or p.get("game_date") != final_date_str:
+        if not in_final_game(p, final_date_str, is_monday_night):
             continue
         if p["points"] >= GOOD_THRESHOLD:
             results.append({"name": p["name"], "points": p["points"], "category": "good_but_not_enough"})
@@ -700,15 +752,19 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
     if away_lineup:
         top, bottom = top_and_bottom_starter(away_lineup)
         if top and top["points"] > HIGH_SCORE_THRESHOLD:
-            context["away_top_scorer"] = {"name": top["name"], "points": top["points"]}
+            context["away_top_scorer"] = {"name": top["name"], "points": top["points"],
+                                         "played": game_day(top.get("game_date"))}
         if bottom and bottom["points"] < LOW_SCORE_THRESHOLD:
-            context["away_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
+            context["away_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"],
+                                            "played": game_day(bottom.get("game_date"))}
     if home_lineup:
         top, bottom = top_and_bottom_starter(home_lineup)
         if top and top["points"] > HIGH_SCORE_THRESHOLD:
-            context["home_top_scorer"] = {"name": top["name"], "points": top["points"]}
+            context["home_top_scorer"] = {"name": top["name"], "points": top["points"],
+                                         "played": game_day(top.get("game_date"))}
         if bottom and bottom["points"] < LOW_SCORE_THRESHOLD:
-            context["home_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"]}
+            context["home_bottom_scorer"] = {"name": bottom["name"], "points": bottom["points"],
+                                            "played": game_day(bottom.get("game_date"))}
 
     # Bench-swap analysis for the losing team only (a winning team has
     # no "what if" story — they already won).
@@ -730,6 +786,10 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
         swing_display = dict(swing)
         swing_display["leader_before_final_game"] = away if swing["leader_before_final_game"] == "away" else home
         swing_display["final_winner"] = away if swing["final_winner"] == "away" else home
+        swing_display["final_game_players"] = {
+            away: swing_display.pop("away_final_game_players"),
+            home: swing_display.pop("home_final_game_players"),
+        }
         context["final_game_swing"] = swing_display
 
     # For the LOSING team's real starters who played the final game of
@@ -738,10 +798,10 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
     # Different from final_game_swing above — this fires even when the
     # result was never really in doubt.
     if losing_lineup:
-        heroics_or_bust = find_final_game_heroics_or_bust(losing_lineup, final_date_str)
+        heroics_or_bust = find_final_game_heroics_or_bust(losing_lineup, final_date_str, is_monday_night)
         if heroics_or_bust:
             context["losing_team_final_game_players"] = heroics_or_bust
-            context["final_game_type"] = "Monday Night Football" if is_monday_night else "the final game of the week"
+            context["final_game_type"] = final_game_label(final_date_str, is_monday_night)
 
     # Real, verified career context — this is the actual roast material.
     away_flavor = get_manager_flavor(away, stats, lore, rotation_state)
@@ -841,7 +901,13 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"details about those past games beyond what's given. If "
         f"top/bottom scorer fields are present, you can mention a "
         f"standout or disappointing individual performance if it fits "
-        f"naturally, following the one-per-team limit above. If "
+        f"naturally, following the one-per-team limit above. "
+        f"Never say when a player played, or in what order points came "
+        f"in (late, last slot, Monday, Sunday night...), unless a "
+        f"'played' day or the final_game_swing fields say so. If "
+        f"final_game_swing is absent, there was no comeback: never call "
+        f"the win a comeback or say who was ahead or behind going into "
+        f"a late game. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
@@ -853,7 +919,12 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"final_winner pulled off a genuine comeback, and "
         f"leader_before_final_game blew a lead they had going into that "
         f"last game. This is excellent, dramatic material and should "
-        f"usually be mentioned prominently. If "
+        f"usually be mentioned prominently. final_game_players lists, "
+        f"for each manager, EVERY starter who played in that final game "
+        f"with their points; an empty list means that manager had nobody "
+        f"left. Only those players' points came after the score_before "
+        f"numbers, so credit the comeback (or the collapse) only to them "
+        f"by name, and never to any other player. If "
         f"losing_team_final_game_players is present, these are real "
         f"starters from the LOSING team who played in the game named "
         f"by final_game_type — for each one, category "
@@ -1131,7 +1202,13 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"details about those past games beyond what's given. If "
         f"a top_scorer or bottom_scorer field is present, mention it "
         f"following the winner-top-scorer / loser-bottom-scorer-only "
-        f"rule above. If "
+        f"rule above. "
+        f"Never say when a player played, or in what order points came "
+        f"in (late, last slot, Monday, Sunday night...), unless a "
+        f"'played' day or the final_game_swing fields say so. If "
+        f"final_game_swing is absent, there was no comeback: never call "
+        f"the win a comeback or say who was ahead or behind going into "
+        f"a late game. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
@@ -1139,7 +1216,11 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"final_game_swing is present, that's a real, verified fact: "
         f"the manager named in leader_before_final_game was actually "
         f"ahead before {swing['game_type'] if (swing := context.get('final_game_swing')) else 'the final game'} "
-        f"finished, but final_winner ended up taking the game. If "
+        f"finished, but final_winner ended up taking the game. "
+        f"final_game_players lists, for each manager, EVERY starter who "
+        f"played in that final game with their points (an empty list "
+        f"means nobody was left); credit the comeback or collapse only "
+        f"to those players, never to anyone else. If "
         f"away_manager_background or home_manager_background is present "
         f"(especially for {loser or 'the loser'}, who lost this game), "
         f"use it as real ammunition — a bad career record, zero playoff "
