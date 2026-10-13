@@ -601,6 +601,30 @@ def compute_records(all_games, roster_names):
             i += 1
         return result
 
+    # "Welcome to the Record Books" mentions an active streak only when
+    # its place on the board changes (new to the Top 5, a new rank, or
+    # gaining/losing a tie). That needs last week's place, worked out
+    # here from the full lists: a streak that grew this week was one
+    # shorter last week, and everyone else's best is unchanged.
+    latest_reg = max(((g["year"], _week_sort_key(g["week"])) for g in all_games
+                      if g["game_type"] == "Regular"), default=None)
+
+    def add_rank_last_week(streaks, spots=5):
+        grew = [e for e in streaks
+                if (e["end_year"], _week_sort_key(e["end_week"])) == latest_reg]
+        grew_ids = {id(e) for e in grew}
+        last_week = {id(e): e["streak"] - (id(e) in grew_ids) for e in streaks}
+        for e in grew:
+            prev = last_week[id(e)]
+            higher = sum(v > prev for k, v in last_week.items() if k != id(e))
+            same = sum(v == prev for k, v in last_week.items() if k != id(e))
+            rank = higher + 1
+            e["rank_last_week"] = ({"rank": rank, "tied": same > 0}
+                                   if prev > 0 and rank <= spots else None)
+
+    add_rank_last_week(win_streaks)
+    add_rank_last_week(loss_streaks)
+
     win_streaks.sort(key=lambda e: -e["streak"])
     loss_streaks.sort(key=lambda e: -e["streak"])
     top_win_streaks = top_n_with_ties(win_streaks, 5)

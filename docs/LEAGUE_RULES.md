@@ -63,6 +63,7 @@ MSI = 2.0 × (playoff appearances / seasons)
 
 * Ranks are competition-style: tied values share the rank of the first row with that value, and the next row skips ahead. The shared rank is shown on the first tied row only; the other tied rows are blank (1, blank, 3), matching `tieAwareRanks()` in `records.js`.
 * The "Welcome to the Record Books" write-ups must use the same ranks as the Record Books page. When a mark ties one from an earlier season, the sentence says "tied for".
+* An active win/loss streak is mentioned in "Welcome to the Record Books" only when its place on the Top 5 changes: it enters the list, moves to a new rank, or gains or loses a tie (tied 3rd → 3rd, 3rd → tied 2nd). A streak that grows but keeps the same place is not mentioned again.
 
 ## 9. Playoff Probability
 
