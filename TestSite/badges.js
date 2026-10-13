@@ -26,6 +26,8 @@ const BADGES = {
   },
   diamond_in_the_rough: {
     name: "Diamond in the Rough", file: "diamond-in-the-rough.png", numbered: true,
+    // Cream panel is widest near the top of the gem.
+    numberTop: "42%",
     initials: "DIR",
     rule: "Started a waiver or free-agent pickup (not drafted by them, not a trade) who scored more than 25 (QB) or 15 (RB, WR, TE, K).",
   },
