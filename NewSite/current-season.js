@@ -156,7 +156,7 @@ function renderStatOfTheWeek(stat) {
     return;
   }
 
-  valueEl.textContent = `${stat.value}%`;
+  valueEl.textContent = `${stat.value}${stat.value_suffix ?? "%"}`;
 
   const teams = Array.isArray(stat.this_year_teams) ? stat.this_year_teams : [];
   const parts = [escapeHtml(stat.narrative || "")];
