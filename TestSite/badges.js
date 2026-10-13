@@ -29,7 +29,7 @@ const BADGES = {
     // Cream panel is widest near the top of the gem.
     numberTop: "42%",
     initials: "DIR",
-    rule: "Started a waiver or free-agent pickup (not drafted by them, not a trade) who scored more than 25 (QB) or 15 (RB, WR, TE, K).",
+    rule: "Started a waiver or free-agent pickup (not drafted by them, not a trade) who scored more than 25 (QB) or 15 (RB, WR, TE, K). Once per player.",
   },
   giant_killer: {
     name: "Giant Killer", file: "giant-killer.png", numbered: false,

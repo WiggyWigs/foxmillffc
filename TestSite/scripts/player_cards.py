@@ -49,7 +49,9 @@ Badge rules (all regular season only, Weeks 1-14):
                        did NOT draft that season, and who joined the
                        roster off waivers or free agency (not a trade),
                        scored more than 25 (QB) or 15 (RB, WR, TE, K).
-                       D/ST doesn't count. Each such player-week counts.
+                       D/ST doesn't count. Once per player per manager
+                       each season: the first qualifying week counts,
+                       later big weeks by the same player don't.
   Businessman        - not computed yet (needs transaction data).
 
 "Going into Monday" is each team's final score minus the points of its
@@ -282,7 +284,8 @@ def _lineup_kings(lineups, year):
 
 
 def _diamond_hits(lineups, year):
-    """[(week, manager, event)] for every Diamond in the Rough start.
+    """[(week, manager, event)] for every Diamond in the Rough start,
+    keeping only the first qualifying week for each manager + player.
     Needs the acquisition fields espn_pull.py records; a player missing
     them (older captures) is skipped rather than guessed."""
     hits = []
@@ -298,8 +301,17 @@ def _diamond_hits(lineups, year):
                 continue
             hits.append((int(entry["week"]), entry["manager"],
                          {"week": int(entry["week"]), "player": p["name"],
-                          "position": p["position"], "points": p["points"]}))
-    return sorted(hits, key=lambda h: (h[0], h[1], -h[2]["points"]))
+                          "position": p["position"], "points": p["points"],
+                          "player_key": p.get("player_id") or p["name"]}))
+    first, seen = [], set()
+    for wk, mgr, ev in sorted(hits, key=lambda h: (h[0], h[1], -h[2]["points"])):
+        key = (mgr, ev["player_key"])
+        if key not in seen:
+            seen.add(key)
+            first.append((wk, mgr, ev))
+    for _, _, ev in first:
+        del ev["player_key"]
+    return first
 
 
 def compute_season_cards(all_games, lineups, roster_names, year):
