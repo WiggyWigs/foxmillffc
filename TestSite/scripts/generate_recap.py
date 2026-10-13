@@ -251,8 +251,12 @@ def get_playoff_probability_trend(manager, old_stats, new_stats):
     silently report a manager's probability as "unchanged" just
     because it's literally the same computation compared to itself,
     not a real week-over-week trend."""
-    old_pp = (old_stats or {}).get("playoff_probabilities")
+    # ingest_csv.py keeps the previous week's odds in stats.json, which
+    # survives a re-run of the same week; the before-this-run snapshot
+    # (old_stats) is only a fallback for data written before that.
     new_pp = (new_stats or {}).get("playoff_probabilities")
+    old_pp = ((new_stats or {}).get("playoff_probabilities_last_week")
+              or (old_stats or {}).get("playoff_probabilities"))
     if not old_pp or not new_pp or not old_pp.get("visible") or not new_pp.get("visible"):
         return None
 
@@ -260,9 +264,9 @@ def get_playoff_probability_trend(manager, old_stats, new_stats):
     new_season, new_week = new_pp.get("season"), new_pp.get("current_week")
     if old_season is None or new_season is None or old_week is None or new_week is None:
         return None
-    if (old_season, old_week) >= (new_season, new_week):
-        # Not genuinely "previous" — same week, or somehow later.
-        # Reporting a trend here would be actively misleading.
+    if old_season != new_season or old_week != new_week - 1:
+        # Not genuinely the previous week — same week, later, or a
+        # skipped week. Reporting a trend here would be misleading.
         return None
 
     def lookup(pp):
@@ -883,7 +887,9 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         "their season_playoff_probability_trend field if it's present — never "
         "make a vague qualitative claim about playoff odds without "
         "those two real numbers. If that field isn't present for a "
-        "manager, don't speculate about their playoff chances at all."
+        "manager, don't speculate about their playoff chances at all, "
+        "and never describe a change in them. If previous_week_pct "
+        "equals current_week_pct, say it held steady."
     )
     user = (
         f"Write a recap of the closest game of Week {week}, {year} — this "
@@ -1197,7 +1203,9 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "their season_playoff_probability_trend field if it's present — never "
         "make a vague qualitative claim about playoff odds without "
         "those two real numbers. If that field isn't present for a "
-        "manager, don't speculate about their playoff chances at all."
+        "manager, don't speculate about their playoff chances at all, "
+        "and never describe a change in them. If previous_week_pct "
+        "equals current_week_pct, say it held steady."
     )
     user = (
         f"Write the Honorable Mention recap for this Week {week}, {year} game:\n"
@@ -1739,7 +1747,12 @@ def build_gotw_writing_prompt(matchup, tone):
         "season_playoff_probability_trend field if present — never a "
         "vague qualitative claim without those two real numbers; if "
         "that field isn't present for a manager, don't speculate "
-        "about their playoff chances. If you reference a manager's "
+        "about their playoff chances. Without that field you may "
+        "state season_playoff_probability_pct on its own, but never "
+        "call it up, down, unchanged or 'from' anything, and never "
+        "reuse it as a previous number. If previous_week_pct equals "
+        "current_week_pct, say it held steady instead of up or down. "
+        "If you reference a manager's "
         "individual top or bottom player performance, frame it as a "
         "dramatic contrast in one sentence — the big performance "
         "overcoming, carrying, or outshining the weak one (or vice "
