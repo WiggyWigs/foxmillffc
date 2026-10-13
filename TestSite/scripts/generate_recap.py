@@ -559,24 +559,25 @@ def in_final_game(player, final_date_str, is_monday_night):
     return gd == final_date_str
 
 
+def is_sunday_night(game_date):
+    kickoff = eastern_kickoff(game_date)
+    return kickoff.weekday() == 6 and kickoff.hour >= 19
+
+
 def final_game_label(final_date_str, is_monday_night):
     """What to call the final game in a write-up."""
-    if is_monday_night:
-        return "Monday Night Football"
-    kickoff = eastern_kickoff(final_date_str)
-    if kickoff.weekday() == 6 and kickoff.hour >= 19:
-        return "Sunday Night Football"
-    if kickoff.weekday() == 3:
-        return "Thursday Night Football"
-    return "the final game of the week"
+    return "Monday Night Football" if is_monday_night else "Sunday Night Football"
 
 
 def find_final_game_date(away_lineup, home_lineup):
-    """The date of the LAST real NFL game to finish that week among
-    all of both teams' starters (usually Monday Night Football, though
-    this checks the actual date rather than assuming it). Returns
-    (final_date_str, is_monday_night) or (None, False) if no dated
-    starters are available."""
+    """The last game of the week that counts for a comeback story: the
+    LATEST kickoff among both teams' starters, but only if it is Monday
+    Night Football or Sunday Night Football (Eastern time). If one team
+    has a Monday player, Monday is the last game; if nobody does but
+    someone has a Sunday night player, SNF is. If neither team started
+    anyone in SNF or MNF, there is no "last game" and no comeback or
+    final-game story at all. Returns (final_date_str, is_monday_night)
+    or (None, False)."""
     if not away_lineup or not home_lineup:
         return None, False
     all_dates = [
@@ -587,6 +588,8 @@ def find_final_game_date(away_lineup, home_lineup):
         return None, False
     final_date_str = max(all_dates)
     is_monday_night = eastern_kickoff(final_date_str).weekday() == 0  # Monday == 0
+    if not is_monday_night and not is_sunday_night(final_date_str):
+        return None, False  # last starter played Sunday afternoon or earlier
     return final_date_str, is_monday_night
 
 
@@ -902,6 +905,9 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"Never say when a player played, or in what order points came "
         f"in (late, last slot, Monday, Sunday night...), unless a "
         f"'played' day or the final_game_swing fields say so. If "
+        f"final_game_swing is absent, there was no comeback: never call "
+        f"the win a comeback or say who was ahead or behind going into "
+        f"a late game. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
@@ -1200,6 +1206,9 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"Never say when a player played, or in what order points came "
         f"in (late, last slot, Monday, Sunday night...), unless a "
         f"'played' day or the final_game_swing fields say so. If "
+        f"final_game_swing is absent, there was no comeback: never call "
+        f"the win a comeback or say who was ahead or behind going into "
+        f"a late game. If "
         f"bench_swap_that_would_have_won is present, that's a real, "
         f"verified fact — a bench player who would have won the game if "
         f"started instead of the named starter — and it's usually prime "
