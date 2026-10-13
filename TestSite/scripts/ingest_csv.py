@@ -2658,9 +2658,23 @@ def main():
     else:
         print("This Week in Club History: no eligible candidate this week.")
     stats["playoff_probability_model"] = compute_playoff_probability_model(stats["games"], roster_names)
+    # Keep the previous WEEK's odds for the recap's "up from X%" trend.
+    # On a re-run of the same week, stats.json already holds this week's
+    # odds, so carry the stored previous week forward instead of
+    # comparing the week with itself.
+    old_pp = stats.get("playoff_probabilities") or {}
+    old_last_week = stats.get("playoff_probabilities_last_week")
     stats["playoff_probabilities"] = compute_playoff_probabilities(
         stats["games"], roster_names, stats["playoff_probability_model"]
     )
+    new_pp = stats["playoff_probabilities"] or {}
+    new_key = (new_pp.get("season"), new_pp.get("current_week"))
+    old_key = (old_pp.get("season"), old_pp.get("current_week"))
+    if old_pp.get("visible") and None not in old_key and old_key < new_key:
+        stats["playoff_probabilities_last_week"] = old_pp       # normal weekly run
+    elif not (old_last_week and old_key == new_key):
+        stats.pop("playoff_probabilities_last_week", None)      # nothing earlier to compare with
+    # else: re-run of the same week, keep the stored previous week as is
     complete_years = {g["year"] for g in stats["games"] if g["game_type"] == "Championship"}
     stats["msi_last_complete_season"] = max(complete_years) if complete_years else None
     stats["h2h_summary"] = compute_h2h_summary(stats["games"], roster_names)
