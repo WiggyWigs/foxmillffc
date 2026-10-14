@@ -70,7 +70,7 @@ const BADGES = {
   bad_beat: {
     name: "Bad Beat", file: "bad-beat.png", numbered: true,
     initials: "BB",
-    rule: "Lost a game while posting one of the week's top 3 scores.",
+    rule: "Lost a game while posting one of the week's top 4 scores.",
   },
 };
 

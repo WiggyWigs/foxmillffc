@@ -54,7 +54,7 @@ Badge rules (all regular season only, Weeks 1-14):
                        later big weeks by the same player don't.
   Heartbreaker       - count of losses by less than 3 points.
   Bad Beat           - count of losses while posting one of the week's
-                       top 3 scores (a score tied with 3rd counts).
+                       top 4 scores (a score tied with 4th counts).
 
 "Going into Monday" is each team's final score minus the points of its
 starters who played on Monday (Eastern time). Games with no Monday
@@ -88,7 +88,7 @@ HIGH_POINT_CLUB_SCORE = 150
 PUNISHER_MARGIN = 50
 ICE_COLD_LOSSES = 5
 HEARTBREAKER_MARGIN = 3
-BAD_BEAT_TOP_SCORES = 3
+BAD_BEAT_TOP_SCORES = 4
 MNF_MIRACLE_POINTS_PER_PLAYER = 10
 MNF_MASTER_POINTS_PER_PLAYER = 15
 # Diamond in the Rough: points a waiver/free-agent pickup must beat, by
