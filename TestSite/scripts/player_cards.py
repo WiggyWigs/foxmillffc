@@ -48,7 +48,7 @@ Badge rules (all regular season only, Weeks 1-14):
   Diamond in the Rough - count of starts where a player this manager
                        did NOT draft that season, and who joined the
                        roster off waivers or free agency (not a trade),
-                       scored more than 24 (QB) or 15 (RB, WR, TE, K).
+                       scored more than 25 (QB) or 15 (RB, WR, TE, K).
                        D/ST doesn't count. Once per player per manager
                        each season: the first qualifying week counts,
                        later big weeks by the same player don't.
@@ -89,7 +89,7 @@ MNF_MIRACLE_POINTS_PER_PLAYER = 10
 MNF_MASTER_POINTS_PER_PLAYER = 15
 # Diamond in the Rough: points a waiver/free-agent pickup must beat, by
 # position. Positions not listed (D/ST) can't earn it.
-DIAMOND_THRESHOLDS = {"QB": 24, "RB": 15, "WR": 15, "TE": 15, "K": 15}
+DIAMOND_THRESHOLDS = {"QB": 25, "RB": 15, "WR": 15, "TE": 15, "K": 15}
 
 # player_lineups.json stores kickoff times in UTC (Sunday Night Football
 # reads as Monday 00:20, Monday Night Football as Tuesday 00:15), so
