@@ -62,9 +62,15 @@ const BADGES = {
     name: "Lineup King", file: "lineup-king.png", numbered: false,
     rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
   },
-  businessman: {
-    name: "Businessman", file: "businessman.png", numbered: false,
-    rule: "Most transactions (adds, drops and trades) in the regular season.",
+  heartbreaker: {
+    name: "Heartbreaker", file: "heartbreaker.png", numbered: true,
+    initials: "HB",
+    rule: "Lost a game by less than 3 points.",
+  },
+  bad_beat: {
+    name: "Bad Beat", file: "bad-beat.png", numbered: true,
+    initials: "BB",
+    rule: "Lost a game while posting one of the week's top 3 scores.",
   },
 };
 
@@ -84,6 +90,10 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
     case "diamond_in_the_rough":
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
+    case "heartbreaker":
+      return ev.map((e) => `Week ${e.week}: lost to ${opp(e)} by ${e.margin.toFixed(2)} (${score(e)})`);
+    case "bad_beat":
+      return ev.map((e) => `Week ${e.week}: ${ordinal(e.score_rank)}-highest score of the week, lost to ${opp(e)} ${score(e)}`);
     case "giant_killer":
       return ev.map((e) => `Week ${e.week}: ranked ${ordinal(e.manager_rank)}, beat ${ordinal(e.opponent_rank)}-place ${opp(e)} ${score(e)}`);
     case "high_point_club":
