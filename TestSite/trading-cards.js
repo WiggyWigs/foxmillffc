@@ -130,10 +130,13 @@ function hashString(s) {
   return h >>> 0;
 }
 
-function badgeHtml(badge, cls) {
+// showNumber: the count is drawn on the badge only in the pop-up's badge
+// list. Badges on the card itself (grid and the pop-up's card copy) never
+// carry a number.
+function badgeHtml(badge, cls, showNumber = false) {
   const meta = BADGES[badge.id];
   if (!meta) return "";
-  const number = meta.numbered && badge.count != null
+  const number = showNumber && meta.numbered && badge.count != null
     ? `<span class="pc-badge-num${meta.numberStyle === "light" ? " is-light" : ""}"${meta.numberTop ? ` style="top:${meta.numberTop}"` : ""}>${badge.count}</span>`
     : "";
   return `
@@ -365,7 +368,7 @@ function badgeDetailHtml(badge, isFocus) {
   const lines = badgeEventLines(badge).map((l) => `<li>${l}</li>`).join("");
   return `
     <div class="pc-detail${isFocus ? " is-focus" : ""}">
-      ${badgeHtml(badge, "pc-detail-badge")}
+      ${badgeHtml(badge, "pc-detail-badge", true)}
       <div class="pc-detail-text">
         <div class="pc-detail-name">${escapeHtml(title)}</div>
         <div class="pc-detail-rule">${escapeHtml(meta.rule)}</div>
