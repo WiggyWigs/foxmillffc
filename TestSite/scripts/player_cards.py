@@ -52,7 +52,8 @@ Badge rules (all regular season only, Weeks 1-14):
                        D/ST doesn't count. Once per player per manager
                        each season: the first qualifying week counts,
                        later big weeks by the same player don't.
-  Heartbreaker       - count of losses by less than 3 points.
+  Heartbreaker       - lost by less than 3 points. Not numbered; every
+                       such loss is listed in the pop-up.
   Bad Beat           - count of losses while posting one of the week's
                        top 4 scores (a score tied with 4th counts).
 
@@ -439,8 +440,7 @@ def compute_season_cards(all_games, lineups, roster_names, year):
         if margin < HEARTBREAKER_MARGIN:
             ev = _game_event(g, loser)
             ev["margin"] = margin
-            b = badges[loser].setdefault("heartbreaker", {"count": 0, "earned_week": wk, "events": []})
-            b["count"] += 1
+            b = badges[loser].setdefault("heartbreaker", {"count": None, "earned_week": wk, "events": []})
             b["events"].append(ev)
         week_scores = sorted((s for x in season_games if _week(x) == wk
                               for s in (x["away_score"], x["home_score"])), reverse=True)

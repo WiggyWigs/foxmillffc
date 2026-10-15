@@ -63,7 +63,7 @@ const BADGES = {
     rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
   },
   heartbreaker: {
-    name: "Heartbreaker", file: "heartbreaker.png", numbered: true,
+    name: "Heartbreaker", file: "heartbreaker.png", numbered: false,
     initials: "HB",
     rule: "Lost a game by less than 3 points.",
   },
