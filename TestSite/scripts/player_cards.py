@@ -48,11 +48,14 @@ Badge rules (all regular season only, Weeks 1-14):
   Diamond in the Rough - count of starts where a player this manager
                        did NOT draft that season, and who joined the
                        roster off waivers or free agency (not a trade),
-                       scored more than 24 (QB) or 15 (RB, WR, TE, K).
+                       scored more than 25 (QB) or 15 (RB, WR, TE, K).
                        D/ST doesn't count. Once per player per manager
                        each season: the first qualifying week counts,
                        later big weeks by the same player don't.
-  Businessman        - not computed yet (needs transaction data).
+  Heartbreaker       - lost by less than 3 points. Not numbered; every
+                       such loss is listed in the pop-up.
+  Bad Beat           - count of losses while posting one of the week's
+                       top 4 scores (a score tied with 4th counts).
 
 "Going into Monday" is each team's final score minus the points of its
 starters who played on Monday (Eastern time). Games with no Monday
@@ -85,11 +88,13 @@ GIANT_KILLER_RANK_GAP = 5
 HIGH_POINT_CLUB_SCORE = 150
 PUNISHER_MARGIN = 50
 ICE_COLD_LOSSES = 5
+HEARTBREAKER_MARGIN = 3
+BAD_BEAT_TOP_SCORES = 4
 MNF_MIRACLE_POINTS_PER_PLAYER = 10
 MNF_MASTER_POINTS_PER_PLAYER = 15
 # Diamond in the Rough: points a waiver/free-agent pickup must beat, by
 # position. Positions not listed (D/ST) can't earn it.
-DIAMOND_THRESHOLDS = {"QB": 24, "RB": 15, "WR": 15, "TE": 15, "K": 15}
+DIAMOND_THRESHOLDS = {"QB": 25, "RB": 15, "WR": 15, "TE": 15, "K": 15}
 
 # player_lineups.json stores kickoff times in UTC (Sunday Night Football
 # reads as Monday 00:20, Monday Night Football as Tuesday 00:15), so
@@ -100,7 +105,8 @@ EASTERN = ZoneInfo("America/New_York")
 BADGE_ORDER = [
     "longest_win_streak", "weekly_high_score", "superstar", "diamond_in_the_rough", "giant_killer",
     "high_point_club", "the_punisher", "ice_cold",
-    "monday_night_miracle", "monday_night_master", "lineup_king", "businessman",
+    "monday_night_miracle", "monday_night_master", "lineup_king",
+    "heartbreaker", "bad_beat",
 ]
 
 
@@ -423,6 +429,28 @@ def compute_season_cards(all_games, lineups, roster_names, year):
             b["count"] += 1
             b["events"].append({"week": wk, "player": h["player"],
                                 "position": h["position"], "points": h["points"]})
+
+    # Heartbreaker / Bad Beat (both are losses; ties don't count)
+    for g in season_games:
+        if g["tie"] or g["loser"] not in badges:
+            continue
+        wk, loser = _week(g), g["loser"]
+        own, _, opp_score, _ = _side(g, loser)
+        margin = round(opp_score - own, 2)
+        if margin < HEARTBREAKER_MARGIN:
+            ev = _game_event(g, loser)
+            ev["margin"] = margin
+            b = badges[loser].setdefault("heartbreaker", {"count": None, "earned_week": wk, "events": []})
+            b["events"].append(ev)
+        week_scores = sorted((s for x in season_games if _week(x) == wk
+                              for s in (x["away_score"], x["home_score"])), reverse=True)
+        score_rank = 1 + sum(s > own for s in week_scores)  # competition rank
+        if score_rank <= BAD_BEAT_TOP_SCORES:
+            ev = _game_event(g, loser)
+            ev["score_rank"] = score_rank
+            b = badges[loser].setdefault("bad_beat", {"count": 0, "earned_week": wk, "events": []})
+            b["count"] += 1
+            b["events"].append(ev)
 
     # Diamond in the Rough
     for wk, mgr, ev in _diamond_hits(lineups, year):
