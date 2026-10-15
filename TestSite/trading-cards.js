@@ -136,7 +136,7 @@ function hashString(s) {
 function badgeHtml(badge, cls, showNumber = false) {
   const meta = BADGES[badge.id];
   if (!meta) return "";
-  const number = showNumber && meta.numbered && badge.count != null
+  const number = showNumber && meta.numbered && meta.iconNumber !== false && badge.count != null
     ? `<span class="pc-badge-num${meta.numberStyle === "light" ? " is-light" : ""}"${meta.numberTop ? ` style="top:${meta.numberTop}"` : ""}>${badge.count}</span>`
     : "";
   return `

@@ -69,6 +69,9 @@ const BADGES = {
   },
   bad_beat: {
     name: "Bad Beat", file: "bad-beat.png", numbered: true,
+    // The thumbs-down fills the medal, so the pop-up shows the count in
+    // the title ("Bad Beat ×2") but not on the icon.
+    iconNumber: false,
     initials: "BB",
     rule: "Lost a game while posting one of the week's top 4 scores.",
   },
