@@ -2128,6 +2128,10 @@ def compute_stat_of_the_week(all_games, roster_names):
       2. Otherwise, number of past teams that started 0-5
       3. If there are none, number of past teams that started 1-4,
          plus each past last-place team's record after Week 5
+
+    Week 6, in priority order:
+      1. Playoff odds at 3-3 (only if someone is 3-3 now)
+      2. Playoff odds at 2-4 (only if someone is 2-4 now)
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2138,17 +2142,26 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
-    if last_completed_week == 3:
-        # (wins, losses, reason, include_champions, list_historical_names)
-        for wins, losses, reason, champs, list_names in (
+    # Records checked in order after that week; the first one that someone
+    # holds now (and some past team held) wins.
+    # (wins, losses, reason, include_champions, list_historical_names)
+    start_record_options = {
+        3: (
             (0, 3, "start_0_3", False, True),
             (3, 0, "start_3_0", True, True),
             (1, 2, "start_1_2", False, False),  # too common a record to name every past team
-        ):
-            this_year = _teams_with_record_now(season_games, 3, wins, losses)
+        ),
+        6: (
+            (3, 3, "start_3_3", False, True),
+            (2, 4, "start_2_4", False, True),
+        ),
+    }
+    if last_completed_week in start_record_options:
+        for wins, losses, reason, champs, list_names in start_record_options[last_completed_week]:
+            this_year = _teams_with_record_now(season_games, last_completed_week, wins, losses)
             if not this_year:
                 continue
-            cohort = _historical_start_cohort(all_games, wins, losses, 3, current_year)
+            cohort = _historical_start_cohort(all_games, wins, losses, last_completed_week, current_year)
             if not cohort:
                 continue
             return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
