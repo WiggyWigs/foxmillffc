@@ -24,6 +24,13 @@ const BADGES = {
     numberTop: "30%",
     rule: "Weeks with the league's highest-scoring starter.",
   },
+  diamond_in_the_rough: {
+    name: "Diamond in the Rough", file: "diamond-in-the-rough.png", numbered: true,
+    // Cream panel is widest near the top of the gem.
+    numberTop: "42%",
+    initials: "DIR",
+    rule: "Started a waiver or free-agent pickup (not drafted by them, not a trade) who scored more than 25 (QB) or 15 (RB, WR, TE, K). Once per player.",
+  },
   giant_killer: {
     name: "Giant Killer", file: "giant-killer.png", numbered: false,
     rule: "Week 5 or later: beat a top-5 team ranked at least 5 spots higher going into the week.",
@@ -55,9 +62,18 @@ const BADGES = {
     name: "Lineup King", file: "lineup-king.png", numbered: false,
     rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
   },
-  businessman: {
-    name: "Businessman", file: "businessman.png", numbered: false,
-    rule: "Most transactions (adds, drops and trades) in the regular season.",
+  heartbreaker: {
+    name: "Heartbreaker", file: "heartbreaker.png", numbered: false,
+    initials: "HB",
+    rule: "Lost a game by less than 3 points.",
+  },
+  bad_beat: {
+    name: "Bad Beat", file: "bad-beat.png", numbered: true,
+    // The thumbs-down fills the medal, so the pop-up shows the count in
+    // the title ("Bad Beat ×2") but not on the icon.
+    iconNumber: false,
+    initials: "BB",
+    rule: "Lost a game while posting one of the week's top 4 scores.",
   },
 };
 
@@ -75,6 +91,12 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: ${e.manager_score.toFixed(2)} points`);
     case "superstar":
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
+    case "diamond_in_the_rough":
+      return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
+    case "heartbreaker":
+      return ev.map((e) => `Week ${e.week}: lost to ${opp(e)} by ${e.margin.toFixed(2)} (${score(e)})`);
+    case "bad_beat":
+      return ev.map((e) => `Week ${e.week}: ${ordinal(e.score_rank)}-highest score of the week, lost to ${opp(e)} ${score(e)}`);
     case "giant_killer":
       return ev.map((e) => `Week ${e.week}: ranked ${ordinal(e.manager_rank)}, beat ${ordinal(e.opponent_rank)}-place ${opp(e)} ${score(e)}`);
     case "high_point_club":
