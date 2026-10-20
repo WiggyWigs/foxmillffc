@@ -35,6 +35,13 @@ const BADGES = {
     name: "Giant Killer", file: "giant-killer.png", numbered: false,
     rule: "Week 5 or later: beat a top-5 team ranked at least 5 spots higher going into the week.",
   },
+  chess_not_checkers: {
+    name: "Chess, Not Checkers", file: "chess-not-checkers.png", numbered: true,
+    // The king piece is too narrow for a digit: count in the pop-up title only.
+    iconNumber: false,
+    initials: "CNC",
+    rule: "Beat the same team twice in one season (playoff games count). The number is how many different teams.",
+  },
   high_point_club: {
     name: "High Point Club", file: "high-point-club.png", numbered: false,
     rule: "Scored 150 or more points in a game.",
@@ -61,6 +68,20 @@ const BADGES = {
   lineup_king: {
     name: "Lineup King", file: "lineup-king.png", numbered: false,
     rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
+  },
+  the_eliminator: {
+    name: "The Eliminator", file: "the-eliminator.png", numbered: true,
+    // A digit would cover the bullseye: count in the pop-up title only.
+    iconNumber: false,
+    initials: "ELM",
+    rule: "Beat a team and mathematically eliminated them from the playoffs that week.",
+  },
+  not_great_bob: {
+    name: "Not Great Bob", file: "not-great-bob.png", numbered: true,
+    // The portrait fills the coin: count in the pop-up title only.
+    iconNumber: false,
+    initials: "NGB",
+    rule: "Scored less than 75 points in a game.",
   },
   heartbreaker: {
     name: "Heartbreaker", file: "heartbreaker.png", numbered: false,
@@ -93,12 +114,19 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
     case "diamond_in_the_rough":
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
+    case "the_eliminator":
+      return ev.map((e) => `Week ${e.week}: beat ${opp(e)} ${score(e)}, eliminating them from the playoffs`);
+    case "not_great_bob":
+      return ev.map((e) => `Week ${e.week}: ${e.manager_score.toFixed(2)} points vs ${opp(e)}`);
     case "heartbreaker":
       return ev.map((e) => `Week ${e.week}: lost to ${opp(e)} by ${e.margin.toFixed(2)} (${score(e)})`);
     case "bad_beat":
       return ev.map((e) => `Week ${e.week}: ${ordinal(e.score_rank)}-highest score of the week, lost to ${opp(e)} ${score(e)}`);
     case "giant_killer":
       return ev.map((e) => `Week ${e.week}: ranked ${ordinal(e.manager_rank)}, beat ${ordinal(e.opponent_rank)}-place ${opp(e)} ${score(e)}`);
+    case "chess_not_checkers":
+      return ev.map((e) => `Beat ${opp(e)} ${e.wins === 2 ? "twice" : `${e.wins} times`}: `
+        + e.games.map((g) => `${escapeHtml(g.label)} ${g.manager_score.toFixed(2)}–${g.opponent_score.toFixed(2)}`).join(", "));
     case "high_point_club":
       return ev.map((e) => `Week ${e.week}: ${e.manager_score.toFixed(2)} points vs ${opp(e)}`);
     case "the_punisher":

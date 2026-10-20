@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupHighestScoringPlayerModal();
   setupLowestScoringTeamModal();
   setupWeekInHistoryModal();
-  setupMoreYouKnowModal();
   let data;
   try {
     const res = await fetch("data/stats.json");
@@ -88,7 +87,7 @@ function renderRecap(data) {
   }
 
   renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams);
-  renderAnalyticsDeepDive(data.week_in_history, data.more_you_know);
+  renderAnalyticsDeepDive(data.week_in_history);
   renderStatOfTheWeek(data.stat_of_the_week);
   renderBoxScores(recap.box_scores || []);
   renderHonorableMention(recap);
@@ -167,6 +166,7 @@ function renderStatOfTheWeek(stat) {
   } else if (stat.teams_label) {
     parts.push(`${escapeHtml(label)}: none.`);
   }
+  if (stat.closing) parts.push(`\n${escapeHtml(stat.closing)}`);
   if (stat.footnote) parts.push(`<span class="stat-of-week-footnote">${escapeHtml(stat.footnote)}</span>`);
   textEl.innerHTML = parts.join("\n");
 
@@ -252,42 +252,6 @@ function setupWeekInHistoryModal() {
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && overlay.classList.contains("active")) closeWeekInHistoryModal();
-  });
-}
-
-function openMoreYouKnowModal(mtk) {
-  const modal = document.getElementById("moreYouKnowModal");
-  const body = document.getElementById("moreYouKnowModalBody");
-  const closeBtn = document.getElementById("moreYouKnowModalClose");
-  if (!modal || !body) return;
-
-  body.textContent = moreYouKnowModalText(mtk);
-
-  modal.classList.add("active");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-  if (closeBtn) closeBtn.focus();
-}
-
-function closeMoreYouKnowModal() {
-  const modal = document.getElementById("moreYouKnowModal");
-  if (!modal) return;
-  modal.classList.remove("active");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function setupMoreYouKnowModal() {
-  const overlay = document.getElementById("moreYouKnowModal");
-  const closeBtn = document.getElementById("moreYouKnowModalClose");
-  if (!overlay || !closeBtn) return;
-
-  closeBtn.addEventListener("click", closeMoreYouKnowModal);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeMoreYouKnowModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("active")) closeMoreYouKnowModal();
   });
 }
 
@@ -416,10 +380,9 @@ function renderCallouts(callouts, highestScoringPlayers, lowestScoringTeams) {
 }
 
 // Deep Dive — its own section, holding the "This Week in Club History"
-// and "The More You Know" boxes, moved out of the Highs and Lows grid.
-// Either can be present or absent independently; the section itself
-// hides only when NEITHER has anything to show.
-function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
+// box, moved out of the Highs and Lows grid. Hidden when there's nothing
+// to show.
+function renderAnalyticsDeepDive(weekInHistory) {
   const divider = document.getElementById("analytics-divider");
   const section = document.getElementById("analytics-section");
   const grid = document.getElementById("analytics-grid");
@@ -427,11 +390,6 @@ function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
 
   const entries = [];
   if (weekInHistory) entries.push({ item: weekInHistoryToCalloutItem(weekInHistory), raw: weekInHistory, kind: "history" });
-  // "The More You Know" is intentionally not shown yet — still fully
-  // computed and passed in by ingest_csv.py, just not rendered while
-  // its weekly content plan gets worked out. Flip this back on by
-  // restoring the block below.
-  // if (moreYouKnow) entries.push({ item: moreYouKnowToCalloutItem(moreYouKnow), raw: moreYouKnow, kind: "mtk" });
 
   if (entries.length === 0) {
     section.style.display = "none";
@@ -454,37 +412,8 @@ function renderAnalyticsDeepDive(weekInHistory, moreYouKnow) {
     if (e.kind === "history" && e.raw.narrative) {
       el.classList.add("callout-hm-clickable");
       el.addEventListener("click", () => openWeekInHistoryModal(e.raw));
-    } else if (e.kind === "mtk") {
-      el.classList.add("callout-hm-clickable");
-      el.addEventListener("click", () => openMoreYouKnowModal(e.raw));
     }
   });
-}
-
-// Builds the compact callout-box display fields for "The More You Know"
-// from the raw object ingest_csv.py wrote to stats.json.
-function moreYouKnowToCalloutItem(mtk) {
-  if (mtk.reason === "playoff_odds_after_0_3_start") {
-    return {
-      label: "The More You Know",
-      headline: "Odds of making the playoffs after an 0-3 start",
-      value: `${mtk.value}%`,
-    };
-  }
-  return { label: "The More You Know", headline: "", value: mtk.value };
-}
-
-// Plain templated text (not AI-written) for the popup — deterministic,
-// so this needs no narrative field or API call at all.
-function moreYouKnowModalText(mtk) {
-  if (mtk.reason === "playoff_odds_after_0_3_start") {
-    const teams = mtk.on_watch_teams && mtk.on_watch_teams.length
-      ? mtk.on_watch_teams.join(", ")
-      : "No teams are currently 0-2.";
-    return `${mtk.value}% probability of making the playoffs if your team starts out 0-3. `
-      + `The following teams are on watch: ${teams}`;
-  }
-  return "";
 }
 
 // Builds the compact callout-box display fields for "This Week in Club
