@@ -74,6 +74,8 @@ const BADGES = {
   },
   not_great_bob: {
     name: "Not Great Bob", file: "not-great-bob.png", numbered: true,
+    // The portrait fills the coin: count in the pop-up title only.
+    iconNumber: false,
     initials: "NGB",
     rule: "Scored less than 75 points in a game.",
   },
