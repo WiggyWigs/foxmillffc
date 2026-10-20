@@ -54,6 +54,12 @@ Badge rules (regular season only, Weeks 1-14, unless noted):
                        D/ST doesn't count. Once per player per manager
                        each season: the first qualifying week counts,
                        later big weeks by the same player don't.
+  The Eliminator     - count of wins that mathematically eliminated the
+                       loser from the playoffs: eliminated after that
+                       week, not before it. Same elimination math as the
+                       playoff odds; after Week 14, everyone outside the
+                       final top 6 (standings tiebreaks applied).
+  Not Great Bob      - count of games scoring less than 75.
   Heartbreaker       - lost by less than 3 points. Not numbered; every
                        such loss is listed in the pop-up.
   Bad Beat           - count of losses while posting one of the week's
@@ -73,12 +79,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from ingest_csv import load_roster, rank_season_games, _week_sort_key
+from ingest_csv import (load_roster, rank_season_games, _week_sort_key,
+                        compute_playoff_status, REGULAR_SEASON_GAMES as SEASON_WEEKS,
+                        PLAYOFF_SPOTS)
 
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "data"
 STATS_PATH = DATA_DIR / os.environ.get("STATS_FILENAME", "stats.json")
 PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "player_lineups.json")
+REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
 
 FIRST_CARD_SEASON = 2026
 REGULAR_SEASON_WEEKS = 14
@@ -91,6 +100,7 @@ HIGH_POINT_CLUB_SCORE = 150
 PUNISHER_MARGIN = 50
 ICE_COLD_LOSSES = 5
 HEARTBREAKER_MARGIN = 3
+NOT_GREAT_BOB_SCORE = 75
 BAD_BEAT_TOP_SCORES = 4
 MNF_MIRACLE_POINTS_PER_PLAYER = 10
 MNF_MASTER_POINTS_PER_PLAYER = 15
@@ -109,7 +119,7 @@ BADGE_ORDER = [
     "chess_not_checkers",
     "high_point_club", "the_punisher", "ice_cold",
     "monday_night_miracle", "monday_night_master", "lineup_king",
-    "heartbreaker", "bad_beat",
+    "the_eliminator", "not_great_bob", "heartbreaker", "bad_beat",
 ]
 
 
@@ -325,6 +335,69 @@ def _diamond_hits(lineups, year):
 PLAYOFF_ROUND_NAMES = {"P1": "Quarterfinal", "P2": "Semifinal", "P3": "Championship"}
 
 
+def _future_schedule(year):
+    """{week: [(a, b), ...]} for unplayed weeks from remaining_schedule.json
+    (espn_pull.py writes it before this runs). {} if missing or another
+    season."""
+    try:
+        with open(REMAINING_SCHEDULE_PATH) as f:
+            data = json.load(f)
+        if int(data.get("year", -1)) != int(year):
+            return {}
+        return {int(w): [(m["away_manager"], m["home_manager"]) for m in ms]
+                for w, ms in data.get("weeks", {}).items()}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
+def _eliminated_after(season_games, week, managers, future, roster_names):
+    """Managers mathematically out of the playoffs after `week`'s games."""
+    if week <= 0:
+        return set()
+    played = [g for g in season_games if _week(g) <= week]
+    if week >= SEASON_WEEKS:
+        field = {row["manager"] for row in rank_season_games(played, roster_names)[:PLAYOFF_SPOTS]}
+        return set(managers) - field
+    records = {m: [0, 0] for m in managers}
+    games_played = {m: 0 for m in managers}
+    for g in played:
+        for m in (g["away_manager"], g["home_manager"]):
+            if m in games_played:
+                games_played[m] += 1
+        if not g["tie"]:
+            if g["winner"] in records:
+                records[g["winner"]][0] += 1
+            if g["loser"] in records:
+                records[g["loser"]][1] += 1
+    schedule = []
+    for w in range(week + 1, SEASON_WEEKS + 1):
+        pairs = [(g["away_manager"], g["home_manager"]) for g in season_games if _week(g) == w]
+        pairs = pairs or future.get(w)
+        if not pairs:
+            schedule = None  # a week we can't see: schedule-blind bounds only
+            break
+        schedule.append(pairs)
+    _, eliminated, _ = compute_playoff_status(
+        {m: tuple(r) for m, r in records.items()}, games_played, schedule)
+    return eliminated
+
+
+def _eliminator_hits(season_games, year, roster_names):
+    """[(winner, event)] for every win that eliminated the loser: out after
+    that week, still alive before it."""
+    managers = sorted({m for g in season_games for m in (g["away_manager"], g["home_manager"])})
+    future = _future_schedule(year)
+    weeks = sorted({_week(g) for g in season_games})
+    hits, before = [], set()
+    for wk in weeks:
+        after = _eliminated_after(season_games, wk, managers, future, roster_names)
+        for g in season_games:
+            if _week(g) == wk and not g["tie"] and g["loser"] in after - before:
+                hits.append((g["winner"], _game_event(g, g["winner"])))
+        before = after
+    return hits
+
+
 def _chess_not_checkers(games):
     """[(manager, event)] for every (winner, opponent) pair where the winner
     beat that opponent at least twice in `games` (one season, regular season
@@ -460,6 +533,24 @@ def compute_season_cards(all_games, lineups, roster_names, year):
             b["count"] += 1
             b["events"].append({"week": wk, "player": h["player"],
                                 "position": h["position"], "points": h["points"]})
+
+    # The Eliminator
+    for mgr, ev in _eliminator_hits(season_games, year, roster_names):
+        if mgr not in badges:
+            continue
+        b = badges[mgr].setdefault("the_eliminator", {"count": 0, "earned_week": ev["week"], "events": []})
+        b["count"] += 1
+        b["events"].append(ev)
+
+    # Not Great Bob
+    for g in season_games:
+        for mgr in (g["away_manager"], g["home_manager"]):
+            own = _side(g, mgr)[0]
+            if mgr in badges and own < NOT_GREAT_BOB_SCORE:
+                b = badges[mgr].setdefault(
+                    "not_great_bob", {"count": 0, "earned_week": _week(g), "events": []})
+                b["count"] += 1
+                b["events"].append(_game_event(g, mgr))
 
     # Heartbreaker / Bad Beat (both are losses; ties don't count)
     for g in season_games:

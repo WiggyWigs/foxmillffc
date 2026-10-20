@@ -67,6 +67,16 @@ const BADGES = {
     name: "Lineup King", file: "lineup-king.png", numbered: false,
     rule: "Started the best lineup the roster allowed: nobody on the bench could have helped.",
   },
+  the_eliminator: {
+    name: "The Eliminator", file: "the-eliminator.png", numbered: true,
+    initials: "ELM",
+    rule: "Beat a team and mathematically eliminated them from the playoffs that week.",
+  },
+  not_great_bob: {
+    name: "Not Great Bob", file: "not-great-bob.png", numbered: true,
+    initials: "NGB",
+    rule: "Scored less than 75 points in a game.",
+  },
   heartbreaker: {
     name: "Heartbreaker", file: "heartbreaker.png", numbered: false,
     initials: "HB",
@@ -98,6 +108,10 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
     case "diamond_in_the_rough":
       return ev.map((e) => `Week ${e.week}: ${escapeHtml(e.player)} (${escapeHtml(e.position)}), ${e.points} points`);
+    case "the_eliminator":
+      return ev.map((e) => `Week ${e.week}: beat ${opp(e)} ${score(e)}, eliminating them from the playoffs`);
+    case "not_great_bob":
+      return ev.map((e) => `Week ${e.week}: ${e.manager_score.toFixed(2)} points vs ${opp(e)}`);
     case "heartbreaker":
       return ev.map((e) => `Week ${e.week}: lost to ${opp(e)} by ${e.margin.toFixed(2)} (${score(e)})`);
     case "bad_beat":
