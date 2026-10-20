@@ -8438,14 +8438,21 @@
     "narrative": "This one earns a spot in the archive for the dumbest reason possible: 3.96 points, the closest Week 7 finish this league has ever produced \u2014 close enough that both guys probably refreshed the scoreboard app like it owed them money.\n\nJason Carlton's \"The PenixIS Mightier\" survived by the width of a gas station receipt, and he turned that squeaker into momentum, grinding out a 4-3 finish down the stretch to sneak into the playoffs. It didn't last \u2014 a quarterfinal exit awaited, so the celebration was less \"championship parade\" and more \"exit through the gift shop.\"\n\nEddie McCumiskey's \"Front Stuff,\" meanwhile, took the 3.96-point gut-punch and just kept bleeding, limping to a 3-4 finish and missing the playoffs entirely. So while Jason got a brief stay of execution in the postseason bracket, Eddie spent the rest of the year watching the standings like a man checking a toilet that won't stop running \u2014 knowing full well nothing good is coming out of it."
   },
   "stat_of_the_week": {
-    "reason": "top_two_matchup_week_7",
-    "value": 3,
-    "value_suffix": "",
-    "sample_size": 3,
-    "first_won": 2,
-    "this_year_teams": [],
-    "narrative": "The number of #1 vs #2 matchups in the regular season (Week 5 or later). The #1 team has prevailed 2 times.\n\n2023 Week 11: #1 Greg Wigton beat #2 Jay Nelson 162.26-85.14\n2024 Week 5: #1 Brian Kleinhenz beat #2 Jason Carlton 108.22-98.34\n2025 Week 13: #2 Blake Pratt beat #1 Jay Nelson 135.04-104.22",
-    "closing": "This week, Eddie McCumiskey tries to defend the top spot against Greg Wigton.\n\nHistory says Greg Wigton has the edge, 3-0 all-time."
+    "reason": "start_3_3",
+    "value": 54.5,
+    "sample_size": 11,
+    "made_playoffs": 6,
+    "champions": 0,
+    "record_label": "3-3",
+    "this_year_teams": [
+      "Blake Pratt",
+      "Brian Harris",
+      "Carl Bruce",
+      "Daniel Bahamonde"
+    ],
+    "narrative": "The historical chance of making the playoffs if you are 3-3. Since 2023, 11 teams have started 3-3, and 6 have made the playoffs.",
+    "closing": "Based on history, only two of those teams will make the playoffs, who will it be?",
+    "expected_playoff_teams": 2
   },
   "player_cards": {
     "current_season": "2026",
