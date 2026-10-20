@@ -167,6 +167,7 @@ function renderStatOfTheWeek(stat) {
   } else if (stat.teams_label) {
     parts.push(`${escapeHtml(label)}: none.`);
   }
+  if (stat.closing) parts.push(`\n${escapeHtml(stat.closing)}`);
   if (stat.footnote) parts.push(`<span class="stat-of-week-footnote">${escapeHtml(stat.footnote)}</span>`);
   textEl.innerHTML = parts.join("\n");
 

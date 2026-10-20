@@ -1872,7 +1872,171 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
     }
 
 
+_NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven",
+                 "eight", "nine", "ten", "eleven", "twelve"]
+
+
+def _number_word(n):
+    return _NUMBER_WORDS[n] if 0 <= n < len(_NUMBER_WORDS) else str(n)
+
+
+def _week6_playoff_odds_text(stat, cohort, this_year):
+    """Week 6 wording: counts only (no past team names), and a closing
+    line after this year's list with how many of them history says get
+    in: the playoff rate times this year's group, rounded to the nearest
+    whole team."""
+    n, label = len(cohort), stat["record_label"]
+    made = stat["made_playoffs"]
+    stat["narrative"] = (
+        f"The historical chance of making the playoffs if you are {label}. "
+        f"Since {cohort[0]['year']}, {n} {'team has' if n == 1 else 'teams have'} "
+        f"started {label}, and {made} {'has' if made == 1 else 'have'} made the playoffs."
+    )
+    group = len(this_year)
+    expected = int(made / n * group + 0.5)  # round half up
+    if group == 1:
+        stat["closing"] = ("Based on history, they should make the playoffs." if expected
+                           else "Based on history, they will miss the playoffs.")
+    elif expected == 0:
+        stat["closing"] = "Based on history, none of those teams will make the playoffs. Who will prove history wrong?"
+    elif expected == group:
+        stat["closing"] = f"Based on history, all {_number_word(group)} of those teams will make the playoffs."
+    else:
+        stat["closing"] = (f"Based on history, only {_number_word(expected)} of those teams "
+                           f"will make the playoffs, who will it be?")
+    stat["expected_playoff_teams"] = expected
+
+
 TOP_POINTS_SPOTS = 6
+
+# #1 vs #2 Stat of the Week: considered from the publication after Week 5
+# (previewing Week 6). Past meetings count from Week 5 on, when the
+# standings mean something.
+TOP_TWO_FIRST_WEEK = 5
+
+
+def _top_two_entering(season_games, week, roster_names):
+    """[#1, #2] in the standings going into `week` (games before it)."""
+    prior = [g for g in season_games if _week_sort_key(g["week"]) < week]
+    if not prior:
+        return []
+    return [row["manager"] for row in rank_season_games(prior, roster_names)[:2]]
+
+
+def _top_two_game(season_games, week, top_two):
+    """The game in `week` between the two managers in top_two, if any."""
+    if len(top_two) < 2:
+        return None
+    return next((g for g in season_games if _week_sort_key(g["week"]) == week
+                 and {g["away_manager"], g["home_manager"]} == set(top_two)), None)
+
+
+def _top_two_meetings(all_games, roster_names, first_week=TOP_TWO_FIRST_WEEK):
+    """Every played regular-season game, Week first_week or later, between
+    the teams ranked #1 and #2 going into that week:
+    [{year, week, first, second, game}] oldest first."""
+    out = []
+    for year in sorted({g["year"] for g in all_games}):
+        season = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+        for week in sorted({_week_sort_key(g["week"]) for g in season}):
+            if week < first_week:
+                continue
+            top_two = _top_two_entering(season, week, roster_names)
+            game = _top_two_game(season, week, top_two)
+            if game:
+                out.append({"year": year, "week": week, "first": top_two[0],
+                            "second": top_two[1], "game": game})
+    return out
+
+
+def _top_two_shown_for(season_games, preview_week, roster_names):
+    """Would the #1 vs #2 stat have run in the publication previewing
+    `preview_week` (a week already played)? It needs a #1 vs #2 game that
+    week and must not have run the week before (never two weeks in a row),
+    so this walks back until it finds a week where it couldn't run."""
+    if preview_week - 1 < TOP_TWO_FIRST_WEEK:
+        return False
+    top_two = _top_two_entering(season_games, preview_week, roster_names)
+    if not _top_two_game(season_games, preview_week, top_two):
+        return False
+    return not _top_two_shown_for(season_games, preview_week - 1, roster_names)
+
+
+def _upcoming_pairs(current_year, week):
+    """[(away, home)] for `week` from remaining_schedule.json, which
+    espn_pull.py writes before this script runs. [] if it's missing,
+    for another season, or doesn't have that week."""
+    try:
+        with open(REMAINING_SCHEDULE_PATH) as f:
+            data = json.load(f)
+        if int(data.get("year", -1)) != int(current_year):
+            return []
+        return [(m["away_manager"], m["home_manager"])
+                for m in data.get("weeks", {}).get(str(week), [])]
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+
+
+def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_week, roster_names):
+    """Stat of the Week, top priority from the publication after Week 5:
+    the week ahead features #1 vs #2 in the current standings. The number
+    is how many #1 vs #2 regular-season games there have been (Week 5 or
+    later), with how often #1 won, every game listed, and who the all-time
+    head-to-head (playoffs included, like the rest of the site) favors.
+    Never runs two weeks in a row. None otherwise."""
+    preview_week = last_completed_week + 1
+    if preview_week > REGULAR_SEASON_GAMES:
+        return None
+    top_two = _top_two_entering(season_games, preview_week, roster_names)
+    if len(top_two) < 2:
+        return None
+    if not any({a, h} == set(top_two) for a, h in _upcoming_pairs(current_year, preview_week)):
+        return None
+    if _top_two_shown_for(season_games, last_completed_week, roster_names):
+        return None  # it ran last week
+
+    first, second = top_two
+    meetings = _top_two_meetings(all_games, roster_names)
+    n = len(meetings)
+    first_won = sum(m["game"]["winner"] == m["first"] for m in meetings if not m["game"]["tie"])
+
+    lines = []
+    for m in meetings:
+        g = m["game"]
+        if g["tie"]:
+            result = f"#1 {m['first']} and #2 {m['second']} tied"
+        else:
+            w, l = g["winner"], g["loser"]
+            result = f"#{1 if w == m['first'] else 2} {w} beat #{1 if l == m['first'] else 2} {l}"
+        hi, lo = sorted((g["away_score"], g["home_score"]), reverse=True)
+        lines.append(f"{m['year']} Week {m['week']}: {result} {hi:.2f}-{lo:.2f}")
+
+    h2h = [g for g in all_games if {g["away_manager"], g["home_manager"]} == {first, second}]
+    first_h2h = sum(g["winner"] == first for g in h2h if not g["tie"])
+    second_h2h = sum(g["winner"] == second for g in h2h if not g["tie"])
+    if not h2h:
+        edge = "These two have never met, so history has no favorite."
+    elif first_h2h == second_h2h:
+        edge = f"History says it's dead even: {first_h2h}-{second_h2h} all-time."
+    else:
+        lead, w_, l_ = ((first, first_h2h, second_h2h) if first_h2h > second_h2h
+                        else (second, second_h2h, first_h2h))
+        edge = f"History says {lead} has the edge, {w_}-{l_} all-time."
+
+    intro = (f"The number of #1 vs #2 matchups in the regular season "
+             f"(Week {TOP_TWO_FIRST_WEEK} or later).")
+    if n:
+        intro += (f" The #1 team has prevailed {first_won} "
+                  f"{'time' if first_won == 1 else 'times'}.\n" + "\n".join(lines))
+    else:
+        intro += " This is the first one."
+    return {
+        "reason": f"top_two_matchup_week_{preview_week}",
+        "value": n, "value_suffix": "", "sample_size": n, "first_won": first_won,
+        "this_year_teams": [],
+        "narrative": intro,
+        "closing": f"This week, {first} tries to defend the top spot against {second}. {edge}",
+    }
 
 
 def _points_and_standings_top(games, roster_names, spots):
@@ -2129,7 +2293,12 @@ def compute_stat_of_the_week(all_games, roster_names):
       3. If there are none, number of past teams that started 1-4,
          plus each past last-place team's record after Week 5
 
-    Week 6, in priority order:
+    From the publication after Week 5 on, a #1 vs #2 matchup in the week
+    ahead takes priority over everything above (never two weeks in a row)
+    - _top_two_matchup_stat.
+
+    Week 6, in priority order (counts only, plus a closing line with how
+    many of this year's group history says will get in):
       1. Playoff odds at 3-3 (only if someone is 3-3 now)
       2. Playoff odds at 2-4 (only if someone is 2-4 now)
     """
@@ -2142,6 +2311,13 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
+    # Top priority from Week 5 on: the week ahead features #1 vs #2.
+    if last_completed_week >= TOP_TWO_FIRST_WEEK:
+        top_two = _top_two_matchup_stat(all_games, season_games, current_year,
+                                        last_completed_week, roster_names)
+        if top_two:
+            return top_two
+
     # Records checked in order after that week; the first one that someone
     # holds now (and some past team held) wins.
     # (wins, losses, reason, include_champions, list_historical_names)
@@ -2152,8 +2328,8 @@ def compute_stat_of_the_week(all_games, roster_names):
             (1, 2, "start_1_2", False, False),  # too common a record to name every past team
         ),
         6: (
-            (3, 3, "start_3_3", False, True),
-            (2, 4, "start_2_4", False, True),
+            (3, 3, "start_3_3", False, False),
+            (2, 4, "start_2_4", False, False),
         ),
     }
     if last_completed_week in start_record_options:
@@ -2164,7 +2340,10 @@ def compute_stat_of_the_week(all_games, roster_names):
             cohort = _historical_start_cohort(all_games, wins, losses, last_completed_week, current_year)
             if not cohort:
                 continue
-            return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
+            stat = _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
+            if last_completed_week == 6:
+                _week6_playoff_odds_text(stat, cohort, this_year)
+            return stat
         return None
 
     if last_completed_week == 4:
