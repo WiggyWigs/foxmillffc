@@ -2027,7 +2027,7 @@ def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_
              f"(Week {TOP_TWO_FIRST_WEEK} or later).")
     if n:
         intro += (f" The #1 team has prevailed {first_won} "
-                  f"{'time' if first_won == 1 else 'times'}.\n" + "\n".join(lines))
+                  f"{'time' if first_won == 1 else 'times'}.\n\n" + "\n".join(lines))
     else:
         intro += " This is the first one."
     return {
@@ -2035,7 +2035,7 @@ def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_
         "value": n, "value_suffix": "", "sample_size": n, "first_won": first_won,
         "this_year_teams": [],
         "narrative": intro,
-        "closing": f"This week, {first} tries to defend the top spot against {second}. {edge}",
+        "closing": f"This week, {first} tries to defend the top spot against {second}.\n\n{edge}",
     }
 
 
