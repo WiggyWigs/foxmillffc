@@ -1872,6 +1872,41 @@ def _build_start_record_stat(cohort, this_year_teams, wins, losses, reason, incl
     }
 
 
+_NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven",
+                 "eight", "nine", "ten", "eleven", "twelve"]
+
+
+def _number_word(n):
+    return _NUMBER_WORDS[n] if 0 <= n < len(_NUMBER_WORDS) else str(n)
+
+
+def _week6_playoff_odds_text(stat, cohort, this_year):
+    """Week 6 wording: counts only (no past team names), and a closing
+    line after this year's list with how many of them history says get
+    in: the playoff rate times this year's group, rounded to the nearest
+    whole team."""
+    n, label = len(cohort), stat["record_label"]
+    made = stat["made_playoffs"]
+    stat["narrative"] = (
+        f"The historical chance of making the playoffs if you are {label}. "
+        f"Since {cohort[0]['year']}, {n} {'team has' if n == 1 else 'teams have'} "
+        f"started {label}, and {made} {'has' if made == 1 else 'have'} made the playoffs."
+    )
+    group = len(this_year)
+    expected = int(made / n * group + 0.5)  # round half up
+    if group == 1:
+        stat["closing"] = ("Based on history, they should make the playoffs." if expected
+                           else "Based on history, they will miss the playoffs.")
+    elif expected == 0:
+        stat["closing"] = "Based on history, none of those teams will make the playoffs. Who will prove history wrong?"
+    elif expected == group:
+        stat["closing"] = f"Based on history, all {_number_word(group)} of those teams will make the playoffs."
+    else:
+        stat["closing"] = (f"Based on history, only {_number_word(expected)} of those teams "
+                           f"will make the playoffs, who will it be?")
+    stat["expected_playoff_teams"] = expected
+
+
 TOP_POINTS_SPOTS = 6
 
 
@@ -2129,7 +2164,8 @@ def compute_stat_of_the_week(all_games, roster_names):
       3. If there are none, number of past teams that started 1-4,
          plus each past last-place team's record after Week 5
 
-    Week 6, in priority order:
+    Week 6, in priority order (counts only, plus a closing line with how
+    many of this year's group history says will get in):
       1. Playoff odds at 3-3 (only if someone is 3-3 now)
       2. Playoff odds at 2-4 (only if someone is 2-4 now)
     """
@@ -2152,8 +2188,8 @@ def compute_stat_of_the_week(all_games, roster_names):
             (1, 2, "start_1_2", False, False),  # too common a record to name every past team
         ),
         6: (
-            (3, 3, "start_3_3", False, True),
-            (2, 4, "start_2_4", False, True),
+            (3, 3, "start_3_3", False, False),
+            (2, 4, "start_2_4", False, False),
         ),
     }
     if last_completed_week in start_record_options:
@@ -2164,7 +2200,10 @@ def compute_stat_of_the_week(all_games, roster_names):
             cohort = _historical_start_cohort(all_games, wins, losses, last_completed_week, current_year)
             if not cohort:
                 continue
-            return _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
+            stat = _build_start_record_stat(cohort, this_year, wins, losses, reason, champs, list_names)
+            if last_completed_week == 6:
+                _week6_playoff_odds_text(stat, cohort, this_year)
+            return stat
         return None
 
     if last_completed_week == 4:
