@@ -35,6 +35,11 @@ const BADGES = {
     name: "Giant Killer", file: "giant-killer.png", numbered: false,
     rule: "Week 5 or later: beat a top-5 team ranked at least 5 spots higher going into the week.",
   },
+  chess_not_checkers: {
+    name: "Chess, Not Checkers", file: "chess-not-checkers.png", numbered: true,
+    initials: "CNC",
+    rule: "Beat the same team twice in one season (playoff games count). The number is how many different teams.",
+  },
   high_point_club: {
     name: "High Point Club", file: "high-point-club.png", numbered: false,
     rule: "Scored 150 or more points in a game.",
@@ -99,6 +104,9 @@ function badgeEventLines(badge) {
       return ev.map((e) => `Week ${e.week}: ${ordinal(e.score_rank)}-highest score of the week, lost to ${opp(e)} ${score(e)}`);
     case "giant_killer":
       return ev.map((e) => `Week ${e.week}: ranked ${ordinal(e.manager_rank)}, beat ${ordinal(e.opponent_rank)}-place ${opp(e)} ${score(e)}`);
+    case "chess_not_checkers":
+      return ev.map((e) => `Beat ${opp(e)} ${e.wins === 2 ? "twice" : `${e.wins} times`}: `
+        + e.games.map((g) => `${escapeHtml(g.label)} ${g.manager_score.toFixed(2)}–${g.opponent_score.toFixed(2)}`).join(", "));
     case "high_point_club":
       return ev.map((e) => `Week ${e.week}: ${e.manager_score.toFixed(2)} points vs ${opp(e)}`);
     case "the_punisher":
