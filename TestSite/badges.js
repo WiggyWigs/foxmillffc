@@ -71,6 +71,8 @@ const BADGES = {
   },
   the_eliminator: {
     name: "The Eliminator", file: "the-eliminator.png", numbered: true,
+    // A digit would cover the bullseye: count in the pop-up title only.
+    iconNumber: false,
     initials: "ELM",
     rule: "Beat a team and mathematically eliminated them from the playoffs that week.",
   },
