@@ -1675,85 +1675,6 @@ def _select_week_in_history_weeks11_14(pool, all_games, week_num, roster_names):
     return _week_in_history_candidate(_pick_smallest_margin(pool), "week_smallest_margin")
 
 
-def _historical_playoff_odds_after_start(all_games, start_wins, start_losses, through_week, exclude_year):
-    """
-    Across every PAST season (year < exclude_year), what fraction of
-    managers whose record was exactly start_wins-start_losses after
-    `through_week` games went on to make the playoffs that season?
-    Returns (percentage, sample_size); (None, 0) if no season in
-    history has ever produced a qualifying manager.
-    """
-    years = sorted({g["year"] for g in all_games if g["year"] < exclude_year})
-    qualifying = 0
-    made_playoffs = 0
-    for year in years:
-        season_games = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
-        if not season_games:
-            continue
-        weeks_played = {_week_sort_key(g["week"]) for g in season_games}
-        if through_week not in weeks_played:
-            continue  # this season never reached that week (shouldn't normally happen)
-
-        records = defaultdict(lambda: [0, 0])
-        for g in season_games:
-            if _week_sort_key(g["week"]) > through_week or g["tie"]:
-                continue
-            records[g["winner"]][0] += 1
-            records[g["loser"]][1] += 1
-
-        playoff_managers = {
-            g[side] for g in all_games if g["year"] == year and g["game_type"] != "Regular"
-            for side in ("away_manager", "home_manager")
-        }
-        for mgr, (w, l) in records.items():
-            if (w, l) == (start_wins, start_losses):
-                qualifying += 1
-                if mgr in playoff_managers:
-                    made_playoffs += 1
-
-    if qualifying == 0:
-        return None, 0
-    return round(100 * made_playoffs / qualifying, 1), qualifying
-
-
-def compute_more_you_know(all_games, roster_names):
-    """
-    Selects this week's "The More You Know" fact for the Deep Dive
-    section. Dispatches by the MOST RECENTLY COMPLETED week (not the
-    week ahead, unlike compute_week_in_history) — this fact is about the
-    season as it stands right now, not a preview of what's coming.
-    Returns None if nothing is defined for this week yet, or there's no
-    historical sample to compute from.
-    """
-    years = {g["year"] for g in all_games}
-    if not years:
-        return None
-    current_year = max(years)
-    current_season_games = [g for g in all_games
-                            if g["year"] == current_year and g["game_type"] == "Regular"]
-    if not current_season_games:
-        return None
-    last_completed_week = max(_week_sort_key(g["week"]) for g in current_season_games)
-
-    if last_completed_week == 2:
-        pct, sample_size = _historical_playoff_odds_after_start(all_games, 0, 3, 3, current_year)
-        if pct is None:
-            return None
-        records = defaultdict(lambda: [0, 0])
-        for g in current_season_games:
-            if g["tie"]:
-                continue
-            records[g["winner"]][0] += 1
-            records[g["loser"]][1] += 1
-        on_watch = sorted(m for m, (w, l) in records.items() if (w, l) == (0, 2))
-        return {
-            "reason": "playoff_odds_after_0_3_start",
-            "value": pct, "sample_size": sample_size, "on_watch_teams": on_watch,
-        }
-
-    return None  # Week 1, and weeks 3+, are TBD
-
-
 def _historical_start_cohort(all_games, start_wins, start_losses, through_week, exclude_year):
     """
     Every (manager, year) from PAST seasons (year < exclude_year) whose
@@ -2826,14 +2747,17 @@ def main():
         print("KEEP_NARRATIVES: keeping the existing This Week in Club History entry.")
     else:
         stats["week_in_history"] = compute_week_in_history(stats["games"], roster_names)
-    stats["more_you_know"] = compute_more_you_know(stats["games"], roster_names)
-    if stats["more_you_know"]:
-        mtk = stats["more_you_know"]
-        print(f"The More You Know: {mtk['reason']} -> {mtk['value']} "
-              f"(sample size {mtk.get('sample_size')})")
+    stats.pop("more_you_know", None)  # retired
+    # Stat of the Week is kept as is on a "Skip narrative generation" re-run,
+    # but only for the same week; once a new week is in, it's rebuilt.
+    regular = [g for g in stats["games"] if g["game_type"] == "Regular"]
+    sotw_year = max((g["year"] for g in regular), default=None)
+    sotw_week = max((_week_sort_key(g["week"]) for g in regular if g["year"] == sotw_year), default=None)
+    if KEEP_NARRATIVES and stats.get("stat_of_the_week_for") == [sotw_year, sotw_week]:
+        print("KEEP_NARRATIVES: keeping the existing Stat of the Week.")
     else:
-        print("The More You Know: nothing defined for this week yet.")
-    stats["stat_of_the_week"] = compute_stat_of_the_week(stats["games"], roster_names)
+        stats["stat_of_the_week"] = compute_stat_of_the_week(stats["games"], roster_names)
+        stats["stat_of_the_week_for"] = [sotw_year, sotw_week]
     if stats["stat_of_the_week"]:
         sotw = stats["stat_of_the_week"]
         detail = (f"{sotw['made_playoffs']} of {sotw['sample_size']} made the playoffs"
