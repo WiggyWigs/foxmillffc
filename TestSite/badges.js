@@ -37,6 +37,8 @@ const BADGES = {
   },
   chess_not_checkers: {
     name: "Chess, Not Checkers", file: "chess-not-checkers.png", numbered: true,
+    // The king piece is too narrow for a digit: count in the pop-up title only.
+    iconNumber: false,
     initials: "CNC",
     rule: "Beat the same team twice in one season (playoff games count). The number is how many different teams.",
   },
