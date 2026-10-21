@@ -2603,15 +2603,19 @@ def compute_h2h_summary(all_games, roster_names):
         # Points titles: highest cumulative regular-season points_for
         # that season, computed fresh here (same rule as recompute_stats,
         # but re-derived rather than reused since that function is
-        # scoped to complete seasons only).
+        # scoped to complete seasons only). Only once that season's
+        # regular season is over: the current points leader hasn't won
+        # the title yet.
         season_points = defaultdict(lambda: defaultdict(float))
+        last_week = defaultdict(int)
         for g in all_games:
             if g["game_type"] != "Regular":
                 continue
             season_points[g["year"]][g["away_manager"]] += g["away_score"]
             season_points[g["year"]][g["home_manager"]] += g["home_score"]
+            last_week[g["year"]] = max(last_week[g["year"]], _week_sort_key(g["week"]))
         for year, totals in season_points.items():
-            if not totals:
+            if not totals or last_week[year] < REGULAR_SEASON_GAMES:
                 continue
             top = max(totals.values())
             if totals.get(mgr) == top:
