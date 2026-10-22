@@ -1926,6 +1926,8 @@ def _top_two_shown_for(season_games, preview_week, roster_names):
     so this walks back until it finds a week where it couldn't run."""
     if preview_week - 1 < TOP_TWO_FIRST_WEEK:
         return False
+    if preview_week - 1 == HALFWAY_WEEK:
+        return False  # the halfway stat takes that publication
     top_two = _top_two_entering(season_games, preview_week, roster_names)
     if not _top_two_game(season_games, preview_week, top_two):
         return False
@@ -1948,7 +1950,8 @@ def _upcoming_pairs(current_year, week):
 
 
 def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_week, roster_names):
-    """Stat of the Week, top priority from the publication after Week 5:
+    """Stat of the Week, top priority from the publication after Week 5
+    (except after Week 7, which belongs to the halfway stat):
     the week ahead features #1 vs #2 in the current standings. The number
     is how many #1 vs #2 regular-season games there have been (Week 5 or
     later), with how often #1 won, every game listed, and who the all-time
@@ -2265,7 +2268,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     From the publication after Week 5 on, a #1 vs #2 matchup in the week
     ahead takes priority over everything above (never two weeks in a row)
-    - _top_two_matchup_stat.
+    - _top_two_matchup_stat. The one exception is Week 7: the halfway stat
+    wins, and a #1 vs #2 that week doesn't count as having run, so it can
+    still show after Week 8.
 
     Week 6, in priority order (counts only, plus a closing line with how
     many of this year's group history says will get in):
@@ -2285,7 +2290,13 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
-    # Top priority from Week 5 on: the week ahead features #1 vs #2.
+    # The halfway point outranks everything, #1 vs #2 included.
+    if last_completed_week == HALFWAY_WEEK:
+        halfway = _halfway_top_six_stat(all_games, season_games, current_year, roster_names)
+        if halfway:
+            return halfway
+
+    # Top priority from Week 5 on (Week 7 aside): the week ahead features #1 vs #2.
     if last_completed_week >= TOP_TWO_FIRST_WEEK:
         top_two = _top_two_matchup_stat(all_games, season_games, current_year,
                                         last_completed_week, roster_names)
@@ -2326,9 +2337,6 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == 5:
         return _winless_start_stat(all_games, season_games, current_year, roster_names)
-
-    if last_completed_week == HALFWAY_WEEK:
-        return _halfway_top_six_stat(all_games, season_games, current_year, roster_names)
 
     return None  # other weeks: not defined yet
 
