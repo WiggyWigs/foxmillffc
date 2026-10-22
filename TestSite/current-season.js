@@ -89,6 +89,7 @@ function renderRecap(data) {
   renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams);
   renderAnalyticsDeepDive(data.week_in_history);
   renderStatOfTheWeek(data.stat_of_the_week);
+  renderHalfwayPoint(data.halfway_point);
   renderBoxScores(recap.box_scores || []);
   renderHonorableMention(recap);
 }
@@ -170,6 +171,139 @@ function renderStatOfTheWeek(stat) {
   if (stat.footnote) parts.push(`<span class="stat-of-week-footnote">${escapeHtml(stat.footnote)}</span>`);
   textEl.innerHTML = parts.join("\n");
 
+  section.style.display = "";
+  if (divider) divider.style.display = "";
+}
+
+// "The Halfway Point" — a one-time section, published only the week
+// after Week 7 (scripts/halfway.py writes stats.json["halfway_point"]
+// that week and removes it every other week).
+function renderHalfwayPoint(hw) {
+  const divider = document.getElementById("halfway-divider");
+  const section = document.getElementById("halfway-section");
+  const body = document.getElementById("halfway-body");
+  if (!section || !body) return;
+  if (!hw) {
+    section.style.display = "none";
+    if (divider) divider.style.display = "none";
+    return;
+  }
+
+  const esc = escapeHtml;
+  const names = (rows) => rows.map((r) => esc(r.manager)).join("<br>");
+  const pct = (v) => `${v > 0 ? "+" : ""}${(v * 100).toFixed(1)}%`;
+  const card = (label, headline, subtitle, value) =>
+    renderCalloutHmCard({ label, headline, subtitle, value }, "halfway");
+  const grid = (cards) => cards.length ? `<div class="callout-grid hw-grid">${cards.join("")}</div>` : "";
+  const sub = (title) => `<h4 class="hw-sub">${esc(title)}</h4>`;
+  const note = (text) => `<p class="recap-text hw-note">${text}</p>`;
+  const parts = [];
+
+  // Rise and fall (past seasons)
+  const rf = hw.rise_and_fall || { falls: [], rises: [] };
+  const move = (e, verb) => `${e.year} · #${e.half_rank} at the halfway point, finished #${e.final_rank} and ${verb}`;
+  const others = (list, sign) => list.slice(1).map((e) =>
+    `${e.year} ${esc(e.manager)}: #${e.half_rank} → #${e.final_rank} (${sign}${e.spots})`).join("<br>");
+  parts.push(sub("Who will rise to the occasion and who will collapse under pressure"));
+  const rfCards = [];
+  if (rf.falls.length) {
+    const f = rf.falls[0];
+    rfCards.push(card("Biggest Fall", esc(f.manager), move(f, "missed the playoffs"), `−${f.spots}`));
+  }
+  if (rf.rises.length) {
+    const r = rf.rises[0];
+    rfCards.push(card("Biggest Rise", esc(r.manager), move(r, "made the playoffs"), `+${r.spots}`));
+  }
+  parts.push(grid(rfCards));
+  const otherFalls = others(rf.falls, "−"), otherRises = others(rf.rises, "+");
+  if (otherFalls) parts.push(note(`<b>Other falls</b><br>${otherFalls}`));
+  if (otherRises) parts.push(note(`<b>Other rises</b><br>${otherRises}`));
+  if (!rfCards.length) parts.push(note("No past season has had a team rise into or fall out of the top 6 after the halfway point."));
+
+  // Schedules Matter
+  const sc = hw.schedules;
+  if (sc) {
+    parts.push(sub("Schedules Matter"));
+    const outlook = (e) => e.remaining_opponents
+      ? `Remaining opponents' average power ranking: ${e.avg_opponent_power_rank} of ${sc.teams}. `
+        + (e.trend === "about the same" ? "The rest of the way looks about the same."
+          : `The rest of the season gets ${e.trend}.`)
+      : "";
+    parts.push(grid([
+      card("Hardest Schedule So Far", names(sc.hardest), outlook(sc.hardest[0]), pct(sc.hardest[0].schedule_difficulty)),
+      card("Easiest Schedule So Far", names(sc.easiest), outlook(sc.easiest[0]), pct(sc.easiest[0].schedule_difficulty)),
+    ]));
+    const h = sc.history, t = (h.threshold * 100).toFixed(0);
+    if (h.playoff_teams && h.lowest_playoff) {
+      const z = pct(h.lowest_playoff.schedule_difficulty);
+      const below = h.below_lowest_now.length
+        ? h.below_lowest_now.map((r) => `${esc(r.manager)} (${pct(r.schedule_difficulty)})`).join(", ")
+        : "none";
+      parts.push(note(
+        `Of the ${h.playoff_teams} teams that have made the playoffs, ${h.favorable} had a favorable schedule `
+        + `(schedule difficulty over +${t}%). Only ${h.difficult} overcame a difficult schedule (under −${t}%). `
+        + `No one with a schedule difficulty under ${z} has ever made the playoffs.\n\n`
+        + `Teams under ${z} right now: ${below}`));
+    }
+  }
+
+  // Mid-season awards
+  const aw = hw.awards || {};
+  const awardCards = [];
+  if ((aw.most_consistent || []).length) {
+    const r = aw.most_consistent[0];
+    awardCards.push(card("Most Consistent", names(aw.most_consistent),
+      `Averaging ${r.average.toFixed(2)}, give or take ${r.stdev.toFixed(2)} a week`, `±${r.stdev.toFixed(1)}`));
+  }
+  if ((aw.rock_bottom || []).length) {
+    const first = aw.rock_bottom.map((r) => esc(r.first_name)).join(" & ");
+    awardCards.push(card("Rock Bottom", `Not Great <s>Bob</s> ${first}`,
+      `${aw.rock_bottom.map((r) => esc(r.manager)).join(", ")} · most Not Great Bob badges`, aw.rock_bottom[0].count));
+  }
+  if ((aw.mantle || []).length) {
+    awardCards.push(card("Dust Off the Mantle", names(aw.mantle), "most badges on the trading card", aw.mantle[0].badges));
+  }
+  if ((aw.best_pickup || []).length) {
+    const p = aw.best_pickup[0];
+    awardCards.push(card("Best Pickup", `${esc(p.player)} <span class="callout-hm-inline-mgr">(${esc(p.manager)})</span>`,
+      `${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup`, p.average.toFixed(1)));
+  }
+  if ((aw.big_spender || []).length) {
+    awardCards.push(card("Big Spender", names(aw.big_spender), "most free-agent budget spent", `$${aw.big_spender[0].faab_spent}`));
+  }
+  if ((aw.steady || []).length) {
+    const r = aw.steady[0];
+    awardCards.push(card("Steady as He Goes", names(aw.steady),
+      `fewest moves: ${r.acquisitions} adds, ${r.trades} trades`, r.moves));
+  }
+  if (awardCards.length) {
+    parts.push(sub("Mid-Season Awards"));
+    parts.push(grid(awardCards));
+  }
+
+  // Second-half outlook
+  const sh = hw.second_half;
+  if (sh) {
+    parts.push(sub("Second-Half Outlook"));
+    const sos = sh.strength_of_schedule || [];
+    if (sos.length) {
+      const first = sos[0], last = sos[sos.length - 1];
+      const rate = (v) => v.toFixed(3).replace(/^0/, "");
+      parts.push(note(
+        `<b>Toughest road left:</b> ${esc(first.manager)} (opponents' win % ${rate(first.opponent_win_pct)})<br>`
+        + `<b>Easiest road left:</b> ${esc(last.manager)} (${rate(last.opponent_win_pct)})\n\n`
+        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${rate(r.opponent_win_pct)}`).join("<br>")));
+    }
+    const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
+    parts.push(note(`<b>Top-6 showdowns still to come</b><br>`
+      + (sh.top_games.length ? sh.top_games.map(gameLine).join("<br>") : "None left on the schedule.")));
+    if (sh.teams >= sh.bottom_first_rank) {
+      parts.push(note(`<b>Battle to avoid last (ranked ${sh.bottom_first_rank}-${sh.teams})</b><br>`
+        + (sh.bottom_games.length ? sh.bottom_games.map(gameLine).join("<br>") : "None left on the schedule.")));
+    }
+  }
+
+  body.innerHTML = parts.join("");
   section.style.display = "";
   if (divider) divider.style.display = "";
 }

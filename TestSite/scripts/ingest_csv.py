@@ -1797,6 +1797,55 @@ _NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven",
                  "eight", "nine", "ten", "eleven", "twelve"]
 
 
+HALFWAY_WEEK = 7  # 7 of 14 regular-season weeks
+
+
+def _halfway_top_six_stat(all_games, season_games, current_year, roster_names):
+    """Stat of the Week after Week 7: the percent of past teams that were
+    in the top PLAYOFF_SPOTS at the halfway point but missed the playoffs,
+    this year's top PLAYOFF_SPOTS, and how many of them history says will
+    fall out (that percent times the group, rounded). None if no complete
+    past season."""
+    held = missed = 0
+    first_year = None
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        if not any(g["year"] == year and g["game_type"] == "Championship" for g in all_games):
+            continue
+        reg = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+               and _week_sort_key(g["week"]) <= HALFWAY_WEEK]
+        playoff = {m for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+                   for m in (g["away_manager"], g["home_manager"])}
+        for row in rank_season_games(reg, roster_names)[:PLAYOFF_SPOTS]:
+            if row["manager"] in playoff:
+                held += 1
+            else:
+                missed += 1
+        first_year = first_year or year
+    total = held + missed
+    if not total:
+        return None
+    pct = round(100 * missed / total, 1)
+    now = [row["manager"] for row in rank_season_games(season_games, roster_names)[:PLAYOFF_SPOTS]]
+    falls = int(missed / total * len(now) + 0.5)  # round half up
+    if falls == 0:
+        closing = f"Based on history, all of this year's top {PLAYOFF_SPOTS} will hold on. Will they?"
+    else:
+        closing = (f"Based on history, {_number_word(falls)} of this year's top {PLAYOFF_SPOTS} "
+                   f"will fall out, who will it be?")
+    return {
+        "reason": f"halfway_top_{PLAYOFF_SPOTS}_missed", "value": pct,
+        "sample_size": total, "missed_playoffs": missed, "expected_falls": falls,
+        "record_label": f"top {PLAYOFF_SPOTS}",
+        "this_year_teams": now,
+        "teams_label": f"This year's top {PLAYOFF_SPOTS} at the halfway point",
+        "narrative": (f"The percent of teams in the top {PLAYOFF_SPOTS} at the halfway point "
+                      f"(Week {HALFWAY_WEEK}) that missed the playoffs. Since {first_year}, {total} "
+                      f"teams were in the top {PLAYOFF_SPOTS} at the halfway point, and {missed} "
+                      f"{'has' if missed == 1 else 'have'} missed the playoffs."),
+        "closing": closing,
+    }
+
+
 def _number_word(n):
     return _NUMBER_WORDS[n] if 0 <= n < len(_NUMBER_WORDS) else str(n)
 
@@ -1877,6 +1926,8 @@ def _top_two_shown_for(season_games, preview_week, roster_names):
     so this walks back until it finds a week where it couldn't run."""
     if preview_week - 1 < TOP_TWO_FIRST_WEEK:
         return False
+    if preview_week - 1 == HALFWAY_WEEK:
+        return False  # the halfway stat takes that publication
     top_two = _top_two_entering(season_games, preview_week, roster_names)
     if not _top_two_game(season_games, preview_week, top_two):
         return False
@@ -1899,7 +1950,8 @@ def _upcoming_pairs(current_year, week):
 
 
 def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_week, roster_names):
-    """Stat of the Week, top priority from the publication after Week 5:
+    """Stat of the Week, top priority from the publication after Week 5
+    (except after Week 7, which belongs to the halfway stat):
     the week ahead features #1 vs #2 in the current standings. The number
     is how many #1 vs #2 regular-season games there have been (Week 5 or
     later), with how often #1 won, every game listed, and who the all-time
@@ -2216,12 +2268,18 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     From the publication after Week 5 on, a #1 vs #2 matchup in the week
     ahead takes priority over everything above (never two weeks in a row)
-    - _top_two_matchup_stat.
+    - _top_two_matchup_stat. The one exception is Week 7: the halfway stat
+    wins, and a #1 vs #2 that week doesn't count as having run, so it can
+    still show after Week 8.
 
     Week 6, in priority order (counts only, plus a closing line with how
     many of this year's group history says will get in):
       1. Playoff odds at 3-3 (only if someone is 3-3 now)
       2. Playoff odds at 2-4 (only if someone is 2-4 now)
+
+    Week 7, the halfway point - _halfway_top_six_stat: the share of past
+    halfway top-6 teams that missed the playoffs, this year's top 6, and
+    how many of them history says will fall out.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2232,7 +2290,13 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
-    # Top priority from Week 5 on: the week ahead features #1 vs #2.
+    # The halfway point outranks everything, #1 vs #2 included.
+    if last_completed_week == HALFWAY_WEEK:
+        halfway = _halfway_top_six_stat(all_games, season_games, current_year, roster_names)
+        if halfway:
+            return halfway
+
+    # Top priority from Week 5 on (Week 7 aside): the week ahead features #1 vs #2.
     if last_completed_week >= TOP_TWO_FIRST_WEEK:
         top_two = _top_two_matchup_stat(all_games, season_games, current_year,
                                         last_completed_week, roster_names)
