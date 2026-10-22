@@ -256,9 +256,13 @@ function renderHalfwayPoint(hw) {
       `Averaging ${r.average.toFixed(2)}, give or take ${r.stdev.toFixed(2)} a week`, `±${r.stdev.toFixed(1)}`));
   }
   if ((aw.rock_bottom || []).length) {
-    const first = aw.rock_bottom.map((r) => esc(r.first_name)).join(" & ");
-    awardCards.push(card("Rock Bottom", `Not Great <s>Bob</s> ${first}`,
-      `${aw.rock_bottom.map((r) => esc(r.manager)).join(", ")} · most Not Great Bob badges`, aw.rock_bottom[0].count));
+    // One leader gets the Bob scratch-out; a tie just lists the managers.
+    const rb = aw.rock_bottom;
+    const headline = rb.length === 1
+      ? `Not Great <s>Bob</s> ${esc(rb[0].first_name)}`
+      : `Not Great Bob:<br>${names(rb)}`;
+    const sub = rb.length === 1 ? `${esc(rb[0].manager)} · most games under 75` : "tied for most games under 75";
+    awardCards.push(card("Rock Bottom", headline, sub, rb[0].count));
   }
   if ((aw.mantle || []).length) {
     awardCards.push(card("Dust Off the Mantle", names(aw.mantle), "most badges on the trading card", aw.mantle[0].badges));
