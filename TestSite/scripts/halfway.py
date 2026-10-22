@@ -56,6 +56,7 @@ TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.j
 SCHEDULE_THRESHOLD = 0.05
 BOTTOM_GROUP_FIRST_RANK = 9      # "battle to avoid last": ranks 9-12
 BEST_PICKUP_MIN_WEEKS = 2        # weeks on the roster after the add
+ROCK_BOTTOM_MAX_TIED = 3         # more managers tied than this and the card is hidden
 
 
 def _load(path, default):
@@ -165,6 +166,8 @@ def awards(season_games, year, roster, cards, lineups, moves):
     bobs = [{"manager": m, "not_great_bob": sum(x < NOT_GREAT_BOB_SCORE for x in s)}
             for m, s in scores.items()]
     bottom = [r for r in _ties(bobs, "not_great_bob", max) if r["not_great_bob"]]
+    if len(bottom) > ROCK_BOTTOM_MAX_TIED:
+        bottom = []
     out["rock_bottom"] = [{"manager": r["manager"], "first_name": r["manager"].split()[0],
                            "count": r["not_great_bob"]} for r in bottom]
     badge_rows = []
