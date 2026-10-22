@@ -1797,6 +1797,55 @@ _NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven",
                  "eight", "nine", "ten", "eleven", "twelve"]
 
 
+HALFWAY_WEEK = 7  # 7 of 14 regular-season weeks
+
+
+def _halfway_top_six_stat(all_games, season_games, current_year, roster_names):
+    """Stat of the Week after Week 7: the percent of past teams that were
+    in the top PLAYOFF_SPOTS at the halfway point but missed the playoffs,
+    this year's top PLAYOFF_SPOTS, and how many of them history says will
+    fall out (that percent times the group, rounded). None if no complete
+    past season."""
+    held = missed = 0
+    first_year = None
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        if not any(g["year"] == year and g["game_type"] == "Championship" for g in all_games):
+            continue
+        reg = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+               and _week_sort_key(g["week"]) <= HALFWAY_WEEK]
+        playoff = {m for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+                   for m in (g["away_manager"], g["home_manager"])}
+        for row in rank_season_games(reg, roster_names)[:PLAYOFF_SPOTS]:
+            if row["manager"] in playoff:
+                held += 1
+            else:
+                missed += 1
+        first_year = first_year or year
+    total = held + missed
+    if not total:
+        return None
+    pct = round(100 * missed / total, 1)
+    now = [row["manager"] for row in rank_season_games(season_games, roster_names)[:PLAYOFF_SPOTS]]
+    falls = int(missed / total * len(now) + 0.5)  # round half up
+    if falls == 0:
+        closing = f"Based on history, all of this year's top {PLAYOFF_SPOTS} will hold on. Will they?"
+    else:
+        closing = (f"Based on history, {_number_word(falls)} of this year's top {PLAYOFF_SPOTS} "
+                   f"will fall out, who will it be?")
+    return {
+        "reason": f"halfway_top_{PLAYOFF_SPOTS}_missed", "value": pct,
+        "sample_size": total, "missed_playoffs": missed, "expected_falls": falls,
+        "record_label": f"top {PLAYOFF_SPOTS}",
+        "this_year_teams": now,
+        "teams_label": f"This year's top {PLAYOFF_SPOTS} at the halfway point",
+        "narrative": (f"The percent of teams in the top {PLAYOFF_SPOTS} at the halfway point "
+                      f"(Week {HALFWAY_WEEK}) that missed the playoffs. Since {first_year}, {total} "
+                      f"teams were in the top {PLAYOFF_SPOTS} at the halfway point, and {missed} "
+                      f"{'has' if missed == 1 else 'have'} missed the playoffs."),
+        "closing": closing,
+    }
+
+
 def _number_word(n):
     return _NUMBER_WORDS[n] if 0 <= n < len(_NUMBER_WORDS) else str(n)
 
@@ -2222,6 +2271,10 @@ def compute_stat_of_the_week(all_games, roster_names):
     many of this year's group history says will get in):
       1. Playoff odds at 3-3 (only if someone is 3-3 now)
       2. Playoff odds at 2-4 (only if someone is 2-4 now)
+
+    Week 7, the halfway point - _halfway_top_six_stat: the share of past
+    halfway top-6 teams that missed the playoffs, this year's top 6, and
+    how many of them history says will fall out.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2273,6 +2326,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == 5:
         return _winless_start_stat(all_games, season_games, current_year, roster_names)
+
+    if last_completed_week == HALFWAY_WEEK:
+        return _halfway_top_six_stat(all_games, season_games, current_year, roster_names)
 
     return None  # other weeks: not defined yet
 
