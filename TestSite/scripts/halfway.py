@@ -42,6 +42,7 @@ from pathlib import Path
 
 from ingest_csv import (load_roster, rank_season_games, compute_power_rankings,
                         _week_sort_key, PLAYOFF_SPOTS, HALFWAY_WEEK)
+from player_cards import NOT_GREAT_BOB_SCORE
 
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "data"
@@ -159,16 +160,18 @@ def awards(season_games, year, roster, cards, lineups, moves):
               for m, s in scores.items() if len(s) > 1]
     out["most_consistent"] = _ties(spread, "stdev", min)
 
-    badge_rows = []
-    for card in cards:
-        bob = next((b for b in card["badges"] if b["id"] == "not_great_bob"), None)
-        total = sum(b["count"] if isinstance(b.get("count"), int) else len(b.get("events", []))
-                    for b in card["badges"])
-        badge_rows.append({"manager": card["manager"], "badges": len(card["badges"]), "total": total,
-                           "not_great_bob": len(bob["events"]) if bob else 0})
-    bottom = [r for r in _ties(badge_rows, "not_great_bob", max) if r["not_great_bob"]]
+    # Rock Bottom counts games under the Not Great Bob line straight from the
+    # scores, so it works for seasons that have no player cards too.
+    bobs = [{"manager": m, "not_great_bob": sum(x < NOT_GREAT_BOB_SCORE for x in s)}
+            for m, s in scores.items()]
+    bottom = [r for r in _ties(bobs, "not_great_bob", max) if r["not_great_bob"]]
     out["rock_bottom"] = [{"manager": r["manager"], "first_name": r["manager"].split()[0],
                            "count": r["not_great_bob"]} for r in bottom]
+    badge_rows = []
+    for card in cards:
+        total = sum(b["count"] if isinstance(b.get("count"), int) else len(b.get("events", []))
+                    for b in card["badges"])
+        badge_rows.append({"manager": card["manager"], "badges": len(card["badges"]), "total": total})
     most = _ties(badge_rows, "badges", max)
     most = _ties(most, "total", max)  # tiebreak: total badge count, numbers included
     out["mantle"] = [{"manager": r["manager"], "badges": r["badges"], "total": r["total"]}
@@ -247,7 +250,8 @@ def compute_halfway(stats, lineups, remaining_file, moves, roster):
         weeks = remaining_file.get("weeks", {})
         remaining = [[(m["away_manager"], m["home_manager"]) for m in weeks[w]]
                      for w in sorted(weeks, key=int) if int(w) > HALFWAY_WEEK]
-    cards = (stats.get("player_cards", {}).get("seasons", {}).get(str(year), {}) or {}).get("cards", [])
+    # player_cards is None for seasons before player cards existed (a TEST run on 2025)
+    cards = (((stats.get("player_cards") or {}).get("seasons") or {}).get(str(year)) or {}).get("cards", [])
     return {
         "season": year,
         "week": HALFWAY_WEEK,
