@@ -54,6 +54,7 @@ TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.j
 # Schedule difficulty is actual win % minus breakdown win %. Past playoff
 # teams over +5% had a favorable schedule; under -5% a difficult one.
 SCHEDULE_THRESHOLD = 0.05
+TOP_GROUP_LAST_RANK = 4          # "showdowns still to come": ranks 1-4
 BOTTOM_GROUP_FIRST_RANK = 9      # "battle to avoid last": ranks 9-12
 BEST_PICKUP_MIN_WEEKS = 2        # weeks on the roster after the add
 ROCK_BOTTOM_MAX_TIED = 3         # more managers tied than this and the card is hidden
@@ -205,20 +206,22 @@ def awards(season_games, year, roster, cards, lineups, moves):
     return out
 
 
-def second_half(season_games, roster, remaining):
+def second_half(season_games, roster, power, remaining):
     standings = rank_season_games(season_games, roster)
     rank = {r["manager"]: i + 1 for i, r in enumerate(standings)}
-    played = {r["manager"]: r["wins"] + r["losses"] + r["ties"] for r in standings}
-    win_pct = {r["manager"]: (r["wins"] / played[r["manager"]] if played[r["manager"]] else 0.0)
-               for r in standings}
+    rows = power.get("rankings", []) if power else []
+    power_rank = {r["manager"]: i + 1 for i, r in enumerate(rows)}
 
+    # Strength of the road left: remaining opponents' average power rank as
+    # of Week 7. Power rank 1 is the strongest team, so lowest is toughest.
     sos = []
     for m in rank:
         opps = [b if a == m else a for wk in remaining for a, b in wk if m in (a, b)]
-        if opps:
-            sos.append({"manager": m, "opponent_win_pct": round(sum(win_pct.get(o, 0) for o in opps) / len(opps), 3),
+        ranked = [power_rank[o] for o in opps if o in power_rank]
+        if ranked:
+            sos.append({"manager": m, "avg_opponent_power_rank": round(sum(ranked) / len(ranked), 2),
                         "games": len(opps)})
-    sos.sort(key=lambda r: (-r["opponent_win_pct"], r["manager"]))
+    sos.sort(key=lambda r: (r["avg_opponent_power_rank"], r["manager"]))
 
     def games_between(low, high):
         out = []
@@ -232,7 +235,8 @@ def second_half(season_games, roster, remaining):
     n = len(rank)
     return {
         "strength_of_schedule": sos,
-        "top_games": games_between(1, PLAYOFF_SPOTS),
+        "top_games": games_between(1, TOP_GROUP_LAST_RANK),
+        "top_last_rank": TOP_GROUP_LAST_RANK,
         "bottom_games": games_between(BOTTOM_GROUP_FIRST_RANK, n) if n >= BOTTOM_GROUP_FIRST_RANK else [],
         "bottom_first_rank": BOTTOM_GROUP_FIRST_RANK,
         "teams": n,
@@ -261,7 +265,7 @@ def compute_halfway(stats, lineups, remaining_file, moves, roster):
         "rise_and_fall": rise_and_fall(games, year, roster),
         "schedules": schedules(games, year, roster, stats.get("power_rankings"), remaining),
         "awards": awards(season, year, roster, cards, lineups, moves),
-        "second_half": second_half(season, roster, remaining),
+        "second_half": second_half(season, roster, stats.get("power_rankings"), remaining),
     }
 
 

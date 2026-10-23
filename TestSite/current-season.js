@@ -190,48 +190,61 @@ function renderHalfwayPoint(hw) {
   }
 
   const esc = escapeHtml;
-  const names = (rows) => rows.map((r) => esc(r.manager)).join("<br>");
+  const who = (rows) => rows.map((r) => `<b>${esc(r.manager)}</b>`).join(" & ");
   const pct = (v) => `${v > 0 ? "+" : ""}${(v * 100).toFixed(1)}%`;
-  const card = (label, headline, subtitle, value) =>
-    renderCalloutHmCard({ label, headline, subtitle, value }, "halfway");
   const grid = (cards) => cards.length ? `<div class="callout-grid hw-grid">${cards.join("")}</div>` : "";
   const sub = (title) => `<h4 class="hw-sub">${esc(title)}</h4>`;
   const note = (text) => `<p class="recap-text hw-note">${text}</p>`;
   const parts = [];
 
-  // Rise and fall (past seasons)
+  // Orange boxes are only for things that open a popup; everything else
+  // is a plain label + sentence.
+  const plain = (label, html) =>
+    `<div class="sentence-item"><span class="sentence-label">${esc(label)}</span><p class="sentence-text">${html}</p></div>`;
+  const plainList = (items) => items.length ? `<div class="hw-plain-list">${items.join("")}</div>` : "";
+  const spots = (n, sign) => `${sign}${n} ${n === 1 ? "Spot" : "Spots"}`;
+  const popups = {};
+
+  // Rise and fall (past seasons): the leader is an orange box when there
+  // are other notable entries for its popup, otherwise plain text.
   const rf = hw.rise_and_fall || { falls: [], rises: [] };
   const move = (e, verb) => `${e.year} · #${e.half_rank} at the halfway point, finished #${e.final_rank} and ${verb}`;
-  const others = (list, sign) => list.slice(1).map((e) =>
-    `${e.year} ${esc(e.manager)}: #${e.half_rank} → #${e.final_rank} (${sign}${e.spots})`).join("<br>");
+  const otherLine = (e, sign) =>
+    `${e.year} ${esc(e.manager)}: #${e.half_rank} → #${e.final_rank} (${spots(e.spots, sign).toLowerCase()})`;
+  const rfBox = (key, label, list, sign, verb, popTitle) => {
+    const e = list[0];
+    if (list.length < 2) {
+      return { plain: plain(label, `<b>${esc(e.manager)}</b>, ${spots(e.spots, sign).toLowerCase()}. ${move(e, verb)}.`) };
+    }
+    popups[key] = { title: popTitle, lines: list.slice(1).map((x) => otherLine(x, sign)) };
+    return { card: `
+      <div class="callout-hm callout-hm-clickable" data-hw-pop="${key}">
+        <span class="box-score-eyebrow">${esc(label)}</span>
+        <div class="callout-hm-headline">${esc(e.manager)}</div>
+        <div class="callout-hm-value">${spots(e.spots, sign)}</div>
+        <div class="callout-hm-subtitle">${move(e, verb)}</div>
+      </div>` };
+  };
   parts.push(sub("Who will rise to the occasion and who will collapse under pressure"));
-  const rfCards = [];
-  if (rf.falls.length) {
-    const f = rf.falls[0];
-    rfCards.push(card("Biggest Fall", esc(f.manager), move(f, "missed the playoffs"), `−${f.spots}`));
-  }
-  if (rf.rises.length) {
-    const r = rf.rises[0];
-    rfCards.push(card("Biggest Rise", esc(r.manager), move(r, "made the playoffs"), `+${r.spots}`));
-  }
-  parts.push(grid(rfCards));
-  const otherFalls = others(rf.falls, "−"), otherRises = others(rf.rises, "+");
-  if (otherFalls) parts.push(note(`<b>Other falls</b><br>${otherFalls}`));
-  if (otherRises) parts.push(note(`<b>Other rises</b><br>${otherRises}`));
-  if (!rfCards.length) parts.push(note("No past season has had a team rise into or fall out of the top 6 after the halfway point."));
+  const rfItems = [];
+  if (rf.falls.length) rfItems.push(rfBox("falls", "Biggest Fall", rf.falls, "−", "missed the playoffs", "Other notable falls"));
+  if (rf.rises.length) rfItems.push(rfBox("rises", "Biggest Rise", rf.rises, "+", "made the playoffs", "Other notable risers"));
+  parts.push(grid(rfItems.filter((x) => x.card).map((x) => x.card)));
+  parts.push(plainList(rfItems.filter((x) => x.plain).map((x) => x.plain)));
+  if (!rfItems.length) parts.push(note("No past season has had a team rise into or fall out of the top 6 after the halfway point."));
 
   // Schedules Matter
   const sc = hw.schedules;
   if (sc) {
     parts.push(sub("Schedules Matter"));
     const outlook = (e) => e.remaining_opponents
-      ? `Remaining opponents' average power ranking: ${e.avg_opponent_power_rank} of ${sc.teams}. `
+      ? ` Remaining opponents' average power ranking: ${e.avg_opponent_power_rank} of ${sc.teams}. `
         + (e.trend === "about the same" ? "The rest of the way looks about the same."
           : `The rest of the season gets ${e.trend}.`)
       : "";
-    parts.push(grid([
-      card("Hardest Schedule So Far", names(sc.hardest), outlook(sc.hardest[0]), pct(sc.hardest[0].schedule_difficulty)),
-      card("Easiest Schedule So Far", names(sc.easiest), outlook(sc.easiest[0]), pct(sc.easiest[0].schedule_difficulty)),
+    parts.push(plainList([
+      plain("Hardest Schedule So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.hardest[0])}`),
+      plain("Easiest Schedule So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.easiest[0])}`),
     ]));
     const h = sc.history, t = (h.threshold * 100).toFixed(0);
     if (h.playoff_teams && h.lowest_playoff) {
@@ -247,42 +260,38 @@ function renderHalfwayPoint(hw) {
     }
   }
 
-  // Mid-season awards
+  // Mid-season recognition
   const aw = hw.awards || {};
-  const awardCards = [];
+  const awardItems = [];
   if ((aw.most_consistent || []).length) {
     const r = aw.most_consistent[0];
-    awardCards.push(card("Most Consistent", names(aw.most_consistent),
-      `Averaging ${r.average.toFixed(2)}, give or take ${r.stdev.toFixed(2)} a week`, `±${r.stdev.toFixed(1)}`));
+    awardItems.push(plain("Most Consistent", `${who(aw.most_consistent)}: averaging ${r.average.toFixed(2)}, give or take ${r.stdev.toFixed(2)} a week.`));
   }
   if ((aw.rock_bottom || []).length) {
     // One leader gets the Bob scratch-out; a tie just lists the managers.
-    const rb = aw.rock_bottom;
-    const headline = rb.length === 1
-      ? `Not Great <s>Bob</s> ${esc(rb[0].first_name)}`
-      : `Not Great Bob:<br>${names(rb)}`;
-    const sub = rb.length === 1 ? `${esc(rb[0].manager)} · most games under 75` : "tied for most games under 75";
-    awardCards.push(card("Rock Bottom", headline, sub, rb[0].count));
+    const rb = aw.rock_bottom, games = `${rb[0].count} ${rb[0].count === 1 ? "game" : "games"} under 75`;
+    awardItems.push(plain("Rock Bottom", rb.length === 1
+      ? `<b>Not Great <s>Bob</s> ${esc(rb[0].first_name)}</b>: ${esc(rb[0].manager)}, ${games}.`
+      : `<b>Not Great Bob:</b> ${rb.map((r) => esc(r.manager)).join(", ")}, ${games} each.`));
   }
   if ((aw.mantle || []).length) {
-    awardCards.push(card("Dust Off the Mantle", names(aw.mantle), "most badges on the trading card", aw.mantle[0].badges));
+    const n = aw.mantle[0].badges;
+    awardItems.push(plain("Dust Off the Mantle", `${who(aw.mantle)}: ${n} ${n === 1 ? "badge" : "badges"} on the trading card, the most so far.`));
   }
   if ((aw.best_pickup || []).length) {
     const p = aw.best_pickup[0];
-    awardCards.push(card("Best Pickup", `${esc(p.player)} <span class="callout-hm-inline-mgr">(${esc(p.manager)})</span>`,
-      `${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup`, p.average.toFixed(1)));
+    awardItems.push(plain("Best Pickup", `<b>${esc(p.player)}</b> (${esc(p.manager)}): ${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup.`));
   }
   if ((aw.big_spender || []).length) {
-    awardCards.push(card("Big Spender", names(aw.big_spender), "most free-agent budget spent", `$${aw.big_spender[0].faab_spent}`));
+    awardItems.push(plain("Big Spender", `${who(aw.big_spender)}: $${aw.big_spender[0].faab_spent} of free-agent budget spent, the most in the league.`));
   }
   if ((aw.steady || []).length) {
     const r = aw.steady[0];
-    awardCards.push(card("Steady as He Goes", names(aw.steady),
-      `fewest moves: ${r.acquisitions} adds, ${r.trades} trades`, r.moves));
+    awardItems.push(plain("Steady as He Goes", `${who(aw.steady)}: the fewest moves, ${r.acquisitions} adds and ${r.trades} trades.`));
   }
-  if (awardCards.length) {
-    parts.push(sub("Mid-Season Awards"));
-    parts.push(grid(awardCards));
+  if (awardItems.length) {
+    parts.push(sub("Mid-Season Recognition"));
+    parts.push(plainList(awardItems));
   }
 
   // Second-half outlook
@@ -291,15 +300,17 @@ function renderHalfwayPoint(hw) {
     parts.push(sub("Second-Half Outlook"));
     const sos = sh.strength_of_schedule || [];
     if (sos.length) {
-      const first = sos[0], last = sos[sos.length - 1];
-      const rate = (v) => v.toFixed(3).replace(/^0/, "");
+      // Remaining opponents' average power rank (as of Week 7): lowest is toughest.
+      const avg = (r) => r.avg_opponent_power_rank.toFixed(2);
+      const ends = (v) => sos.filter((r) => r.avg_opponent_power_rank === v).map((r) => esc(r.manager)).join(" & ");
+      const first = sos[0].avg_opponent_power_rank, last = sos[sos.length - 1].avg_opponent_power_rank;
       parts.push(note(
-        `<b>Toughest road left:</b> ${esc(first.manager)} (opponents' win % ${rate(first.opponent_win_pct)})<br>`
-        + `<b>Easiest road left:</b> ${esc(last.manager)} (${rate(last.opponent_win_pct)})\n\n`
-        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${rate(r.opponent_win_pct)}`).join("<br>")));
+        `<b>Toughest road left:</b> ${ends(first)} (remaining opponents' average power ranking ${first.toFixed(2)})<br>`
+        + `<b>Easiest road left:</b> ${ends(last)} (${last.toFixed(2)})\n\n`
+        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${avg(r)}`).join("<br>")));
     }
     const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
-    parts.push(note(`<b>Top-6 showdowns still to come</b><br>`
+    parts.push(note(`<b>Top-${sh.top_last_rank} showdowns still to come</b><br>`
       + (sh.top_games.length ? sh.top_games.map(gameLine).join("<br>") : "None left on the schedule.")));
     if (sh.teams >= sh.bottom_first_rank) {
       parts.push(note(`<b>Battle to avoid last (ranked ${sh.bottom_first_rank}-${sh.teams})</b><br>`
@@ -308,8 +319,27 @@ function renderHalfwayPoint(hw) {
   }
 
   body.innerHTML = parts.join("");
+  body.querySelectorAll("[data-hw-pop]").forEach((el) => {
+    el.addEventListener("click", () => openHalfwayModal(popups[el.dataset.hwPop]));
+  });
   section.style.display = "";
   if (divider) divider.style.display = "";
+}
+
+// Popup for the Halfway Point's orange boxes. Reuses the streak modal
+// shell (title badge + body), which already has its close wiring.
+function openHalfwayModal(pop) {
+  const modal = document.getElementById("streakModal");
+  const badge = document.getElementById("streakModalBadge");
+  const body = document.getElementById("streakModalBody");
+  const closeBtn = document.getElementById("streakModalClose");
+  if (!modal || !body || !pop) return;
+  if (badge) badge.textContent = pop.title;
+  body.innerHTML = pop.lines.map((l) => `<div class="streak-game-line"><span>${l}</span></div>`).join("");
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  if (closeBtn) closeBtn.focus();
 }
 
 function renderHonorableMention(recap) {
