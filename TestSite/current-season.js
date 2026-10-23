@@ -238,16 +238,9 @@ function renderHalfwayPoint(hw) {
   const sc = hw.schedules;
   if (sc) {
     parts.push(sub("Schedules Matter"));
-    // Opponent strength = breakdown win %: how often they'd have beaten every team, every week.
-    const outlook = (e) => e.remaining_opponents
-      ? ` Opponents so far beat the league ${share(e.past_opponent_strength)} of the time; `
-        + `the remaining ${e.remaining_opponents}, ${share(e.opponent_strength)}. `
-        + (e.trend === "same" ? "Schedule difficulty is projected to be the same."
-          : `The rest of the season gets ${e.trend}.`)
-      : "";
     parts.push(plainList([
-      plain("Unluckiest So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} Luck Factor.${outlook(sc.hardest[0])}`),
-      plain("Luckiest So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} Luck Factor.${outlook(sc.easiest[0])}`),
+      plain("Unluckiest So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} Luck Factor.`),
+      plain("Luckiest So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} Luck Factor.`),
     ]));
     const h = sc.history, t = (h.threshold * 100).toFixed(0);
     if (h.playoff_teams && h.lowest_playoff) {
@@ -264,6 +257,17 @@ function renderHalfwayPoint(hw) {
         + `${ofPlayoff(average)} had an average schedule (Luck Factor was irrelevant)\n\n`
         + `No one with a Luck Factor under ${z} at the halfway point has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
+    }
+    // Schedule swing: remaining opponents vs opponents played, by scoring
+    // (breakdown win %); only managers past the threshold are named.
+    const sw = sc.swing;
+    if (sw && sw.measured) {
+      const list = (ms) => ms.map(esc).join(", ");
+      parts.push(note(sw.harder.length || sw.easier.length
+        ? [sw.harder.length ? `<b>Rest of the season gets harder:</b> ${list(sw.harder)}` : "",
+           sw.easier.length ? `<b>Gets easier:</b> ${list(sw.easier)}` : "",
+           "Everyone else: no real change."].filter(Boolean).join("<br>")
+        : "No one's schedule changes much in the second half."));
     }
   }
 
