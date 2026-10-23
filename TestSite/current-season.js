@@ -246,8 +246,8 @@ function renderHalfwayPoint(hw) {
           : `The rest of the season gets ${e.trend}.`)
       : "";
     parts.push(plainList([
-      plain("Hardest Schedule So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.hardest[0])}`),
-      plain("Easiest Schedule So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.easiest[0])}`),
+      plain("Unluckiest So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.hardest[0])}`),
+      plain("Luckiest So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.easiest[0])}`),
     ]));
     const h = sc.history, t = (h.threshold * 100).toFixed(0);
     if (h.playoff_teams && h.lowest_playoff) {
