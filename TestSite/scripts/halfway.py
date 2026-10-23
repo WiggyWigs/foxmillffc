@@ -54,6 +54,10 @@ TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.j
 # Schedule difficulty is actual win % minus breakdown win %. Past playoff
 # teams over +5% had a favorable schedule; under -5% a difficult one.
 SCHEDULE_THRESHOLD = 0.05
+# "The rest of the season gets easier/harder" needs the remaining opponents'
+# average power rank to differ from past opponents' by at least this much.
+OUTLOOK_RANK_THRESHOLD = 1.0
+OTHER_NOTABLE_MIN_SPOTS = 2      # popup's other falls/rises must move at least this far
 TOP_GROUP_LAST_RANK = 4          # "showdowns still to come": ranks 1-4
 BOTTOM_GROUP_FIRST_RANK = 9      # "battle to avoid last": ranks 9-12
 BEST_PICKUP_MIN_WEEKS = 2        # weeks on the roster after the add
@@ -101,7 +105,12 @@ def rise_and_fall(all_games, current_year, roster):
             elif h > PLAYOFF_SPOTS and m in playoff:
                 rises.append({"year": year, "manager": m, "half_rank": h, "final_rank": f, "spots": h - f})
     order = lambda e: (-e["spots"], e["year"], e["manager"])
-    return {"falls": sorted(falls, key=order), "rises": sorted(rises, key=order)}
+
+    def ranked(entries):
+        # The leader always shows; the others need OTHER_NOTABLE_MIN_SPOTS.
+        entries = sorted(entries, key=order)
+        return entries[:1] + [e for e in entries[1:] if e["spots"] >= OTHER_NOTABLE_MIN_SPOTS]
+    return {"falls": ranked(falls), "rises": ranked(rises)}
 
 
 def schedules(all_games, current_year, roster, power, remaining):
@@ -110,17 +119,29 @@ def schedules(all_games, current_year, roster, power, remaining):
         return None
     power_rank = {r["manager"]: i + 1 for i, r in enumerate(rows)}
     n = len(rows)
-    midpoint = (n + 1) / 2
+    played = [g for g in all_games if g["year"] == current_year and g["game_type"] == "Regular"]
+
+    def avg_rank(opps):
+        ranked = [power_rank[o] for o in opps if o in power_rank]
+        return sum(ranked) / len(ranked) if ranked else None
 
     def outlook(row):
-        opps = [b if a == row["manager"] else a for wk in remaining
-                for a, b in wk if row["manager"] in (a, b)]
-        if not opps:
+        # Remaining opponents vs the opponents already played, both measured
+        # by this week's power rankings (1 = strongest, so higher = easier).
+        m = row["manager"]
+        opps = [b if a == m else a for wk in remaining for a, b in wk if m in (a, b)]
+        past = [g["home_manager"] if g["away_manager"] == m else g["away_manager"]
+                for g in played if m in (g["away_manager"], g["home_manager"])]
+        ahead, behind = avg_rank(opps), avg_rank(past)
+        if ahead is None or behind is None:
             return {"remaining_opponents": 0}
-        avg = round(sum(power_rank[o] for o in opps if o in power_rank) / len(opps), 1)
-        # Power rank 1 is the strongest team: a higher average is easier.
-        trend = "easier" if avg > midpoint else "harder" if avg < midpoint else "about the same"
-        return {"remaining_opponents": len(opps), "avg_opponent_power_rank": avg, "trend": trend}
+        ahead, behind = round(ahead, 1), round(behind, 1)
+        diff = round(ahead - behind, 1)  # on the shown (rounded) numbers, so the text matches them
+        trend = ("easier" if diff >= OUTLOOK_RANK_THRESHOLD
+                 else "harder" if diff <= -OUTLOOK_RANK_THRESHOLD else "same")
+        return {"remaining_opponents": len(opps), "avg_opponent_power_rank": ahead,
+                "past_opponents": len(past), "avg_past_opponent_power_rank": behind,
+                "trend": trend}
 
     def entry(row):
         return {"manager": row["manager"], "schedule_difficulty": row["schedule_difficulty"], **outlook(row)}

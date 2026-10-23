@@ -238,8 +238,9 @@ function renderHalfwayPoint(hw) {
   if (sc) {
     parts.push(sub("Schedules Matter"));
     const outlook = (e) => e.remaining_opponents
-      ? ` Remaining opponents' average power ranking: ${e.avg_opponent_power_rank} of ${sc.teams}. `
-        + (e.trend === "about the same" ? "The rest of the way looks about the same."
+      ? ` Opponents so far averaged ${e.avg_past_opponent_power_rank.toFixed(1)} in this week's power rankings; `
+        + `the remaining ${e.remaining_opponents} average ${e.avg_opponent_power_rank.toFixed(1)}. `
+        + (e.trend === "same" ? "Schedule difficulty is projected to be the same."
           : `The rest of the season gets ${e.trend}.`)
       : "";
     parts.push(plainList([
@@ -252,9 +253,13 @@ function renderHalfwayPoint(hw) {
       const below = h.below_lowest_now.length
         ? h.below_lowest_now.map((r) => `${esc(r.manager)} (${pct(r.schedule_difficulty)})`).join(", ")
         : "none";
+      const share = (k) => `${(100 * k / h.playoff_teams).toFixed(1)}%`;
+      const average = h.playoff_teams - h.favorable - h.difficult;
       parts.push(note(
-        `Of the ${h.playoff_teams} teams that have made the playoffs, ${h.favorable} had a favorable schedule `
-        + `(schedule difficulty over +${t}%). Only ${h.difficult} overcame a difficult schedule (under −${t}%). `
+        `Of all the teams that have made the playoffs:\n`
+        + `${share(h.favorable)} had a favorable schedule (schedule difficulty over +${t}%)\n`
+        + `${share(h.difficult)} overcame a difficult schedule (under −${t}%)\n`
+        + `${share(average)} had an average strength of schedule\n\n`
         + `No one with a schedule difficulty under ${z} has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
@@ -265,7 +270,7 @@ function renderHalfwayPoint(hw) {
   const awardItems = [];
   if ((aw.most_consistent || []).length) {
     const r = aw.most_consistent[0];
-    awardItems.push(plain("Most Consistent", `${who(aw.most_consistent)}: averaging ${r.average.toFixed(2)}, give or take ${r.stdev.toFixed(2)} a week.`));
+    awardItems.push(plain("Most Consistent", `${who(aw.most_consistent)}: averaging ${r.average.toFixed(2)} points, give or take ${r.stdev.toFixed(2)} a week.`));
   }
   if ((aw.rock_bottom || []).length) {
     // One leader gets the Bob scratch-out; a tie just lists the managers.
@@ -280,7 +285,7 @@ function renderHalfwayPoint(hw) {
   }
   if ((aw.best_pickup || []).length) {
     const p = aw.best_pickup[0];
-    awardItems.push(plain("Best Pickup", `<b>${esc(p.player)}</b> (${esc(p.manager)}): ${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup.`));
+    awardItems.push(plain("Best Pickup", `<b>${esc(p.manager)}</b> (${esc(p.player)}): ${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup.`));
   }
   if ((aw.big_spender || []).length) {
     awardItems.push(plain("Big Spender", `${who(aw.big_spender)}: $${aw.big_spender[0].faab_spent} of free-agent budget spent, the most in the league.`));
@@ -310,10 +315,10 @@ function renderHalfwayPoint(hw) {
         + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${avg(r)}`).join("<br>")));
     }
     const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
-    parts.push(note(`<b>Top-${sh.top_last_rank} showdowns still to come</b><br>`
+    parts.push(note(`<b>Top-${sh.top_last_rank} (as of Week ${hw.week}) showdowns still to come</b><br>`
       + (sh.top_games.length ? sh.top_games.map(gameLine).join("<br>") : "None left on the schedule.")));
     if (sh.teams >= sh.bottom_first_rank) {
-      parts.push(note(`<b>Battle to avoid last (ranked ${sh.bottom_first_rank}-${sh.teams})</b><br>`
+      parts.push(note(`<b>Battles to avoid last (currently ranked ${sh.bottom_first_rank}-${sh.teams})</b><br>`
         + (sh.bottom_games.length ? sh.bottom_games.map(gameLine).join("<br>") : "None left on the schedule.")));
     }
   }
