@@ -259,9 +259,9 @@ function renderHalfwayPoint(hw) {
       const average = h.playoff_teams - h.favorable - h.difficult;
       parts.push(note(
         `Of all the teams that have made the playoffs:\n`
-        + `${ofPlayoff(h.favorable)} had a favorable schedule (Luck Factor over +${t}%)\n`
-        + `${ofPlayoff(h.difficult)} overcame a difficult schedule (under −${t}%)\n`
-        + `${ofPlayoff(average)} had an average strength of schedule\n\n`
+        + `${ofPlayoff(h.favorable)} were lucky (Luck Factor over +${t}%)\n`
+        + `${ofPlayoff(h.difficult)} overcame bad luck (under −${t}%)\n`
+        + `${ofPlayoff(average)} had average luck\n\n`
         + `No one with a Luck Factor under ${z} has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
