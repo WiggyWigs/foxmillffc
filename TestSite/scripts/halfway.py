@@ -161,7 +161,14 @@ def schedules(all_games, current_year, roster, power, remaining):
             history["playoff_teams"] += 1
             history["favorable"] += sd > SCHEDULE_THRESHOLD
             history["difficult"] += sd < -SCHEDULE_THRESHOLD
-            if lowest is None or sd < lowest["schedule_difficulty"]:
+        # Lowest Luck Factor AT THE HALFWAY POINT among that year's playoff
+        # teams, so it compares like-for-like with this season's Week 7 numbers.
+        half = compute_power_rankings(
+            [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+             and _week_sort_key(g["week"]) <= HALFWAY_WEEK], roster) or {}
+        for r in half.get("rankings", []):
+            sd = r["schedule_difficulty"]
+            if r["manager"] in playoff and (lowest is None or sd < lowest["schedule_difficulty"]):
                 lowest = {"manager": r["manager"], "year": year, "schedule_difficulty": sd}
     history["lowest_playoff"] = lowest
     history["below_lowest_now"] = ([{"manager": r["manager"], "schedule_difficulty": r["schedule_difficulty"]}
