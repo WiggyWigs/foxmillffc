@@ -258,11 +258,11 @@ function renderHalfwayPoint(hw) {
       const ofPlayoff = (k) => `${(100 * k / h.playoff_teams).toFixed(1)}%`;
       const average = h.playoff_teams - h.favorable - h.difficult;
       parts.push(note(
-        `Of all the teams that have made the playoffs:\n`
+        `Of all the teams that have made the playoffs, at the halfway point:\n`
         + `${ofPlayoff(h.favorable)} had a favorable schedule (Luck Factor over +${t}%)\n`
         + `${ofPlayoff(h.difficult)} overcame a hard schedule (Luck Factor under −${t}%)\n`
         + `${ofPlayoff(average)} had an average schedule (Luck Factor was irrelevant)\n\n`
-        + `No one with a Luck Factor under ${z} has ever made the playoffs.\n\n`
+        + `No one with a Luck Factor under ${z} at the halfway point has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
   }
