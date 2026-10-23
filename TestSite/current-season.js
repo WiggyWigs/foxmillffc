@@ -306,8 +306,8 @@ function renderHalfwayPoint(hw) {
         const rows = names.map((m) => byName[m]);
         const k = rows[0][key].length, last = rows[0].games;
         return rows.length === 1
-          ? `${esc(rows[0].manager)}: ${k} of the last ${last} against the ${group} ${n} (${spots(rows[0][key])})`
-          : `${rows.map((r) => esc(r.manager)).join(" & ")}: ${k} of the last ${last} each against the ${group} ${n}`;
+          ? `${esc(rows[0].manager)}: ${k} of the last ${last} against the ${group} ${n} in the Power Rankings (${spots(rows[0][key])})`
+          : `${rows.map((r) => esc(r.manager)).join(" & ")}: ${k} of the last ${last} each against the ${group} ${n} in the Power Rankings`;
       };
       parts.push(note(
         `<b>Toughest road left:</b> ${headline(sh.toughest_road, "top", "top")}<br>`
