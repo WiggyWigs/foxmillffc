@@ -192,7 +192,6 @@ function renderHalfwayPoint(hw) {
   const esc = escapeHtml;
   const who = (rows) => rows.map((r) => `<b>${esc(r.manager)}</b>`).join(" & ");
   const pct = (v) => `${v > 0 ? "+" : ""}${(v * 100).toFixed(1)}%`;
-  const share = (v) => `${(v * 100).toFixed(1)}%`;
   const grid = (cards) => cards.length ? `<div class="callout-grid hw-grid">${cards.join("")}</div>` : "";
   const sub = (title) => `<h4 class="hw-sub">${esc(title)}</h4>`;
   const note = (text) => `<p class="recap-text hw-note">${text}</p>`;
@@ -311,13 +310,21 @@ function renderHalfwayPoint(hw) {
     parts.push(sub("Second-Half Outlook"));
     const sos = sh.strength_of_schedule || [];
     if (sos.length) {
-      // Remaining opponents' average breakdown win % (as of Week 7): highest is toughest.
-      const ends = (v) => sos.filter((r) => r.opponent_strength === v).map((r) => esc(r.manager)).join(" & ");
-      const first = sos[0].opponent_strength, last = sos[sos.length - 1].opponent_strength;
+      // Remaining games vs the top / bottom N of the Week 7 power rankings.
+      const n = sh.road_group_size, byName = Object.fromEntries(sos.map((r) => [r.manager, r]));
+      const spots = (xs) => xs.map((x) => `#${x}`).join(", ");
+      const headline = (names, key, group) => {
+        const rows = names.map((m) => byName[m]);
+        const k = rows[0][key].length, last = rows[0].games;
+        return rows.length === 1
+          ? `${esc(rows[0].manager)}: ${k} of the last ${last} against the ${group} ${n} (${spots(rows[0][key])})`
+          : `${rows.map((r) => esc(r.manager)).join(" & ")}: ${k} of the last ${last} each against the ${group} ${n}`;
+      };
       parts.push(note(
-        `<b>Toughest road left:</b> ${ends(first)} (remaining opponents beat the league ${share(first)} of the time)<br>`
-        + `<b>Easiest road left:</b> ${ends(last)} (${share(last)})\n\n`
-        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${share(r.opponent_strength)}`).join("<br>")));
+        `<b>Toughest road left:</b> ${headline(sh.toughest_road, "top", "top")}<br>`
+        + `<b>Easiest road left:</b> ${headline(sh.easiest_road, "bottom", "bottom")}\n\n`
+        + `Remaining games vs the top ${n} and bottom ${n} of the Week ${hw.week} power rankings:\n`
+        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${r.top.length} vs top ${n}, ${r.bottom.length} vs bottom ${n}`).join("<br>")));
     }
     const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
     parts.push(note(`<b>Top-${sh.top_last_rank} (as of Week ${hw.week}) showdowns still to come</b><br>`
