@@ -1829,6 +1829,42 @@ main {
   margin: 0.25rem 0 0.9rem;
 }
 
+/* The Halfway Point (one-time section after Week 7) */
+.hw-sub {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.05rem;
+  color: var(--navy);
+  text-align: center;
+  margin: 1.6rem 0 0.7rem;
+}
+
+.hw-grid {
+  margin-bottom: 0.8rem;
+}
+
+.hw-note {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  white-space: pre-line;
+  text-align: center;
+  margin: 0.4rem auto 0.8rem;
+  max-width: 700px;
+}
+
+/* Halfway Point plain (non-clickable) items: label + sentence, stacked */
+.hw-plain-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 auto 1.25rem;
+  padding: 0 1rem;
+}
+
+.hw-plain-list .sentence-text {
+  margin: 0;  /* sentence sits right under its label */
+}
+
 .stat-of-week-text {
   font-size: 0.92rem;
   line-height: 1.6;

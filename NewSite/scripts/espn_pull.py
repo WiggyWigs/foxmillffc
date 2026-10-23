@@ -59,6 +59,7 @@ if TEST_CUTOFF_WEEK:
     TEST_CUTOFF_WEEK = int(TEST_CUTOFF_WEEK)
 INGEST_SCRIPT_PATH = SCRIPT_DIR / "ingest_csv.py"
 PLAYER_CARDS_SCRIPT_PATH = SCRIPT_DIR / "player_cards.py"
+HALFWAY_SCRIPT_PATH = SCRIPT_DIR / "halfway.py"
 
 LEAGUE_ID = 1222412013
 YEARS = [2023, 2024, 2025, 2026]
@@ -393,6 +394,34 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
     print(f"Added {len(new_entries)} manager-lineups through week {latest_completed_week} to {PLAYER_LINEUPS_PATH}")
 
 
+TEAM_MOVES_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
+
+
+def capture_team_moves(league_id, swid, espn_s2, resolved_mapping):
+    """Saves each manager's season transaction counts and free-agent budget
+    spent (ESPN's per-team transactionCounter) to team_moves.json, for the
+    Halfway Point awards (Big Spender, Steady as He Goes). These are
+    ESPN's CURRENT totals: in test-cutoff mode they're today's numbers,
+    not the numbers as of the cutoff week (flagged in the file)."""
+    year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
+    year_str = str(year)
+    league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    managers = {}
+    for team in league.teams:
+        manager = resolved_mapping.get((year_str, team.team_name))
+        if manager is None:
+            continue
+        managers[manager] = {
+            "acquisitions": int(getattr(team, "acquisitions", 0) or 0),
+            "drops": int(getattr(team, "drops", 0) or 0),
+            "trades": int(getattr(team, "trades", 0) or 0),
+            "faab_spent": int(getattr(team, "acquisition_budget_spent", 0) or 0),
+        }
+    with open(TEAM_MOVES_PATH, "w") as f:
+        json.dump({"year": year, "as_of_today": bool(TEST_CUTOFF_WEEK), "managers": managers}, f, indent=2)
+    print(f"Saved transaction counts for {len(managers)} managers to {TEAM_MOVES_PATH}")
+
+
 def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
     """
     Finds the current (max) year's next unplayed week and saves just the
@@ -604,6 +633,17 @@ def main():
     result = subprocess.run([sys.executable, str(PLAYER_CARDS_SCRIPT_PATH)], cwd=SCRIPT_DIR)
     if result.returncode != 0:
         print("WARNING: player_cards.py failed — see output above.")
+
+    # The Halfway Point section (only produces anything after Week 7).
+    # Runs last: it reads the badges player_cards.py just wrote. Both
+    # steps are non-fatal; the section is simply left out if they fail.
+    try:
+        capture_team_moves(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        print(f"WARNING: couldn't capture transaction counts: {e}")
+    result = subprocess.run([sys.executable, str(HALFWAY_SCRIPT_PATH)], cwd=SCRIPT_DIR)
+    if result.returncode != 0:
+        print("WARNING: halfway.py failed — see output above.")
 
 
 if __name__ == "__main__":
