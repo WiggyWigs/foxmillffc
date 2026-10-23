@@ -20,10 +20,8 @@ Sections:
                        spots dropped), and teams outside the top 6 that
                        made them (Biggest Rise, by spots gained).
   Schedules Matter   - this season's unluckiest and luckiest manager so
-                       far (power rankings' Luck Factor), how past playoff
-                       teams' halfway Luck Factor compares, and whose
-                       schedule swings harder or easier in the second half
-                       (remaining vs past opponents' breakdown win %).
+                       far (power rankings' Luck Factor), and how past
+                       playoff teams' halfway Luck Factor compares.
   Mid-season awards  - Most Consistent, Rock Bottom, Dust Off the Mantle,
                        Best Pickup, Big Spender, Steady as He Goes.
   Second-half outlook - road left (remaining games vs the top 4 and
@@ -55,11 +53,6 @@ TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.j
 # schedule; under -10% a hard one. (Over 7 games one result moves it ~9
 # points, so 5% would mostly catch noise.)
 SCHEDULE_THRESHOLD = 0.10
-# Opponent strength is the opponent's current breakdown win % (how often
-# they'd have beaten every team, every week): scoring only, no luck or
-# schedule in it. "The rest of the season gets easier/harder" needs the
-# remaining opponents' average to differ from past opponents' by this much.
-OUTLOOK_THRESHOLD = 0.05
 ROAD_GROUP_SIZE = 4               # road left: games vs the top 4 / bottom 4 in power score
 OTHER_NOTABLE_MIN_SPOTS = 2      # popup's other falls/rises must move at least this far
 TOP_GROUP_LAST_RANK = 4          # "showdowns still to come": ranks 1-4
@@ -82,12 +75,6 @@ def _ties(rows, key, best):
         return []
     target = best(r[key] for r in rows)
     return [r for r in rows if r[key] == target]
-
-
-def _avg_strength(opps, strength):
-    """Average breakdown win % of these opponents, rounded to 3 places."""
-    known = [strength[o] for o in opps if o in strength]
-    return round(sum(known) / len(known), 3) if known else None
 
 
 def _complete_years(all_games, before):
@@ -123,40 +110,14 @@ def rise_and_fall(all_games, current_year, roster):
     return {"falls": ranked(falls), "rises": ranked(rises)}
 
 
-def schedules(all_games, current_year, roster, power, remaining):
+def schedules(all_games, current_year, roster, power):
     rows = power.get("rankings", []) if power else []
     if not rows:
         return None
-    strength = {r["manager"]: r["breakdown_win_pct"] for r in rows}
     n = len(rows)
-    played = [g for g in all_games if g["year"] == current_year and g["game_type"] == "Regular"]
-
-    def outlook(row):
-        # Remaining opponents vs the opponents already played, both measured
-        # by this week's breakdown win % (higher = stronger = harder).
-        m = row["manager"]
-        opps = [b if a == m else a for wk in remaining for a, b in wk if m in (a, b)]
-        past = [g["home_manager"] if g["away_manager"] == m else g["away_manager"]
-                for g in played if m in (g["away_manager"], g["home_manager"])]
-        ahead, behind = _avg_strength(opps, strength), _avg_strength(past, strength)
-        if ahead is None or behind is None:
-            return None
-        return round(ahead - behind, 3)
 
     def entry(row):
         return {"manager": row["manager"], "schedule_difficulty": row["schedule_difficulty"]}
-
-    # Schedule swing: only managers whose remaining opponents score at least
-    # OUTLOOK_THRESHOLD better (harder) or worse (easier) than the ones
-    # they've played. Biggest swing first.
-    swings = [(outlook(r), r["manager"]) for r in rows]
-    swing = {
-        "harder": [m for d, m in sorted(swings, key=lambda x: (-(x[0] or 0), x[1]))
-                   if d is not None and d >= OUTLOOK_THRESHOLD],
-        "easier": [m for d, m in sorted(swings, key=lambda x: ((x[0] or 0), x[1]))
-                   if d is not None and d <= -OUTLOOK_THRESHOLD],
-        "measured": any(d is not None for d, _ in swings),
-    }
 
     history = {"playoff_teams": 0, "favorable": 0, "difficult": 0, "threshold": SCHEDULE_THRESHOLD}
     lowest = None
@@ -184,7 +145,6 @@ def schedules(all_games, current_year, roster, power, remaining):
         "hardest": [entry(r) for r in _ties(rows, "schedule_difficulty", min)],
         "easiest": [entry(r) for r in _ties(rows, "schedule_difficulty", max)],
         "teams": n,
-        "swing": swing,
         "history": history,
     }
 
@@ -318,7 +278,7 @@ def compute_halfway(stats, lineups, remaining_file, moves, roster):
         "season": year,
         "week": HALFWAY_WEEK,
         "rise_and_fall": rise_and_fall(games, year, roster),
-        "schedules": schedules(games, year, roster, stats.get("power_rankings"), remaining),
+        "schedules": schedules(games, year, roster, stats.get("power_rankings")),
         "awards": awards(season, year, roster, cards, lineups, moves),
         "second_half": second_half(season, roster, stats.get("power_rankings"), remaining),
     }

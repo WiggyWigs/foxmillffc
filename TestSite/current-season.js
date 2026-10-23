@@ -257,17 +257,6 @@ function renderHalfwayPoint(hw) {
         + `No one with a Luck Factor under ${z} at the halfway point has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
-    // Schedule swing: remaining opponents vs opponents played, by scoring
-    // (breakdown win %); only managers past the threshold are named.
-    const sw = sc.swing;
-    if (sw && sw.measured) {
-      const list = (ms) => ms.map(esc).join(", ");
-      parts.push(note(sw.harder.length || sw.easier.length
-        ? [sw.harder.length ? `<b>Rest of the season gets harder:</b> ${list(sw.harder)}` : "",
-           sw.easier.length ? `<b>Gets easier:</b> ${list(sw.easier)}` : "",
-           "Everyone else: no real change."].filter(Boolean).join("<br>")
-        : "No one's schedule changes much in the second half."));
-    }
   }
 
   // Mid-season recognition
