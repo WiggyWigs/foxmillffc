@@ -1861,6 +1861,10 @@ main {
   padding: 0 1rem;
 }
 
+.hw-plain-list .sentence-text {
+  margin: 0;  /* sentence sits right under its label */
+}
+
 .stat-of-week-text {
   font-size: 0.92rem;
   line-height: 1.6;

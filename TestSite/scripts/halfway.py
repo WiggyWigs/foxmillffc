@@ -19,12 +19,11 @@ Sections:
                        point that missed the playoffs (Biggest Fall, by
                        spots dropped), and teams outside the top 6 that
                        made them (Biggest Rise, by spots gained).
-  Schedules Matter   - this season's hardest and easiest schedule so far
-                       (power rankings' schedule difficulty), whether the
-                       rest of their schedule is easier or harder (their
-                       remaining opponents' average power ranking), and
-                       how past playoff teams' full-season schedule
-                       difficulty compares.
+  Schedules Matter   - this season's unluckiest and luckiest manager so
+                       far (power rankings' Luck Factor), whether the rest
+                       of their schedule is easier or harder (remaining vs
+                       past opponents' breakdown win %), and how past
+                       playoff teams' full-season Luck Factor compares.
   Mid-season awards  - Most Consistent, Rock Bottom, Dust Off the Mantle,
                        Best Pickup, Big Spender, Steady as He Goes.
   Second-half outlook - remaining strength of schedule (remaining
@@ -51,9 +50,16 @@ PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "play
 REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
 TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
 
-# Schedule difficulty is actual win % minus breakdown win %. Past playoff
-# teams over +5% had a favorable schedule; under -5% a difficult one.
+# Luck Factor (stats' schedule_difficulty) is actual win % minus breakdown
+# win %. Past playoff teams over +5% had a favorable schedule; under -5% a
+# hard one.
 SCHEDULE_THRESHOLD = 0.05
+# Opponent strength is the opponent's current breakdown win % (how often
+# they'd have beaten every team, every week): scoring only, no luck or
+# schedule in it. "The rest of the season gets easier/harder" needs the
+# remaining opponents' average to differ from past opponents' by this much.
+OUTLOOK_THRESHOLD = 0.05
+OTHER_NOTABLE_MIN_SPOTS = 2      # popup's other falls/rises must move at least this far
 TOP_GROUP_LAST_RANK = 4          # "showdowns still to come": ranks 1-4
 BOTTOM_GROUP_FIRST_RANK = 9      # "battle to avoid last": ranks 9-12
 BEST_PICKUP_MIN_WEEKS = 2        # weeks on the roster after the add
@@ -74,6 +80,12 @@ def _ties(rows, key, best):
         return []
     target = best(r[key] for r in rows)
     return [r for r in rows if r[key] == target]
+
+
+def _avg_strength(opps, strength):
+    """Average breakdown win % of these opponents, rounded to 3 places."""
+    known = [strength[o] for o in opps if o in strength]
+    return round(sum(known) / len(known), 3) if known else None
 
 
 def _complete_years(all_games, before):
@@ -101,26 +113,38 @@ def rise_and_fall(all_games, current_year, roster):
             elif h > PLAYOFF_SPOTS and m in playoff:
                 rises.append({"year": year, "manager": m, "half_rank": h, "final_rank": f, "spots": h - f})
     order = lambda e: (-e["spots"], e["year"], e["manager"])
-    return {"falls": sorted(falls, key=order), "rises": sorted(rises, key=order)}
+
+    def ranked(entries):
+        # The leader always shows; the others need OTHER_NOTABLE_MIN_SPOTS.
+        entries = sorted(entries, key=order)
+        return entries[:1] + [e for e in entries[1:] if e["spots"] >= OTHER_NOTABLE_MIN_SPOTS]
+    return {"falls": ranked(falls), "rises": ranked(rises)}
 
 
 def schedules(all_games, current_year, roster, power, remaining):
     rows = power.get("rankings", []) if power else []
     if not rows:
         return None
-    power_rank = {r["manager"]: i + 1 for i, r in enumerate(rows)}
+    strength = {r["manager"]: r["breakdown_win_pct"] for r in rows}
     n = len(rows)
-    midpoint = (n + 1) / 2
+    played = [g for g in all_games if g["year"] == current_year and g["game_type"] == "Regular"]
 
     def outlook(row):
-        opps = [b if a == row["manager"] else a for wk in remaining
-                for a, b in wk if row["manager"] in (a, b)]
-        if not opps:
+        # Remaining opponents vs the opponents already played, both measured
+        # by this week's breakdown win % (higher = stronger = harder).
+        m = row["manager"]
+        opps = [b if a == m else a for wk in remaining for a, b in wk if m in (a, b)]
+        past = [g["home_manager"] if g["away_manager"] == m else g["away_manager"]
+                for g in played if m in (g["away_manager"], g["home_manager"])]
+        ahead, behind = _avg_strength(opps, strength), _avg_strength(past, strength)
+        if ahead is None or behind is None:
             return {"remaining_opponents": 0}
-        avg = round(sum(power_rank[o] for o in opps if o in power_rank) / len(opps), 1)
-        # Power rank 1 is the strongest team: a higher average is easier.
-        trend = "easier" if avg > midpoint else "harder" if avg < midpoint else "about the same"
-        return {"remaining_opponents": len(opps), "avg_opponent_power_rank": avg, "trend": trend}
+        diff = round(ahead - behind, 3)  # on the shown (rounded) numbers, so the text matches them
+        trend = ("harder" if diff >= OUTLOOK_THRESHOLD
+                 else "easier" if diff <= -OUTLOOK_THRESHOLD else "same")
+        return {"remaining_opponents": len(opps), "opponent_strength": ahead,
+                "past_opponents": len(past), "past_opponent_strength": behind,
+                "trend": trend}
 
     def entry(row):
         return {"manager": row["manager"], "schedule_difficulty": row["schedule_difficulty"], **outlook(row)}
@@ -210,18 +234,17 @@ def second_half(season_games, roster, power, remaining):
     standings = rank_season_games(season_games, roster)
     rank = {r["manager"]: i + 1 for i, r in enumerate(standings)}
     rows = power.get("rankings", []) if power else []
-    power_rank = {r["manager"]: i + 1 for i, r in enumerate(rows)}
+    strength = {r["manager"]: r["breakdown_win_pct"] for r in rows}
 
-    # Strength of the road left: remaining opponents' average power rank as
-    # of Week 7. Power rank 1 is the strongest team, so lowest is toughest.
+    # Strength of the road left: remaining opponents' average breakdown win %
+    # as of Week 7, toughest (highest) first.
     sos = []
     for m in rank:
         opps = [b if a == m else a for wk in remaining for a, b in wk if m in (a, b)]
-        ranked = [power_rank[o] for o in opps if o in power_rank]
-        if ranked:
-            sos.append({"manager": m, "avg_opponent_power_rank": round(sum(ranked) / len(ranked), 2),
-                        "games": len(opps)})
-    sos.sort(key=lambda r: (r["avg_opponent_power_rank"], r["manager"]))
+        avg = _avg_strength(opps, strength)
+        if avg is not None:
+            sos.append({"manager": m, "opponent_strength": avg, "games": len(opps)})
+    sos.sort(key=lambda r: (-r["opponent_strength"], r["manager"]))
 
     def games_between(low, high):
         out = []

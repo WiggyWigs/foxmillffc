@@ -192,6 +192,7 @@ function renderHalfwayPoint(hw) {
   const esc = escapeHtml;
   const who = (rows) => rows.map((r) => `<b>${esc(r.manager)}</b>`).join(" & ");
   const pct = (v) => `${v > 0 ? "+" : ""}${(v * 100).toFixed(1)}%`;
+  const share = (v) => `${(v * 100).toFixed(1)}%`;
   const grid = (cards) => cards.length ? `<div class="callout-grid hw-grid">${cards.join("")}</div>` : "";
   const sub = (title) => `<h4 class="hw-sub">${esc(title)}</h4>`;
   const note = (text) => `<p class="recap-text hw-note">${text}</p>`;
@@ -237,14 +238,16 @@ function renderHalfwayPoint(hw) {
   const sc = hw.schedules;
   if (sc) {
     parts.push(sub("Schedules Matter"));
+    // Opponent strength = breakdown win %: how often they'd have beaten every team, every week.
     const outlook = (e) => e.remaining_opponents
-      ? ` Remaining opponents' average power ranking: ${e.avg_opponent_power_rank} of ${sc.teams}. `
-        + (e.trend === "about the same" ? "The rest of the way looks about the same."
+      ? ` Opponents so far beat the league ${share(e.past_opponent_strength)} of the time; `
+        + `the remaining ${e.remaining_opponents}, ${share(e.opponent_strength)}. `
+        + (e.trend === "same" ? "Schedule difficulty is projected to be the same."
           : `The rest of the season gets ${e.trend}.`)
       : "";
     parts.push(plainList([
-      plain("Hardest Schedule So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.hardest[0])}`),
-      plain("Easiest Schedule So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.easiest[0])}`),
+      plain("Unluckiest So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} Luck Factor.${outlook(sc.hardest[0])}`),
+      plain("Luckiest So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} Luck Factor.${outlook(sc.easiest[0])}`),
     ]));
     const h = sc.history, t = (h.threshold * 100).toFixed(0);
     if (h.playoff_teams && h.lowest_playoff) {
@@ -252,10 +255,14 @@ function renderHalfwayPoint(hw) {
       const below = h.below_lowest_now.length
         ? h.below_lowest_now.map((r) => `${esc(r.manager)} (${pct(r.schedule_difficulty)})`).join(", ")
         : "none";
+      const ofPlayoff = (k) => `${(100 * k / h.playoff_teams).toFixed(1)}%`;
+      const average = h.playoff_teams - h.favorable - h.difficult;
       parts.push(note(
-        `Of the ${h.playoff_teams} teams that have made the playoffs, ${h.favorable} had a favorable schedule `
-        + `(schedule difficulty over +${t}%). Only ${h.difficult} overcame a difficult schedule (under −${t}%). `
-        + `No one with a schedule difficulty under ${z} has ever made the playoffs.\n\n`
+        `Of all the teams that have made the playoffs:\n`
+        + `${ofPlayoff(h.favorable)} had a favorable schedule (Luck Factor over +${t}%)\n`
+        + `${ofPlayoff(h.difficult)} overcame a hard schedule (Luck Factor under −${t}%)\n`
+        + `${ofPlayoff(average)} had an average schedule (Luck Factor was irrelevant)\n\n`
+        + `No one with a Luck Factor under ${z} has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
   }
@@ -265,7 +272,7 @@ function renderHalfwayPoint(hw) {
   const awardItems = [];
   if ((aw.most_consistent || []).length) {
     const r = aw.most_consistent[0];
-    awardItems.push(plain("Most Consistent", `${who(aw.most_consistent)}: averaging ${r.average.toFixed(2)}, give or take ${r.stdev.toFixed(2)} a week.`));
+    awardItems.push(plain("Most Consistent", `${who(aw.most_consistent)}: averaging ${r.average.toFixed(2)} points, give or take ${r.stdev.toFixed(2)} a week.`));
   }
   if ((aw.rock_bottom || []).length) {
     // One leader gets the Bob scratch-out; a tie just lists the managers.
@@ -280,7 +287,7 @@ function renderHalfwayPoint(hw) {
   }
   if ((aw.best_pickup || []).length) {
     const p = aw.best_pickup[0];
-    awardItems.push(plain("Best Pickup", `<b>${esc(p.player)}</b> (${esc(p.manager)}): ${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup.`));
+    awardItems.push(plain("Best Pickup", `<b>${esc(p.manager)}</b> (${esc(p.player)}): ${p.average.toFixed(2)} points a week over ${p.weeks} weeks since the pickup.`));
   }
   if ((aw.big_spender || []).length) {
     awardItems.push(plain("Big Spender", `${who(aw.big_spender)}: $${aw.big_spender[0].faab_spent} of free-agent budget spent, the most in the league.`));
@@ -300,20 +307,19 @@ function renderHalfwayPoint(hw) {
     parts.push(sub("Second-Half Outlook"));
     const sos = sh.strength_of_schedule || [];
     if (sos.length) {
-      // Remaining opponents' average power rank (as of Week 7): lowest is toughest.
-      const avg = (r) => r.avg_opponent_power_rank.toFixed(2);
-      const ends = (v) => sos.filter((r) => r.avg_opponent_power_rank === v).map((r) => esc(r.manager)).join(" & ");
-      const first = sos[0].avg_opponent_power_rank, last = sos[sos.length - 1].avg_opponent_power_rank;
+      // Remaining opponents' average breakdown win % (as of Week 7): highest is toughest.
+      const ends = (v) => sos.filter((r) => r.opponent_strength === v).map((r) => esc(r.manager)).join(" & ");
+      const first = sos[0].opponent_strength, last = sos[sos.length - 1].opponent_strength;
       parts.push(note(
-        `<b>Toughest road left:</b> ${ends(first)} (remaining opponents' average power ranking ${first.toFixed(2)})<br>`
-        + `<b>Easiest road left:</b> ${ends(last)} (${last.toFixed(2)})\n\n`
-        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${avg(r)}`).join("<br>")));
+        `<b>Toughest road left:</b> ${ends(first)} (remaining opponents beat the league ${share(first)} of the time)<br>`
+        + `<b>Easiest road left:</b> ${ends(last)} (${share(last)})\n\n`
+        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${share(r.opponent_strength)}`).join("<br>")));
     }
     const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
-    parts.push(note(`<b>Top-${sh.top_last_rank} showdowns still to come</b><br>`
+    parts.push(note(`<b>Top-${sh.top_last_rank} (as of Week ${hw.week}) showdowns still to come</b><br>`
       + (sh.top_games.length ? sh.top_games.map(gameLine).join("<br>") : "None left on the schedule.")));
     if (sh.teams >= sh.bottom_first_rank) {
-      parts.push(note(`<b>Battle to avoid last (ranked ${sh.bottom_first_rank}-${sh.teams})</b><br>`
+      parts.push(note(`<b>Battles to avoid last (currently ranked ${sh.bottom_first_rank}-${sh.teams})</b><br>`
         + (sh.bottom_games.length ? sh.bottom_games.map(gameLine).join("<br>") : "None left on the schedule.")));
     }
   }
@@ -1022,7 +1028,7 @@ function renderPlayoffProbability(data) {
   section.style.display = "";
   if (divider) divider.style.display = "";
   const seasonCount = data.playoff_probability_model?.seasons_used?.length || 0;
-  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and schedule difficulty.`;
+  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and Luck Factor.`;
 
   const rows = pp.managers; // already sorted by probability descending
 
@@ -1044,7 +1050,7 @@ function renderPlayoffProbability(data) {
           <th>Record</th>
           <th class="col-msi">Probability</th>
           <th class="num col-extra">Points</th>
-          <th class="num col-extra">Sched Diff</th>
+          <th class="num col-extra">Luck Factor</th>
         </tr>
       </thead>
       <tbody>${body}</tbody>
@@ -1095,7 +1101,7 @@ function renderPowerRankings(data) {
           <th class="col-msi">Tot Points</th>
           <th class="num col-extra">Win %</th>
           <th class="num col-extra">Scoring</th>
-          <th class="num col-extra">Sched Diff</th>
+          <th class="num col-extra">Luck Factor</th>
         </tr>
       </thead>
       <tbody>

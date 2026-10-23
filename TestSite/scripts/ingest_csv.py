@@ -668,10 +668,10 @@ def compute_power_rankings(all_games, roster_names):
     1 point to last (N = number of active managers this season):
       - Win %              → highest wins the most points
       - Points Scored       → highest wins the most points
-      - Schedule Difficulty → LOWEST value wins the most points, since
-        a very negative (Actual W% - Breakdown W%) means the manager's
-        real record undersold their scoring quality — i.e. a hard
-        schedule — and that's the manager who should score highest here.
+      - Luck Factor (schedule_difficulty) → LOWEST value wins the most
+        points, since a very negative (Actual W% - Breakdown W%) means the
+        manager's real record undersold their scoring quality — i.e. bad
+        luck — and that's the manager who should score highest here.
 
     Ties within a factor share the same point value; the next distinct
     value skips ahead accordingly (standard competition ranking).
