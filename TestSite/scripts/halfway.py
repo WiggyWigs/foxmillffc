@@ -51,8 +51,8 @@ REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME
 TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
 
 # Luck Factor (stats' schedule_difficulty) is actual win % minus breakdown
-# win %. Past playoff teams over +5% had a favorable schedule; under -5% a
-# hard one.
+# win %. Past playoff teams over +5% at the halfway point had a favorable
+# schedule; under -5% a hard one.
 SCHEDULE_THRESHOLD = 0.05
 # Opponent strength is the opponent's current breakdown win % (how often
 # they'd have beaten every team, every week): scoring only, no luck or
@@ -153,22 +153,19 @@ def schedules(all_games, current_year, roster, power, remaining):
     lowest = None
     for year in _complete_years(all_games, current_year):
         playoff = _playoff_teams(all_games, year)
-        past = compute_power_rankings([g for g in all_games if g["year"] <= year], roster) or {}
-        for r in past.get("rankings", []):
+        # Each playoff team's Luck Factor AT THE HALFWAY POINT, so the history
+        # compares like-for-like with this season's Week 7 numbers.
+        half = compute_power_rankings(
+            [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+             and _week_sort_key(g["week"]) <= HALFWAY_WEEK], roster) or {}
+        for r in half.get("rankings", []):
             if r["manager"] not in playoff:
                 continue
             sd = r["schedule_difficulty"]
             history["playoff_teams"] += 1
             history["favorable"] += sd > SCHEDULE_THRESHOLD
             history["difficult"] += sd < -SCHEDULE_THRESHOLD
-        # Lowest Luck Factor AT THE HALFWAY POINT among that year's playoff
-        # teams, so it compares like-for-like with this season's Week 7 numbers.
-        half = compute_power_rankings(
-            [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
-             and _week_sort_key(g["week"]) <= HALFWAY_WEEK], roster) or {}
-        for r in half.get("rankings", []):
-            sd = r["schedule_difficulty"]
-            if r["manager"] in playoff and (lowest is None or sd < lowest["schedule_difficulty"]):
+            if lowest is None or sd < lowest["schedule_difficulty"]:
                 lowest = {"manager": r["manager"], "year": year, "schedule_difficulty": sd}
     history["lowest_playoff"] = lowest
     history["below_lowest_now"] = ([{"manager": r["manager"], "schedule_difficulty": r["schedule_difficulty"]}
