@@ -51,7 +51,8 @@ REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME
 TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
 
 # Luck Factor (stats' schedule_difficulty) is actual win % minus breakdown
-# win %. Past playoff teams over +5% were lucky; under -5% overcame bad luck.
+# win %. Past playoff teams over +5% had a favorable schedule; under -5% a
+# hard one.
 SCHEDULE_THRESHOLD = 0.05
 # Opponent strength is the opponent's current breakdown win % (how often
 # they'd have beaten every team, every week): scoring only, no luck or
