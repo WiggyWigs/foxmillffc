@@ -26,10 +26,10 @@ Sections:
                        (remaining vs past opponents' breakdown win %).
   Mid-season awards  - Most Consistent, Rock Bottom, Dust Off the Mantle,
                        Best Pickup, Big Spender, Steady as He Goes.
-  Second-half outlook - remaining strength of schedule (remaining
-                       opponents' current win %), and remaining games
-                       between current top-6 teams and between the teams
-                       ranked 9-12.
+  Second-half outlook - road left (remaining games vs the top 4 and
+                       bottom 4 in power score, ties broken by points
+                       scored), and remaining games between the current
+                       top-4 teams and between the teams ranked 9-12.
 """
 
 import json
@@ -60,6 +60,7 @@ SCHEDULE_THRESHOLD = 0.10
 # schedule in it. "The rest of the season gets easier/harder" needs the
 # remaining opponents' average to differ from past opponents' by this much.
 OUTLOOK_THRESHOLD = 0.05
+ROAD_GROUP_SIZE = 4               # road left: games vs the top 4 / bottom 4 in power score
 OTHER_NOTABLE_MIN_SPOTS = 2      # popup's other falls/rises must move at least this far
 TOP_GROUP_LAST_RANK = 4          # "showdowns still to come": ranks 1-4
 BOTTOM_GROUP_FIRST_RANK = 9      # "battle to avoid last": ranks 9-12
@@ -247,17 +248,32 @@ def second_half(season_games, roster, power, remaining):
     standings = rank_season_games(season_games, roster)
     rank = {r["manager"]: i + 1 for i, r in enumerate(standings)}
     rows = power.get("rankings", []) if power else []
-    strength = {r["manager"]: r["breakdown_win_pct"] for r in rows}
 
-    # Strength of the road left: remaining opponents' average breakdown win %
-    # as of Week 7, toughest (highest) first.
+    # Road left: how many remaining games are against the top ROAD_GROUP_SIZE
+    # and bottom ROAD_GROUP_SIZE in power score as of Week 7. Power-score ties
+    # are broken by points scored, here only, so every team has its own spot.
+    order = sorted(rows, key=lambda r: (-r["power_score"], -r["points_scored"], r["manager"]))
+    spot = {r["manager"]: i + 1 for i, r in enumerate(order)}
+    score = {r["manager"]: r["power_score"] for r in rows}
+    n_power = len(order)
     sos = []
     for m in rank:
         opps = [b if a == m else a for wk in remaining for a, b in wk if m in (a, b)]
-        avg = _avg_strength(opps, strength)
-        if avg is not None:
-            sos.append({"manager": m, "opponent_strength": avg, "games": len(opps)})
-    sos.sort(key=lambda r: (-r["opponent_strength"], r["manager"]))
+        spots = sorted(spot[o] for o in opps if o in spot)
+        if not spots:
+            continue
+        sos.append({
+            "manager": m, "games": len(opps),
+            "top": [x for x in spots if x <= ROAD_GROUP_SIZE],
+            "bottom": [x for x in spots if x > n_power - ROAD_GROUP_SIZE],
+            "avg_power_score": round(sum(score[o] for o in opps if o in score) / len(spots), 2),
+        })
+    # Toughest first: more top games, fewer bottom games, stronger average.
+    sos.sort(key=lambda r: (-len(r["top"]), len(r["bottom"]), -r["avg_power_score"], r["manager"]))
+    # Headliners: most top games (tiebreak: strongest average) and most
+    # bottom games (tiebreak: weakest average). Remaining ties share it.
+    toughest = _ties(_ties([dict(r, t=len(r["top"])) for r in sos], "t", max), "avg_power_score", max)
+    easiest = _ties(_ties([dict(r, b=len(r["bottom"])) for r in sos], "b", max), "avg_power_score", min)
 
     def games_between(low, high):
         out = []
@@ -271,6 +287,9 @@ def second_half(season_games, roster, power, remaining):
     n = len(rank)
     return {
         "strength_of_schedule": sos,
+        "road_group_size": ROAD_GROUP_SIZE,
+        "toughest_road": [r["manager"] for r in toughest],
+        "easiest_road": [r["manager"] for r in easiest],
         "top_games": games_between(1, TOP_GROUP_LAST_RANK),
         "top_last_rank": TOP_GROUP_LAST_RANK,
         "bottom_games": games_between(BOTTOM_GROUP_FIRST_RANK, n) if n >= BOTTOM_GROUP_FIRST_RANK else [],
