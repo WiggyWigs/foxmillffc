@@ -20,10 +20,10 @@ Sections:
                        spots dropped), and teams outside the top 6 that
                        made them (Biggest Rise, by spots gained).
   Schedules Matter   - this season's unluckiest and luckiest manager so
-                       far (power rankings' Luck Factor), whether the rest
-                       of their schedule is easier or harder (remaining vs
-                       past opponents' breakdown win %), and how past
-                       playoff teams' full-season Luck Factor compares.
+                       far (power rankings' Luck Factor), how past playoff
+                       teams' halfway Luck Factor compares, and whose
+                       schedule swings harder or easier in the second half
+                       (remaining vs past opponents' breakdown win %).
   Mid-season awards  - Most Consistent, Rock Bottom, Dust Off the Mantle,
                        Best Pickup, Big Spender, Steady as He Goes.
   Second-half outlook - remaining strength of schedule (remaining
@@ -51,9 +51,10 @@ REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME
 TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
 
 # Luck Factor (stats' schedule_difficulty) is actual win % minus breakdown
-# win %. Past playoff teams over +5% at the halfway point had a favorable
-# schedule; under -5% a hard one.
-SCHEDULE_THRESHOLD = 0.05
+# win %. Past playoff teams over +10% at the halfway point had a favorable
+# schedule; under -10% a hard one. (Over 7 games one result moves it ~9
+# points, so 5% would mostly catch noise.)
+SCHEDULE_THRESHOLD = 0.10
 # Opponent strength is the opponent's current breakdown win % (how often
 # they'd have beaten every team, every week): scoring only, no luck or
 # schedule in it. "The rest of the season gets easier/harder" needs the
@@ -138,16 +139,23 @@ def schedules(all_games, current_year, roster, power, remaining):
                 for g in played if m in (g["away_manager"], g["home_manager"])]
         ahead, behind = _avg_strength(opps, strength), _avg_strength(past, strength)
         if ahead is None or behind is None:
-            return {"remaining_opponents": 0}
-        diff = round(ahead - behind, 3)  # on the shown (rounded) numbers, so the text matches them
-        trend = ("harder" if diff >= OUTLOOK_THRESHOLD
-                 else "easier" if diff <= -OUTLOOK_THRESHOLD else "same")
-        return {"remaining_opponents": len(opps), "opponent_strength": ahead,
-                "past_opponents": len(past), "past_opponent_strength": behind,
-                "trend": trend}
+            return None
+        return round(ahead - behind, 3)
 
     def entry(row):
-        return {"manager": row["manager"], "schedule_difficulty": row["schedule_difficulty"], **outlook(row)}
+        return {"manager": row["manager"], "schedule_difficulty": row["schedule_difficulty"]}
+
+    # Schedule swing: only managers whose remaining opponents score at least
+    # OUTLOOK_THRESHOLD better (harder) or worse (easier) than the ones
+    # they've played. Biggest swing first.
+    swings = [(outlook(r), r["manager"]) for r in rows]
+    swing = {
+        "harder": [m for d, m in sorted(swings, key=lambda x: (-(x[0] or 0), x[1]))
+                   if d is not None and d >= OUTLOOK_THRESHOLD],
+        "easier": [m for d, m in sorted(swings, key=lambda x: ((x[0] or 0), x[1]))
+                   if d is not None and d <= -OUTLOOK_THRESHOLD],
+        "measured": any(d is not None for d, _ in swings),
+    }
 
     history = {"playoff_teams": 0, "favorable": 0, "difficult": 0, "threshold": SCHEDULE_THRESHOLD}
     lowest = None
@@ -175,6 +183,7 @@ def schedules(all_games, current_year, roster, power, remaining):
         "hardest": [entry(r) for r in _ties(rows, "schedule_difficulty", min)],
         "easiest": [entry(r) for r in _ties(rows, "schedule_difficulty", max)],
         "teams": n,
+        "swing": swing,
         "history": history,
     }
 
