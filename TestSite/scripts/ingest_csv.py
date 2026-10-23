@@ -1807,7 +1807,6 @@ def _halfway_top_six_stat(all_games, season_games, current_year, roster_names):
     fall out (that percent times the group, rounded). None if no complete
     past season."""
     held = missed = 0
-    first_year = None
     for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
         if not any(g["year"] == year and g["game_type"] == "Championship" for g in all_games):
             continue
@@ -1820,7 +1819,6 @@ def _halfway_top_six_stat(all_games, season_games, current_year, roster_names):
                 held += 1
             else:
                 missed += 1
-        first_year = first_year or year
     total = held + missed
     if not total:
         return None
@@ -1838,10 +1836,9 @@ def _halfway_top_six_stat(all_games, season_games, current_year, roster_names):
         "record_label": f"top {PLAYOFF_SPOTS}",
         "this_year_teams": now,
         "teams_label": f"This year's top {PLAYOFF_SPOTS} at the halfway point",
-        "narrative": (f"The percent of teams in the top {PLAYOFF_SPOTS} at the halfway point "
-                      f"(Week {HALFWAY_WEEK}) that missed the playoffs. Since {first_year}, {total} "
-                      f"teams were in the top {PLAYOFF_SPOTS} at the halfway point, and {missed} "
-                      f"{'has' if missed == 1 else 'have'} missed the playoffs."),
+        # Trailing newline = a blank line before the list of this year's top 6.
+        "narrative": (f"The percent of teams in the top {PLAYOFF_SPOTS} of the standings at the "
+                      f"halfway point of the season that ended up missing the playoffs.\n"),
         "closing": closing,
     }
 
