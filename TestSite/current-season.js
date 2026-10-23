@@ -322,9 +322,7 @@ function renderHalfwayPoint(hw) {
       };
       parts.push(note(
         `<b>Toughest road left:</b> ${headline(sh.toughest_road, "top", "top")}<br>`
-        + `<b>Easiest road left:</b> ${headline(sh.easiest_road, "bottom", "bottom")}\n\n`
-        + `Remaining games vs the top ${n} and bottom ${n} of the Week ${hw.week} power rankings:\n`
-        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${r.top.length} vs top ${n}, ${r.bottom.length} vs bottom ${n}`).join("<br>")));
+        + `<b>Easiest road left:</b> ${headline(sh.easiest_road, "bottom", "bottom")}`));
     }
     const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
     parts.push(note(`<b>Top-${sh.top_last_rank} (as of Week ${hw.week}) showdowns still to come</b><br>`
