@@ -246,8 +246,8 @@ function renderHalfwayPoint(hw) {
           : `The rest of the season gets ${e.trend}.`)
       : "";
     parts.push(plainList([
-      plain("Unluckiest So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.hardest[0])}`),
-      plain("Luckiest So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} schedule difficulty.${outlook(sc.easiest[0])}`),
+      plain("Unluckiest So Far", `${who(sc.hardest)}: ${pct(sc.hardest[0].schedule_difficulty)} Luck Factor.${outlook(sc.hardest[0])}`),
+      plain("Luckiest So Far", `${who(sc.easiest)}: ${pct(sc.easiest[0].schedule_difficulty)} Luck Factor.${outlook(sc.easiest[0])}`),
     ]));
     const h = sc.history, t = (h.threshold * 100).toFixed(0);
     if (h.playoff_teams && h.lowest_playoff) {
@@ -259,10 +259,10 @@ function renderHalfwayPoint(hw) {
       const average = h.playoff_teams - h.favorable - h.difficult;
       parts.push(note(
         `Of all the teams that have made the playoffs:\n`
-        + `${ofPlayoff(h.favorable)} had a favorable schedule (schedule difficulty over +${t}%)\n`
+        + `${ofPlayoff(h.favorable)} had a favorable schedule (Luck Factor over +${t}%)\n`
         + `${ofPlayoff(h.difficult)} overcame a difficult schedule (under −${t}%)\n`
         + `${ofPlayoff(average)} had an average strength of schedule\n\n`
-        + `No one with a schedule difficulty under ${z} has ever made the playoffs.\n\n`
+        + `No one with a Luck Factor under ${z} has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
   }
@@ -1028,7 +1028,7 @@ function renderPlayoffProbability(data) {
   section.style.display = "";
   if (divider) divider.style.display = "";
   const seasonCount = data.playoff_probability_model?.seasons_used?.length || 0;
-  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and schedule difficulty.`;
+  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and Luck Factor.`;
 
   const rows = pp.managers; // already sorted by probability descending
 
@@ -1050,7 +1050,7 @@ function renderPlayoffProbability(data) {
           <th>Record</th>
           <th class="col-msi">Probability</th>
           <th class="num col-extra">Points</th>
-          <th class="num col-extra">Sched Diff</th>
+          <th class="num col-extra">Luck Factor</th>
         </tr>
       </thead>
       <tbody>${body}</tbody>
@@ -1101,7 +1101,7 @@ function renderPowerRankings(data) {
           <th class="col-msi">Tot Points</th>
           <th class="num col-extra">Win %</th>
           <th class="num col-extra">Scoring</th>
-          <th class="num col-extra">Sched Diff</th>
+          <th class="num col-extra">Luck Factor</th>
         </tr>
       </thead>
       <tbody>

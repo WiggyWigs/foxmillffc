@@ -35,7 +35,7 @@ MSI = 2.0 × (playoff appearances / seasons)
 
 * Win % = wins ÷ (wins + losses + ties).
 * A tie is not a win and not half a win. It counts as a game played with no win, so it lowers win %.
-* This applies everywhere win % appears: standings, career stats, MSI, head-to-head, power rankings, schedule difficulty and the playoff-probability model.
+* This applies everywhere win % appears: standings, career stats, MSI, head-to-head, power rankings, Luck Factor and the playoff-probability model.
 
 ## 5. Standings
 
@@ -51,9 +51,9 @@ MSI = 2.0 × (playoff appearances / seasons)
 
 ## 7. Power rankings
 
-* Schedule difficulty = actual win % minus breakdown win %.
-* A lower value means a harder schedule. The lowest value (hardest schedule) earns the most power-ranking points.
-* Within each category (win %, points scored, schedule difficulty), tied managers share the average of the positions they occupy. Example: two managers tied for 2nd in win % each get the points for position 2.5.
+* Luck Factor = actual win % minus breakdown win %. (The data field is still named `schedule_difficulty`.)
+* A lower value means unluckier: fewer wins than the manager's scoring earned. The lowest value (unluckiest) earns the most power-ranking points.
+* Within each category (win %, points scored, Luck Factor), tied managers share the average of the positions they occupy. Example: two managers tied for 2nd in win % each get the points for position 2.5.
 * Final rank (after all category points are added up): competition-style. Tied totals share a rank and the next manager skips ahead.
    * The table shows the shared rank on the first tied row only and leaves the other tied rows blank (1, blank, 3).
    * Tied managers are listed alphabetically by name.
@@ -104,6 +104,6 @@ Picked by code, never the same game as the Impact Game:
 * Every number states its scope in the sentence ("this season", "career", "all-time").
 * Point totals are written as "X points". Percentages are written as "X%". Win percentages become "a 68.2 winning percentage", never a raw decimal.
 * Playoff odds may only be mentioned by citing both last week's and this week's numbers. Otherwise don't mention them.
-* Don't describe one manager's schedule as easier or harder than another's unless their schedule-difficulty values differ by at least 0.15.
-* Don't mention a scoring average until a manager has played at least 2 games, or schedule difficulty until at least 3 games.
+* Don't describe one manager as luckier or unluckier than another unless their Luck Factor values differ by at least 0.15. Luck Factor never describes a schedule as hard or easy.
+* Don't mention a scoring average until a manager has played at least 2 games, or Luck Factor until at least 3 games.
 * Career playoff and championship counts are only used for roasting once a manager has at least 3 complete seasons.

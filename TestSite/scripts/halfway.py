@@ -19,12 +19,11 @@ Sections:
                        point that missed the playoffs (Biggest Fall, by
                        spots dropped), and teams outside the top 6 that
                        made them (Biggest Rise, by spots gained).
-  Schedules Matter   - this season's hardest and easiest schedule so far
-                       (power rankings' schedule difficulty), whether the
-                       rest of their schedule is easier or harder (their
-                       remaining opponents' average power ranking), and
-                       how past playoff teams' full-season schedule
-                       difficulty compares.
+  Schedules Matter   - this season's unluckiest and luckiest manager so
+                       far (power rankings' Luck Factor), whether the rest
+                       of their schedule is easier or harder (remaining vs
+                       past opponents' breakdown win %), and how past
+                       playoff teams' full-season Luck Factor compares.
   Mid-season awards  - Most Consistent, Rock Bottom, Dust Off the Mantle,
                        Best Pickup, Big Spender, Steady as He Goes.
   Second-half outlook - remaining strength of schedule (remaining
@@ -51,8 +50,9 @@ PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "play
 REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME", "remaining_schedule.json")
 TEAM_MOVES_PATH = DATA_DIR / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
 
-# Schedule difficulty is actual win % minus breakdown win %. Past playoff
-# teams over +5% had a favorable schedule; under -5% a difficult one.
+# Luck Factor (stats' schedule_difficulty) is actual win % minus breakdown
+# win %. Past playoff teams over +5% had a favorable schedule; under -5% a
+# difficult one.
 SCHEDULE_THRESHOLD = 0.05
 # Opponent strength is the opponent's current breakdown win % (how often
 # they'd have beaten every team, every week): scoring only, no luck or

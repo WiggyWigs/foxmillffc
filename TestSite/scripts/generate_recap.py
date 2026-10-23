@@ -1019,13 +1019,13 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             if points_total is not None and games_played and games_played >= MIN_GAMES_FOR_AVERAGE
             else None
         )
-        # Schedule difficulty needs a real sample too — 1-2 games
-        # isn't enough for "their schedule has been hard/easy" to
-        # mean anything yet.
-        MIN_GAMES_FOR_SCHEDULE_DIFFICULTY = 3
-        schedule_difficulty = (
+        # Luck Factor (stats' schedule_difficulty) needs a real sample
+        # too — 1-2 games isn't enough for "they've been lucky/unlucky"
+        # to mean anything yet.
+        MIN_GAMES_FOR_LUCK_FACTOR = 3
+        luck_factor = (
             p.get("schedule_difficulty")
-            if games_played and games_played >= MIN_GAMES_FOR_SCHEDULE_DIFFICULTY
+            if games_played and games_played >= MIN_GAMES_FOR_LUCK_FACTOR
             else None
         )
         ctx = {
@@ -1036,7 +1036,7 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             "season_power_rank": power_rank.get(name),
             "season_points_avg": points_avg,
             "season_points_rank": points_rank.get(name),
-            "season_schedule_difficulty": schedule_difficulty,
+            "season_luck_factor": luck_factor,
             "season_playoff_probability_pct": playoff_prob.get(name),
         }
         flavor = get_manager_flavor(name, stats, lore, rotation_state)
@@ -1483,7 +1483,7 @@ def build_playoff_preview_prompt(away, home, all_games, stats, lore, old_stats,
     determined by the bracket — no selection step needed, unlike the
     regular-season Game of the Week). Deliberately simpler than the
     regular-season preview prompt: no playoff-probability-trend or
-    schedule-difficulty framing, since those stop meaning anything once
+    Luck Factor framing, since those stop meaning anything once
     a manager is already in the bracket.
     """
     away_flavor = get_manager_flavor(away, stats, lore, rotation_state)
@@ -1723,22 +1723,23 @@ def build_gotw_writing_prompt(matchup, tone):
         "first and the ordinal after — e.g. 'sits ranked 12th' or "
         "'is ranked 8th', never 'sits 12th ranked'. Never use a bare "
         "number without the word 'ranked' at all, e.g. never 'rank "
-        "2' or 'at rank 5'. IMPORTANT: season_schedule_difficulty "
-        "is counterintuitively named — a HIGHER (more positive) "
-        "value means an EASIER schedule, and a LOWER (more negative, "
-        "or less positive) value means a HARDER schedule. The value "
-        "itself is a percentage-point gap: it's how much higher or "
-        "lower a manager's actual win percentage is compared to what "
-        "their weekly scoring alone would predict — describe it in "
-        "those terms rather than citing the bare decimal. If "
-        "season_schedule_difficulty is absent for a manager (this "
-        "happens early in a season, before enough games have been "
-        "played for it to mean anything), do not reference their "
-        "schedule strength or difficulty at all — don't estimate or "
-        "guess at it. NEVER "
-        "describe one manager's schedule as easier or harder than "
-        "another's unless their season_schedule_difficulty values "
-        "differ by at least 0.15. If you use the all-time meetings "
+        "2' or 'at rank 5'. IMPORTANT: season_luck_factor is the "
+        "league's 'Luck Factor' — call it that. A HIGHER (more "
+        "positive) value means LUCKIER (more wins than their scoring "
+        "earned), and a LOWER (more negative) value means UNLUCKIER "
+        "(fewer wins than their scoring earned). The value itself is "
+        "a percentage-point gap: it's how much higher or lower a "
+        "manager's actual win percentage is compared to what their "
+        "weekly scoring alone would predict — describe it in those "
+        "terms rather than citing the bare decimal. It says nothing "
+        "about how strong their opponents were, so never call it a "
+        "hard or easy schedule. If season_luck_factor is absent for a "
+        "manager (this happens early in a season, before enough games "
+        "have been played for it to mean anything), do not reference "
+        "their luck at all — don't estimate or guess at it. NEVER "
+        "describe one manager as luckier or unluckier than another "
+        "unless their season_luck_factor values differ by at least "
+        "0.15. If you use the all-time meetings "
         "history, use the h2h_record field for the real record (e.g. "
         "'X leads Y-Z') — don't invent details beyond what's given. "
         "If you mention playoff chances or probability for a "
