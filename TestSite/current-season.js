@@ -192,6 +192,7 @@ function renderHalfwayPoint(hw) {
   const esc = escapeHtml;
   const who = (rows) => rows.map((r) => `<b>${esc(r.manager)}</b>`).join(" & ");
   const pct = (v) => `${v > 0 ? "+" : ""}${(v * 100).toFixed(1)}%`;
+  const share = (v) => `${(v * 100).toFixed(1)}%`;
   const grid = (cards) => cards.length ? `<div class="callout-grid hw-grid">${cards.join("")}</div>` : "";
   const sub = (title) => `<h4 class="hw-sub">${esc(title)}</h4>`;
   const note = (text) => `<p class="recap-text hw-note">${text}</p>`;
@@ -237,9 +238,10 @@ function renderHalfwayPoint(hw) {
   const sc = hw.schedules;
   if (sc) {
     parts.push(sub("Schedules Matter"));
+    // Opponent strength = breakdown win %: how often they'd have beaten every team, every week.
     const outlook = (e) => e.remaining_opponents
-      ? ` Opponents so far averaged ${e.avg_past_opponent_power_rank.toFixed(1)} in this week's power rankings; `
-        + `the remaining ${e.remaining_opponents} average ${e.avg_opponent_power_rank.toFixed(1)}. `
+      ? ` Opponents so far beat the league ${share(e.past_opponent_strength)} of the time; `
+        + `the remaining ${e.remaining_opponents}, ${share(e.opponent_strength)}. `
         + (e.trend === "same" ? "Schedule difficulty is projected to be the same."
           : `The rest of the season gets ${e.trend}.`)
       : "";
@@ -253,13 +255,13 @@ function renderHalfwayPoint(hw) {
       const below = h.below_lowest_now.length
         ? h.below_lowest_now.map((r) => `${esc(r.manager)} (${pct(r.schedule_difficulty)})`).join(", ")
         : "none";
-      const share = (k) => `${(100 * k / h.playoff_teams).toFixed(1)}%`;
+      const ofPlayoff = (k) => `${(100 * k / h.playoff_teams).toFixed(1)}%`;
       const average = h.playoff_teams - h.favorable - h.difficult;
       parts.push(note(
         `Of all the teams that have made the playoffs:\n`
-        + `${share(h.favorable)} had a favorable schedule (schedule difficulty over +${t}%)\n`
-        + `${share(h.difficult)} overcame a difficult schedule (under −${t}%)\n`
-        + `${share(average)} had an average strength of schedule\n\n`
+        + `${ofPlayoff(h.favorable)} had a favorable schedule (schedule difficulty over +${t}%)\n`
+        + `${ofPlayoff(h.difficult)} overcame a difficult schedule (under −${t}%)\n`
+        + `${ofPlayoff(average)} had an average strength of schedule\n\n`
         + `No one with a schedule difficulty under ${z} has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
@@ -305,14 +307,13 @@ function renderHalfwayPoint(hw) {
     parts.push(sub("Second-Half Outlook"));
     const sos = sh.strength_of_schedule || [];
     if (sos.length) {
-      // Remaining opponents' average power rank (as of Week 7): lowest is toughest.
-      const avg = (r) => r.avg_opponent_power_rank.toFixed(2);
-      const ends = (v) => sos.filter((r) => r.avg_opponent_power_rank === v).map((r) => esc(r.manager)).join(" & ");
-      const first = sos[0].avg_opponent_power_rank, last = sos[sos.length - 1].avg_opponent_power_rank;
+      // Remaining opponents' average breakdown win % (as of Week 7): highest is toughest.
+      const ends = (v) => sos.filter((r) => r.opponent_strength === v).map((r) => esc(r.manager)).join(" & ");
+      const first = sos[0].opponent_strength, last = sos[sos.length - 1].opponent_strength;
       parts.push(note(
-        `<b>Toughest road left:</b> ${ends(first)} (remaining opponents' average power ranking ${first.toFixed(2)})<br>`
-        + `<b>Easiest road left:</b> ${ends(last)} (${last.toFixed(2)})\n\n`
-        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${avg(r)}`).join("<br>")));
+        `<b>Toughest road left:</b> ${ends(first)} (remaining opponents beat the league ${share(first)} of the time)<br>`
+        + `<b>Easiest road left:</b> ${ends(last)} (${share(last)})\n\n`
+        + sos.map((r, i) => `${i + 1}. ${esc(r.manager)} · ${share(r.opponent_strength)}`).join("<br>")));
     }
     const gameLine = (g) => `Week ${g.week}: #${g.away_rank} ${esc(g.away)} vs #${g.home_rank} ${esc(g.home)}`;
     parts.push(note(`<b>Top-${sh.top_last_rank} (as of Week ${hw.week}) showdowns still to come</b><br>`
