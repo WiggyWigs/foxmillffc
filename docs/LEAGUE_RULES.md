@@ -104,6 +104,6 @@ Picked by code, never the same game as the Impact Game:
 * Every number states its scope in the sentence ("this season", "career", "all-time").
 * Point totals are written as "X points". Percentages are written as "X%". Win percentages become "a 68.2 winning percentage", never a raw decimal.
 * Playoff odds may only be mentioned by citing both last week's and this week's numbers. Otherwise don't mention them.
-* Don't describe one manager as luckier or unluckier than another unless their Luck Factor values differ by at least 0.15. Luck Factor never describes a schedule as hard or easy.
+* Don't describe one manager as luckier or unluckier than another unless their Luck Factor values differ by at least 15 percentage points. It is always written as a percentage with its sign (e.g. +22.1%), never a decimal. Luck Factor never describes a schedule as hard or easy.
 * Don't mention a scoring average until a manager has played at least 2 games, or Luck Factor until at least 3 games.
 * Career playoff and championship counts are only used for roasting once a manager has at least 3 complete seasons.
