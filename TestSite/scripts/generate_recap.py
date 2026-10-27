@@ -387,6 +387,21 @@ def h2h_record(manager_a, manager_b, all_games):
     return a_wins, b_wins, ties
 
 
+def h2h_text(manager_a, manager_b, all_games):
+    """The all-time series in words, ties included so the numbers add up
+    to all_time_meetings: 'A leads 2-1 with 1 tie', 'series tied 1-1',
+    or None if they've never met."""
+    a, b, ties = h2h_record(manager_a, manager_b, all_games)
+    if not (a or b or ties):
+        return None
+    tie_part = f" with {ties} {'tie' if ties == 1 else 'ties'}" if ties else ""
+    if a > b:
+        return f"{manager_a} leads {a}-{b}{tie_part}"
+    if b > a:
+        return f"{manager_b} leads {b}-{a}{tie_part}"
+    return f"series tied {a}-{b}{tie_part}"
+
+
 def get_week_games(stats):
     """All of the most recently completed week's games, with H2H
     context for each."""
@@ -409,15 +424,12 @@ def get_week_games(stats):
             gg for gg in stats["games"]
             if {gg["away_manager"], gg["home_manager"]} == {away, home}
         ]
-        away_wins, home_wins, h2h_ties = h2h_record(away, home, stats["games"])
         enriched.append({
             "away_manager": away, "away_team": g["away_team"], "away_score": g["away_score"],
             "home_manager": home, "home_team": g["home_team"], "home_score": g["home_score"],
             "margin": round(g["score_diff"], 2),
             "all_time_meetings": len(h2h_games),
-            "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
-                else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
-                else f"series tied {away_wins}-{home_wins}",
+            "h2h_record": h2h_text(away, home, stats["games"]),
         })
     return enriched, latest_week, current_year
 
@@ -910,7 +922,8 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
-        f"record between them (e.g. 'X leads Y-Z') — don't invent "
+        f"record between them (e.g. 'X leads Y-Z', plus any ties exactly as "
+        f"h2h_record states them, so the record adds up to all_time_meetings) — don't invent "
         f"details about those past games beyond what's given. If "
         f"top/bottom scorer fields are present, you can mention a "
         f"standout or disappointing individual performance if it fits "
@@ -1058,9 +1071,7 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             "home_manager": home, "home_team": m.get("home_team"),
             **{f"home_{k}": v for k, v in manager_context(home).items()},
             "all_time_meetings": h2h_meetings,
-            "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
-                else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
-                else f"series tied {away_wins}-{home_wins}",
+            "h2h_record": h2h_text(away, home, stats["games"]),
         })
     return enriched
 
@@ -1229,7 +1240,8 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"Mention the final score and margin. If all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
-        f"record between them (e.g. 'X leads Y-Z') — don't invent "
+        f"record between them (e.g. 'X leads Y-Z', plus any ties exactly as "
+        f"h2h_record states them, so the record adds up to all_time_meetings) — don't invent "
         f"details about those past games beyond what's given. If "
         f"a top_scorer or bottom_scorer field is present, mention it "
         f"following the winner-top-scorer / loser-bottom-scorer-only "
@@ -1510,9 +1522,7 @@ def build_playoff_preview_prompt(away, home, all_games, stats, lore, old_stats,
         "round": round_label,
         "away_manager": away, "home_manager": home,
         "away_manager_background": away_flavor, "home_manager_background": home_flavor,
-        "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
-                     else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
-                     else f"{away_wins}-{home_wins} all-time" if (away_wins or home_wins) else None,
+        "h2h_record": h2h_text(away, home, all_games),
         "all_time_meetings": away_wins + home_wins + ties,
     }
 
@@ -1757,7 +1767,8 @@ def build_gotw_writing_prompt(matchup, tone):
         "unless their season_luck_factor values differ by at least "
         "0.15. If you use the all-time meetings "
         "history, use the h2h_record field for the real record (e.g. "
-        "'X leads Y-Z') — don't invent details beyond what's given. "
+        "'X leads Y-Z', plus any ties exactly as h2h_record states "
+        "them) — don't invent details beyond what's given. "
         "If you mention playoff chances or probability for a "
         "manager, you MUST cite both their previous_week_pct and "
         "current_week_pct numbers from their "
