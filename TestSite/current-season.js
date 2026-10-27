@@ -253,7 +253,7 @@ function renderHalfwayPoint(hw) {
         `Of all the teams that have made the playoffs, at the halfway point:\n`
         + `${ofPlayoff(h.favorable)} had a favorable schedule (Luck Factor over +${t}%)\n`
         + `${ofPlayoff(h.difficult)} overcame a hard schedule (Luck Factor under −${t}%)\n`
-        + `${ofPlayoff(average)} had an average schedule (Luck Factor was irrelevant)\n\n`
+        + `${ofPlayoff(average)} had an average schedule (Luck Factor was negligible)\n\n`
         + `No one with a Luck Factor under ${z} at the halfway point has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }

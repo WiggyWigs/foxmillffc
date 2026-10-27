@@ -387,6 +387,21 @@ def h2h_record(manager_a, manager_b, all_games):
     return a_wins, b_wins, ties
 
 
+def h2h_text(manager_a, manager_b, all_games):
+    """The all-time series, ties included so the numbers add up to
+    all_time_meetings: 'A leads 2-1', or W-L-T when there's been a tie
+    ('A leads 2-1-1', 'series tied 1-1-1'). None if they've never met."""
+    a, b, ties = h2h_record(manager_a, manager_b, all_games)
+    if not (a or b or ties):
+        return None
+    tie_part = f"-{ties}" if ties else ""
+    if a > b:
+        return f"{manager_a} leads {a}-{b}{tie_part}"
+    if b > a:
+        return f"{manager_b} leads {b}-{a}{tie_part}"
+    return f"series tied {a}-{b}{tie_part}"
+
+
 def get_week_games(stats):
     """All of the most recently completed week's games, with H2H
     context for each."""
@@ -409,15 +424,12 @@ def get_week_games(stats):
             gg for gg in stats["games"]
             if {gg["away_manager"], gg["home_manager"]} == {away, home}
         ]
-        away_wins, home_wins, h2h_ties = h2h_record(away, home, stats["games"])
         enriched.append({
             "away_manager": away, "away_team": g["away_team"], "away_score": g["away_score"],
             "home_manager": home, "home_team": g["home_team"], "home_score": g["home_score"],
             "margin": round(g["score_diff"], 2),
             "all_time_meetings": len(h2h_games),
-            "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
-                else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
-                else f"series tied {away_wins}-{home_wins}",
+            "h2h_record": h2h_text(away, home, stats["games"]),
         })
     return enriched, latest_week, current_year
 
@@ -910,7 +922,8 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
-        f"record between them (e.g. 'X leads Y-Z') — don't invent "
+        f"record between them (e.g. 'X leads Y-Z', or 'X leads Y-Z-T' when "
+        f"there's been a tie — write it exactly as h2h_record gives it) — don't invent "
         f"details about those past games beyond what's given. If "
         f"top/bottom scorer fields are present, you can mention a "
         f"standout or disappointing individual performance if it fits "
@@ -1023,9 +1036,12 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
         # too — 1-2 games isn't enough for "they've been lucky/unlucky"
         # to mean anything yet.
         MIN_GAMES_FOR_LUCK_FACTOR = 3
+        # Handed over as a ready-made percentage ("+22.1%"), the same way
+        # the site shows it, so the write-up never cites a raw decimal.
+        raw_luck = p.get("schedule_difficulty")
         luck_factor = (
-            p.get("schedule_difficulty")
-            if games_played and games_played >= MIN_GAMES_FOR_LUCK_FACTOR
+            f"{raw_luck * 100:+.1f}%"
+            if raw_luck is not None and games_played and games_played >= MIN_GAMES_FOR_LUCK_FACTOR
             else None
         )
         ctx = {
@@ -1058,9 +1074,7 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             "home_manager": home, "home_team": m.get("home_team"),
             **{f"home_{k}": v for k, v in manager_context(home).items()},
             "all_time_meetings": h2h_meetings,
-            "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
-                else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
-                else f"series tied {away_wins}-{home_wins}",
+            "h2h_record": h2h_text(away, home, stats["games"]),
         })
     return enriched
 
@@ -1229,7 +1243,8 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"Mention the final score and margin. If all_time_meetings is "
         f"more than 1, you can briefly note this isn't their first "
         f"meeting, using the h2h_record field for the real all-time "
-        f"record between them (e.g. 'X leads Y-Z') — don't invent "
+        f"record between them (e.g. 'X leads Y-Z', or 'X leads Y-Z-T' when "
+        f"there's been a tie — write it exactly as h2h_record gives it) — don't invent "
         f"details about those past games beyond what's given. If "
         f"a top_scorer or bottom_scorer field is present, mention it "
         f"following the winner-top-scorer / loser-bottom-scorer-only "
@@ -1510,9 +1525,7 @@ def build_playoff_preview_prompt(away, home, all_games, stats, lore, old_stats,
         "round": round_label,
         "away_manager": away, "home_manager": home,
         "away_manager_background": away_flavor, "home_manager_background": home_flavor,
-        "h2h_record": f"{away} leads {away_wins}-{home_wins}" if away_wins > home_wins
-                     else f"{home} leads {home_wins}-{away_wins}" if home_wins > away_wins
-                     else f"{away_wins}-{home_wins} all-time" if (away_wins or home_wins) else None,
+        "h2h_record": h2h_text(away, home, all_games),
         "all_time_meetings": away_wins + home_wins + ties,
     }
 
@@ -1743,11 +1756,12 @@ def build_gotw_writing_prompt(matchup, tone):
         "league's 'Luck Factor' — call it that. A HIGHER (more "
         "positive) value means LUCKIER (more wins than their scoring "
         "earned), and a LOWER (more negative) value means UNLUCKIER "
-        "(fewer wins than their scoring earned). The value itself is "
-        "a percentage-point gap: it's how much higher or lower a "
+        "(fewer wins than their scoring earned). The value is already "
+        "a percentage (e.g. '+22.1%'): it's how much higher or lower a "
         "manager's actual win percentage is compared to what their "
-        "weekly scoring alone would predict — describe it in those "
-        "terms rather than citing the bare decimal. It says nothing "
+        "weekly scoring alone would predict. Always write it exactly "
+        "as given, as a percentage with its sign — never as a decimal "
+        "like 0.221. It says nothing "
         "about how strong their opponents were, so never call it a "
         "hard or easy schedule. If season_luck_factor is absent for a "
         "manager (this happens early in a season, before enough games "
@@ -1755,9 +1769,10 @@ def build_gotw_writing_prompt(matchup, tone):
         "their luck at all — don't estimate or guess at it. NEVER "
         "describe one manager as luckier or unluckier than another "
         "unless their season_luck_factor values differ by at least "
-        "0.15. If you use the all-time meetings "
+        "15 percentage points (e.g. +22.1% vs +5.0%). If you use the all-time meetings "
         "history, use the h2h_record field for the real record (e.g. "
-        "'X leads Y-Z') — don't invent details beyond what's given. "
+        "'X leads Y-Z', or 'X leads Y-Z-T' when there's been a "
+        "tie — write it exactly as h2h_record gives it) — don't invent details beyond what's given. "
         "If you mention playoff chances or probability for a "
         "manager, you MUST cite both their previous_week_pct and "
         "current_week_pct numbers from their "
