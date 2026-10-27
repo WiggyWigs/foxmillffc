@@ -21,7 +21,9 @@ is recomputed, which keeps past seasons available for an archive page.
 
 Badge rules (regular season only, Weeks 1-14, unless noted):
   Longest Win Streak - every manager's longest run of consecutive wins
-                       this season (a tie ends the run). Shown at 2+.
+                       this season (a tie ends the run). Earned once, at
+                       the 3rd straight win; after that the number only
+                       goes up when a longer streak beats it.
                        Season only: unlike the site's streak displays,
                        it does not carry over from the previous season.
   Weekly High Score  - count of weeks with the league's top score.
@@ -92,7 +94,7 @@ REMAINING_SCHEDULE_PATH = DATA_DIR / os.environ.get("REMAINING_SCHEDULE_FILENAME
 FIRST_CARD_SEASON = 2026
 REGULAR_SEASON_WEEKS = 14
 
-MIN_WIN_STREAK = 2
+MIN_WIN_STREAK = 3
 GIANT_KILLER_FIRST_WEEK = 5
 GIANT_KILLER_MAX_LOSER_RANK = 5
 GIANT_KILLER_RANK_GAP = 5
@@ -453,18 +455,18 @@ def compute_season_cards(all_games, lineups, roster_names, year):
     for m in managers:
         glist = games_by_mgr[m]
 
-        # Longest Win Streak: the longest run; if two runs tie for
-        # longest, the most recent one is the one shown.
-        win_runs = _runs(glist, m, "W")
+        # Longest Win Streak: earned once, the week the first run reached
+        # MIN_WIN_STREAK. The run shown is the longest; on a tie the
+        # earlier one stays, so the badge only changes when it's beaten.
+        win_runs = [r for r in _runs(glist, m, "W") if len(r) >= MIN_WIN_STREAK]
         if win_runs:
             longest = max(len(r) for r in win_runs)
-            if longest >= MIN_WIN_STREAK:
-                run = [r for r in win_runs if len(r) == longest][-1]
-                badges[m]["longest_win_streak"] = {
-                    "count": longest,
-                    "earned_week": _week(run[MIN_WIN_STREAK - 1]),
-                    "events": [_game_event(g, m) for g in run],
-                }
+            run = next(r for r in win_runs if len(r) == longest)
+            badges[m]["longest_win_streak"] = {
+                "count": longest,
+                "earned_week": _week(win_runs[0][MIN_WIN_STREAK - 1]),
+                "events": [_game_event(g, m) for g in run],
+            }
 
         # Ice Cold: every run of 5+ losses. Earned at the 5th loss of
         # the first such run; the number is the longest run.
