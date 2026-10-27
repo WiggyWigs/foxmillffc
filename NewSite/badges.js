@@ -12,7 +12,7 @@ const BADGES = {
     name: "Longest Win Streak", file: "longest-win-streak.png", numbered: true,
     // Orange banner, no cream centre: light number, a little higher up.
     numberStyle: "light", numberTop: "44%",
-    rule: "This manager's longest run of straight wins this season.",
+    rule: "Won 3 or more games in a row. The number is the longest win streak this season.",
   },
   weekly_high_score: {
     name: "Weekly High Score", file: "weekly-high-score.png", numbered: true,

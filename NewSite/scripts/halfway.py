@@ -174,8 +174,7 @@ def awards(season_games, year, roster, cards, lineups, moves):
         total = sum(b["count"] if isinstance(b.get("count"), int) else len(b.get("events", []))
                     for b in card["badges"])
         badge_rows.append({"manager": card["manager"], "badges": len(card["badges"]), "total": total})
-    most = _ties(badge_rows, "badges", max)
-    most = _ties(most, "total", max)  # tiebreak: total badge count, numbers included
+    most = _ties(badge_rows, "badges", max)  # ties share it
     out["mantle"] = [{"manager": r["manager"], "badges": r["badges"], "total": r["total"]}
                      for r in most if r["badges"]]
 
@@ -197,9 +196,12 @@ def awards(season_games, year, roster, cards, lineups, moves):
     teams = (moves or {}).get("managers", {}) if (moves or {}).get("year") == year else {}
     spend = [{"manager": m, "faab_spent": v["faab_spent"]} for m, v in teams.items()]
     out["big_spender"] = [r for r in _ties(spend, "faab_spent", max) if r["faab_spent"]]
+    # Trades come from the activity feed; None means it couldn't be read,
+    # and then there's no fair way to name the fewest moves.
     moved = [{"manager": m, "moves": v["acquisitions"] + v["trades"],
-              "acquisitions": v["acquisitions"], "trades": v["trades"]} for m, v in teams.items()]
-    out["steady"] = _ties(moved, "moves", min)
+              "acquisitions": v["acquisitions"], "trades": v["trades"]}
+             for m, v in teams.items() if v.get("trades") is not None]
+    out["steady"] = _ties(moved, "moves", min) if len(moved) == len(teams) else []
     out["moves_as_of_today"] = bool((moves or {}).get("as_of_today"))
     return out
 

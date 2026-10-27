@@ -253,7 +253,7 @@ function renderHalfwayPoint(hw) {
         `Of all the teams that have made the playoffs, at the halfway point:\n`
         + `${ofPlayoff(h.favorable)} had a favorable schedule (Luck Factor over +${t}%)\n`
         + `${ofPlayoff(h.difficult)} overcame a hard schedule (Luck Factor under −${t}%)\n`
-        + `${ofPlayoff(average)} had an average schedule (Luck Factor was irrelevant)\n\n`
+        + `${ofPlayoff(average)} had an average schedule (Luck Factor was negligible)\n\n`
         + `No one with a Luck Factor under ${z} at the halfway point has ever made the playoffs.\n\n`
         + `Teams under ${z} right now: ${below}`));
     }
@@ -275,7 +275,9 @@ function renderHalfwayPoint(hw) {
   }
   if ((aw.mantle || []).length) {
     const n = aw.mantle[0].badges;
-    awardItems.push(plain("Dust Off the Mantle", `${who(aw.mantle)}: ${n} ${n === 1 ? "badge" : "badges"} on the trading card, the most so far.`));
+    const tied = aw.mantle.length > 1;
+    awardItems.push(plain("Dust Off the Mantle", `${who(aw.mantle)}: ${n} ${n === 1 ? "badge" : "badges"}`
+      + `${tied ? " each" : ""} on the trading card, ${tied ? "tied for " : ""}the most so far.`));
   }
   if ((aw.best_pickup || []).length) {
     const p = aw.best_pickup[0];
