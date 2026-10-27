@@ -1085,7 +1085,16 @@ def add_selection_only_context(enriched, stats):
     return augmented
 
 
-def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, tone, reason, blowout_detail, rotation_state):
+def _margin_place(game, week_games):
+    """'2nd', '3rd'... closest margin of the week, counting every game
+    (the Impact Game included). Ties share a place."""
+    n = 1 + sum(g["margin"] < game["margin"] for g in week_games)
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, tone, reason, blowout_detail, rotation_state,
+                                   week_games=None):
     """The week's Honorable Mention narrative — reuses the exact same
     shared fact-gathering as the Impact Game (build_game_narrative_context),
     just with its own framing and, in the blowout fallback tier, an
@@ -1099,9 +1108,13 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
     # reasoning (standings rank, margin thresholds, "next-closest by
     # margin," etc.). The write-up should gesture at the vibe of why
     # this game stood out, never explain the selection process itself.
+    # The margin tier names the game's real place among ALL the week's
+    # games: it's often 3rd or later, since games with an already-featured
+    # manager are skipped. Never call it "the next-closest" or "second".
     selection_hook = {
         "top6_matchup": "a genuine top-6 showdown",
-        "next_closest_margin": "the next-closest game of the week",
+        "next_closest_margin": (f"the {_margin_place(game, week_games)}-closest game of the week"
+                                if week_games else "one of the week's closer games"),
         "biggest_blowout": "the week's biggest blowout",
     }[reason]
     context["selection_hook"] = selection_hook
@@ -1146,7 +1159,10 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "near the top of the write-up (e.g. 'These two top-6 teams "
         "collided...' or 'this game was a blowout we had to write "
         "about...'), or skip it entirely if the game's own story is "
-        "more interesting. NEVER explain the actual selection process — "
+        "more interesting. If you say where this game ranked by margin, "
+        "use selection_hook's exact place (e.g. '3rd-closest') — never "
+        "call it 'second-closest' or 'next-closest' on your own. "
+        "NEVER explain the actual selection process — "
         "no mention of standings rank, margin thresholds, 'closest "
         "matchup among top-6 teams,' or why the Impact Game wasn't "
         "picked instead. A passing reference to the vibe, not a "
@@ -2342,7 +2358,8 @@ def main():
                 honorable_mention_away_score = hm_game["away_score"]
                 honorable_mention_home_score = hm_game["home_score"]
                 hm_system, hm_user, honorable_mention_away_team, honorable_mention_home_team = build_honorable_mention_prompt(
-                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state
+                    hm_game, week, year, stats, lore, old_stats, tone, hm_reason, hm_blowout_detail, rotation_state,
+                    week_games
                 )
                 ranks = standings_ranks(stats)
                 a, h = hm_game["away_manager"], hm_game["home_manager"]
@@ -2350,8 +2367,8 @@ def main():
                 if hm_reason == "top6_matchup":
                     why = f"tier 1, closest top-6 vs top-6 game: {matchup}, margin {hm_game['margin']} pts"
                 elif hm_reason == "next_closest_margin":
-                    why = (f"tier 2, no top-6 vs top-6 game; next closest margin "
-                           f"{hm_game['margin']} pts (under 15): {matchup}")
+                    why = (f"tier 2, no top-6 vs top-6 game; {_margin_place(hm_game, week_games)}-closest "
+                           f"margin of the week, {hm_game['margin']} pts (under 15): {matchup}")
                 else:
                     flags = [k for k, v in (hm_blowout_detail or {}).items() if v]
                     why = (f"tier 3, no other game within 15 pts; biggest blowout "

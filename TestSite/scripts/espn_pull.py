@@ -397,24 +397,53 @@ def capture_latest_lineups(league_id, swid, espn_s2, resolved_mapping):
 TEAM_MOVES_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("TEAM_MOVES_FILENAME", "team_moves.json")
 
 
+def _completed_trades(league):
+    """{team_id: number of completed trades} from the league activity feed
+    (one TRADED activity = one trade, counted once for each team in it),
+    or None if the feed can't be read. ESPN's transactionCounter "trades"
+    doesn't match the league's real trades (it showed 3 for a manager who
+    made none), so this is what the awards use."""
+    counts = {}
+    offset, page = 0, 25  # ESPN returns at most 25 per message type per call
+    try:
+        for _ in range(40):
+            batch = league.recent_activity(size=page, msg_type="TRADED", offset=offset)
+            for activity in batch:
+                for team_id in {t.team_id for t, action, *_ in activity.actions
+                                if action in ("TRADE_SENT", "TRADE_RECEIVED") and t}:
+                    counts[team_id] = counts.get(team_id, 0) + 1
+            if len(batch) < page:
+                return counts
+            offset += page
+    except Exception as e:
+        print(f"WARNING: couldn't read trades from the activity feed: {e}")
+        return None
+    return counts
+
+
 def capture_team_moves(league_id, swid, espn_s2, resolved_mapping):
     """Saves each manager's season transaction counts and free-agent budget
-    spent (ESPN's per-team transactionCounter) to team_moves.json, for the
-    Halfway Point awards (Big Spender, Steady as He Goes). These are
-    ESPN's CURRENT totals: in test-cutoff mode they're today's numbers,
-    not the numbers as of the cutoff week (flagged in the file)."""
+    spent (ESPN's per-team transactionCounter; trades from the activity
+    feed) to team_moves.json, for the Halfway Point awards (Big Spender,
+    Steady as He Goes). These are ESPN's CURRENT totals: in test-cutoff
+    mode they're today's numbers, not the numbers as of the cutoff week
+    (flagged in the file)."""
     year = TEST_CUTOFF_YEAR if TEST_CUTOFF_YEAR else max(YEARS)
     year_str = str(year)
     league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+    trades = _completed_trades(league)
     managers = {}
     for team in league.teams:
         manager = resolved_mapping.get((year_str, team.team_name))
         if manager is None:
             continue
+        counter_trades = int(getattr(team, "trades", 0) or 0)
+        feed_trades = trades.get(team.team_id, 0) if trades is not None else None
+        print(f"Trades for {manager}: activity feed {feed_trades}, ESPN counter {counter_trades}")
         managers[manager] = {
             "acquisitions": int(getattr(team, "acquisitions", 0) or 0),
             "drops": int(getattr(team, "drops", 0) or 0),
-            "trades": int(getattr(team, "trades", 0) or 0),
+            "trades": feed_trades,  # None if the feed couldn't be read
             "faab_spent": int(getattr(team, "acquisition_budget_spent", 0) or 0),
         }
     with open(TEAM_MOVES_PATH, "w") as f:
