@@ -17,10 +17,12 @@ If the code and this file disagree, stop and ask Greg. Do not change either one 
 * Weeks `1`–`14` are the regular season.
 * `P1` = Quarterfinal, `P2` = Semifinal, `P3` = Championship.
 
-## 3. Manager Score Index (MSI)
+## 3. Manager Legacy Score
+
+Formerly the Manager Score Index. The code and data still use the key `msi`.
 
 ```
-MSI = 2.0 × (playoff appearances / seasons)
+Legacy Score = 2.0 × (playoff appearances / seasons)
     + 1.5 × (regular-season win %)
     + 1.3 × (championships / seasons)
     + 1.0 × (points titles / seasons)
@@ -35,7 +37,7 @@ MSI = 2.0 × (playoff appearances / seasons)
 
 * Win % = wins ÷ (wins + losses + ties).
 * A tie is not a win and not half a win. It counts as a game played with no win, so it lowers win %.
-* This applies everywhere win % appears: standings, career stats, MSI, head-to-head, power rankings, Luck Factor and the playoff-probability model.
+* This applies everywhere win % appears: standings, career stats, Legacy Score, head-to-head, power rankings, Luck Factor and the playoff-probability model.
 
 ## 5. Standings
 
