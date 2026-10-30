@@ -95,7 +95,7 @@ def build_game(row, roster_names):
             print(
                 f"WARNING: manager '{mgr}' not found in manager_roster.json "
                 f"(Year {row['Year']}, Week {row['Week']}). Ingesting anyway, but "
-                f"this manager will NOT appear correctly on the Manager Score Index "
+                f"this manager will NOT appear correctly on the Manager Legacy Score "
                 f"until you add them to the roster or fix the name."
             )
 
