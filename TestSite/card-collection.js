@@ -7,13 +7,13 @@
 // A missing front shows a plain stand-in with the award and manager name.
 //
 // Sections are shown in CARD_SECTIONS order for each season, after that
-// season's regular-season cards. Within End of Season Recognition, awards
+// season's regular-season cards. Within Regular Season Recognition, awards
 // follow AWARD_ORDER. To add a new kind of card, add its section or award
 // here.
 
 const CARD_SECTIONS = [
   { id: "regular", title: "Regular Season" },
-  { id: "recognition", title: "End of Season Recognition" },
+  { id: "recognition", title: "Regular Season Recognition" },
   { id: "postseason", title: "Post Season Collection" },
 ];
 
