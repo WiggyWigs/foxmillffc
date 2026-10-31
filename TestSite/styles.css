@@ -1917,6 +1917,93 @@ main {
   .pc-main .panel { padding: 1.25rem 0.75rem; }
 }
 
+/* Season menu above the grid. */
+.pc-year-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0 auto 0.75rem;
+  color: var(--ink-soft);
+}
+
+.pc-year-picker .input-select {
+  width: 8rem;
+}
+
+/* Section and season headings (Regular Season, End of Season
+   Recognition, Post Season Collection; one season heading each in "All"). */
+.pc-season + .pc-season {
+  margin-top: 2.5rem;
+}
+
+.pc-season-heading {
+  text-align: center;
+  font-size: 1.6rem;
+  margin: 0 0 0.25rem;
+  color: var(--navy);
+}
+
+.pc-section + .pc-section {
+  margin-top: 2rem;
+}
+
+.pc-section-heading {
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: var(--rust);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 0.4rem;
+  margin: 1rem 0 1rem;
+}
+
+.pc-toggle[hidden] { display: none; }
+
+/* Award / postseason card whose front image isn't in yet. */
+.pc-special-missing {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  padding: 8%;
+  background: var(--panel-solid);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--ink-soft);
+  font-family: 'EB Garamond', serif;
+  font-size: 7cqw;
+  text-align: center;
+}
+
+.pc-special-missing strong {
+  color: var(--navy);
+  font-size: 1.3em;
+}
+
+.pc-card.is-missing .pc-special-missing { display: flex; }
+
+/* Pop-up for award / postseason cards: only the card and its flip. */
+#pcModal.is-simple .modal-badge,
+#pcModal.is-simple .modal-name,
+#pcModal.is-simple .modal-year,
+#pcModal.is-simple .pc-modal-badges {
+  display: none;
+}
+
+#pcModal.is-simple .modal-card.pc-modal-card {
+  max-width: 440px;
+}
+
+#pcModal.is-simple .pc-modal-layout {
+  grid-template-columns: minmax(0, 1fr);
+  border-top: none;
+  padding-top: 0.5rem;
+}
+
 .pc-card-btn {
   display: block;
   width: 100%;
