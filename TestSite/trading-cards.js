@@ -420,10 +420,11 @@ function openModal(s, card, focusBadgeId) {
   if (focused) focused.scrollIntoView({ block: "nearest" });
 }
 
-// Award and postseason cards: just the card and its flip, no details.
-// The name stays in the (hidden) heading so the dialog still has a label.
+// Award and postseason cards: a two-line heading, then just the card and
+// its flip, no details.
 function openSpecialModal(c) {
-  document.getElementById("pcModalName").textContent = `${c.year} ${c.award}: ${c.manager}`;
+  document.getElementById("pcModalBadge").textContent = `${c.year} Trading Card`;
+  document.getElementById("pcModalName").textContent = "Special Insert";
   document.getElementById("pcModalCard").innerHTML =
     flipCardHtml(specialFaceHtml(c, "front", false), specialFaceHtml(c, "back", false));
   setupFlip(document.getElementById("pcModalCard"));

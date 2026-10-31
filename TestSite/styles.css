@@ -1902,18 +1902,27 @@ main {
   text-align: center;
 }
 
+/* Flex rather than grid so a part-filled last row sits in the middle.
+   --pc-cols cards per row (4, 3 on tablets, 2 on phones). */
 .pc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
+  --pc-cols: 4;
+  --pc-gap: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pc-gap);
+}
+
+.pc-grid > .pc-card-btn {
+  width: calc((100% - (var(--pc-cols) - 1) * var(--pc-gap)) / var(--pc-cols));
 }
 
 @media (max-width: 900px) {
-  .pc-grid { grid-template-columns: repeat(3, 1fr); }
+  .pc-grid { --pc-cols: 3; }
 }
 
 @media (max-width: 640px) {
-  .pc-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .pc-grid { --pc-cols: 2; --pc-gap: 0.75rem; }
   .pc-main .panel { padding: 1.25rem 0.75rem; }
 }
 
@@ -1986,9 +1995,8 @@ main {
 
 .pc-card.is-missing .pc-special-missing { display: flex; }
 
-/* Pop-up for award / postseason cards: only the card and its flip. */
-#pcModal.is-simple .modal-badge,
-#pcModal.is-simple .modal-name,
+/* Pop-up for award / postseason cards: the season and "Special Insert"
+   heading, then only the card and its flip. */
 #pcModal.is-simple .modal-year,
 #pcModal.is-simple .pc-modal-badges {
   display: none;
