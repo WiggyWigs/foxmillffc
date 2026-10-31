@@ -1,7 +1,9 @@
 // Trading Cards page — one trading card per manager, with the standings
 // stamp and earned badges layered on top. Everything comes precomputed
 // from stats.json's "player_cards" (scripts/player_cards.py); this file
-// only lays it out. Add ?season=2026 to the URL to show a past season.
+// only lays it out. The year menu (also ?season=2026 or ?season=all in
+// the URL) picks the season. Each season shows its regular-season cards,
+// then the award and postseason cards listed in card-collection.js.
 //
 // Images:
 //   images/cards/<first>-<last>-<year>.jpg   e.g. daniel-bahamonde-2026.jpg
@@ -19,8 +21,9 @@ const BADGE_PLACEHOLDER = "images/badges/badge-placeholder.png";
 // card opens the pop-up instead.
 const canClickBadges = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-let season = null;
+let playerCards = { seasons: {} };   // stats.json "player_cards"
 let allGames = [];   // stats.json game log, for the back of the card
+let shown = [];      // what each grid button opens, by data-index
 
 document.addEventListener("DOMContentLoaded", async () => {
   setupModal();
@@ -36,36 +39,114 @@ document.addEventListener("DOMContentLoaded", async () => {
     grid.innerHTML = `<p class="load-state">Couldn't load stats.json (${escapeHtml(err.message)}).</p>`;
     return;
   }
+  playerCards = data.player_cards || playerCards;
 
-  const pc = data.player_cards;
-  const wanted = new URLSearchParams(location.search).get("season");
-  season = pc?.seasons?.[wanted || pc?.current_season];
-  if (!season) {
+  const years = cardYears();
+  if (!years.length) {
     grid.innerHTML = `<p class="load-state">No trading cards yet.</p>`;
     return;
   }
 
-  document.getElementById("pc-title").textContent = `${season.season} Trading Cards`;
-  const through = season.regular_season_complete
-    ? "Final regular-season cards."
-    : `Through Week ${season.through_week}.`;
-  document.getElementById("pc-meta").textContent =
-    `${through} ${canClickBadges ? "Click a card or a badge" : "Tap a card"} to see the badges.`;
-
-  grid.innerHTML = season.cards.map((card, i) =>
-    `<button type="button" class="pc-card-btn" data-index="${i}"
-       aria-label="${escapeHtml(card.manager)}, ${ordinal(card.rank)} place, ${badgeCountLabel(card)}">
-       ${cardHtml(card)}
-     </button>`
-  ).join("");
+  // Newest season first, then "All". Defaults to the current season.
+  const select = document.getElementById("pc-year");
+  select.innerHTML = years.map((y) => `<option value="${y}">${y}</option>`).join("")
+    + `<option value="all">All</option>`;
+  const wanted = new URLSearchParams(location.search).get("season");
+  const current = String(playerCards.current_season ?? "");
+  select.value = [...years, "all"].includes(wanted) ? wanted
+    : years.includes(current) ? current : years[0];
+  select.addEventListener("change", () => {
+    const url = new URL(location.href);
+    url.searchParams.set("season", select.value);
+    history.replaceState(null, "", url);
+    render(select.value);
+  });
+  render(select.value);
 
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest(".pc-card-btn");
     if (!btn) return;
+    const item = shown[Number(btn.dataset.index)];
+    if (item.special) {
+      openSpecialModal(item.special);
+      return;
+    }
     const badgeEl = canClickBadges ? e.target.closest("[data-badge]") : null;
-    openModal(season.cards[Number(btn.dataset.index)], badgeEl?.dataset.badge || null);
+    openModal(item.season, item.card, badgeEl?.dataset.badge || null);
   });
 });
+
+// Every season with regular-season cards or a special card, newest first.
+function cardYears() {
+  const years = new Set([
+    ...Object.keys(playerCards.seasons || {}),
+    ...SPECIAL_CARDS.map((c) => String(c.year)),
+  ]);
+  return [...years].sort((a, b) => Number(b) - Number(a));
+}
+
+function render(choice) {
+  const all = choice === "all";
+  const years = all ? cardYears() : [choice];
+  shown = [];
+  document.getElementById("pc-grid").innerHTML =
+    years.map((y) => seasonHtml(y, all)).join("")
+    || `<p class="load-state">No trading cards for ${escapeHtml(choice)} yet.</p>`;
+
+  const s = all ? null : playerCards.seasons?.[choice];
+  document.getElementById("pc-title").textContent = all ? "Trading Cards" : `${choice} Trading Cards`;
+  const tap = canClickBadges ? "Click" : "Tap";
+  let meta = all ? `${tap} a card to see it up close.` : `${tap} a card to flip it over.`;
+  if (s) {
+    const through = s.regular_season_complete
+      ? "Final regular-season cards."
+      : `Through Week ${s.through_week}.`;
+    meta = `${through} ${canClickBadges ? "Click a card or a badge" : "Tap a card"} to see the badges.`;
+  }
+  document.getElementById("pc-meta").textContent = meta;
+  // The badge switch only matters when regular-season cards are showing.
+  document.querySelector(".pc-toggle").hidden = !shown.some((item) => item.card);
+}
+
+// One season's cards, grouped in CARD_SECTIONS order. Empty sections are
+// left out. "All" adds a heading for each season.
+function seasonHtml(year, withHeading) {
+  const s = playerCards.seasons?.[year];
+  const sections = CARD_SECTIONS.map((sec) => {
+    const items = sec.id === "regular"
+      ? (s ? s.cards.map((card) => ({ season: s, card })) : [])
+      : SPECIAL_CARDS
+          .filter((c) => String(c.year) === year && c.section === sec.id)
+          .sort((a, b) => awardOrder(a) - awardOrder(b))
+          .map((special) => ({ special }));
+    if (!items.length) return "";
+    const buttons = items.map((item) => {
+      const i = shown.push(item) - 1;
+      return item.special ? specialButtonHtml(item.special, i) : cardButtonHtml(item.season, item.card, i);
+    }).join("");
+    return `
+      <section class="pc-section">
+        <h3 class="pc-section-heading">${escapeHtml(sec.title)}</h3>
+        <div class="pc-grid">${buttons}</div>
+      </section>`;
+  }).join("");
+  if (!sections) return "";
+  return withHeading
+    ? `<div class="pc-season"><h3 class="pc-season-heading">${escapeHtml(year)}</h3>${sections}</div>`
+    : sections;
+}
+
+function awardOrder(c) {
+  const i = AWARD_ORDER.indexOf(c.award);
+  return i === -1 ? AWARD_ORDER.length : i;
+}
+
+function cardButtonHtml(s, card, i) {
+  return `<button type="button" class="pc-card-btn" data-index="${i}"
+       aria-label="${escapeHtml(card.manager)}, ${ordinal(card.rank)} place, ${badgeCountLabel(card)}">
+       ${cardHtml(s, card)}
+     </button>`;
+}
 
 // "Show badges" checkbox: hides the badge icons layered on the cards
 // (grid and pop-up) by toggling a class on <body>. The standings stamp
@@ -89,16 +170,16 @@ function setupBadgeToggle() {
 
 // lazy: true for the grid. The pop-up copy loads straight away, because
 // iPhone Safari can fail to start a lazy image inside a scrolling pop-up.
-function cardHtml(card, lazy = true) {
-  const src = `images/cards/${card.slug}-${season.season}.jpg`;
+function cardHtml(s, card, lazy = true) {
+  const src = `images/cards/${card.slug}-${s.season}.jpg`;
   const badges = card.badges.map((b) => badgeHtml(b, "pc-badge")).join("");
   return `
     <div class="pc-card">
       <img class="pc-card-img" src="${src}" alt=""${lazy ? ' loading="lazy"' : ""}
            onerror="cardImageMissing(this)">
       <div class="pc-placeholder-name" style="font-size:${placeholderNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
-      <div class="pc-placeholder-year">${season.season}</div>
-      <div class="pc-stamp">${stampHtml(card)}</div>
+      <div class="pc-placeholder-year">${s.season}</div>
+      <div class="pc-stamp">${stampHtml(s, card)}</div>
       <div class="pc-badges">${badges}</div>
     </div>`;
 }
@@ -108,11 +189,11 @@ function cardHtml(card, lazy = true) {
 // from a hash of the manager, season and rank rather than Math.random(),
 // so a stamp sits the same way on every visit and in the pop-up, and
 // only moves when the rank changes.
-function stampHtml(card) {
+function stampHtml(s, card) {
   const rank = card.rank;
-  const n = season.managers_in_league;
+  const n = s.managers_in_league;
   const file = `images/badges/rank-${String(rank).padStart(2, "0")}.png`;
-  const h = hashString(`${card.slug}-${season.season}-${rank}`);
+  const h = hashString(`${card.slug}-${s.season}-${rank}`);
   const tilt = ((h % 1001) / 1000 * 10 - 5).toFixed(1);
   const dx = ((h >>> 10) % 13) - 6;
   const dy = ((h >>> 20) % 13) - 6;
@@ -178,8 +259,8 @@ function badgeImageMissing(img) {
 // are regular season only (same as the standings); the game list also
 // includes playoff games once there are any.
 
-function backHtml(card) {
-  const yr = Number(season.season);
+function backHtml(s, card) {
+  const yr = Number(s.season);
   const mine = allGames
     .filter((g) => g.year === yr && (g.away_manager === card.manager || g.home_manager === card.manager))
     .sort((a, b) => weekOrder(a.week) - weekOrder(b.week));
@@ -225,8 +306,8 @@ function backHtml(card) {
 
   return `
     <div class="pc-back">
-      <img class="pc-back-img" src="images/cards/back-${String(card.rank).padStart(2, "0")}-${season.season}.jpg" alt=""
-           data-fallback="images/cards/back-${season.season}.jpg" onerror="backImageMissing(this)">
+      <img class="pc-back-img" src="images/cards/back-${String(card.rank).padStart(2, "0")}-${s.season}.jpg" alt=""
+           data-fallback="images/cards/back-${s.season}.jpg" onerror="backImageMissing(this)">
       <div class="pc-back-name" style="font-size:${backNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
       <div class="pc-back-body">
         <div class="pc-back-stats">${stats}</div>
@@ -267,11 +348,11 @@ function weekOrder(week) {
   return w.startsWith("P") ? 100 + Number(w.slice(1)) : Number(w);
 }
 
-function flipCardHtml(card) {
+function flipCardHtml(front, back) {
   return `
     <button type="button" class="pc-flip" aria-label="Flip card" aria-pressed="false">
-      <div class="pc-flip-face pc-flip-front">${cardHtml(card, false)}</div>
-      <div class="pc-flip-face pc-flip-back" hidden>${backHtml(card)}</div>
+      <div class="pc-flip-face pc-flip-front">${front}</div>
+      <div class="pc-flip-face pc-flip-back" hidden>${back}</div>
     </button>
     <div class="pc-flip-hint">Tap the card to flip it</div>`;
 }
@@ -319,14 +400,14 @@ function setupFlip(wrap) {
 
 // --- Pop-up ---
 
-function openModal(card, focusBadgeId) {
-  const modal = document.getElementById("pcModal");
-  document.getElementById("pcModalBadge").textContent = `${season.season} Trading Card`;
+function openModal(s, card, focusBadgeId) {
+  document.getElementById("pcModalBadge").textContent = `${s.season} Trading Card`;
   document.getElementById("pcModalName").textContent = card.manager;
   const record = card.ties > 0 ? `${card.wins}-${card.losses}-${card.ties}` : `${card.wins}-${card.losses}`;
   document.getElementById("pcModalMeta").textContent =
     `${card.team_name} · ${ordinal(card.rank)} place · ${record} · ${card.points_for.toFixed(2)} points`;
-  document.getElementById("pcModalCard").innerHTML = flipCardHtml(card);
+  document.getElementById("pcModalCard").innerHTML =
+    flipCardHtml(cardHtml(s, card, false), backHtml(s, card));
   setupFlip(document.getElementById("pcModalCard"));
 
   const list = document.getElementById("pcModalBadges");
@@ -334,13 +415,28 @@ function openModal(card, focusBadgeId) {
     ? card.badges.map((b) => badgeDetailHtml(b, b.id === focusBadgeId)).join("")
     : `<p class="pc-no-badges">No badges yet.</p>`;
 
+  showModal(false);
+  const focused = list.querySelector(".pc-detail.is-focus");
+  if (focused) focused.scrollIntoView({ block: "nearest" });
+}
+
+// Award and postseason cards: just the card and its flip, no details.
+// The name stays in the (hidden) heading so the dialog still has a label.
+function openSpecialModal(c) {
+  document.getElementById("pcModalName").textContent = `${c.year} ${c.award}: ${c.manager}`;
+  document.getElementById("pcModalCard").innerHTML =
+    flipCardHtml(specialFaceHtml(c, "front", false), specialFaceHtml(c, "back", false));
+  setupFlip(document.getElementById("pcModalCard"));
+  showModal(true);
+}
+
+function showModal(simple) {
+  const modal = document.getElementById("pcModal");
+  modal.classList.toggle("is-simple", simple);
   modal.classList.add("active");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
   document.getElementById("pcModalClose").focus();
-
-  const focused = list.querySelector(".pc-detail.is-focus");
-  if (focused) focused.scrollIntoView({ block: "nearest" });
 }
 
 function closeModal() {
@@ -375,6 +471,33 @@ function badgeDetailHtml(badge, isFocus) {
         <ul class="pc-detail-events">${lines}</ul>
       </div>
     </div>`;
+}
+
+// --- Award and postseason cards (see card-collection.js) ---
+
+function specialButtonHtml(c, i) {
+  return `<button type="button" class="pc-card-btn" data-index="${i}"
+       aria-label="${escapeHtml(`${c.year} ${c.award}: ${c.manager}`)}">
+       ${specialFaceHtml(c, "front")}
+     </button>`;
+}
+
+function specialFaceHtml(c, side, lazy = true) {
+  return `
+    <div class="pc-card">
+      <img class="pc-card-img" src="images/cards/awards/${c.file}-${side}.jpg" alt=""${lazy ? ' loading="lazy"' : ""}
+           onerror="specialImageMissing(this)">
+      <div class="pc-special-missing">
+        <span>${c.year} ${escapeHtml(c.award)}</span>
+        <strong>${escapeHtml(c.manager)}</strong>
+      </div>
+    </div>`;
+}
+
+function specialImageMissing(img) {
+  img.onerror = null;
+  img.style.visibility = "hidden";
+  img.closest(".pc-card").classList.add("is-missing");
 }
 
 // --- Helpers ---
