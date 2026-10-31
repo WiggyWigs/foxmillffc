@@ -1995,7 +1995,7 @@ main {
 
 .pc-card.is-missing .pc-special-missing { display: flex; }
 
-/* Pop-up for award / postseason cards: the season and "Special Inserts"
+/* Pop-up for award / postseason cards: the season and "Special Insert"
    heading, then only the card and its flip. */
 #pcModal.is-simple .modal-year,
 #pcModal.is-simple .pc-modal-badges {

@@ -424,7 +424,7 @@ function openModal(s, card, focusBadgeId) {
 // its flip, no details.
 function openSpecialModal(c) {
   document.getElementById("pcModalBadge").textContent = `${c.year} Trading Card`;
-  document.getElementById("pcModalName").textContent = "Special Inserts";
+  document.getElementById("pcModalName").textContent = "Special Insert";
   document.getElementById("pcModalCard").innerHTML =
     flipCardHtml(specialFaceHtml(c, "front", false), specialFaceHtml(c, "back", false));
   setupFlip(document.getElementById("pcModalCard"));
