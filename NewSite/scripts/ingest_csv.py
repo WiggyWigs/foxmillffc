@@ -95,7 +95,7 @@ def build_game(row, roster_names):
             print(
                 f"WARNING: manager '{mgr}' not found in manager_roster.json "
                 f"(Year {row['Year']}, Week {row['Week']}). Ingesting anyway, but "
-                f"this manager will NOT appear correctly on the Manager Score Index "
+                f"this manager will NOT appear correctly on the Manager Legacy Score "
                 f"until you add them to the roster or fix the name."
             )
 
@@ -1874,6 +1874,62 @@ def _week6_playoff_odds_text(stat, cohort, this_year):
     stat["expected_playoff_teams"] = expected
 
 
+CROWDED_RECORD_WEEK = 8
+MUST_WIN_RECORD = (3, 5)  # the Week 8 footnote: one more loss is the 3-6 cliff
+
+
+def _crowded_record_stat(all_games, season_games, current_year):
+    """Stat of the Week after Week 8: playoff odds for the record held by
+    the most managers right now (ties go to the better record), in the
+    Week 6 format - counts, this year's group, and how many of them
+    history says get in. Records with no past team at that mark are
+    skipped. If someone else sits at MUST_WIN_RECORD, a footnote says how
+    teams that lost the next week (falling to 3-6) fared. None if no
+    record has a past cohort."""
+    week = CROWDED_RECORD_WEEK
+    records = defaultdict(lambda: [0, 0])
+    for g in season_games:
+        if _week_sort_key(g["week"]) > week or g["tie"]:
+            continue
+        records[g["winner"]][0] += 1
+        records[g["loser"]][1] += 1
+    groups = defaultdict(list)
+    for mgr, (w, l) in records.items():
+        groups[(w, l)].append(mgr)
+
+    for (w, l), managers in sorted(groups.items(), key=lambda kv: (-len(kv[1]), -kv[0][0])):
+        cohort = _historical_start_cohort(all_games, w, l, week, current_year)
+        if not cohort:
+            continue
+        this_year = sorted(managers)
+        stat = _build_start_record_stat(cohort, this_year, w, l, f"crowded_{w}_{l}", False, False)
+        _week6_playoff_odds_text(stat, cohort, this_year)
+        n, made, label = len(cohort), stat["made_playoffs"], stat["record_label"]
+        stat["narrative"] = (
+            f"The historical chance of making the playoffs if you are {label} after Week {week}. "
+            f"Since {cohort[0]['year']}, {n} {'team has' if n == 1 else 'teams have'} been "
+            f"{label} after Week {week}, and {made} {'has' if made == 1 else 'have'} made the playoffs."
+        )
+        stat["teams_label"] = f"Managers that are {label} this year"
+
+        mw, ml = MUST_WIN_RECORD
+        on_edge = sorted(groups.get(MUST_WIN_RECORD, []))
+        fell = _historical_start_cohort(all_games, mw, ml + 1, week + 1, current_year)
+        if (w, l) != MUST_WIN_RECORD and on_edge and fell:
+            got_in = sum(c["made_playoffs"] for c in fell)
+            stat["footnote"] = (
+                f"For {_join_and(on_edge)} at {mw}-{ml}, Week {week + 1} is a must-win: since "
+                f"{fell[0]['year']}, only {got_in} of {len(fell)} teams that fell to "
+                f"{mw}-{ml + 1} made the playoffs."
+                if got_in else
+                f"For {_join_and(on_edge)} at {mw}-{ml}, Week {week + 1} is a must-win: since "
+                f"{fell[0]['year']}, none of the {len(fell)} teams that fell to "
+                f"{mw}-{ml + 1} made the playoffs."
+            )
+        return stat
+    return None
+
+
 TOP_POINTS_SPOTS = 6
 
 # #1 vs #2 Stat of the Week: considered from the publication after Week 5
@@ -2277,6 +2333,10 @@ def compute_stat_of_the_week(all_games, roster_names):
     Week 7, the halfway point - _halfway_top_six_stat: the share of past
     halfway top-6 teams that missed the playoffs, this year's top 6, and
     how many of them history says will fall out.
+
+    Week 8 - _crowded_record_stat: playoff odds for the record held by the
+    most managers (ties to the better record), Week 6 format, plus a
+    must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2334,6 +2394,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == 5:
         return _winless_start_stat(all_games, season_games, current_year, roster_names)
+
+    if last_completed_week == CROWDED_RECORD_WEEK:
+        return _crowded_record_stat(all_games, season_games, current_year)
 
     return None  # other weeks: not defined yet
 
