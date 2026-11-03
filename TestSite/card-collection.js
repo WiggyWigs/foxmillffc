@@ -26,4 +26,6 @@ const SPECIAL_CARDS = [
     file: "points-champion-2024-carl-bruce" },
   { year: 2025, section: "recognition", award: "Points Champion", manager: "Greg Wigton",
     file: "points-champion-2025-greg-wigton" },
+  { year: 2025, section: "recognition", award: "Last Place", manager: "Daniel Bahamonde",
+    file: "last-place-2025-daniel-bahamonde" },
 ];
