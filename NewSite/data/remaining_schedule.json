@@ -1,32 +1,6 @@
 {
   "year": 2026,
   "weeks": {
-    "8": [
-      {
-        "away_manager": "Kevin Mallon",
-        "home_manager": "Josh Davis"
-      },
-      {
-        "away_manager": "Carl Bruce",
-        "home_manager": "Greg Wigton"
-      },
-      {
-        "away_manager": "Blake Pratt",
-        "home_manager": "Brian Harris"
-      },
-      {
-        "away_manager": "Eddie McCumiskey",
-        "home_manager": "Jay Nelson"
-      },
-      {
-        "away_manager": "Daniel Bahamonde",
-        "home_manager": "John Schauder"
-      },
-      {
-        "away_manager": "Jason Carlton",
-        "home_manager": "Brian Kleinhenz"
-      }
-    ],
     "9": [
       {
         "away_manager": "Josh Davis",
