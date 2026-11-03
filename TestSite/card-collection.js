@@ -17,7 +17,7 @@ const CARD_SECTIONS = [
   { id: "postseason", title: "Post Season Collection" },
 ];
 
-const AWARD_ORDER = ["Points Champion", "Division Champion", "Loser"];
+const AWARD_ORDER = ["Points Champion", "Division Champion", "Last Place"];
 
 const SPECIAL_CARDS = [
   { year: 2023, section: "recognition", award: "Points Champion", manager: "Greg Wigton",
