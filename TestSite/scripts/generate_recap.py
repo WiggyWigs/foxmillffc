@@ -1102,7 +1102,18 @@ def add_selection_only_context(enriched, stats):
 def _margin_place(game, week_games):
     """'2nd', '3rd'... closest margin of the week, counting every game
     (the Impact Game included). Ties share a place."""
-    n = 1 + sum(g["margin"] < game["margin"] for g in week_games)
+    return _ordinal(1 + sum(g["margin"] < game["margin"] for g in week_games))
+
+
+def _blowout_place(game, week_games):
+    """'the week's biggest blowout', or 'the 3rd-biggest blowout of the
+    week' when bigger ones went to managers already featured elsewhere.
+    Counts every game; ties share a place."""
+    n = 1 + sum(g["margin"] > game["margin"] for g in week_games)
+    return "the week's biggest blowout" if n == 1 else f"the {_ordinal(n)}-biggest blowout of the week"
+
+
+def _ordinal(n):
     suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suffix}"
 
@@ -1129,7 +1140,8 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "top6_matchup": "a genuine top-6 showdown",
         "next_closest_margin": (f"the {_margin_place(game, week_games)}-closest game of the week"
                                 if week_games else "one of the week's closer games"),
-        "biggest_blowout": "the week's biggest blowout",
+        "biggest_blowout": (_blowout_place(game, week_games)
+                            if week_games else "one of the week's lopsided games"),
     }[reason]
     context["selection_hook"] = selection_hook
 
@@ -1156,7 +1168,7 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         if extremes:
             context["real_scoring_extreme"] = "; ".join(extremes)
             blowout_instruction = (
-                " Since this game was selected as the week's biggest blowout, spend real "
+                " Since this game was selected as a blowout, spend real "
                 "attention on real_scoring_extreme — drill into whichever team hit that "
                 "extreme (150+ points, or under 100) rather than treating this as just "
                 "another game recap; that extreme IS the story here."
@@ -1174,8 +1186,9 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         "collided...' or 'this game was a blowout we had to write "
         "about...'), or skip it entirely if the game's own story is "
         "more interesting. If you say where this game ranked by margin, "
-        "use selection_hook's exact place (e.g. '3rd-closest') — never "
-        "call it 'second-closest' or 'next-closest' on your own. "
+        "use selection_hook's exact place (e.g. '3rd-closest' or "
+        "'3rd-biggest blowout') — never call it 'second-closest', "
+        "'next-closest' or 'the biggest blowout' on your own. "
         "NEVER explain the actual selection process — "
         "no mention of standings rank, margin thresholds, 'closest "
         "matchup among top-6 teams,' or why the Impact Game wasn't "
@@ -2386,7 +2399,7 @@ def main():
                            f"margin of the week, {hm_game['margin']} pts (under 15): {matchup}")
                 else:
                     flags = [k for k, v in (hm_blowout_detail or {}).items() if v]
-                    why = (f"tier 3, no other game within 15 pts; biggest blowout "
+                    why = (f"tier 3, no other game within 15 pts; {_blowout_place(hm_game, week_games)}, "
                            f"{hm_game['margin']} pts: {matchup}"
                            + (f" [{', '.join(flags)}]" if flags else ""))
                 if {a, h} & excluded_managers:
