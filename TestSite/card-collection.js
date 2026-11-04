@@ -28,7 +28,7 @@ const SPECIAL_CARDS = [
     file: "points-champion-2025-greg-wigton" },
   { year: 2025, section: "recognition", award: "Last Place", manager: "Daniel Bahamonde",
     file: "last-place-2025-daniel-bahamonde" },
-  // Parallel of the 2025 Last Place card, issued in the 2026 set.
-  { year: 2026, section: "recognition", award: "Punishment Insert", manager: "Daniel Bahamonde",
+  // Paintball parallel of the 2025 Last Place card, issued in the 2026 set.
+  { year: 2026, section: "recognition", award: "Paintball Parallel", manager: "Daniel Bahamonde",
     file: "punishment-2026-daniel-bahamonde" },
 ];
