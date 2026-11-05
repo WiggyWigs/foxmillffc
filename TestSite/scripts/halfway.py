@@ -274,7 +274,7 @@ def compute_halfway(stats, lineups, remaining_file, moves, roster):
         weeks = remaining_file.get("weeks", {})
         remaining = [[(m["away_manager"], m["home_manager"]) for m in weeks[w]]
                      for w in sorted(weeks, key=int) if int(w) > HALFWAY_WEEK]
-    # player_cards is None for seasons before player cards existed (a TEST run on 2025)
+    # player_cards is None for seasons before player cards existed (a TEST run on 2024)
     cards = (((stats.get("player_cards") or {}).get("seasons") or {}).get(str(year)) or {}).get("cards", [])
     return {
         "season": year,

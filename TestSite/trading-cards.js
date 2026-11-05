@@ -174,7 +174,7 @@ function cardHtml(s, card, lazy = true) {
   const src = `images/cards/${card.slug}-${s.season}.jpg`;
   const badges = card.badges.map((b) => badgeHtml(b, "pc-badge")).join("");
   return `
-    <div class="pc-card">
+    <div class="pc-card pc-layout-${s.season}">
       <img class="pc-card-img" src="${src}" alt=""${lazy ? ' loading="lazy"' : ""}
            onerror="cardImageMissing(this)">
       <div class="pc-placeholder-name" style="font-size:${placeholderNameSize(card.manager)}cqw">${escapeHtml(card.manager)}</div>
