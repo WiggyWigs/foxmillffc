@@ -2057,6 +2057,14 @@ main {
   justify-content: center;
 }
 
+/* 2025 cards use a different template: the year ribbon sits where the
+   stamp goes on 2026 cards, so the stamp moves to the bottom-right corner,
+   beside the team name (x 872-1026, y 1312-1438). */
+.pc-layout-2025 .pc-stamp {
+  left: 82.26%;
+  top: 88.41%;
+}
+
 .pc-stamp img {
   width: 69%;
   height: 69%;
