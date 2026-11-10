@@ -1930,6 +1930,108 @@ def _crowded_record_stat(all_games, season_games, current_year):
     return None
 
 
+FINAL_FIVE_WEEK = 9  # Stat of the Week after Week 9: the last 5 regular-season games
+
+
+def _final_five_rows(all_games, exclude_year, through_week):
+    """Every (manager, year) from PAST seasons: wins and losses after
+    `through_week`, points per game over the rest of the regular season,
+    the record over that stretch, and whether the team made the playoffs.
+    Seasons that never finished the regular season are skipped."""
+    rows = []
+    for year in sorted({g["year"] for g in all_games if g["year"] < exclude_year}):
+        season = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+        if max((_week_sort_key(g["week"]) for g in season), default=0) < REGULAR_SEASON_GAMES:
+            continue
+        playoff_managers = {g[side] for g in all_games
+                            if g["year"] == year and g["game_type"] != "Regular"
+                            for side in ("away_manager", "home_manager")}
+        stats = defaultdict(lambda: {"w": 0, "l": 0, "fw": 0, "fl": 0, "pts": 0.0, "games": 0})
+        for g in season:
+            late = _week_sort_key(g["week"]) > through_week
+            for mgr, pts in ((g["away_manager"], g["away_score"]), (g["home_manager"], g["home_score"])):
+                s = stats[mgr]
+                if late:
+                    s["pts"] += pts
+                    s["games"] += 1
+                if g["tie"]:
+                    continue
+                won = g["winner"] == mgr
+                if late:
+                    s["fw" if won else "fl"] += 1
+                else:
+                    s["w" if won else "l"] += 1
+        for mgr, s in stats.items():
+            if not s["games"]:
+                continue
+            rows.append({"manager": mgr, "year": year, "wins": s["w"], "losses": s["l"],
+                         "finish": f"{s['fw']}-{s['fl']}", "ppg": s["pts"] / s["games"],
+                         "made_playoffs": mgr in playoff_managers})
+    return rows
+
+
+def _final_five_stat(all_games, season_games, current_year):
+    """Stat of the Week after Week 9 ("Mirror Image"): the hottest and
+    coldest finishes from history. The big number is the best points per
+    game over the final five by a past team that was .500 or worse after
+    Week 9 and still made the playoffs; the narrative pairs it with the
+    worst final-five scoring by a past team that had a winning record
+    after Week 9 and missed. The list is this year's teams with that
+    riser's record or better but not above .500 (the ones chasing the same
+    comeback), and the footnote names every past team with a winning
+    record after Week 9 that missed. None if history has no such riser."""
+    week = FINAL_FIVE_WEEK
+    left = REGULAR_SEASON_GAMES - week
+    rows = _final_five_rows(all_games, current_year, week)
+    risers = [r for r in rows if r["wins"] <= r["losses"] and r["made_playoffs"]]
+    fallers = [r for r in rows if r["wins"] > r["losses"] and not r["made_playoffs"]]
+    if not risers:
+        return None
+    riser = max(risers, key=lambda r: r["ppg"])
+
+    def rec(r):
+        return f"{r['wins']}-{r['losses']}"
+
+    narrative = (
+        f"Points per game {riser['manager']} scored over the final {left} games of {riser['year']}, "
+        f"after sitting at {rec(riser)} through Week {week}: {riser['finish']} the rest of the way "
+        f"and into the playoffs."
+    )
+    if fallers:
+        faller = min(fallers, key=lambda r: r["ppg"])
+        same = " That same season" if faller["year"] == riser["year"] else f" In {faller['year']}"
+        narrative += (
+            f"{same}, {faller['manager']} was {rec(faller)} after Week {week}, scored "
+            f"{faller['ppg']:.1f} a game over the final {left}, went {faller['finish']} and missed."
+        )
+
+    records = defaultdict(lambda: [0, 0])
+    for g in season_games:
+        if _week_sort_key(g["week"]) > week or g["tie"]:
+            continue
+        records[g["winner"]][0] += 1
+        records[g["loser"]][1] += 1
+    this_year = sorted(m for m, (w, l) in records.items() if riser["wins"] <= w <= l)
+    labels = sorted({f"{w}-{l}" for m, (w, l) in records.items() if m in this_year},
+                    key=lambda s: -int(s.split("-")[0]))
+
+    stat = {
+        "reason": f"final_{left}_mirror_image", "value": round(riser["ppg"], 1),
+        "value_suffix": "", "sample_size": len(rows),
+        "this_year_teams": this_year,
+        "teams_label": (f"Managers chasing the same comeback ({' or '.join(labels)})"
+                        if labels else "Managers chasing the same comeback"),
+        "narrative": narrative,
+    }
+    if fallers:
+        stat["footnote"] = (
+            f"A winning record after Week {week} isn't safe: since {fallers[0]['year']}, "
+            f"{len(fallers)} {'team' if len(fallers) == 1 else 'teams'} with one missed the playoffs: "
+            + _join_and(f"{r['manager']} ({r['year']}, {rec(r)})" for r in fallers) + "."
+        )
+    return stat
+
+
 TOP_POINTS_SPOTS = 6
 
 # #1 vs #2 Stat of the Week: considered from the publication after Week 5
@@ -2337,6 +2439,12 @@ def compute_stat_of_the_week(all_games, roster_names):
     Week 8 - _crowded_record_stat: playoff odds for the record held by the
     most managers (ties to the better record), Week 6 format, plus a
     must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
+
+    Week 9 - _final_five_stat ("Mirror Image"): the best final-five
+    scoring by a past team that was .500 or worse after Week 9 and made
+    the playoffs, paired with the worst by a past team that had a winning
+    record and missed, plus this year's teams chasing that comeback.
+    #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2397,6 +2505,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == CROWDED_RECORD_WEEK:
         return _crowded_record_stat(all_games, season_games, current_year)
+
+    if last_completed_week == FINAL_FIVE_WEEK:
+        return _final_five_stat(all_games, season_games, current_year)
 
     return None  # other weeks: not defined yet
 
