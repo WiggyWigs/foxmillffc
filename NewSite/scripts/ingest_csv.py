@@ -1930,6 +1930,75 @@ def _crowded_record_stat(all_games, season_games, current_year):
     return None
 
 
+FINAL_FIVE_WEEK = 9  # Stat of the Week after Week 9: the last 5 regular-season games
+FINAL_FIVE_TOP_TEAMS = 3  # this year's highest averages listed with it
+
+
+def _ppg(season_games, mgr, first_week, last_week):
+    """mgr's average score in season_games from first_week to last_week
+    (inclusive), or None if no games."""
+    pts = [g["away_score"] if g["away_manager"] == mgr else g["home_score"]
+           for g in season_games
+           if first_week <= _week_sort_key(g["week"]) <= last_week
+           and mgr in (g["away_manager"], g["home_manager"])]
+    return sum(pts) / len(pts) if pts else None
+
+
+def _final_five_stat(all_games, season_games, current_year):
+    """Stat of the Week after Week 9: the pace of a points champion. The
+    big number is the average score through Week 9 of each past points-
+    title winner (most regular-season points), averaged across those
+    seasons. The narrative gives each champion's average through Week 9
+    and for the whole regular season, and a closing line says how high every
+    champion already ranked in average after Week 9. The list is this
+    year's top FINAL_FIVE_TOP_TEAMS teams by average. None if no past
+    season finished its regular season."""
+    week = FINAL_FIVE_WEEK
+    champs = []
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        season = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+        if max((_week_sort_key(g["week"]) for g in season), default=0) < REGULAR_SEASON_GAMES:
+            continue
+        mgrs = {g[side] for g in season for side in ("away_manager", "home_manager")}
+        totals = {m: _ppg(season, m, 1, REGULAR_SEASON_GAMES) for m in mgrs}
+        champ = max(mgrs, key=lambda m: totals[m])
+        early = {m: _ppg(season, m, 1, week) for m in mgrs}
+        champs.append({"manager": champ, "year": year, "early": early[champ],
+                       "season": totals[champ],
+                       "rank": sorted(mgrs, key=lambda m: -early[m]).index(champ) + 1})
+    if not champs:
+        return None
+
+    pace = sum(c["early"] for c in champs) / len(champs)
+    seasons = "; ".join(
+        f"{c['manager']} ({c['year']}) averaged {c['early']:.2f} through Week {week} "
+        f"and finished the season with {c['season']:.2f}" for c in champs)
+    worst = max(c["rank"] for c in champs)
+    n = len(champs)
+    closing = (f"Every points champion was already #1 in average after Week {week}."
+               if worst == 1 else
+               f"Every points champion was already in the top {worst} in average after Week {week}.")
+    if n == 1:
+        closing = closing.replace("Every points champion was", "The points champion was")
+
+    now = [g for g in season_games if _week_sort_key(g["week"]) <= week]
+    mgrs = {g[side] for g in now for side in ("away_manager", "home_manager")}
+    avg = {m: _ppg(now, m, 1, week) for m in mgrs}
+    top = sorted(mgrs, key=lambda m: (-avg[m], m))[:FINAL_FIVE_TOP_TEAMS]
+
+    return {
+        "reason": f"points_title_pace_week_{week}", "value": round(pace, 2),
+        "value_suffix": "", "sample_size": n,
+        "this_year_teams": [f"{m} ({avg[m]:.2f})" for m in top],
+        "teams_label": f"Highest scoring teams this year (average score through Week {week})",
+        "narrative": (
+            f"The average score through Week {week} of the teams that went on to win the "
+            f"points title. {seasons}."
+        ),
+        "closing": closing,
+    }
+
+
 TOP_POINTS_SPOTS = 6
 
 # #1 vs #2 Stat of the Week: considered from the publication after Week 5
@@ -2337,6 +2406,10 @@ def compute_stat_of_the_week(all_games, roster_names):
     Week 8 - _crowded_record_stat: playoff odds for the record held by the
     most managers (ties to the better record), Week 6 format, plus a
     must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
+
+    Week 9 - _final_five_stat: past points champions' average score
+    through Week 9 (and for the whole season), plus this year's three
+    highest averages. #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2397,6 +2470,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == CROWDED_RECORD_WEEK:
         return _crowded_record_stat(all_games, season_games, current_year)
+
+    if last_completed_week == FINAL_FIVE_WEEK:
+        return _final_five_stat(all_games, season_games, current_year)
 
     return None  # other weeks: not defined yet
 
