@@ -39,6 +39,7 @@ GitHub Secret in the automated workflow).
 import json
 import os
 import random
+import re
 import sys
 from collections import Counter
 from datetime import datetime, timezone
@@ -742,6 +743,9 @@ def build_game_narrative_context(game, week, year, stats, lore, old_stats, rotat
 
     context = dict(game)  # copy — don't mutate the caller's dict
     away_team, home_team = context.pop("away_team", None), context.pop("home_team", None)
+    # The meeting number, worked out here so the AI never counts it itself
+    # (it once wrote "third meeting" beside a 2-0 record).
+    context["meeting_label"] = meeting_label(context.get("all_time_meetings", 0))
 
     # Does this game rank among the all-time smallest margins of
     # victory? Real, verified fact from the actual leaderboard — not
@@ -924,7 +928,9 @@ def build_recap_prompt(closest_game, week, year, stats, lore, old_stats, tone, r
         f"meeting, using the h2h_record field for the real all-time "
         f"record between them (e.g. 'X leads Y-Z', or 'X leads Y-Z-T' when "
         f"there's been a tie — write it exactly as h2h_record gives it) — don't invent "
-        f"details about those past games beyond what's given. If "
+        f"details about those past games beyond what's given. If you say which "
+        f"meeting this was, use meeting_label exactly as given — never work out "
+        f"a meeting number yourself. If "
         f"top/bottom scorer fields are present, you can mention a "
         f"standout or disappointing individual performance if it fits "
         f"naturally, following the one-per-team limit above. "
@@ -1075,6 +1081,8 @@ def build_enriched_matchups(upcoming, stats, lore, old_stats, rotation_state):
             **{f"home_{k}": v for k, v in manager_context(home).items()},
             "all_time_meetings": h2h_meetings,
             "h2h_record": h2h_text(away, home, stats["games"]),
+            # The game being previewed is the next one, so it's meeting n+1.
+            "upcoming_meeting_label": meeting_label(h2h_meetings + 1),
         })
     return enriched
 
@@ -1116,6 +1124,49 @@ def _blowout_place(game, week_games):
 def _ordinal(n):
     suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suffix}"
+
+
+def meeting_label(n):
+    """'their first meeting' or 'their 2nd all-time meeting' for the
+    n-th game between two managers."""
+    return "their first meeting" if n <= 1 else f"their {_ordinal(n)} all-time meeting"
+
+
+_ORDINAL_WORDS = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh",
+                  "eighth", "ninth", "tenth", "eleventh", "twelfth"]
+_COUNT_WORDS = ["one", "two", "three", "four", "five", "six", "seven", "eight",
+                "nine", "ten", "eleven", "twelve"]
+_ORDINAL_RE = re.compile(
+    r"\b(" + "|".join(_ORDINAL_WORDS) + r"|\d+(?:st|nd|rd|th))"
+    r"(\s+(?:all[- ]time\s+)?(?:meeting|matchup)\b)", re.I)
+_COUNT_RE = re.compile(
+    r"\b(" + "|".join(_COUNT_WORDS) + r"|\d+)(\s+(?:all[- ]time\s+)?meetings\b)", re.I)
+
+
+def fix_meeting_count(text, n):
+    """Correct any 'Nth meeting' / 'N meetings' phrase in a single-game
+    recap to the real count n (the game just played included). The prompt
+    already gives the AI meeting_label; this catches it when it miscounts
+    anyway. Keeps the original style (word vs digits, capital letter)."""
+    if not text or n < 1:
+        return text
+
+    def as_word(words, original, digits):
+        if original[0].isdigit():
+            return digits
+        word = words[n - 1] if n <= len(words) else digits
+        return word.capitalize() if original[0].isupper() else word
+
+    def ordinal(m):
+        return as_word(_ORDINAL_WORDS, m.group(1), _ordinal(n)) + m.group(2)
+
+    def count(m):
+        return as_word(_COUNT_WORDS, m.group(1), str(n)) + m.group(2)
+
+    fixed = _COUNT_RE.sub(count, _ORDINAL_RE.sub(ordinal, text))
+    if fixed != text:
+        print(f"Corrected a meeting count in the narrative to {n}.")
+    return fixed
 
 
 def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, tone, reason, blowout_detail, rotation_state,
@@ -1258,7 +1309,9 @@ def build_honorable_mention_prompt(game, week, year, stats, lore, old_stats, ton
         f"meeting, using the h2h_record field for the real all-time "
         f"record between them (e.g. 'X leads Y-Z', or 'X leads Y-Z-T' when "
         f"there's been a tie — write it exactly as h2h_record gives it) — don't invent "
-        f"details about those past games beyond what's given. If "
+        f"details about those past games beyond what's given. If you say which "
+        f"meeting this was, use meeting_label exactly as given — never work out "
+        f"a meeting number yourself. If "
         f"a top_scorer or bottom_scorer field is present, mention it "
         f"following the winner-top-scorer / loser-bottom-scorer-only "
         f"rule above. "
@@ -1786,6 +1839,8 @@ def build_gotw_writing_prompt(matchup, tone):
         "history, use the h2h_record field for the real record (e.g. "
         "'X leads Y-Z', or 'X leads Y-Z-T' when there's been a "
         "tie — write it exactly as h2h_record gives it) — don't invent details beyond what's given. "
+        "If you say which meeting this will be, use upcoming_meeting_label exactly as given — "
+        "never work out a meeting number yourself. "
         "If you mention playoff chances or probability for a "
         "manager, you MUST cite both their previous_week_pct and "
         "current_week_pct numbers from their "
@@ -2270,7 +2325,7 @@ def main():
             system, user, recap_away_team, recap_home_team = build_recap_prompt(
                 closest_game, week, year, stats, lore, old_stats, tone, rotation_state
             )
-            recap_text = call_claude(system, user)
+            recap_text = fix_meeting_count(call_claude(system, user), closest_game["all_time_meetings"])
             print("Generated Previous Weekend Recap.")
         else:
             print("No completed games found — skipping recap.")
@@ -2406,7 +2461,8 @@ def main():
                     why += "; manager exclusion waived (no game left without a featured manager)"
                 print(f"Honorable Mention selected: {a} vs {h}.")
                 print(f"Reason: {why}.")
-                honorable_mention_text = call_claude(hm_system, hm_user)
+                honorable_mention_text = fix_meeting_count(call_claude(hm_system, hm_user),
+                                                           hm_game["all_time_meetings"])
                 print("Generated Honorable Mention.")
             else:
                 print("Only one game this week — no separate Honorable Mention possible.")
