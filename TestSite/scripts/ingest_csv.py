@@ -1949,12 +1949,11 @@ def _final_five_stat(all_games, season_games, current_year):
     big number is the average score through Week 9 of each past points-
     title winner (most regular-season points), averaged across those
     seasons. The narrative gives each champion's average through Week 9
-    and over the final five games, and a closing line says how high every
+    and for the whole regular season, and a closing line says how high every
     champion already ranked in average after Week 9. The list is this
     year's top FINAL_FIVE_TOP_TEAMS teams by average. None if no past
     season finished its regular season."""
     week = FINAL_FIVE_WEEK
-    left = REGULAR_SEASON_GAMES - week
     champs = []
     for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
         season = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
@@ -1965,7 +1964,7 @@ def _final_five_stat(all_games, season_games, current_year):
         champ = max(mgrs, key=lambda m: totals[m])
         early = {m: _ppg(season, m, 1, week) for m in mgrs}
         champs.append({"manager": champ, "year": year, "early": early[champ],
-                       "late": _ppg(season, champ, week + 1, REGULAR_SEASON_GAMES),
+                       "season": totals[champ],
                        "rank": sorted(mgrs, key=lambda m: -early[m]).index(champ) + 1})
     if not champs:
         return None
@@ -1973,7 +1972,7 @@ def _final_five_stat(all_games, season_games, current_year):
     pace = sum(c["early"] for c in champs) / len(champs)
     seasons = "; ".join(
         f"{c['manager']} ({c['year']}) averaged {c['early']:.2f} through Week {week} "
-        f"and {c['late']:.2f} over the final {left}" for c in champs)
+        f"and finished the season with {c['season']:.2f}" for c in champs)
     worst = max(c["rank"] for c in champs)
     n = len(champs)
     closing = (f"Every points champion was already #1 in average after Week {week}."
@@ -2409,7 +2408,7 @@ def compute_stat_of_the_week(all_games, roster_names):
     must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
 
     Week 9 - _final_five_stat: past points champions' average score
-    through Week 9 (and over the final five), plus this year's three
+    through Week 9 (and for the whole season), plus this year's three
     highest averages. #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
