@@ -61,12 +61,36 @@ jobs:
           rm -f TestSite/scripts/espn_pull_latest.csv
           echo "Cleared stale test files — this run starts from a genuinely clean slate."
 
+      # Completed seasons are locked: their scores come from live's game
+      # log, never from a fresh ESPN pull (ESPN can change old scores after
+      # a stat correction; live keeps the scores it first stored). Every
+      # season before the cutoff year is seeded here; ingest_csv.py skips
+      # any pulled game that's already in the log, so only the cutoff
+      # year comes from ESPN.
+      - name: Seed completed seasons from live (locked scores)
+        run: |
+          python3 - <<'EOF'
+          import json
+          cutoff = int("${{ inputs.cutoff_year }}")
+          with open("NewSite/data/stats.json") as f:
+              games = [g for g in json.load(f)["games"] if g["year"] < cutoff]
+          with open("TestSite/data/stats.json", "w") as f:
+              json.dump({"last_updated": None, "games": games, "managers": {}}, f)
+          print(f"Seeded {len(games)} games from seasons before {cutoff}.")
+          EOF
+
       - name: Run ESPN pull + ingest pipeline (test-cutoff mode)
         env:
           ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
           ESPN_SWID: ${{ secrets.ESPN_SWID }}
           ESPN_S2: ${{ secrets.ESPN_S2 }}
         run: python TestSite/scripts/espn_pull.py
+
+      # espn_pull.py snapshots stats.json before ingesting, which here is
+      # just the seed above. A clean test run has no real previous week,
+      # so drop it, as before seeding.
+      - name: Drop the seed snapshot
+        run: rm -f TestSite/data/stats_previous_run.json
 
       # With skip_narratives checked, the API key is withheld, so no Claude
       # call can be made. The script still runs: box scores, callouts and
