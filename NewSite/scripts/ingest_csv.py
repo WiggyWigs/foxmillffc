@@ -1931,7 +1931,7 @@ def _crowded_record_stat(all_games, season_games, current_year):
 
 
 FINAL_FIVE_WEEK = 9  # Stat of the Week after Week 9: the last 5 regular-season games
-FINAL_FIVE_TOP_TEAMS = 3  # this year's highest averages listed with it
+FINAL_FIVE_PACE_MARGIN = 10  # list this year's teams averaging within this many points of the pace
 
 
 def _ppg(season_games, mgr, first_week, last_week):
@@ -1950,9 +1950,10 @@ def _final_five_stat(all_games, season_games, current_year):
     title winner (most regular-season points), averaged across those
     seasons. The narrative gives each champion's average through Week 9
     and for the whole regular season, and a closing line says how high every
-    champion already ranked in average after Week 9. The list is this
-    year's top FINAL_FIVE_TOP_TEAMS teams by average. None if no past
-    season finished its regular season."""
+    champion already ranked in average after Week 9. The list is every
+    team this year averaging at least the big number minus
+    FINAL_FIVE_PACE_MARGIN, highest first. None if no past season
+    finished its regular season."""
     week = FINAL_FIVE_WEEK
     champs = []
     for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
@@ -1984,13 +1985,15 @@ def _final_five_stat(all_games, season_games, current_year):
     now = [g for g in season_games if _week_sort_key(g["week"]) <= week]
     mgrs = {g[side] for g in now for side in ("away_manager", "home_manager")}
     avg = {m: _ppg(now, m, 1, week) for m in mgrs}
-    top = sorted(mgrs, key=lambda m: (-avg[m], m))[:FINAL_FIVE_TOP_TEAMS]
+    floor = round(pace, 2) - FINAL_FIVE_PACE_MARGIN
+    top = sorted((m for m in mgrs if round(avg[m], 2) >= floor), key=lambda m: (-avg[m], m))
 
     return {
         "reason": f"points_title_pace_week_{week}", "value": round(pace, 2),
         "value_suffix": "", "sample_size": n,
         "this_year_teams": [f"{m} ({avg[m]:.2f})" for m in top],
-        "teams_label": f"Highest scoring teams this year (average score through Week {week})",
+        "teams_label": (f"Teams within {FINAL_FIVE_PACE_MARGIN} points of that pace this year "
+                        f"(average score through Week {week})"),
         "narrative": (
             f"The average score through Week {week} of the teams that went on to win the "
             f"points title. {seasons}."
@@ -2408,8 +2411,8 @@ def compute_stat_of_the_week(all_games, roster_names):
     must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
 
     Week 9 - _final_five_stat: past points champions' average score
-    through Week 9 (and for the whole season), plus this year's three
-    highest averages. #1 vs #2 still takes priority.
+    through Week 9 (and for the whole season), plus every team this year
+    averaging within 10 points of that. #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
