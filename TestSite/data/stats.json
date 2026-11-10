@@ -5040,367 +5040,176 @@
       "tie": false,
       "score_diff": 6.0,
       "combined_total": 168.32
+    },
+    {
+      "year": 2026,
+      "week": "9",
+      "game_type": "Regular",
+      "away_team": "Jash\u2019s Big Booty H0es",
+      "home_team": "The Invisible Hand",
+      "away_manager": "Josh Davis",
+      "home_manager": "Greg Wigton",
+      "away_score": 76.32,
+      "home_score": 129.82,
+      "winner": "Greg Wigton",
+      "loser": "Josh Davis",
+      "tie": false,
+      "score_diff": 53.5,
+      "combined_total": 206.14
+    },
+    {
+      "year": 2026,
+      "week": "9",
+      "game_type": "Regular",
+      "away_team": "Tomahawk Piranhas",
+      "home_team": "Smack That",
+      "away_manager": "Brian Harris",
+      "home_manager": "Kevin Mallon",
+      "away_score": 101.88,
+      "home_score": 106.08,
+      "winner": "Kevin Mallon",
+      "loser": "Brian Harris",
+      "tie": false,
+      "score_diff": 4.2,
+      "combined_total": 207.96
+    },
+    {
+      "year": 2026,
+      "week": "9",
+      "game_type": "Regular",
+      "away_team": "High Quality H2O",
+      "home_team": "Off to Grandma",
+      "away_manager": "Jay Nelson",
+      "home_manager": "Carl Bruce",
+      "away_score": 109.84,
+      "home_score": 115.08,
+      "winner": "Carl Bruce",
+      "loser": "Jay Nelson",
+      "tie": false,
+      "score_diff": 5.24,
+      "combined_total": 224.92
+    },
+    {
+      "year": 2026,
+      "week": "9",
+      "game_type": "Regular",
+      "away_team": "The Nicebois",
+      "home_team": "Butt Stuff",
+      "away_manager": "John Schauder",
+      "home_manager": "Blake Pratt",
+      "away_score": 89.08,
+      "home_score": 94.5,
+      "winner": "Blake Pratt",
+      "loser": "John Schauder",
+      "tie": false,
+      "score_diff": 5.42,
+      "combined_total": 183.58
+    },
+    {
+      "year": 2026,
+      "week": "9",
+      "game_type": "Regular",
+      "away_team": "Riding miss daisy",
+      "home_team": "She's Tuten from Herbert",
+      "away_manager": "Brian Kleinhenz",
+      "home_manager": "Eddie McCumiskey",
+      "away_score": 101.26,
+      "home_score": 127.68,
+      "winner": "Eddie McCumiskey",
+      "loser": "Brian Kleinhenz",
+      "tie": false,
+      "score_diff": 26.42,
+      "combined_total": 228.94
+    },
+    {
+      "year": 2026,
+      "week": "9",
+      "game_type": "Regular",
+      "away_team": "Open Mic Night Contestant",
+      "home_team": "Freakin Ricans",
+      "away_manager": "Jason Carlton",
+      "home_manager": "Daniel Bahamonde",
+      "away_score": 67.14,
+      "home_score": 110.46,
+      "winner": "Daniel Bahamonde",
+      "loser": "Jason Carlton",
+      "tie": false,
+      "score_diff": 43.32,
+      "combined_total": 177.6
     }
   ],
   "managers": {
-    "Blake Pratt": {
+    "Jason Carlton": {
       "seasons": {
-        "2023": {
-          "regular_wins": 5,
-          "regular_losses": 9,
+        "2024": {
+          "regular_wins": 10,
+          "regular_losses": 4,
           "regular_ties": 0,
           "playoff_wins": 0,
-          "playoff_losses": 0,
+          "playoff_losses": 1,
           "playoff_ties": 0,
-          "points_for_regular": 1410.6800000000003,
-          "points_for_total": 1410.6800000000003,
-          "points_against": 1593.04,
-          "made_playoffs": false,
+          "points_for_regular": 1538.3600000000001,
+          "points_for_total": 1645.5200000000002,
+          "points_against": 1560.6599999999999,
+          "made_playoffs": true,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 1
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 0
         },
-        "2024": {
+        "2025": {
           "regular_wins": 9,
           "regular_losses": 5,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 1,
           "playoff_ties": 0,
-          "points_for_regular": 1664.3999999999999,
-          "points_for_total": 1784.9799999999998,
-          "points_against": 1543.9800000000002,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 12,
-          "regular_losses": 2,
-          "regular_ties": 0,
-          "playoff_wins": 2,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1636.3199999999997,
-          "points_for_total": 1892.0599999999997,
-          "points_against": 1523.5000000000002,
-          "made_playoffs": true,
-          "playoff_finish": "Champion",
-          "champion": true,
-          "points_title": false,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        },
-        "2026": {
-          "regular_wins": 5,
-          "regular_losses": 3,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 952.3,
-          "points_for_total": 952.3,
-          "points_against": 842.76,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": true,
-          "weekly_high_scores": 2,
-          "weekly_low_scores": 0
-        }
-      },
-      "career": {
-        "regular_wins": 26,
-        "regular_losses": 16,
-        "regular_ties": 0,
-        "playoff_wins": 2,
-        "playoff_losses": 1,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.619,
-        "playoff_win_pct": 0.6667,
-        "seasons_played": 3,
-        "championships": 1,
-        "playoff_appearances": 2,
-        "points_titles": 0,
-        "runner_ups": 0,
-        "weekly_high_scores": 6,
-        "weekly_low_scores": 1,
-        "manager_score_index": 3.2285
-      }
-    },
-    "Jay Nelson": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 8,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1552.94,
-          "points_for_total": 1832.54,
-          "points_against": 1748.94,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 0
-        },
-        "2024": {
-          "regular_wins": 8,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1460.8400000000001,
-          "points_for_total": 1541.18,
-          "points_against": 1584.4199999999998,
+          "points_for_regular": 1356.04,
+          "points_for_total": 1448.84,
+          "points_against": 1535.9,
           "made_playoffs": true,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 0,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 10,
-          "regular_losses": 4,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1601.8799999999999,
-          "points_for_total": 1896.2799999999997,
-          "points_against": 1735.68,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 0
+          "weekly_low_scores": 1
         },
         "2026": {
-          "regular_wins": 5,
-          "regular_losses": 3,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 877.82,
-          "points_for_total": 877.82,
-          "points_against": 803.52,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 1
-        }
-      },
-      "career": {
-        "regular_wins": 26,
-        "regular_losses": 16,
-        "regular_ties": 0,
-        "playoff_wins": 2,
-        "playoff_losses": 3,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.619,
-        "playoff_win_pct": 0.4,
-        "seasons_played": 3,
-        "championships": 0,
-        "playoff_appearances": 3,
-        "points_titles": 0,
-        "runner_ups": 0,
-        "weekly_high_scores": 1,
-        "weekly_low_scores": 0,
-        "manager_score_index": 3.2485
-      }
-    },
-    "Greg Wigton": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 11,
-          "regular_losses": 3,
-          "regular_ties": 0,
-          "playoff_wins": 2,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1730.1799999999998,
-          "points_for_total": 2017.1999999999998,
-          "points_against": 1595.4400000000003,
-          "made_playoffs": true,
-          "playoff_finish": "Champion",
-          "champion": true,
-          "points_title": true,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        },
-        "2024": {
-          "regular_wins": 5,
-          "regular_losses": 9,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1641.7599999999998,
-          "points_for_total": 1641.7599999999998,
-          "points_against": 1612.14,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 2,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 10,
-          "regular_losses": 4,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1682.82,
-          "points_for_total": 1918.92,
-          "points_against": 1700.68,
-          "made_playoffs": true,
-          "playoff_finish": "Runner-up",
-          "champion": false,
-          "points_title": true,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        },
-        "2026": {
-          "regular_wins": 5,
-          "regular_losses": 3,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 911.28,
-          "points_for_total": 911.28,
-          "points_against": 936.56,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 1
-        }
-      },
-      "career": {
-        "regular_wins": 26,
-        "regular_losses": 16,
-        "regular_ties": 0,
-        "playoff_wins": 3,
-        "playoff_losses": 1,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.619,
-        "playoff_win_pct": 0.75,
-        "seasons_played": 3,
-        "championships": 1,
-        "playoff_appearances": 2,
-        "points_titles": 2,
-        "runner_ups": 1,
-        "weekly_high_scores": 8,
-        "weekly_low_scores": 0,
-        "manager_score_index": 4.1285
-      }
-    },
-    "Brian Harris": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 8,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1570.5599999999997,
-          "points_for_total": 1672.5799999999997,
-          "points_against": 1690.7200000000003,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 1
-        },
-        "2024": {
-          "regular_wins": 7,
+          "regular_wins": 2,
           "regular_losses": 7,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1525.96,
-          "points_for_total": 1525.96,
-          "points_against": 1575.8,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 3
-        },
-        "2025": {
-          "regular_wins": 4,
-          "regular_losses": 10,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1390.82,
-          "points_for_total": 1390.82,
-          "points_against": 1628.78,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 1
-        },
-        "2026": {
-          "regular_wins": 4,
-          "regular_losses": 4,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 906.08,
-          "points_for_total": 906.08,
-          "points_against": 919.3799999999999,
+          "points_for_regular": 862.4399999999999,
+          "points_for_total": 862.4399999999999,
+          "points_against": 1060.6399999999999,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 0,
-          "weekly_low_scores": 0
+          "weekly_low_scores": 2
         }
       },
       "career": {
         "regular_wins": 19,
-        "regular_losses": 23,
+        "regular_losses": 9,
         "regular_ties": 0,
         "playoff_wins": 0,
-        "playoff_losses": 1,
+        "playoff_losses": 2,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.4524,
+        "regular_season_win_pct": 0.6786,
         "playoff_win_pct": 0.0,
-        "seasons_played": 3,
+        "seasons_played": 2,
         "championships": 0,
-        "playoff_appearances": 1,
+        "playoff_appearances": 2,
         "points_titles": 0,
         "runner_ups": 0,
-        "weekly_high_scores": 3,
-        "weekly_low_scores": 5,
-        "manager_score_index": 1.3453
+        "weekly_high_scores": 2,
+        "weekly_low_scores": 1,
+        "manager_score_index": 3.0179
       }
     },
     "Erik Servinsky": {
@@ -5476,169 +5285,6 @@
         "manager_score_index": 2.65
       }
     },
-    "Eddie McCumiskey": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 8,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 1,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1581.44,
-          "points_for_total": 1776.3000000000002,
-          "points_against": 1708.92,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 1
-        },
-        "2024": {
-          "regular_wins": 10,
-          "regular_losses": 4,
-          "regular_ties": 0,
-          "playoff_wins": 2,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1462.44,
-          "points_for_total": 1810.0800000000002,
-          "points_against": 1767.0,
-          "made_playoffs": true,
-          "playoff_finish": "Runner-up",
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 4,
-          "regular_losses": 10,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1435.84,
-          "points_for_total": 1435.84,
-          "points_against": 1618.16,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 1
-        },
-        "2026": {
-          "regular_wins": 6,
-          "regular_losses": 2,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 952.1600000000001,
-          "points_for_total": 952.1600000000001,
-          "points_against": 892.04,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
-        }
-      },
-      "career": {
-        "regular_wins": 22,
-        "regular_losses": 20,
-        "regular_ties": 0,
-        "playoff_wins": 3,
-        "playoff_losses": 2,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.5238,
-        "playoff_win_pct": 0.6,
-        "seasons_played": 3,
-        "championships": 0,
-        "playoff_appearances": 2,
-        "points_titles": 0,
-        "runner_ups": 1,
-        "weekly_high_scores": 3,
-        "weekly_low_scores": 2,
-        "manager_score_index": 2.7657
-      }
-    },
-    "Jason Carlton": {
-      "seasons": {
-        "2024": {
-          "regular_wins": 10,
-          "regular_losses": 4,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1538.3600000000001,
-          "points_for_total": 1645.5200000000002,
-          "points_against": 1560.6599999999999,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 2,
-          "weekly_low_scores": 0
-        },
-        "2025": {
-          "regular_wins": 9,
-          "regular_losses": 5,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 1,
-          "playoff_ties": 0,
-          "points_for_regular": 1356.04,
-          "points_for_total": 1448.84,
-          "points_against": 1535.9,
-          "made_playoffs": true,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 1
-        },
-        "2026": {
-          "regular_wins": 2,
-          "regular_losses": 6,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 795.3,
-          "points_for_total": 795.3,
-          "points_against": 950.18,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 1
-        }
-      },
-      "career": {
-        "regular_wins": 19,
-        "regular_losses": 9,
-        "regular_ties": 0,
-        "playoff_wins": 0,
-        "playoff_losses": 2,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.6786,
-        "playoff_win_pct": 0.0,
-        "seasons_played": 2,
-        "championships": 0,
-        "playoff_appearances": 2,
-        "points_titles": 0,
-        "runner_ups": 0,
-        "weekly_high_scores": 2,
-        "weekly_low_scores": 1,
-        "manager_score_index": 3.0179
-      }
-    },
     "Daniel Bahamonde": {
       "seasons": {
         "2023": {
@@ -5693,15 +5339,15 @@
           "weekly_low_scores": 2
         },
         "2026": {
-          "regular_wins": 4,
+          "regular_wins": 5,
           "regular_losses": 4,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 915.02,
-          "points_for_total": 915.02,
-          "points_against": 864.0600000000001,
+          "points_for_regular": 1025.48,
+          "points_for_total": 1025.48,
+          "points_against": 931.2,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
@@ -5729,18 +5375,18 @@
         "manager_score_index": 0.5356
       }
     },
-    "Kevin Mallon": {
+    "Carl Bruce": {
       "seasons": {
-        "2025": {
-          "regular_wins": 7,
-          "regular_losses": 7,
+        "2023": {
+          "regular_wins": 9,
+          "regular_losses": 5,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 1,
           "playoff_ties": 0,
-          "points_for_regular": 1591.04,
-          "points_for_total": 1717.96,
-          "points_against": 1724.0399999999997,
+          "points_for_regular": 1627.4600000000003,
+          "points_for_total": 1729.6200000000003,
+          "points_against": 1647.0800000000002,
           "made_playoffs": true,
           "playoff_finish": null,
           "champion": false,
@@ -5748,153 +5394,75 @@
           "weekly_high_scores": 2,
           "weekly_low_scores": 0
         },
-        "2026": {
-          "regular_wins": 0,
-          "regular_losses": 8,
+        "2024": {
+          "regular_wins": 9,
+          "regular_losses": 5,
           "regular_ties": 0,
-          "playoff_wins": 0,
+          "playoff_wins": 3,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 621.8399999999999,
-          "points_for_total": 621.8399999999999,
-          "points_against": 883.94,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 3
-        }
-      },
-      "career": {
-        "regular_wins": 7,
-        "regular_losses": 7,
-        "regular_ties": 0,
-        "playoff_wins": 0,
-        "playoff_losses": 1,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.5,
-        "playoff_win_pct": 0.0,
-        "seasons_played": 1,
-        "championships": 0,
-        "playoff_appearances": 1,
-        "points_titles": 0,
-        "runner_ups": 0,
-        "weekly_high_scores": 2,
-        "weekly_low_scores": 0,
-        "manager_score_index": 2.75
-      }
-    },
-    "Andrew Williams": {
-      "seasons": {
-        "2023": {
+          "points_for_regular": 1699.6,
+          "points_for_total": 2164.2200000000003,
+          "points_against": 1888.6800000000003,
+          "made_playoffs": true,
+          "playoff_finish": "Champion",
+          "champion": true,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2025": {
           "regular_wins": 4,
           "regular_losses": 10,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1324.7399999999998,
-          "points_for_total": 1324.7399999999998,
-          "points_against": 1590.1399999999999,
+          "points_for_regular": 1324.9,
+          "points_for_total": 1324.9,
+          "points_against": 1454.34,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 1,
           "weekly_low_scores": 4
-        }
-      },
-      "career": {
-        "regular_wins": 4,
-        "regular_losses": 10,
-        "regular_ties": 0,
-        "playoff_wins": 0,
-        "playoff_losses": 0,
-        "playoff_ties": 0,
-        "regular_season_win_pct": 0.2857,
-        "playoff_win_pct": 0.0,
-        "seasons_played": 1,
-        "championships": 0,
-        "playoff_appearances": 0,
-        "points_titles": 0,
-        "runner_ups": 0,
-        "weekly_high_scores": 1,
-        "weekly_low_scores": 4,
-        "manager_score_index": 0.4285
-      }
-    },
-    "Josh Davis": {
-      "seasons": {
-        "2023": {
-          "regular_wins": 6,
-          "regular_losses": 8,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1457.24,
-          "points_for_total": 1457.24,
-          "points_against": 1560.7999999999997,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 2
-        },
-        "2024": {
-          "regular_wins": 1,
-          "regular_losses": 13,
-          "regular_ties": 0,
-          "playoff_wins": 0,
-          "playoff_losses": 0,
-          "playoff_ties": 0,
-          "points_for_regular": 1076.58,
-          "points_for_total": 1076.58,
-          "points_against": 1566.6000000000001,
-          "made_playoffs": false,
-          "playoff_finish": null,
-          "champion": false,
-          "points_title": false,
-          "weekly_high_scores": 0,
-          "weekly_low_scores": 8
         },
         "2026": {
-          "regular_wins": 5,
+          "regular_wins": 6,
           "regular_losses": 3,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 854.9000000000001,
-          "points_for_total": 854.9000000000001,
-          "points_against": 858.3799999999999,
+          "points_for_regular": 1047.82,
+          "points_for_total": 1047.82,
+          "points_against": 865.9200000000001,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
-          "weekly_high_scores": 1,
-          "weekly_low_scores": 1
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 0
         }
       },
       "career": {
-        "regular_wins": 7,
-        "regular_losses": 21,
+        "regular_wins": 22,
+        "regular_losses": 20,
         "regular_ties": 0,
-        "playoff_wins": 0,
-        "playoff_losses": 0,
+        "playoff_wins": 3,
+        "playoff_losses": 1,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.25,
-        "playoff_win_pct": 0.0,
-        "seasons_played": 2,
-        "championships": 0,
-        "playoff_appearances": 0,
-        "points_titles": 0,
+        "regular_season_win_pct": 0.5238,
+        "playoff_win_pct": 0.75,
+        "seasons_played": 3,
+        "championships": 1,
+        "playoff_appearances": 2,
+        "points_titles": 1,
         "runner_ups": 0,
-        "weekly_high_scores": 0,
-        "weekly_low_scores": 10,
-        "manager_score_index": 0.375
+        "weekly_high_scores": 6,
+        "weekly_low_scores": 4,
+        "manager_score_index": 3.4857
       }
     },
     "John Schauder": {
@@ -5952,14 +5520,14 @@
         },
         "2026": {
           "regular_wins": 3,
-          "regular_losses": 5,
+          "regular_losses": 6,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 776.48,
-          "points_for_total": 776.48,
-          "points_against": 877.7599999999999,
+          "points_for_regular": 865.5600000000001,
+          "points_for_total": 865.5600000000001,
+          "points_against": 972.2599999999999,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
@@ -6042,14 +5610,14 @@
         },
         "2026": {
           "regular_wins": 4,
-          "regular_losses": 4,
+          "regular_losses": 5,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 837.92,
-          "points_for_total": 837.92,
-          "points_against": 749.18,
+          "points_for_regular": 939.18,
+          "points_for_total": 939.18,
+          "points_against": 876.8599999999999,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
@@ -6077,41 +5645,114 @@
         "manager_score_index": 1.4881
       }
     },
-    "Carl Bruce": {
+    "Josh Davis": {
       "seasons": {
         "2023": {
-          "regular_wins": 9,
-          "regular_losses": 5,
+          "regular_wins": 6,
+          "regular_losses": 8,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1457.24,
+          "points_for_total": 1457.24,
+          "points_against": 1560.7999999999997,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 2
+        },
+        "2024": {
+          "regular_wins": 1,
+          "regular_losses": 13,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1076.58,
+          "points_for_total": 1076.58,
+          "points_against": 1566.6000000000001,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 8
+        },
+        "2026": {
+          "regular_wins": 5,
+          "regular_losses": 4,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 931.22,
+          "points_for_total": 931.22,
+          "points_against": 988.1999999999998,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 1
+        }
+      },
+      "career": {
+        "regular_wins": 7,
+        "regular_losses": 21,
+        "regular_ties": 0,
+        "playoff_wins": 0,
+        "playoff_losses": 0,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.25,
+        "playoff_win_pct": 0.0,
+        "seasons_played": 2,
+        "championships": 0,
+        "playoff_appearances": 0,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 0,
+        "weekly_low_scores": 10,
+        "manager_score_index": 0.375
+      }
+    },
+    "Brian Harris": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 8,
+          "regular_losses": 6,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 1,
           "playoff_ties": 0,
-          "points_for_regular": 1627.4600000000003,
-          "points_for_total": 1729.6200000000003,
-          "points_against": 1647.0800000000002,
+          "points_for_regular": 1570.5599999999997,
+          "points_for_total": 1672.5799999999997,
+          "points_against": 1690.7200000000003,
           "made_playoffs": true,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
-          "weekly_high_scores": 2,
-          "weekly_low_scores": 0
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 1
         },
         "2024": {
-          "regular_wins": 9,
-          "regular_losses": 5,
+          "regular_wins": 7,
+          "regular_losses": 7,
           "regular_ties": 0,
-          "playoff_wins": 3,
+          "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1699.6,
-          "points_for_total": 2164.2200000000003,
-          "points_against": 1888.6800000000003,
-          "made_playoffs": true,
-          "playoff_finish": "Champion",
-          "champion": true,
-          "points_title": true,
-          "weekly_high_scores": 3,
-          "weekly_low_scores": 0
+          "points_for_regular": 1525.96,
+          "points_for_total": 1525.96,
+          "points_against": 1575.8,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 3
         },
         "2025": {
           "regular_wins": 4,
@@ -6120,26 +5761,26 @@
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 1324.9,
-          "points_for_total": 1324.9,
-          "points_against": 1454.34,
+          "points_for_regular": 1390.82,
+          "points_for_total": 1390.82,
+          "points_against": 1628.78,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
           "points_title": false,
           "weekly_high_scores": 1,
-          "weekly_low_scores": 4
+          "weekly_low_scores": 1
         },
         "2026": {
-          "regular_wins": 5,
-          "regular_losses": 3,
+          "regular_wins": 4,
+          "regular_losses": 5,
           "regular_ties": 0,
           "playoff_wins": 0,
           "playoff_losses": 0,
           "playoff_ties": 0,
-          "points_for_regular": 932.74,
-          "points_for_total": 932.74,
-          "points_against": 756.08,
+          "points_for_regular": 1007.96,
+          "points_for_total": 1007.96,
+          "points_against": 1025.4599999999998,
           "made_playoffs": false,
           "playoff_finish": null,
           "champion": false,
@@ -6149,22 +5790,477 @@
         }
       },
       "career": {
-        "regular_wins": 22,
-        "regular_losses": 20,
+        "regular_wins": 19,
+        "regular_losses": 23,
+        "regular_ties": 0,
+        "playoff_wins": 0,
+        "playoff_losses": 1,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.4524,
+        "playoff_win_pct": 0.0,
+        "seasons_played": 3,
+        "championships": 0,
+        "playoff_appearances": 1,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 3,
+        "weekly_low_scores": 5,
+        "manager_score_index": 1.3453
+      }
+    },
+    "Blake Pratt": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 5,
+          "regular_losses": 9,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1410.6800000000003,
+          "points_for_total": 1410.6800000000003,
+          "points_against": 1593.04,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 1
+        },
+        "2024": {
+          "regular_wins": 9,
+          "regular_losses": 5,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1664.3999999999999,
+          "points_for_total": 1784.9799999999998,
+          "points_against": 1543.9800000000002,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 12,
+          "regular_losses": 2,
+          "regular_ties": 0,
+          "playoff_wins": 2,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1636.3199999999997,
+          "points_for_total": 1892.0599999999997,
+          "points_against": 1523.5000000000002,
+          "made_playoffs": true,
+          "playoff_finish": "Champion",
+          "champion": true,
+          "points_title": false,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2026": {
+          "regular_wins": 6,
+          "regular_losses": 3,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1046.8,
+          "points_for_total": 1046.8,
+          "points_against": 931.84,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 0
+        }
+      },
+      "career": {
+        "regular_wins": 26,
+        "regular_losses": 16,
+        "regular_ties": 0,
+        "playoff_wins": 2,
+        "playoff_losses": 1,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.619,
+        "playoff_win_pct": 0.6667,
+        "seasons_played": 3,
+        "championships": 1,
+        "playoff_appearances": 2,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 6,
+        "weekly_low_scores": 1,
+        "manager_score_index": 3.2285
+      }
+    },
+    "Jay Nelson": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 8,
+          "regular_losses": 6,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1552.94,
+          "points_for_total": 1832.54,
+          "points_against": 1748.94,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 0
+        },
+        "2024": {
+          "regular_wins": 8,
+          "regular_losses": 6,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1460.8400000000001,
+          "points_for_total": 1541.18,
+          "points_against": 1584.4199999999998,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 10,
+          "regular_losses": 4,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1601.8799999999999,
+          "points_for_total": 1896.2799999999997,
+          "points_against": 1735.68,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 0
+        },
+        "2026": {
+          "regular_wins": 5,
+          "regular_losses": 4,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 987.6600000000001,
+          "points_for_total": 987.6600000000001,
+          "points_against": 918.6,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 1
+        }
+      },
+      "career": {
+        "regular_wins": 26,
+        "regular_losses": 16,
+        "regular_ties": 0,
+        "playoff_wins": 2,
+        "playoff_losses": 3,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.619,
+        "playoff_win_pct": 0.4,
+        "seasons_played": 3,
+        "championships": 0,
+        "playoff_appearances": 3,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 1,
+        "weekly_low_scores": 0,
+        "manager_score_index": 3.2485
+      }
+    },
+    "Greg Wigton": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 11,
+          "regular_losses": 3,
+          "regular_ties": 0,
+          "playoff_wins": 2,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1730.1799999999998,
+          "points_for_total": 2017.1999999999998,
+          "points_against": 1595.4400000000003,
+          "made_playoffs": true,
+          "playoff_finish": "Champion",
+          "champion": true,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2024": {
+          "regular_wins": 5,
+          "regular_losses": 9,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1641.7599999999998,
+          "points_for_total": 1641.7599999999998,
+          "points_against": 1612.14,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 10,
+          "regular_losses": 4,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1682.82,
+          "points_for_total": 1918.92,
+          "points_against": 1700.68,
+          "made_playoffs": true,
+          "playoff_finish": "Runner-up",
+          "champion": false,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        },
+        "2026": {
+          "regular_wins": 6,
+          "regular_losses": 3,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1041.1,
+          "points_for_total": 1041.1,
+          "points_against": 1012.8799999999999,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 1
+        }
+      },
+      "career": {
+        "regular_wins": 26,
+        "regular_losses": 16,
         "regular_ties": 0,
         "playoff_wins": 3,
         "playoff_losses": 1,
         "playoff_ties": 0,
-        "regular_season_win_pct": 0.5238,
+        "regular_season_win_pct": 0.619,
         "playoff_win_pct": 0.75,
         "seasons_played": 3,
         "championships": 1,
         "playoff_appearances": 2,
-        "points_titles": 1,
+        "points_titles": 2,
+        "runner_ups": 1,
+        "weekly_high_scores": 8,
+        "weekly_low_scores": 0,
+        "manager_score_index": 4.1285
+      }
+    },
+    "Kevin Mallon": {
+      "seasons": {
+        "2025": {
+          "regular_wins": 7,
+          "regular_losses": 7,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1591.04,
+          "points_for_total": 1717.96,
+          "points_against": 1724.0399999999997,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 2,
+          "weekly_low_scores": 0
+        },
+        "2026": {
+          "regular_wins": 1,
+          "regular_losses": 8,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 727.92,
+          "points_for_total": 727.92,
+          "points_against": 985.82,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 3
+        }
+      },
+      "career": {
+        "regular_wins": 7,
+        "regular_losses": 7,
+        "regular_ties": 0,
+        "playoff_wins": 0,
+        "playoff_losses": 1,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.5,
+        "playoff_win_pct": 0.0,
+        "seasons_played": 1,
+        "championships": 0,
+        "playoff_appearances": 1,
+        "points_titles": 0,
         "runner_ups": 0,
-        "weekly_high_scores": 6,
+        "weekly_high_scores": 2,
+        "weekly_low_scores": 0,
+        "manager_score_index": 2.75
+      }
+    },
+    "Andrew Williams": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 4,
+          "regular_losses": 10,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1324.7399999999998,
+          "points_for_total": 1324.7399999999998,
+          "points_against": 1590.1399999999999,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 1,
+          "weekly_low_scores": 4
+        }
+      },
+      "career": {
+        "regular_wins": 4,
+        "regular_losses": 10,
+        "regular_ties": 0,
+        "playoff_wins": 0,
+        "playoff_losses": 0,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.2857,
+        "playoff_win_pct": 0.0,
+        "seasons_played": 1,
+        "championships": 0,
+        "playoff_appearances": 0,
+        "points_titles": 0,
+        "runner_ups": 0,
+        "weekly_high_scores": 1,
         "weekly_low_scores": 4,
-        "manager_score_index": 3.4857
+        "manager_score_index": 0.4285
+      }
+    },
+    "Eddie McCumiskey": {
+      "seasons": {
+        "2023": {
+          "regular_wins": 8,
+          "regular_losses": 6,
+          "regular_ties": 0,
+          "playoff_wins": 1,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1581.44,
+          "points_for_total": 1776.3000000000002,
+          "points_against": 1708.92,
+          "made_playoffs": true,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 1
+        },
+        "2024": {
+          "regular_wins": 10,
+          "regular_losses": 4,
+          "regular_ties": 0,
+          "playoff_wins": 2,
+          "playoff_losses": 1,
+          "playoff_ties": 0,
+          "points_for_regular": 1462.44,
+          "points_for_total": 1810.0800000000002,
+          "points_against": 1767.0,
+          "made_playoffs": true,
+          "playoff_finish": "Runner-up",
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 0
+        },
+        "2025": {
+          "regular_wins": 4,
+          "regular_losses": 10,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1435.84,
+          "points_for_total": 1435.84,
+          "points_against": 1618.16,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": false,
+          "weekly_high_scores": 0,
+          "weekly_low_scores": 1
+        },
+        "2026": {
+          "regular_wins": 7,
+          "regular_losses": 2,
+          "regular_ties": 0,
+          "playoff_wins": 0,
+          "playoff_losses": 0,
+          "playoff_ties": 0,
+          "points_for_regular": 1079.8400000000001,
+          "points_for_total": 1079.8400000000001,
+          "points_against": 993.3,
+          "made_playoffs": false,
+          "playoff_finish": null,
+          "champion": false,
+          "points_title": true,
+          "weekly_high_scores": 3,
+          "weekly_low_scores": 0
+        }
+      },
+      "career": {
+        "regular_wins": 22,
+        "regular_losses": 20,
+        "regular_ties": 0,
+        "playoff_wins": 3,
+        "playoff_losses": 2,
+        "playoff_ties": 0,
+        "regular_season_win_pct": 0.5238,
+        "playoff_win_pct": 0.6,
+        "seasons_played": 3,
+        "championships": 0,
+        "playoff_appearances": 2,
+        "points_titles": 0,
+        "runner_ups": 1,
+        "weekly_high_scores": 3,
+        "weekly_low_scores": 2,
+        "manager_score_index": 2.7657
       }
     }
   },
@@ -6186,14 +6282,9 @@
         "avg_score": 120.2
       },
       {
-        "manager": "Blake Pratt",
-        "year": 2026,
-        "avg_score": 119.04
-      },
-      {
         "manager": "Eddie McCumiskey",
         "year": 2026,
-        "avg_score": 119.02
+        "avg_score": 119.98
       },
       {
         "manager": "Blake Pratt",
@@ -6213,7 +6304,12 @@
       {
         "manager": "Carl Bruce",
         "year": 2026,
-        "avg_score": 116.59
+        "avg_score": 116.42
+      },
+      {
+        "manager": "Blake Pratt",
+        "year": 2026,
+        "avg_score": 116.31
       },
       {
         "manager": "Carl Bruce",
@@ -6230,7 +6326,7 @@
       {
         "manager": "Kevin Mallon",
         "year": 2026,
-        "avg_score": 77.73
+        "avg_score": 80.88
       },
       {
         "manager": "Brian Kleinhenz",
@@ -6253,24 +6349,24 @@
         "avg_score": 94.64
       },
       {
+        "manager": "Jason Carlton",
+        "year": 2026,
+        "avg_score": 95.83
+      },
+      {
         "manager": "Daniel Bahamonde",
         "year": 2023,
+        "avg_score": 96.17
+      },
+      {
+        "manager": "John Schauder",
+        "year": 2026,
         "avg_score": 96.17
       },
       {
         "manager": "Jason Carlton",
         "year": 2025,
         "avg_score": 96.86
-      },
-      {
-        "manager": "John Schauder",
-        "year": 2026,
-        "avg_score": 97.06
-      },
-      {
-        "manager": "Brian Harris",
-        "year": 2025,
-        "avg_score": 99.34
       }
     ],
     "top_regular_season_games": [
@@ -6656,33 +6752,33 @@
     "games_above_125": [
       {
         "manager": "Greg Wigton",
-        "count": 20,
-        "games_played": 54,
-        "rate": 0.3704
+        "count": 21,
+        "games_played": 55,
+        "rate": 0.3818
       },
       {
         "manager": "Carl Bruce",
         "count": 17,
-        "games_played": 54,
-        "rate": 0.3148
+        "games_played": 55,
+        "rate": 0.3091
       },
       {
         "manager": "Blake Pratt",
         "count": 15,
-        "games_played": 53,
-        "rate": 0.283
-      },
-      {
-        "manager": "Kevin Mallon",
-        "count": 6,
-        "games_played": 23,
-        "rate": 0.2609
+        "games_played": 54,
+        "rate": 0.2778
       },
       {
         "manager": "Jay Nelson",
         "count": 14,
-        "games_played": 55,
-        "rate": 0.2545
+        "games_played": 56,
+        "rate": 0.25
+      },
+      {
+        "manager": "Kevin Mallon",
+        "count": 6,
+        "games_played": 24,
+        "rate": 0.25
       },
       {
         "manager": "Erik Servinsky",
@@ -6692,21 +6788,21 @@
       },
       {
         "manager": "Eddie McCumiskey",
-        "count": 10,
-        "games_played": 55,
-        "rate": 0.1818
-      },
-      {
-        "manager": "Jason Carlton",
-        "count": 6,
-        "games_played": 38,
-        "rate": 0.1579
+        "count": 11,
+        "games_played": 56,
+        "rate": 0.1964
       },
       {
         "manager": "Brian Harris",
         "count": 8,
-        "games_played": 51,
-        "rate": 0.1569
+        "games_played": 52,
+        "rate": 0.1538
+      },
+      {
+        "manager": "Jason Carlton",
+        "count": 6,
+        "games_played": 39,
+        "rate": 0.1538
       },
       {
         "manager": "Andrew Williams",
@@ -6717,34 +6813,34 @@
       {
         "manager": "Brian Kleinhenz",
         "count": 7,
-        "games_played": 51,
-        "rate": 0.1373
+        "games_played": 52,
+        "rate": 0.1346
       },
       {
         "manager": "Daniel Bahamonde",
         "count": 5,
-        "games_played": 50,
-        "rate": 0.1
+        "games_played": 51,
+        "rate": 0.098
       },
       {
         "manager": "John Schauder",
         "count": 4,
-        "games_played": 50,
-        "rate": 0.08
+        "games_played": 51,
+        "rate": 0.0784
       },
       {
         "manager": "Josh Davis",
         "count": 2,
-        "games_played": 36,
-        "rate": 0.0556
+        "games_played": 37,
+        "rate": 0.0541
       }
     ],
     "games_below_100": [
       {
         "manager": "Josh Davis",
-        "count": 21,
-        "games_played": 36,
-        "rate": 0.5833
+        "count": 22,
+        "games_played": 37,
+        "rate": 0.5946
       },
       {
         "manager": "Andrew Williams",
@@ -6755,26 +6851,26 @@
       {
         "manager": "Kevin Mallon",
         "count": 12,
-        "games_played": 23,
-        "rate": 0.5217
+        "games_played": 24,
+        "rate": 0.5
       },
       {
         "manager": "Daniel Bahamonde",
         "count": 25,
-        "games_played": 50,
-        "rate": 0.5
+        "games_played": 51,
+        "rate": 0.4902
       },
       {
         "manager": "Brian Kleinhenz",
         "count": 24,
-        "games_played": 51,
-        "rate": 0.4706
+        "games_played": 52,
+        "rate": 0.4615
       },
       {
         "manager": "Jason Carlton",
-        "count": 17,
-        "games_played": 38,
-        "rate": 0.4474
+        "count": 18,
+        "games_played": 39,
+        "rate": 0.4615
       },
       {
         "manager": "Erik Servinsky",
@@ -6783,46 +6879,46 @@
         "rate": 0.413
       },
       {
-        "manager": "Eddie McCumiskey",
-        "count": 19,
-        "games_played": 55,
-        "rate": 0.3455
+        "manager": "John Schauder",
+        "count": 18,
+        "games_played": 51,
+        "rate": 0.3529
       },
       {
-        "manager": "John Schauder",
-        "count": 17,
-        "games_played": 50,
-        "rate": 0.34
+        "manager": "Eddie McCumiskey",
+        "count": 19,
+        "games_played": 56,
+        "rate": 0.3393
       },
       {
         "manager": "Jay Nelson",
         "count": 17,
-        "games_played": 55,
-        "rate": 0.3091
+        "games_played": 56,
+        "rate": 0.3036
       },
       {
-        "manager": "Carl Bruce",
+        "manager": "Blake Pratt",
         "count": 16,
         "games_played": 54,
         "rate": 0.2963
       },
       {
-        "manager": "Blake Pratt",
-        "count": 15,
-        "games_played": 53,
-        "rate": 0.283
+        "manager": "Carl Bruce",
+        "count": 16,
+        "games_played": 55,
+        "rate": 0.2909
       },
       {
         "manager": "Brian Harris",
         "count": 14,
-        "games_played": 51,
-        "rate": 0.2745
+        "games_played": 52,
+        "rate": 0.2692
       },
       {
         "manager": "Greg Wigton",
         "count": 13,
-        "games_played": 54,
-        "rate": 0.2407
+        "games_played": 55,
+        "rate": 0.2364
       }
     ],
     "top_winning_streaks": [
@@ -6906,11 +7002,7 @@
         "streak": 8,
         "span": "2026 Wk1\u2013Wk8",
         "end_year": 2026,
-        "end_week": "8",
-        "rank_last_week": {
-          "rank": 3,
-          "tied": true
-        }
+        "end_week": "8"
       },
       {
         "manager": "Jason Carlton",
@@ -7005,12 +7097,6 @@
         "streak": 5,
         "span": "2025 Wk10\u2013Wk14",
         "end_year": 2025
-      },
-      {
-        "manager": "Daniel Bahamonde",
-        "streak": 6,
-        "span": "2026 Wk3\u2013Wk8",
-        "end_year": 2026
       },
       {
         "manager": "Eddie McCumiskey",
@@ -7160,6 +7246,13 @@
     "fastest_to_50_wins": [],
     "fastest_to_25_losses": [
       {
+        "manager": "Josh Davis",
+        "team_name": "Jash\u2019s Big Booty H0es",
+        "games": 37,
+        "year": 2026,
+        "week": "9"
+      },
+      {
         "manager": "John Schauder",
         "team_name": "The Nicebois",
         "games": 37,
@@ -7188,207 +7281,207 @@
     "rankings": [
       {
         "manager": "Eddie McCumiskey",
-        "wins": 6,
+        "wins": 7,
         "losses": 2,
         "ties": 0,
-        "win_pct": 0.75,
-        "points_scored": 952.16,
-        "breakdown_wins": 64,
-        "breakdown_losses": 24,
+        "win_pct": 0.7778,
+        "points_scored": 1079.84,
+        "breakdown_wins": 74,
+        "breakdown_losses": 25,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.7273,
-        "schedule_difficulty": 0.0227,
+        "breakdown_win_pct": 0.7475,
+        "schedule_difficulty": 0.0303,
         "win_pct_points": 12.0,
-        "points_scored_points": 11.0,
-        "schedule_difficulty_points": 5.0,
-        "power_score": 28.0
+        "points_scored_points": 12.0,
+        "schedule_difficulty_points": 3.5,
+        "power_score": 27.5
       },
       {
-        "manager": "Blake Pratt",
-        "wins": 5,
+        "manager": "Greg Wigton",
+        "wins": 6,
         "losses": 3,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_scored": 952.3,
-        "breakdown_wins": 53,
+        "win_pct": 0.6667,
+        "points_scored": 1041.1,
+        "breakdown_wins": 64,
         "breakdown_losses": 35,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.6023,
-        "schedule_difficulty": 0.0227,
-        "win_pct_points": 9.0,
-        "points_scored_points": 12.0,
-        "schedule_difficulty_points": 5.0,
-        "power_score": 26.0
+        "breakdown_win_pct": 0.6465,
+        "schedule_difficulty": 0.0202,
+        "win_pct_points": 10.0,
+        "points_scored_points": 9.0,
+        "schedule_difficulty_points": 6.0,
+        "power_score": 25.0
       },
       {
         "manager": "Carl Bruce",
-        "wins": 5,
+        "wins": 6,
         "losses": 3,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_scored": 932.74,
-        "breakdown_wins": 54,
-        "breakdown_losses": 34,
+        "win_pct": 0.6667,
+        "points_scored": 1047.82,
+        "breakdown_wins": 63,
+        "breakdown_losses": 36,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.6136,
-        "schedule_difficulty": 0.0114,
-        "win_pct_points": 9.0,
-        "points_scored_points": 10.0,
-        "schedule_difficulty_points": 7.0,
-        "power_score": 26.0
+        "breakdown_win_pct": 0.6364,
+        "schedule_difficulty": 0.0303,
+        "win_pct_points": 10.0,
+        "points_scored_points": 11.0,
+        "schedule_difficulty_points": 3.5,
+        "power_score": 24.5
       },
       {
         "manager": "Brian Harris",
         "wins": 4,
-        "losses": 4,
+        "losses": 5,
         "ties": 0,
-        "win_pct": 0.5,
-        "points_scored": 906.08,
-        "breakdown_wins": 54,
-        "breakdown_losses": 34,
+        "win_pct": 0.4444,
+        "points_scored": 1007.96,
+        "breakdown_wins": 59,
+        "breakdown_losses": 40,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.6136,
-        "schedule_difficulty": -0.1136,
-        "win_pct_points": 5.0,
+        "breakdown_win_pct": 0.596,
+        "schedule_difficulty": -0.1515,
+        "win_pct_points": 4.5,
         "points_scored_points": 7.0,
-        "schedule_difficulty_points": 11.0,
-        "power_score": 23.0
+        "schedule_difficulty_points": 12.0,
+        "power_score": 23.5
       },
       {
         "manager": "Daniel Bahamonde",
-        "wins": 4,
+        "wins": 5,
         "losses": 4,
         "ties": 0,
-        "win_pct": 0.5,
-        "points_scored": 915.02,
-        "breakdown_wins": 46,
-        "breakdown_losses": 42,
+        "win_pct": 0.5556,
+        "points_scored": 1025.48,
+        "breakdown_wins": 54,
+        "breakdown_losses": 45,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.5227,
-        "schedule_difficulty": -0.0227,
-        "win_pct_points": 5.0,
-        "points_scored_points": 9.0,
+        "breakdown_win_pct": 0.5455,
+        "schedule_difficulty": 0.0101,
+        "win_pct_points": 7.0,
+        "points_scored_points": 8.0,
         "schedule_difficulty_points": 8.0,
-        "power_score": 22.0
+        "power_score": 23.0
       },
       {
-        "manager": "Greg Wigton",
-        "wins": 5,
+        "manager": "Blake Pratt",
+        "wins": 6,
         "losses": 3,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_scored": 911.28,
-        "breakdown_wins": 53,
-        "breakdown_losses": 35,
+        "win_pct": 0.6667,
+        "points_scored": 1046.8,
+        "breakdown_wins": 56,
+        "breakdown_losses": 43,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.6023,
-        "schedule_difficulty": 0.0227,
-        "win_pct_points": 9.0,
-        "points_scored_points": 8.0,
-        "schedule_difficulty_points": 5.0,
+        "breakdown_win_pct": 0.5657,
+        "schedule_difficulty": 0.101,
+        "win_pct_points": 10.0,
+        "points_scored_points": 10.0,
+        "schedule_difficulty_points": 2.0,
         "power_score": 22.0
-      },
-      {
-        "manager": "Jason Carlton",
-        "wins": 2,
-        "losses": 6,
-        "ties": 0,
-        "win_pct": 0.25,
-        "points_scored": 795.3,
-        "breakdown_wins": 34,
-        "breakdown_losses": 54,
-        "breakdown_ties": 0,
-        "breakdown_win_pct": 0.3864,
-        "schedule_difficulty": -0.1364,
-        "win_pct_points": 2.0,
-        "points_scored_points": 3.0,
-        "schedule_difficulty_points": 12.0,
-        "power_score": 17.0
       },
       {
         "manager": "Jay Nelson",
         "wins": 5,
-        "losses": 3,
+        "losses": 4,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_scored": 877.82,
-        "breakdown_wins": 46,
-        "breakdown_losses": 42,
+        "win_pct": 0.5556,
+        "points_scored": 987.66,
+        "breakdown_wins": 53,
+        "breakdown_losses": 46,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.5227,
-        "schedule_difficulty": 0.1023,
-        "win_pct_points": 9.0,
+        "breakdown_win_pct": 0.5354,
+        "schedule_difficulty": 0.0202,
+        "win_pct_points": 7.0,
         "points_scored_points": 6.0,
-        "schedule_difficulty_points": 2.0,
-        "power_score": 17.0
-      },
-      {
-        "manager": "Josh Davis",
-        "wins": 5,
-        "losses": 3,
-        "ties": 0,
-        "win_pct": 0.625,
-        "points_scored": 854.9,
-        "breakdown_wins": 38,
-        "breakdown_losses": 50,
-        "breakdown_ties": 0,
-        "breakdown_win_pct": 0.4318,
-        "schedule_difficulty": 0.1932,
-        "win_pct_points": 9.0,
-        "points_scored_points": 5.0,
-        "schedule_difficulty_points": 1.0,
-        "power_score": 15.0
+        "schedule_difficulty_points": 6.0,
+        "power_score": 19.0
       },
       {
         "manager": "John Schauder",
         "wins": 3,
-        "losses": 5,
+        "losses": 6,
         "ties": 0,
-        "win_pct": 0.375,
-        "points_scored": 776.48,
-        "breakdown_wins": 39,
-        "breakdown_losses": 49,
+        "win_pct": 0.3333,
+        "points_scored": 865.56,
+        "breakdown_wins": 41,
+        "breakdown_losses": 58,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.4432,
-        "schedule_difficulty": -0.0682,
+        "breakdown_win_pct": 0.4141,
+        "schedule_difficulty": -0.0808,
         "win_pct_points": 3.0,
-        "points_scored_points": 2.0,
-        "schedule_difficulty_points": 9.0,
-        "power_score": 14.0
+        "points_scored_points": 3.0,
+        "schedule_difficulty_points": 10.0,
+        "power_score": 16.0
       },
       {
         "manager": "Brian Kleinhenz",
         "wins": 4,
+        "losses": 5,
+        "ties": 0,
+        "win_pct": 0.4444,
+        "points_scored": 939.18,
+        "breakdown_wins": 42,
+        "breakdown_losses": 57,
+        "breakdown_ties": 0,
+        "breakdown_win_pct": 0.4242,
+        "schedule_difficulty": 0.0202,
+        "win_pct_points": 4.5,
+        "points_scored_points": 5.0,
+        "schedule_difficulty_points": 6.0,
+        "power_score": 15.5
+      },
+      {
+        "manager": "Jason Carlton",
+        "wins": 2,
+        "losses": 7,
+        "ties": 0,
+        "win_pct": 0.2222,
+        "points_scored": 862.44,
+        "breakdown_wins": 34,
+        "breakdown_losses": 65,
+        "breakdown_ties": 0,
+        "breakdown_win_pct": 0.3434,
+        "schedule_difficulty": -0.1212,
+        "win_pct_points": 2.0,
+        "points_scored_points": 2.0,
+        "schedule_difficulty_points": 11.0,
+        "power_score": 15.0
+      },
+      {
+        "manager": "Josh Davis",
+        "wins": 5,
         "losses": 4,
         "ties": 0,
-        "win_pct": 0.5,
-        "points_scored": 837.92,
-        "breakdown_wins": 38,
-        "breakdown_losses": 50,
+        "win_pct": 0.5556,
+        "points_scored": 931.22,
+        "breakdown_wins": 39,
+        "breakdown_losses": 60,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.4318,
-        "schedule_difficulty": 0.0682,
-        "win_pct_points": 5.0,
+        "breakdown_win_pct": 0.3939,
+        "schedule_difficulty": 0.1616,
+        "win_pct_points": 7.0,
         "points_scored_points": 4.0,
-        "schedule_difficulty_points": 3.0,
+        "schedule_difficulty_points": 1.0,
         "power_score": 12.0
       },
       {
         "manager": "Kevin Mallon",
-        "wins": 0,
+        "wins": 1,
         "losses": 8,
         "ties": 0,
-        "win_pct": 0.0,
-        "points_scored": 621.84,
-        "breakdown_wins": 9,
-        "breakdown_losses": 79,
+        "win_pct": 0.1111,
+        "points_scored": 727.92,
+        "breakdown_wins": 15,
+        "breakdown_losses": 84,
         "breakdown_ties": 0,
-        "breakdown_win_pct": 0.1023,
-        "schedule_difficulty": -0.1023,
+        "breakdown_win_pct": 0.1515,
+        "schedule_difficulty": -0.0404,
         "win_pct_points": 1.0,
         "points_scored_points": 1.0,
-        "schedule_difficulty_points": 10.0,
-        "power_score": 12.0
+        "schedule_difficulty_points": 9.0,
+        "power_score": 11.0
       }
     ]
   },
@@ -7396,29 +7489,8 @@
     "season": 2026,
     "top_current_winning_streaks": [
       {
-        "manager": "Blake Pratt",
-        "win_streak": 2,
-        "loss_streak": 0,
-        "streak_games": [
-          {
-            "opponent": "Kevin Mallon",
-            "manager_score": 146.58,
-            "opponent_score": 73.86,
-            "year": 2026,
-            "week": "7"
-          },
-          {
-            "opponent": "Brian Harris",
-            "manager_score": 124.8,
-            "opponent_score": 106.6,
-            "year": 2026,
-            "week": "8"
-          }
-        ]
-      },
-      {
         "manager": "Carl Bruce",
-        "win_streak": 2,
+        "win_streak": 3,
         "loss_streak": 0,
         "streak_games": [
           {
@@ -7434,40 +7506,47 @@
             "opponent_score": 65.5,
             "year": 2026,
             "week": "8"
-          }
-        ]
-      },
-      {
-        "manager": "Eddie McCumiskey",
-        "win_streak": 1,
-        "loss_streak": 0,
-        "streak_games": [
+          },
           {
             "opponent": "Jay Nelson",
-            "manager_score": 149.08,
-            "opponent_score": 121.48,
+            "manager_score": 115.08,
+            "opponent_score": 109.84,
             "year": 2026,
-            "week": "8"
+            "week": "9"
           }
         ]
       },
       {
-        "manager": "Jason Carlton",
-        "win_streak": 1,
+        "manager": "Blake Pratt",
+        "win_streak": 3,
         "loss_streak": 0,
         "streak_games": [
           {
-            "opponent": "Brian Kleinhenz",
-            "manager_score": 87.16,
-            "opponent_score": 81.16,
+            "opponent": "Kevin Mallon",
+            "manager_score": 146.58,
+            "opponent_score": 73.86,
+            "year": 2026,
+            "week": "7"
+          },
+          {
+            "opponent": "Brian Harris",
+            "manager_score": 124.8,
+            "opponent_score": 106.6,
             "year": 2026,
             "week": "8"
+          },
+          {
+            "opponent": "John Schauder",
+            "manager_score": 94.5,
+            "opponent_score": 89.08,
+            "year": 2026,
+            "week": "9"
           }
         ]
       },
       {
         "manager": "Daniel Bahamonde",
-        "win_streak": 1,
+        "win_streak": 2,
         "loss_streak": 0,
         "streak_games": [
           {
@@ -7476,92 +7555,43 @@
             "opponent_score": 98.5,
             "year": 2026,
             "week": "8"
+          },
+          {
+            "opponent": "Jason Carlton",
+            "manager_score": 110.46,
+            "opponent_score": 67.14,
+            "year": 2026,
+            "week": "9"
           }
         ]
       },
       {
-        "manager": "Josh Davis",
-        "win_streak": 1,
+        "manager": "Eddie McCumiskey",
+        "win_streak": 2,
         "loss_streak": 0,
         "streak_games": [
           {
-            "opponent": "Kevin Mallon",
-            "manager_score": 102.62,
-            "opponent_score": 86.82,
+            "opponent": "Jay Nelson",
+            "manager_score": 149.08,
+            "opponent_score": 121.48,
             "year": 2026,
             "week": "8"
+          },
+          {
+            "opponent": "Brian Kleinhenz",
+            "manager_score": 127.68,
+            "opponent_score": 101.26,
+            "year": 2026,
+            "week": "9"
           }
         ]
       }
     ],
     "top_current_losing_streaks": [
       {
-        "manager": "Kevin Mallon",
-        "win_streak": 0,
-        "loss_streak": 8,
-        "streak_games": [
-          {
-            "opponent": "Eddie McCumiskey",
-            "manager_score": 78.84,
-            "opponent_score": 79.16,
-            "year": 2026,
-            "week": "1"
-          },
-          {
-            "opponent": "Carl Bruce",
-            "manager_score": 72.8,
-            "opponent_score": 103.92,
-            "year": 2026,
-            "week": "2"
-          },
-          {
-            "opponent": "Greg Wigton",
-            "manager_score": 98.78,
-            "opponent_score": 104.04,
-            "year": 2026,
-            "week": "3"
-          },
-          {
-            "opponent": "Jay Nelson",
-            "manager_score": 66.88,
-            "opponent_score": 111.12,
-            "year": 2026,
-            "week": "4"
-          },
-          {
-            "opponent": "Brian Kleinhenz",
-            "manager_score": 57.42,
-            "opponent_score": 134.0,
-            "year": 2026,
-            "week": "5"
-          },
-          {
-            "opponent": "Daniel Bahamonde",
-            "manager_score": 86.44,
-            "opponent_score": 102.5,
-            "year": 2026,
-            "week": "6"
-          },
-          {
-            "opponent": "Blake Pratt",
-            "manager_score": 73.86,
-            "opponent_score": 146.58,
-            "year": 2026,
-            "week": "7"
-          },
-          {
-            "opponent": "Josh Davis",
-            "manager_score": 86.82,
-            "opponent_score": 102.62,
-            "year": 2026,
-            "week": "8"
-          }
-        ]
-      },
-      {
         "manager": "Brian Kleinhenz",
         "win_streak": 0,
-        "loss_streak": 3,
+        "loss_streak": 4,
         "streak_games": [
           {
             "opponent": "Brian Harris",
@@ -7583,6 +7613,76 @@
             "opponent_score": 87.16,
             "year": 2026,
             "week": "8"
+          },
+          {
+            "opponent": "Eddie McCumiskey",
+            "manager_score": 101.26,
+            "opponent_score": 127.68,
+            "year": 2026,
+            "week": "9"
+          }
+        ]
+      },
+      {
+        "manager": "John Schauder",
+        "win_streak": 0,
+        "loss_streak": 2,
+        "streak_games": [
+          {
+            "opponent": "Daniel Bahamonde",
+            "manager_score": 98.5,
+            "opponent_score": 118.28,
+            "year": 2026,
+            "week": "8"
+          },
+          {
+            "opponent": "Blake Pratt",
+            "manager_score": 89.08,
+            "opponent_score": 94.5,
+            "year": 2026,
+            "week": "9"
+          }
+        ]
+      },
+      {
+        "manager": "Brian Harris",
+        "win_streak": 0,
+        "loss_streak": 2,
+        "streak_games": [
+          {
+            "opponent": "Blake Pratt",
+            "manager_score": 106.6,
+            "opponent_score": 124.8,
+            "year": 2026,
+            "week": "8"
+          },
+          {
+            "opponent": "Kevin Mallon",
+            "manager_score": 101.88,
+            "opponent_score": 106.08,
+            "year": 2026,
+            "week": "9"
+          }
+        ]
+      },
+      {
+        "manager": "Jay Nelson",
+        "win_streak": 0,
+        "loss_streak": 2,
+        "streak_games": [
+          {
+            "opponent": "Eddie McCumiskey",
+            "manager_score": 121.48,
+            "opponent_score": 149.08,
+            "year": 2026,
+            "week": "8"
+          },
+          {
+            "opponent": "Carl Bruce",
+            "manager_score": 109.84,
+            "opponent_score": 115.08,
+            "year": 2026,
+            "week": "9"
           }
         ]
       }
@@ -7594,169 +7694,167 @@
       {
         "manager": "Eddie McCumiskey",
         "team_name": "She's Tuten from Herbert",
-        "wins": 6,
+        "wins": 7,
         "losses": 2,
         "ties": 0,
-        "win_pct": 0.75,
-        "points_for": 952.16,
-        "points_against": 892.04
-      },
-      {
-        "manager": "Blake Pratt",
-        "team_name": "Butt Stuff",
-        "wins": 5,
-        "losses": 3,
-        "ties": 0,
-        "win_pct": 0.625,
-        "points_for": 952.3,
-        "points_against": 842.76
+        "win_pct": 0.7778,
+        "points_for": 1079.84,
+        "points_against": 993.3
       },
       {
         "manager": "Carl Bruce",
         "team_name": "Off to Grandma",
-        "wins": 5,
+        "wins": 6,
         "losses": 3,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_for": 932.74,
-        "points_against": 756.08
+        "win_pct": 0.6667,
+        "points_for": 1047.82,
+        "points_against": 865.92
+      },
+      {
+        "manager": "Blake Pratt",
+        "team_name": "Butt Stuff",
+        "wins": 6,
+        "losses": 3,
+        "ties": 0,
+        "win_pct": 0.6667,
+        "points_for": 1046.8,
+        "points_against": 931.84
       },
       {
         "manager": "Greg Wigton",
         "team_name": "The Invisible Hand",
-        "wins": 5,
+        "wins": 6,
         "losses": 3,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_for": 911.28,
-        "points_against": 936.56
+        "win_pct": 0.6667,
+        "points_for": 1041.1,
+        "points_against": 1012.88
+      },
+      {
+        "manager": "Daniel Bahamonde",
+        "team_name": "Freakin Ricans",
+        "wins": 5,
+        "losses": 4,
+        "ties": 0,
+        "win_pct": 0.5556,
+        "points_for": 1025.48,
+        "points_against": 931.2
       },
       {
         "manager": "Jay Nelson",
         "team_name": "High Quality H2O",
         "wins": 5,
-        "losses": 3,
+        "losses": 4,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_for": 877.82,
-        "points_against": 803.52
+        "win_pct": 0.5556,
+        "points_for": 987.66,
+        "points_against": 918.6
       },
       {
         "manager": "Josh Davis",
         "team_name": "Jash\u2019s Big Booty H0es",
         "wins": 5,
-        "losses": 3,
+        "losses": 4,
         "ties": 0,
-        "win_pct": 0.625,
-        "points_for": 854.9,
-        "points_against": 858.38
+        "win_pct": 0.5556,
+        "points_for": 931.22,
+        "points_against": 988.2
       },
       {
         "manager": "Brian Harris",
         "team_name": "Tomahawk Piranhas",
         "wins": 4,
-        "losses": 4,
+        "losses": 5,
         "ties": 0,
-        "win_pct": 0.5,
-        "points_for": 906.08,
-        "points_against": 919.38
-      },
-      {
-        "manager": "Daniel Bahamonde",
-        "team_name": "Freakin Ricans",
-        "wins": 4,
-        "losses": 4,
-        "ties": 0,
-        "win_pct": 0.5,
-        "points_for": 915.02,
-        "points_against": 864.06
+        "win_pct": 0.4444,
+        "points_for": 1007.96,
+        "points_against": 1025.46
       },
       {
         "manager": "Brian Kleinhenz",
         "team_name": "Riding miss daisy",
         "wins": 4,
-        "losses": 4,
+        "losses": 5,
         "ties": 0,
-        "win_pct": 0.5,
-        "points_for": 837.92,
-        "points_against": 749.18
+        "win_pct": 0.4444,
+        "points_for": 939.18,
+        "points_against": 876.86
       },
       {
         "manager": "John Schauder",
         "team_name": "The Nicebois",
         "wins": 3,
-        "losses": 5,
+        "losses": 6,
         "ties": 0,
-        "win_pct": 0.375,
-        "points_for": 776.48,
-        "points_against": 877.76
+        "win_pct": 0.3333,
+        "points_for": 865.56,
+        "points_against": 972.26
       },
       {
         "manager": "Jason Carlton",
         "team_name": "Open Mic Night Contestant",
         "wins": 2,
-        "losses": 6,
+        "losses": 7,
         "ties": 0,
-        "win_pct": 0.25,
-        "points_for": 795.3,
-        "points_against": 950.18
+        "win_pct": 0.2222,
+        "points_for": 862.44,
+        "points_against": 1060.64
       },
       {
         "manager": "Kevin Mallon",
         "team_name": "Smack That",
-        "wins": 0,
+        "wins": 1,
         "losses": 8,
         "ties": 0,
-        "win_pct": 0.0,
-        "points_for": 621.84,
-        "points_against": 883.94
+        "win_pct": 0.1111,
+        "points_for": 727.92,
+        "points_against": 985.82
       }
     ]
   },
   "week_in_history": {
-    "year": 2025,
-    "week": "9",
-    "away_manager": "Kevin Mallon",
-    "away_team": "Salmation Nation",
-    "away_score": 103.52,
-    "home_manager": "Greg Wigton",
-    "home_team": "The Invisible Hand",
-    "home_score": 171.26,
-    "winner": "Greg Wigton",
-    "loser": "Kevin Mallon",
+    "year": 2024,
+    "week": "10",
+    "away_manager": "John Schauder",
+    "away_team": "The Nicebois",
+    "away_score": 96.02,
+    "home_manager": "Josh Davis",
+    "home_team": "Salmation Nation",
+    "home_score": 73.72,
+    "winner": "John Schauder",
+    "loser": "Josh Davis",
     "tie": false,
-    "margin": 67.74,
-    "selection_reason": "all_time_top5_score",
+    "margin": 22.3,
+    "selection_reason": "last_place_two_seasons_ago",
     "selection_detail": {
-      "manager": "Greg Wigton",
-      "score": 171.26,
-      "rank": 3
+      "manager": "Josh Davis",
+      "won": false,
+      "season": 2024,
+      "final_record": [
+        1,
+        13
+      ]
     },
-    "narrative": "This week's flashback drags us back to Week 9 of 2025, and we're revisiting it for one reason only: Greg Wigton's 171.26 points that day stands as the #3 highest single-game score in the entire history of this league. That's not a fluke, that's a man locking himself in the garage with a scoreboard and refusing to come out until Kevin Mallon's season looked like roadkill. And it did \u2014 Salmation Nation got run over to the tune of 103.52, a near-68-point beatdown that should've come with a tetanus shot.\n\nKevin, give him credit, didn't curl up in the fetal position \u2014 he reeled off a 3-2 finish, clawed into the playoffs, and still got bounced in the quarterfinal, proving resilience only gets you so far before reality flushes you anyway. Greg, meanwhile, kept the faucet running, rolled 4-1 the rest of the way, and marched all the way to the championship \u2014 where he lost. Turns out 171 points buys you a banner story, not a trophy."
+    "narrative": "This week's dusty reel pulls up Week 10 of 2024, revisited specifically because Josh Davis finished that season at a gruesome 1-13 \u2014 a record so bad it belongs in a museum exhibit titled \"How Not To.\" This game was just a preview of the coming disaster.\n\nJohn Schauder's Nicebois rolled to a comfortable 96.02-73.72 beatdown, hanging 22-plus points on Salmation Nation like it owed him money. But don't mistake this for the start of a Schauder renaissance \u2014 he limped to a 1-3 finish the rest of the way, missing the playoffs anyway, because apparently winning one blowout doesn't fix a roster held together with duct tape and prayer.\n\nJosh Davis, meanwhile, took this loss as a launching pad into total collapse, going an astonishing 0-4 down the stretch to cement that 1-13 campaign in franchise lore. No playoffs, no dignity, just a bye-week-adjacent vibe for ten straight weeks. Somewhere out there, Salmation Nation's garage fridge is still stocked with sympathy beers nobody wanted to bring over."
   },
   "stat_of_the_week": {
-    "reason": "crowded_5_3",
-    "value": 71.4,
-    "sample_size": 7,
-    "made_playoffs": 5,
-    "champions": 1,
-    "record_label": "5-3",
+    "reason": "points_title_pace_week_9",
+    "value": 121.32,
+    "value_suffix": "",
+    "sample_size": 3,
     "this_year_teams": [
-      "Blake Pratt",
-      "Carl Bruce",
-      "Greg Wigton",
-      "Jay Nelson",
-      "Josh Davis"
+      "Eddie McCumiskey (119.98)",
+      "Carl Bruce (116.42)",
+      "Blake Pratt (116.31)"
     ],
-    "narrative": "The historical chance of making the playoffs if you are 5-3 after Week 8. Since 2023, 7 teams have been 5-3 after Week 8, and 5 have made the playoffs.",
-    "closing": "Based on history, only four of those teams will make the playoffs, who will it be?",
-    "expected_playoff_teams": 4,
-    "teams_label": "Managers that are 5-3 this year",
-    "footnote": "For John Schauder at 3-5, Week 9 is a must-win: since 2023, only 1 of 8 teams that fell to 3-6 made the playoffs."
+    "teams_label": "Highest scoring teams this year (average score through Week 9)",
+    "narrative": "The average score through Week 9 of the teams that went on to win the points title. Greg Wigton (2023) averaged 119.94 through Week 9 and finished the season with 123.58; Carl Bruce (2024) averaged 121.74 through Week 9 and finished the season with 121.40; Greg Wigton (2025) averaged 122.28 through Week 9 and finished the season with 120.20.",
+    "closing": "Every points champion was already in the top 2 in average after Week 9."
   },
   "stat_of_the_week_for": [
     2026,
-    8
+    9
   ],
   "playoff_probability_model": {
     "seasons_used": [
@@ -8013,157 +8111,155 @@
   "playoff_probabilities": {
     "season": 2026,
     "visible": true,
-    "current_week": 8,
+    "current_week": 9,
     "status_method": "bound",
     "managers": [
       {
         "manager": "Eddie McCumiskey",
-        "wins": 6,
+        "wins": 7,
         "losses": 2,
-        "base_rate": 0.875,
-        "basis": "exact (8 historical samples)",
-        "points_scored": 952.16,
-        "schedule_difficulty": 0.0227,
-        "probability": 87.5,
-        "clinched": false,
-        "eliminated": false
-      },
-      {
-        "manager": "Blake Pratt",
-        "wins": 5,
-        "losses": 3,
-        "base_rate": 0.7643,
-        "basis": "exact (7 historical samples); record-order rule 71.4% -> 76.4%",
-        "points_scored": 952.3,
-        "schedule_difficulty": 0.0227,
-        "historical_rate": 0.7143,
-        "probability": 81.2,
+        "base_rate": 1.0,
+        "basis": "exact (6 historical samples)",
+        "points_scored": 1079.84,
+        "schedule_difficulty": 0.0303,
+        "probability": 99.0,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Carl Bruce",
-        "wins": 5,
+        "wins": 6,
         "losses": 3,
-        "base_rate": 0.7643,
-        "basis": "exact (7 historical samples); record-order rule 71.4% -> 76.4%",
-        "points_scored": 932.74,
-        "schedule_difficulty": 0.0114,
-        "historical_rate": 0.7143,
-        "probability": 80.2,
+        "base_rate": 0.7167,
+        "basis": "exact (6 historical samples); record-order rule 66.7% -> 71.7%",
+        "points_scored": 1047.82,
+        "schedule_difficulty": 0.0303,
+        "historical_rate": 0.6667,
+        "probability": 72.7,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Greg Wigton",
-        "wins": 5,
+        "wins": 6,
         "losses": 3,
-        "base_rate": 0.7643,
-        "basis": "exact (7 historical samples); record-order rule 71.4% -> 76.4%",
-        "points_scored": 911.28,
-        "schedule_difficulty": 0.0227,
-        "historical_rate": 0.7143,
-        "probability": 78.7,
+        "base_rate": 0.7167,
+        "basis": "exact (6 historical samples); record-order rule 66.7% -> 71.7%",
+        "points_scored": 1041.1,
+        "schedule_difficulty": 0.0202,
+        "historical_rate": 0.6667,
+        "probability": 72.7,
+        "clinched": false,
+        "eliminated": false
+      },
+      {
+        "manager": "Blake Pratt",
+        "wins": 6,
+        "losses": 3,
+        "base_rate": 0.7167,
+        "basis": "exact (6 historical samples); record-order rule 66.7% -> 71.7%",
+        "points_scored": 1046.8,
+        "schedule_difficulty": 0.101,
+        "historical_rate": 0.6667,
+        "probability": 69.7,
+        "clinched": false,
+        "eliminated": false
+      },
+      {
+        "manager": "Daniel Bahamonde",
+        "wins": 5,
+        "losses": 4,
+        "base_rate": 0.6167,
+        "basis": "exact (5 historical samples); record-order rule 80.0% -> 61.7%",
+        "points_scored": 1025.48,
+        "schedule_difficulty": 0.0101,
+        "historical_rate": 0.8,
+        "probability": 67.2,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Jay Nelson",
         "wins": 5,
-        "losses": 3,
-        "base_rate": 0.7643,
-        "basis": "exact (7 historical samples); record-order rule 71.4% -> 76.4%",
-        "points_scored": 877.82,
-        "schedule_difficulty": 0.1023,
-        "historical_rate": 0.7143,
-        "probability": 73.4,
-        "clinched": false,
-        "eliminated": false
-      },
-      {
-        "manager": "Brian Harris",
-        "wins": 4,
         "losses": 4,
-        "base_rate": 0.6643,
-        "basis": "exact (4 historical samples); record-order rule 75.0% -> 66.4%",
-        "points_scored": 906.08,
-        "schedule_difficulty": -0.1136,
-        "historical_rate": 0.75,
-        "probability": 71.9,
-        "clinched": false,
-        "eliminated": false
-      },
-      {
-        "manager": "Daniel Bahamonde",
-        "wins": 4,
-        "losses": 4,
-        "base_rate": 0.6643,
-        "basis": "exact (4 historical samples); record-order rule 75.0% -> 66.4%",
-        "points_scored": 915.02,
-        "schedule_difficulty": -0.0227,
-        "historical_rate": 0.75,
-        "probability": 68.9,
+        "base_rate": 0.6167,
+        "basis": "exact (5 historical samples); record-order rule 80.0% -> 61.7%",
+        "points_scored": 987.66,
+        "schedule_difficulty": 0.0202,
+        "historical_rate": 0.8,
+        "probability": 64.2,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Josh Davis",
         "wins": 5,
-        "losses": 3,
-        "base_rate": 0.7643,
-        "basis": "exact (7 historical samples); record-order rule 71.4% -> 76.4%",
-        "points_scored": 854.9,
-        "schedule_difficulty": 0.1932,
-        "historical_rate": 0.7143,
-        "probability": 68.7,
+        "losses": 4,
+        "base_rate": 0.6167,
+        "basis": "exact (5 historical samples); record-order rule 80.0% -> 61.7%",
+        "points_scored": 931.22,
+        "schedule_difficulty": 0.1616,
+        "historical_rate": 0.8,
+        "probability": 53.7,
+        "clinched": false,
+        "eliminated": false
+      },
+      {
+        "manager": "Brian Harris",
+        "wins": 4,
+        "losses": 5,
+        "base_rate": 0.3571,
+        "basis": "win% fallback (42 historical samples)",
+        "points_scored": 1007.96,
+        "schedule_difficulty": -0.1515,
+        "probability": 44.7,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Brian Kleinhenz",
         "wins": 4,
-        "losses": 4,
-        "base_rate": 0.6643,
-        "basis": "exact (4 historical samples); record-order rule 75.0% -> 66.4%",
-        "points_scored": 837.92,
-        "schedule_difficulty": 0.0682,
-        "historical_rate": 0.75,
-        "probability": 58.4,
+        "losses": 5,
+        "base_rate": 0.3571,
+        "basis": "win% fallback (42 historical samples)",
+        "points_scored": 939.18,
+        "schedule_difficulty": 0.0202,
+        "probability": 26.7,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "John Schauder",
         "wins": 3,
-        "losses": 5,
-        "base_rate": 0.2222,
-        "basis": "exact (9 historical samples)",
-        "points_scored": 776.48,
-        "schedule_difficulty": -0.0682,
-        "probability": 22.2,
+        "losses": 6,
+        "base_rate": 0.125,
+        "basis": "exact (8 historical samples)",
+        "points_scored": 865.56,
+        "schedule_difficulty": -0.0808,
+        "probability": 12.5,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Jason Carlton",
         "wins": 2,
-        "losses": 6,
-        "base_rate": 0.0,
-        "basis": "exact (4 historical samples)",
-        "points_scored": 795.3,
-        "schedule_difficulty": -0.1364,
-        "probability": 1.0,
+        "losses": 7,
+        "base_rate": 0.0893,
+        "basis": "win% fallback (56 historical samples)",
+        "points_scored": 862.44,
+        "schedule_difficulty": -0.1212,
+        "probability": 8.9,
         "clinched": false,
         "eliminated": false
       },
       {
         "manager": "Kevin Mallon",
-        "wins": 0,
+        "wins": 1,
         "losses": 8,
         "base_rate": 0.0,
-        "basis": "win% fallback (4 historical samples)",
-        "points_scored": 621.84,
-        "schedule_difficulty": -0.1023,
+        "basis": "win% fallback (14 historical samples)",
+        "points_scored": 727.92,
+        "schedule_difficulty": -0.0404,
         "probability": 1.0,
         "clinched": false,
         "eliminated": false
@@ -8172,83 +8268,23 @@
   },
   "msi_last_complete_season": 2025,
   "h2h_summary": {
-    "Blake Pratt": {
-      "seasons_played": 4,
-      "wins": 33,
-      "losses": 20,
+    "Jason Carlton": {
+      "seasons_played": 3,
+      "wins": 21,
+      "losses": 18,
       "ties": 0,
-      "win_pct": 0.6226,
-      "rs_wins": 31,
-      "rs_losses": 19,
+      "win_pct": 0.5385,
+      "rs_wins": 21,
+      "rs_losses": 16,
       "rs_ties": 0,
-      "rs_win_pct": 0.62,
-      "po_wins": 2,
-      "po_losses": 1,
-      "po_ties": 0,
-      "po_win_pct": 0.6667,
-      "rs_avg_score": 113.27,
-      "longest_win_streak": 10,
-      "playoff_appearances": 2,
-      "points_titles": 0,
-      "championships": 1
-    },
-    "Jay Nelson": {
-      "seasons_played": 4,
-      "wins": 33,
-      "losses": 22,
-      "ties": 0,
-      "win_pct": 0.6,
-      "rs_wins": 31,
-      "rs_losses": 19,
-      "rs_ties": 0,
-      "rs_win_pct": 0.62,
-      "po_wins": 2,
-      "po_losses": 3,
-      "po_ties": 0,
-      "po_win_pct": 0.4,
-      "rs_avg_score": 109.87,
-      "longest_win_streak": 11,
-      "playoff_appearances": 3,
-      "points_titles": 0,
-      "championships": 0
-    },
-    "Greg Wigton": {
-      "seasons_played": 4,
-      "wins": 34,
-      "losses": 20,
-      "ties": 0,
-      "win_pct": 0.6296,
-      "rs_wins": 31,
-      "rs_losses": 19,
-      "rs_ties": 0,
-      "rs_win_pct": 0.62,
-      "po_wins": 3,
-      "po_losses": 1,
-      "po_ties": 0,
-      "po_win_pct": 0.75,
-      "rs_avg_score": 119.32,
-      "longest_win_streak": 10,
-      "playoff_appearances": 2,
-      "points_titles": 2,
-      "championships": 1
-    },
-    "Brian Harris": {
-      "seasons_played": 4,
-      "wins": 23,
-      "losses": 28,
-      "ties": 0,
-      "win_pct": 0.451,
-      "rs_wins": 23,
-      "rs_losses": 27,
-      "rs_ties": 0,
-      "rs_win_pct": 0.46,
+      "rs_win_pct": 0.5676,
       "po_wins": 0,
-      "po_losses": 1,
+      "po_losses": 2,
       "po_ties": 0,
       "po_win_pct": 0.0,
-      "rs_avg_score": 107.87,
-      "longest_win_streak": 3,
-      "playoff_appearances": 1,
+      "rs_avg_score": 101.54,
+      "longest_win_streak": 5,
+      "playoff_appearances": 2,
       "points_titles": 0,
       "championships": 0
     },
@@ -8272,81 +8308,201 @@
       "points_titles": 0,
       "championships": 0
     },
-    "Eddie McCumiskey": {
+    "Daniel Bahamonde": {
+      "seasons_played": 4,
+      "wins": 20,
+      "losses": 31,
+      "ties": 0,
+      "win_pct": 0.3922,
+      "rs_wins": 20,
+      "rs_losses": 31,
+      "rs_ties": 0,
+      "rs_win_pct": 0.3922,
+      "po_wins": 0,
+      "po_losses": 0,
+      "po_ties": 0,
+      "po_win_pct": 0.0,
+      "rs_avg_score": 100.67,
+      "longest_win_streak": 4,
+      "playoff_appearances": 0,
+      "points_titles": 0,
+      "championships": 0
+    },
+    "Carl Bruce": {
       "seasons_played": 4,
       "wins": 31,
       "losses": 24,
       "ties": 0,
       "win_pct": 0.5636,
       "rs_wins": 28,
-      "rs_losses": 22,
+      "rs_losses": 23,
       "rs_ties": 0,
-      "rs_win_pct": 0.56,
+      "rs_win_pct": 0.549,
       "po_wins": 3,
-      "po_losses": 2,
+      "po_losses": 1,
       "po_ties": 0,
-      "po_win_pct": 0.6,
-      "rs_avg_score": 108.64,
-      "longest_win_streak": 6,
+      "po_win_pct": 0.75,
+      "rs_avg_score": 111.76,
+      "longest_win_streak": 4,
       "playoff_appearances": 2,
-      "points_titles": 0,
-      "championships": 0
+      "points_titles": 1,
+      "championships": 1
     },
-    "Jason Carlton": {
-      "seasons_played": 3,
-      "wins": 21,
-      "losses": 17,
-      "ties": 0,
-      "win_pct": 0.5526,
-      "rs_wins": 21,
-      "rs_losses": 15,
-      "rs_ties": 0,
-      "rs_win_pct": 0.5833,
-      "po_wins": 0,
-      "po_losses": 2,
-      "po_ties": 0,
-      "po_win_pct": 0.0,
-      "rs_avg_score": 102.49,
-      "longest_win_streak": 5,
-      "playoff_appearances": 2,
-      "points_titles": 0,
-      "championships": 0
-    },
-    "Daniel Bahamonde": {
+    "John Schauder": {
       "seasons_played": 4,
-      "wins": 19,
-      "losses": 31,
-      "ties": 0,
-      "win_pct": 0.38,
-      "rs_wins": 19,
-      "rs_losses": 31,
-      "rs_ties": 0,
-      "rs_win_pct": 0.38,
+      "wins": 17,
+      "losses": 33,
+      "ties": 1,
+      "win_pct": 0.3333,
+      "rs_wins": 17,
+      "rs_losses": 33,
+      "rs_ties": 1,
+      "rs_win_pct": 0.3333,
       "po_wins": 0,
       "po_losses": 0,
       "po_ties": 0,
       "po_win_pct": 0.0,
-      "rs_avg_score": 100.47,
-      "longest_win_streak": 4,
+      "rs_avg_score": 103.82,
+      "longest_win_streak": 2,
       "playoff_appearances": 0,
       "points_titles": 0,
       "championships": 0
     },
-    "Kevin Mallon": {
-      "seasons_played": 2,
-      "wins": 7,
-      "losses": 16,
-      "ties": 0,
-      "win_pct": 0.3043,
-      "rs_wins": 7,
-      "rs_losses": 15,
-      "rs_ties": 0,
-      "rs_win_pct": 0.3182,
+    "Brian Kleinhenz": {
+      "seasons_played": 4,
+      "wins": 27,
+      "losses": 24,
+      "ties": 1,
+      "win_pct": 0.5192,
+      "rs_wins": 27,
+      "rs_losses": 23,
+      "rs_ties": 1,
+      "rs_win_pct": 0.5294,
       "po_wins": 0,
       "po_losses": 1,
       "po_ties": 0,
       "po_win_pct": 0.0,
-      "rs_avg_score": 100.59,
+      "rs_avg_score": 102.49,
+      "longest_win_streak": 5,
+      "playoff_appearances": 1,
+      "points_titles": 0,
+      "championships": 0
+    },
+    "Josh Davis": {
+      "seasons_played": 3,
+      "wins": 12,
+      "losses": 25,
+      "ties": 0,
+      "win_pct": 0.3243,
+      "rs_wins": 12,
+      "rs_losses": 25,
+      "rs_ties": 0,
+      "rs_win_pct": 0.3243,
+      "po_wins": 0,
+      "po_losses": 0,
+      "po_ties": 0,
+      "po_win_pct": 0.0,
+      "rs_avg_score": 93.65,
+      "longest_win_streak": 2,
+      "playoff_appearances": 0,
+      "points_titles": 0,
+      "championships": 0
+    },
+    "Brian Harris": {
+      "seasons_played": 4,
+      "wins": 23,
+      "losses": 29,
+      "ties": 0,
+      "win_pct": 0.4423,
+      "rs_wins": 23,
+      "rs_losses": 28,
+      "rs_ties": 0,
+      "rs_win_pct": 0.451,
+      "po_wins": 0,
+      "po_losses": 1,
+      "po_ties": 0,
+      "po_win_pct": 0.0,
+      "rs_avg_score": 107.75,
+      "longest_win_streak": 3,
+      "playoff_appearances": 1,
+      "points_titles": 0,
+      "championships": 0
+    },
+    "Blake Pratt": {
+      "seasons_played": 4,
+      "wins": 34,
+      "losses": 20,
+      "ties": 0,
+      "win_pct": 0.6296,
+      "rs_wins": 32,
+      "rs_losses": 19,
+      "rs_ties": 0,
+      "rs_win_pct": 0.6275,
+      "po_wins": 2,
+      "po_losses": 1,
+      "po_ties": 0,
+      "po_win_pct": 0.6667,
+      "rs_avg_score": 112.91,
+      "longest_win_streak": 10,
+      "playoff_appearances": 2,
+      "points_titles": 0,
+      "championships": 1
+    },
+    "Jay Nelson": {
+      "seasons_played": 4,
+      "wins": 33,
+      "losses": 23,
+      "ties": 0,
+      "win_pct": 0.5893,
+      "rs_wins": 31,
+      "rs_losses": 20,
+      "rs_ties": 0,
+      "rs_win_pct": 0.6078,
+      "po_wins": 2,
+      "po_losses": 3,
+      "po_ties": 0,
+      "po_win_pct": 0.4,
+      "rs_avg_score": 109.87,
+      "longest_win_streak": 11,
+      "playoff_appearances": 3,
+      "points_titles": 0,
+      "championships": 0
+    },
+    "Greg Wigton": {
+      "seasons_played": 4,
+      "wins": 35,
+      "losses": 20,
+      "ties": 0,
+      "win_pct": 0.6364,
+      "rs_wins": 32,
+      "rs_losses": 19,
+      "rs_ties": 0,
+      "rs_win_pct": 0.6275,
+      "po_wins": 3,
+      "po_losses": 1,
+      "po_ties": 0,
+      "po_win_pct": 0.75,
+      "rs_avg_score": 119.53,
+      "longest_win_streak": 10,
+      "playoff_appearances": 2,
+      "points_titles": 2,
+      "championships": 1
+    },
+    "Kevin Mallon": {
+      "seasons_played": 2,
+      "wins": 8,
+      "losses": 16,
+      "ties": 0,
+      "win_pct": 0.3333,
+      "rs_wins": 8,
+      "rs_losses": 15,
+      "rs_ties": 0,
+      "rs_win_pct": 0.3478,
+      "po_wins": 0,
+      "po_losses": 1,
+      "po_ties": 0,
+      "po_win_pct": 0.0,
+      "rs_avg_score": 100.82,
       "longest_win_streak": 3,
       "playoff_appearances": 1,
       "points_titles": 0,
@@ -8372,85 +8528,25 @@
       "points_titles": 0,
       "championships": 0
     },
-    "Josh Davis": {
-      "seasons_played": 3,
-      "wins": 12,
+    "Eddie McCumiskey": {
+      "seasons_played": 4,
+      "wins": 32,
       "losses": 24,
       "ties": 0,
-      "win_pct": 0.3333,
-      "rs_wins": 12,
-      "rs_losses": 24,
-      "rs_ties": 0,
-      "rs_win_pct": 0.3333,
-      "po_wins": 0,
-      "po_losses": 0,
-      "po_ties": 0,
-      "po_win_pct": 0.0,
-      "rs_avg_score": 94.13,
-      "longest_win_streak": 2,
-      "playoff_appearances": 0,
-      "points_titles": 0,
-      "championships": 0
-    },
-    "John Schauder": {
-      "seasons_played": 4,
-      "wins": 17,
-      "losses": 32,
-      "ties": 1,
-      "win_pct": 0.34,
-      "rs_wins": 17,
-      "rs_losses": 32,
-      "rs_ties": 1,
-      "rs_win_pct": 0.34,
-      "po_wins": 0,
-      "po_losses": 0,
-      "po_ties": 0,
-      "po_win_pct": 0.0,
-      "rs_avg_score": 104.11,
-      "longest_win_streak": 2,
-      "playoff_appearances": 0,
-      "points_titles": 0,
-      "championships": 0
-    },
-    "Brian Kleinhenz": {
-      "seasons_played": 4,
-      "wins": 27,
-      "losses": 23,
-      "ties": 1,
-      "win_pct": 0.5294,
-      "rs_wins": 27,
+      "win_pct": 0.5714,
+      "rs_wins": 29,
       "rs_losses": 22,
-      "rs_ties": 1,
-      "rs_win_pct": 0.54,
-      "po_wins": 0,
-      "po_losses": 1,
+      "rs_ties": 0,
+      "rs_win_pct": 0.5686,
+      "po_wins": 3,
+      "po_losses": 2,
       "po_ties": 0,
-      "po_win_pct": 0.0,
-      "rs_avg_score": 102.52,
-      "longest_win_streak": 5,
-      "playoff_appearances": 1,
+      "po_win_pct": 0.6,
+      "rs_avg_score": 109.01,
+      "longest_win_streak": 6,
+      "playoff_appearances": 2,
       "points_titles": 0,
       "championships": 0
-    },
-    "Carl Bruce": {
-      "seasons_played": 4,
-      "wins": 30,
-      "losses": 24,
-      "ties": 0,
-      "win_pct": 0.5556,
-      "rs_wins": 27,
-      "rs_losses": 23,
-      "rs_ties": 0,
-      "rs_win_pct": 0.54,
-      "po_wins": 3,
-      "po_losses": 1,
-      "po_ties": 0,
-      "po_win_pct": 0.75,
-      "rs_avg_score": 111.69,
-      "longest_win_streak": 4,
-      "playoff_appearances": 2,
-      "points_titles": 1,
-      "championships": 1
     }
   },
   "player_cards": {
@@ -9847,7 +9943,7 @@
       },
       "2026": {
         "season": 2026,
-        "through_week": 8,
+        "through_week": 9,
         "regular_season_complete": false,
         "lineup_weeks_missing": [],
         "managers_in_league": 12,
@@ -9857,10 +9953,10 @@
             "slug": "eddie-mccumiskey",
             "team_name": "She's Tuten from Herbert",
             "rank": 1,
-            "wins": 6,
+            "wins": 7,
             "losses": 2,
             "ties": 0,
-            "points_for": 952.16,
+            "points_for": 1079.84,
             "badges": [
               {
                 "id": "longest_win_streak",
@@ -9994,15 +10090,148 @@
             ]
           },
           {
+            "manager": "Carl Bruce",
+            "slug": "carl-bruce",
+            "team_name": "Off to Grandma",
+            "rank": 2,
+            "wins": 6,
+            "losses": 3,
+            "ties": 0,
+            "points_for": 1047.82,
+            "badges": [
+              {
+                "id": "longest_win_streak",
+                "count": 3,
+                "earned_week": 9,
+                "events": [
+                  {
+                    "week": 7,
+                    "opponent": "Josh Davis",
+                    "manager_score": 105.22,
+                    "opponent_score": 71.7
+                  },
+                  {
+                    "week": 8,
+                    "opponent": "Greg Wigton",
+                    "manager_score": 128.4,
+                    "opponent_score": 65.5
+                  },
+                  {
+                    "week": 9,
+                    "opponent": "Jay Nelson",
+                    "manager_score": 115.08,
+                    "opponent_score": 109.84
+                  }
+                ]
+              },
+              {
+                "id": "superstar",
+                "count": 1,
+                "earned_week": 6,
+                "events": [
+                  {
+                    "week": 6,
+                    "player": "Trevor Lawrence",
+                    "position": "QB",
+                    "points": 29.34
+                  }
+                ]
+              },
+              {
+                "id": "diamond_in_the_rough",
+                "count": 1,
+                "earned_week": 5,
+                "events": [
+                  {
+                    "week": 5,
+                    "player": "Spencer Shrader",
+                    "position": "K",
+                    "points": 21.0
+                  }
+                ]
+              },
+              {
+                "id": "high_point_club",
+                "count": 1,
+                "earned_week": 1,
+                "events": [
+                  {
+                    "week": 1,
+                    "opponent": "Blake Pratt",
+                    "manager_score": 156.56,
+                    "opponent_score": 98.9
+                  }
+                ]
+              },
+              {
+                "id": "the_punisher",
+                "count": null,
+                "earned_week": 1,
+                "events": [
+                  {
+                    "week": 1,
+                    "opponent": "Blake Pratt",
+                    "manager_score": 156.56,
+                    "opponent_score": 98.9,
+                    "margin": 57.66
+                  },
+                  {
+                    "week": 8,
+                    "opponent": "Greg Wigton",
+                    "manager_score": 128.4,
+                    "opponent_score": 65.5,
+                    "margin": 62.9
+                  }
+                ]
+              },
+              {
+                "id": "lineup_king",
+                "count": 1,
+                "earned_week": 6,
+                "events": [
+                  {
+                    "week": 6,
+                    "points": 111.64
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "manager": "Blake Pratt",
             "slug": "blake-pratt",
             "team_name": "Butt Stuff",
-            "rank": 2,
-            "wins": 5,
+            "rank": 3,
+            "wins": 6,
             "losses": 3,
             "ties": 0,
-            "points_for": 952.3,
+            "points_for": 1046.8,
             "badges": [
+              {
+                "id": "longest_win_streak",
+                "count": 3,
+                "earned_week": 9,
+                "events": [
+                  {
+                    "week": 7,
+                    "opponent": "Kevin Mallon",
+                    "manager_score": 146.58,
+                    "opponent_score": 73.86
+                  },
+                  {
+                    "week": 8,
+                    "opponent": "Brian Harris",
+                    "manager_score": 124.8,
+                    "opponent_score": 106.6
+                  },
+                  {
+                    "week": 9,
+                    "opponent": "John Schauder",
+                    "manager_score": 94.5,
+                    "opponent_score": 89.08
+                  }
+                ]
+              },
               {
                 "id": "weekly_high_score",
                 "count": 2,
@@ -10092,101 +10321,18 @@
             ]
           },
           {
-            "manager": "Carl Bruce",
-            "slug": "carl-bruce",
-            "team_name": "Off to Grandma",
-            "rank": 3,
-            "wins": 5,
-            "losses": 3,
-            "ties": 0,
-            "points_for": 932.74,
-            "badges": [
-              {
-                "id": "superstar",
-                "count": 1,
-                "earned_week": 6,
-                "events": [
-                  {
-                    "week": 6,
-                    "player": "Trevor Lawrence",
-                    "position": "QB",
-                    "points": 29.34
-                  }
-                ]
-              },
-              {
-                "id": "diamond_in_the_rough",
-                "count": 1,
-                "earned_week": 5,
-                "events": [
-                  {
-                    "week": 5,
-                    "player": "Spencer Shrader",
-                    "position": "K",
-                    "points": 21.0
-                  }
-                ]
-              },
-              {
-                "id": "high_point_club",
-                "count": 1,
-                "earned_week": 1,
-                "events": [
-                  {
-                    "week": 1,
-                    "opponent": "Blake Pratt",
-                    "manager_score": 156.56,
-                    "opponent_score": 98.9
-                  }
-                ]
-              },
-              {
-                "id": "the_punisher",
-                "count": null,
-                "earned_week": 1,
-                "events": [
-                  {
-                    "week": 1,
-                    "opponent": "Blake Pratt",
-                    "manager_score": 156.56,
-                    "opponent_score": 98.9,
-                    "margin": 57.66
-                  },
-                  {
-                    "week": 8,
-                    "opponent": "Greg Wigton",
-                    "manager_score": 128.4,
-                    "opponent_score": 65.5,
-                    "margin": 62.9
-                  }
-                ]
-              },
-              {
-                "id": "lineup_king",
-                "count": 1,
-                "earned_week": 6,
-                "events": [
-                  {
-                    "week": 6,
-                    "points": 111.64
-                  }
-                ]
-              }
-            ]
-          },
-          {
             "manager": "Greg Wigton",
             "slug": "greg-wigton",
             "team_name": "The Invisible Hand",
             "rank": 4,
-            "wins": 5,
+            "wins": 6,
             "losses": 3,
             "ties": 0,
-            "points_for": 911.28,
+            "points_for": 1041.1,
             "badges": [
               {
                 "id": "weekly_high_score",
-                "count": 1,
+                "count": 2,
                 "earned_week": 1,
                 "events": [
                   {
@@ -10194,6 +10340,12 @@
                     "opponent": "Daniel Bahamonde",
                     "manager_score": 168.96,
                     "opponent_score": 117.26
+                  },
+                  {
+                    "week": 9,
+                    "opponent": "Josh Davis",
+                    "manager_score": 129.82,
+                    "opponent_score": 76.32
                   }
                 ]
               },
@@ -10240,6 +10392,13 @@
                     "manager_score": 168.96,
                     "opponent_score": 117.26,
                     "margin": 51.7
+                  },
+                  {
+                    "week": 9,
+                    "opponent": "Josh Davis",
+                    "manager_score": 129.82,
+                    "opponent_score": 76.32,
+                    "margin": 53.5
                   }
                 ]
               },
@@ -10301,14 +10460,115 @@
             ]
           },
           {
+            "manager": "Daniel Bahamonde",
+            "slug": "daniel-bahamonde",
+            "team_name": "Freakin Ricans",
+            "rank": 5,
+            "wins": 5,
+            "losses": 4,
+            "ties": 0,
+            "points_for": 1025.48,
+            "badges": [
+              {
+                "id": "weekly_high_score",
+                "count": 1,
+                "earned_week": 4,
+                "events": [
+                  {
+                    "week": 4,
+                    "opponent": "Josh Davis",
+                    "manager_score": 172.98,
+                    "opponent_score": 94.28
+                  }
+                ]
+              },
+              {
+                "id": "superstar",
+                "count": 2,
+                "earned_week": 4,
+                "events": [
+                  {
+                    "week": 4,
+                    "player": "Tetairoa McMillan",
+                    "position": "WR",
+                    "points": 40.2
+                  },
+                  {
+                    "week": 7,
+                    "player": "Tony Pollard",
+                    "position": "RB",
+                    "points": 37.0
+                  }
+                ]
+              },
+              {
+                "id": "diamond_in_the_rough",
+                "count": 2,
+                "earned_week": 4,
+                "events": [
+                  {
+                    "week": 4,
+                    "player": "C.J. Stroud",
+                    "position": "QB",
+                    "points": 25.08
+                  },
+                  {
+                    "week": 9,
+                    "player": "Spencer Shrader",
+                    "position": "K",
+                    "points": 16.0
+                  }
+                ]
+              },
+              {
+                "id": "high_point_club",
+                "count": 1,
+                "earned_week": 4,
+                "events": [
+                  {
+                    "week": 4,
+                    "opponent": "Josh Davis",
+                    "manager_score": 172.98,
+                    "opponent_score": 94.28
+                  }
+                ]
+              },
+              {
+                "id": "the_punisher",
+                "count": null,
+                "earned_week": 4,
+                "events": [
+                  {
+                    "week": 4,
+                    "opponent": "Josh Davis",
+                    "manager_score": 172.98,
+                    "opponent_score": 94.28,
+                    "margin": 78.7
+                  }
+                ]
+              },
+              {
+                "id": "lineup_king",
+                "count": 1,
+                "earned_week": 5,
+                "events": [
+                  {
+                    "week": 5,
+                    "points": 100.36
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "manager": "Jay Nelson",
             "slug": "jay-nelson",
             "team_name": "High Quality H2O",
-            "rank": 5,
+            "rank": 6,
             "wins": 5,
-            "losses": 3,
+            "losses": 4,
             "ties": 0,
-            "points_for": 877.82,
+            "points_for": 987.66,
             "badges": [
               {
                 "id": "longest_win_streak",
@@ -10414,11 +10674,11 @@
             "manager": "Josh Davis",
             "slug": "josh-davis",
             "team_name": "Jash\u2019s Big Booty H0es",
-            "rank": 6,
+            "rank": 7,
             "wins": 5,
-            "losses": 3,
+            "losses": 4,
             "ties": 0,
-            "points_for": 854.9,
+            "points_for": 931.22,
             "badges": [
               {
                 "id": "weekly_high_score",
@@ -10518,11 +10778,11 @@
             "manager": "Brian Harris",
             "slug": "brian-harris",
             "team_name": "Tomahawk Piranhas",
-            "rank": 7,
+            "rank": 8,
             "wins": 4,
-            "losses": 4,
+            "losses": 5,
             "ties": 0,
-            "points_for": 906.08,
+            "points_for": 1007.96,
             "badges": [
               {
                 "id": "giant_killer",
@@ -10567,109 +10827,14 @@
             ]
           },
           {
-            "manager": "Daniel Bahamonde",
-            "slug": "daniel-bahamonde",
-            "team_name": "Freakin Ricans",
-            "rank": 8,
-            "wins": 4,
-            "losses": 4,
-            "ties": 0,
-            "points_for": 915.02,
-            "badges": [
-              {
-                "id": "weekly_high_score",
-                "count": 1,
-                "earned_week": 4,
-                "events": [
-                  {
-                    "week": 4,
-                    "opponent": "Josh Davis",
-                    "manager_score": 172.98,
-                    "opponent_score": 94.28
-                  }
-                ]
-              },
-              {
-                "id": "superstar",
-                "count": 2,
-                "earned_week": 4,
-                "events": [
-                  {
-                    "week": 4,
-                    "player": "Tetairoa McMillan",
-                    "position": "WR",
-                    "points": 40.2
-                  },
-                  {
-                    "week": 7,
-                    "player": "Tony Pollard",
-                    "position": "RB",
-                    "points": 37.0
-                  }
-                ]
-              },
-              {
-                "id": "diamond_in_the_rough",
-                "count": 1,
-                "earned_week": 4,
-                "events": [
-                  {
-                    "week": 4,
-                    "player": "C.J. Stroud",
-                    "position": "QB",
-                    "points": 25.08
-                  }
-                ]
-              },
-              {
-                "id": "high_point_club",
-                "count": 1,
-                "earned_week": 4,
-                "events": [
-                  {
-                    "week": 4,
-                    "opponent": "Josh Davis",
-                    "manager_score": 172.98,
-                    "opponent_score": 94.28
-                  }
-                ]
-              },
-              {
-                "id": "the_punisher",
-                "count": null,
-                "earned_week": 4,
-                "events": [
-                  {
-                    "week": 4,
-                    "opponent": "Josh Davis",
-                    "manager_score": 172.98,
-                    "opponent_score": 94.28,
-                    "margin": 78.7
-                  }
-                ]
-              },
-              {
-                "id": "lineup_king",
-                "count": 1,
-                "earned_week": 5,
-                "events": [
-                  {
-                    "week": 5,
-                    "points": 100.36
-                  }
-                ]
-              }
-            ]
-          },
-          {
             "manager": "Brian Kleinhenz",
             "slug": "brian-kleinhenz",
             "team_name": "Riding miss daisy",
             "rank": 9,
             "wins": 4,
-            "losses": 4,
+            "losses": 5,
             "ties": 0,
-            "points_for": 837.92,
+            "points_for": 939.18,
             "badges": [
               {
                 "id": "superstar",
@@ -10741,6 +10906,17 @@
                 ]
               },
               {
+                "id": "lineup_king",
+                "count": 1,
+                "earned_week": 9,
+                "events": [
+                  {
+                    "week": 9,
+                    "points": 101.26
+                  }
+                ]
+              },
+              {
                 "id": "heartbreaker",
                 "count": null,
                 "earned_week": 7,
@@ -10776,9 +10952,9 @@
             "team_name": "The Nicebois",
             "rank": 10,
             "wins": 3,
-            "losses": 5,
+            "losses": 6,
             "ties": 0,
-            "points_for": 776.48,
+            "points_for": 865.56,
             "badges": [
               {
                 "id": "giant_killer",
@@ -10844,9 +11020,9 @@
             "team_name": "Open Mic Night Contestant",
             "rank": 11,
             "wins": 2,
-            "losses": 6,
+            "losses": 7,
             "ties": 0,
-            "points_for": 795.3,
+            "points_for": 862.44,
             "badges": [
               {
                 "id": "superstar",
@@ -10933,7 +11109,7 @@
               },
               {
                 "id": "not_great_bob",
-                "count": 1,
+                "count": 2,
                 "earned_week": 3,
                 "events": [
                   {
@@ -10941,6 +11117,12 @@
                     "opponent": "Josh Davis",
                     "manager_score": 64.34,
                     "opponent_score": 124.3
+                  },
+                  {
+                    "week": 9,
+                    "opponent": "Daniel Bahamonde",
+                    "manager_score": 67.14,
+                    "opponent_score": 110.46
                   }
                 ]
               }
@@ -10951,14 +11133,27 @@
             "slug": "kevin-mallon",
             "team_name": "Smack That",
             "rank": 12,
-            "wins": 0,
+            "wins": 1,
             "losses": 8,
             "ties": 0,
-            "points_for": 621.84,
+            "points_for": 727.92,
             "badges": [
               {
-                "id": "diamond_in_the_rough",
+                "id": "superstar",
                 "count": 1,
+                "earned_week": 9,
+                "events": [
+                  {
+                    "week": 9,
+                    "player": "Jordan Love",
+                    "position": "QB",
+                    "points": 38.18
+                  }
+                ]
+              },
+              {
+                "id": "diamond_in_the_rough",
+                "count": 2,
                 "earned_week": 8,
                 "events": [
                   {
@@ -10966,6 +11161,12 @@
                     "player": "DeMario Douglas",
                     "position": "WR",
                     "points": 15.1
+                  },
+                  {
+                    "week": 9,
+                    "player": "Cam Little",
+                    "position": "K",
+                    "points": 17.0
                   }
                 ]
               },
@@ -11044,106 +11245,87 @@
     }
   },
   "weekly_recap": {
-    "previous_weekend": "Week 8's nail-biter belongs to Jason Carlton, who outlasted Brian Kleinhenz 87.16 to 81.16 \u2014 a 6-point margin that'll sting slightly less once Brian remembers he's got a whiskey room at home built for exactly this kind of recovery. Drake Maye torched the Bengals D/ST's pathetic 2.0-point showing with a 22.46-point outing, which was more than enough padding for Jason, who now leads their all-time series 2-1. Brian got a huge 26.56-point game from Josh Allen, but it all collapsed Monday night when Emanuel Wilson face-planted for zero points and sealed his own manager's fate. Adding injury to insult, Brian had Chris Rodriguez Jr. sitting on his bench with 12.3 points \u2014 swap him in for Wilson and Brian wins outright. Instead he's stuck explaining another playoff-less stretch (one appearance, zero championships in three seasons) to whatever's hiding behind that whiskey room door. Tough loss, tougher pour tonight.",
-    "previous_weekend_week": 8,
-    "previous_weekend_away_team": "Open Mic Night Contestant",
-    "previous_weekend_home_team": "Riding miss daisy",
-    "honorable_mention": "Slotted in as the 3rd-biggest blowout of the week, this one wasn't close \u2014 Daniel Bahamonde throttled John Schauder 118.28 to 98.50, a 19.78-point beatdown, extending Schauder's all-time series lead to 5-2 on a week he'd probably like deleted. The real headline is Schauder scoring under 100 points, a genuinely ugly output for a guy who apparently prioritizes Grateful Dead setlists over his own kids and, this week, over Baker Mayfield's 1.4 points, which just sat on his roster stinking up the joint. Meanwhile Tony Pollard dropped 29.2 points for Bahamonde, whose claim to fame remains a Taylor Swift selfie \u2014 now he's got a blowout win to pair with it. Neither man owns a career playoff appearance in three complete seasons. Fitting.",
-    "honorable_mention_week": 8,
-    "honorable_mention_away_team": "Freakin Ricans",
-    "honorable_mention_home_team": "The Nicebois",
-    "honorable_mention_away_manager": "Daniel Bahamonde",
-    "honorable_mention_home_manager": "John Schauder",
-    "honorable_mention_away_score": 118.28,
-    "honorable_mention_home_score": 98.5,
+    "previous_weekend": "Kevin Mallon escapes with a 106.08-101.88 win over Brian Harris, a 4.2-point margin so stingy it wouldn't cover a vending machine Gatorade \u2014 and Kevin now leads their all-time series 2-0. Jordan Love torched the stat sheet for 38.18 points this season, which is the only reason Kevin's Sunday Night Football duo of Colston Loveland (7.4 points) and Chase McLaughlin (10 points) didn't quietly flush the whole thing down the drain. Brian got a monster 30-point outing from Puka Nacua, completely wasted because Ladd McConkey no-showed with a 0 \u2014 somewhere in Orlando, Brian's Disney-themed optimism just face-planted like a tourist on Splash Mountain. Worse, Brian's own bench had the answer sitting right there: swapping in Audric Estime (14.2 points) for Jonathan Taylor's limp 6.9 would've flipped this one, a 7.3-point gain Brian will be chewing on for a while. With one career playoff appearance and a 45.1% winning percentage over three complete seasons, this is exactly the kind of loss that fits the r\u00e9sum\u00e9.",
+    "previous_weekend_week": 9,
+    "previous_weekend_away_team": "Tomahawk Piranhas",
+    "previous_weekend_home_team": "Smack That",
+    "honorable_mention": "John Schauder walked into Monday night sitting pretty at 89.08 to Blake Pratt's 81.5, probably already queuing up a Dead bootleg to celebrate \u2014 the man loves Jerry Garcia more than his own kids, so priorities are priorities. Then Tyler Bass dropped 13.0 points on Monday and turned a laugher into a 94.5-89.08 gut-punch, the 3rd-closest game of the week. Dak Prescott's 21.5 points carried Blake home while Josh Jacobs no-showed with 0.5 points for John. Blake now leads their all-time series 3-1, and with a career championship and a 62.8 winning percentage against John's 33.3, this rivalry's getting lopsided fast.",
+    "honorable_mention_week": 9,
+    "honorable_mention_away_team": "The Nicebois",
+    "honorable_mention_home_team": "Butt Stuff",
+    "honorable_mention_away_manager": "John Schauder",
+    "honorable_mention_home_manager": "Blake Pratt",
+    "honorable_mention_away_score": 89.08,
+    "honorable_mention_home_score": 94.5,
     "box_scores": [
       {
-        "winner_team": "Jash\u2019s Big Booty H0es",
-        "winner_score": 102.62,
-        "winner_manager": "Josh Davis",
-        "loser_team": "Smack That",
-        "loser_score": 86.82,
-        "loser_manager": "Kevin Mallon"
+        "winner_team": "The Invisible Hand",
+        "winner_score": 129.82,
+        "winner_manager": "Greg Wigton",
+        "loser_team": "Jash\u2019s Big Booty H0es",
+        "loser_score": 76.32,
+        "loser_manager": "Josh Davis"
       },
       {
-        "winner_team": "Off to Grandma",
-        "winner_score": 128.4,
-        "winner_manager": "Carl Bruce",
-        "loser_team": "The Invisible Hand",
-        "loser_score": 65.5,
-        "loser_manager": "Greg Wigton"
-      },
-      {
-        "winner_team": "Butt Stuff",
-        "winner_score": 124.8,
-        "winner_manager": "Blake Pratt",
+        "winner_team": "Smack That",
+        "winner_score": 106.08,
+        "winner_manager": "Kevin Mallon",
         "loser_team": "Tomahawk Piranhas",
-        "loser_score": 106.6,
+        "loser_score": 101.88,
         "loser_manager": "Brian Harris"
       },
       {
-        "winner_team": "She's Tuten from Herbert",
-        "winner_score": 149.08,
-        "winner_manager": "Eddie McCumiskey",
+        "winner_team": "Off to Grandma",
+        "winner_score": 115.08,
+        "winner_manager": "Carl Bruce",
         "loser_team": "High Quality H2O",
-        "loser_score": 121.48,
+        "loser_score": 109.84,
         "loser_manager": "Jay Nelson"
       },
       {
-        "winner_team": "Freakin Ricans",
-        "winner_score": 118.28,
-        "winner_manager": "Daniel Bahamonde",
+        "winner_team": "Butt Stuff",
+        "winner_score": 94.5,
+        "winner_manager": "Blake Pratt",
         "loser_team": "The Nicebois",
-        "loser_score": 98.5,
+        "loser_score": 89.08,
         "loser_manager": "John Schauder"
       },
       {
-        "winner_team": "Open Mic Night Contestant",
-        "winner_score": 87.16,
-        "winner_manager": "Jason Carlton",
+        "winner_team": "She's Tuten from Herbert",
+        "winner_score": 127.68,
+        "winner_manager": "Eddie McCumiskey",
         "loser_team": "Riding miss daisy",
-        "loser_score": 81.16,
+        "loser_score": 101.26,
         "loser_manager": "Brian Kleinhenz"
+      },
+      {
+        "winner_team": "Freakin Ricans",
+        "winner_score": 110.46,
+        "winner_manager": "Daniel Bahamonde",
+        "loser_team": "Open Mic Night Contestant",
+        "loser_score": 67.14,
+        "loser_manager": "Jason Carlton"
       }
     ],
-    "game_of_the_week": "Both sit at 5-3, but that's where the kumbaya ends. Jay Nelson \u2014 the trusted commissioner, which is a polite way of saying the guy with his fingerprints all over the league bylaws \u2014 holds a 2nd ranked spot's worth of shade over Carl Bruce by leading their all-time series 2-1, despite his High Quality H2O squad being stuck ranked 7th in both power score and scoring average this season at 109.73 points a game. His +10.2% Luck Factor suggests the standings are doing him a favor or two.\n\nCarl Bruce isn't exactly sweating it though. Sitting ranked 3rd with a 2nd ranked power score and 116.59 points a game, he's got the scoreboard muscle Jay lacks, plus a career championship banner Jay's three career playoff trips have never produced. Jay's playoff odds sit at 73.4%, Carl's at 80.2% \u2014 commissioner privileges don't cover andvantages like that.",
-    "game_of_the_week_week": 9,
+    "game_of_the_week": "The Invisible Hand sits 4th ranked with a 6-3 record, while High Quality H2O limps in ranked 6th at 5-4, and this one already feels like a formality given Greg Wigton leads their all-time series 4-1. Greg's averaging 115.68 points a game this season, the 2nd ranked power score in the league, built on a face so symmetrical the background notes literally just say \"really really good looking\" \u2014 must be nice to win championships AND bathroom mirrors. Jay Nelson, meanwhile, is the trusted commissioner, which apparently means trusted to set competitive lineups about as often as he's trusted to fix the League's bracket glitches. Averaging only 109.74 points a game this season, ranked 7th in scoring, Jay's clinging to a 64.2% playoff probability while Greg sits comfortably at 72.7%. Both carry identical +2.0% Luck Factors, so no excuses there \u2014 Jay's just getting outcooked, outscored, and out-handsome in his own hot tub.",
+    "game_of_the_week_week": 10,
     "game_of_the_week_matchup": {
-      "manager_a": "Jay Nelson",
-      "manager_b": "Carl Bruce",
-      "week": 9,
+      "manager_a": "Greg Wigton",
+      "manager_b": "Jay Nelson",
+      "week": 10,
       "year": 2026
     },
     "game_of_the_week_last_pick": null,
-    "game_of_the_week_away_team": "High Quality H2O",
-    "game_of_the_week_home_team": "Off to Grandma",
+    "game_of_the_week_away_team": "The Invisible Hand",
+    "game_of_the_week_home_team": "High Quality H2O",
     "callouts": {
       "last_gotw_result": null,
       "longest_win_streak": {
         "style": "card",
         "label": "Longest Current R/S Winning Streak",
-        "headline": "Blake Pratt, Carl Bruce",
-        "value": 2,
+        "headline": "Carl Bruce, Blake Pratt",
+        "value": 3,
         "streak_details": [
-          {
-            "manager": "Blake Pratt",
-            "games": [
-              {
-                "opponent": "Kevin Mallon",
-                "manager_score": 146.58,
-                "opponent_score": 73.86,
-                "year": 2026,
-                "week": "7"
-              },
-              {
-                "opponent": "Brian Harris",
-                "manager_score": 124.8,
-                "opponent_score": 106.6,
-                "year": 2026,
-                "week": "8"
-              }
-            ]
-          },
           {
             "manager": "Carl Bruce",
             "games": [
@@ -11160,6 +11342,39 @@
                 "opponent_score": 65.5,
                 "year": 2026,
                 "week": "8"
+              },
+              {
+                "opponent": "Jay Nelson",
+                "manager_score": 115.08,
+                "opponent_score": 109.84,
+                "year": 2026,
+                "week": "9"
+              }
+            ]
+          },
+          {
+            "manager": "Blake Pratt",
+            "games": [
+              {
+                "opponent": "Kevin Mallon",
+                "manager_score": 146.58,
+                "opponent_score": 73.86,
+                "year": 2026,
+                "week": "7"
+              },
+              {
+                "opponent": "Brian Harris",
+                "manager_score": 124.8,
+                "opponent_score": 106.6,
+                "year": 2026,
+                "week": "8"
+              },
+              {
+                "opponent": "John Schauder",
+                "manager_score": 94.5,
+                "opponent_score": 89.08,
+                "year": 2026,
+                "week": "9"
               }
             ]
           }
@@ -11168,67 +11383,39 @@
       "longest_loss_streak": {
         "style": "card",
         "label": "Longest Current R/S Losing Streak",
-        "headline": "Kevin Mallon",
-        "value": 8,
+        "headline": "Brian Kleinhenz",
+        "value": 4,
         "streak_details": [
           {
-            "manager": "Kevin Mallon",
+            "manager": "Brian Kleinhenz",
             "games": [
               {
-                "opponent": "Eddie McCumiskey",
-                "manager_score": 78.84,
-                "opponent_score": 79.16,
-                "year": 2026,
-                "week": "1"
-              },
-              {
-                "opponent": "Carl Bruce",
-                "manager_score": 72.8,
-                "opponent_score": 103.92,
-                "year": 2026,
-                "week": "2"
-              },
-              {
-                "opponent": "Greg Wigton",
-                "manager_score": 98.78,
-                "opponent_score": 104.04,
-                "year": 2026,
-                "week": "3"
-              },
-              {
-                "opponent": "Jay Nelson",
-                "manager_score": 66.88,
-                "opponent_score": 111.12,
-                "year": 2026,
-                "week": "4"
-              },
-              {
-                "opponent": "Brian Kleinhenz",
-                "manager_score": 57.42,
-                "opponent_score": 134.0,
-                "year": 2026,
-                "week": "5"
-              },
-              {
-                "opponent": "Daniel Bahamonde",
-                "manager_score": 86.44,
-                "opponent_score": 102.5,
+                "opponent": "Brian Harris",
+                "manager_score": 97.0,
+                "opponent_score": 118.98,
                 "year": 2026,
                 "week": "6"
               },
               {
-                "opponent": "Blake Pratt",
-                "manager_score": 73.86,
-                "opponent_score": 146.58,
+                "opponent": "John Schauder",
+                "manager_score": 117.1,
+                "opponent_score": 119.38,
                 "year": 2026,
                 "week": "7"
               },
               {
-                "opponent": "Josh Davis",
-                "manager_score": 86.82,
-                "opponent_score": 102.62,
+                "opponent": "Jason Carlton",
+                "manager_score": 81.16,
+                "opponent_score": 87.16,
                 "year": 2026,
                 "week": "8"
+              },
+              {
+                "opponent": "Eddie McCumiskey",
+                "manager_score": 101.26,
+                "opponent_score": 127.68,
+                "year": 2026,
+                "week": "9"
               }
             ]
           }
@@ -11237,28 +11424,28 @@
       "lowest_scoring_team": {
         "style": "card",
         "label": "ICE COLD",
-        "headline": "Greg Wigton",
+        "headline": "Jason Carlton",
         "subtitle": "lowest score this week",
-        "value": 65.5,
+        "value": 67.14,
         "unit": "points"
       },
       "highest_scoring_player": {
         "style": "card",
         "label": "Highest Scoring Player",
-        "headline": "Joe Burrow",
-        "subtitle": "Jay Nelson \u00b7 QB",
-        "value": 41.48,
+        "headline": "Jordan Love",
+        "subtitle": "Kevin Mallon \u00b7 QB",
+        "value": 38.18,
         "unit": "points"
       }
     },
     "record_books_entries": [
       {
-        "kind": "top_loss_streak",
-        "manager": "Kevin Mallon",
-        "team_name": "Smack That",
-        "value": 8,
-        "rank": 3,
-        "tied_count": 1
+        "kind": "25th_loss",
+        "manager": "Josh Davis",
+        "team_name": "Jash\u2019s Big Booty H0es",
+        "value": 37,
+        "rank": 1,
+        "tied_count": 2
       }
     ]
   },
@@ -11320,6 +11507,13 @@
         "player": "Joe Burrow",
         "position": "QB",
         "points": 41.48
+      },
+      {
+        "week": 9,
+        "manager": "Kevin Mallon",
+        "player": "Jordan Love",
+        "position": "QB",
+        "points": 38.18
       }
     ]
   },
@@ -11365,6 +11559,11 @@
         "week": 8,
         "manager": "Greg Wigton",
         "score": 65.5
+      },
+      {
+        "week": 9,
+        "manager": "Jason Carlton",
+        "score": 67.14
       }
     ]
   }
