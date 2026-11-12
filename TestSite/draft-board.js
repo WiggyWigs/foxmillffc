@@ -138,7 +138,7 @@ function render(year, loadProblems) {
   const managers = order || [...new Set([...currentManagers,
     ...trades.filter((t) => t.year === year).map((t) => t.original)])].sort();
   document.getElementById("dp-note").textContent = drafted
-    ? "Each pick shows who made it and the player taken (K = keeper). Arrows show the snake."
+    ? "Each pick shows the player taken; the color shows who made it (K = keeper). Arrows show the snake."
     : order
       ? "Columns are in draft order; arrows show the snake."
       : "No draft order yet, so managers are listed alphabetically.";

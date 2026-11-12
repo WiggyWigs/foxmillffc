@@ -2558,8 +2558,14 @@ body.pc-hide-badges .pc-badges { display: none; }
   text-align: center;
 }
 
+/* Draft picker sits above the title, its label centred over the menu. */
 .dp-filters {
   justify-content: center;
+  margin: 0 0 0.75rem;
+}
+
+.dp-filters .parlay-filter {
+  align-items: center;
 }
 
 .dp-note {
