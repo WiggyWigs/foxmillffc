@@ -2545,3 +2545,112 @@ body.pc-hide-badges .pc-badges { display: none; }
     border-top: 1px solid var(--hairline);
   }
 }
+
+/* --- Draft Board page ---
+   Grid of every pick: original owner across the top, rounds down the
+   side, each cell in its current owner's color. The table scrolls
+   sideways inside .dp-wrap on narrow screens; the page itself doesn't. */
+.dp-main {
+  max-width: 1240px;
+}
+
+.dp-main h2 {
+  text-align: center;
+}
+
+.dp-filters {
+  justify-content: center;
+}
+
+.dp-note,
+.dp-detail {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.dp-detail {
+  min-height: 1.4em;
+  font-style: italic;
+}
+
+.dp-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dp-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.85rem;
+}
+
+.dp-table th,
+.dp-table td {
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  padding: 0.3rem 0.2rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dp-head {
+  font-weight: 700;
+}
+
+.dp-slot {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.dp-round {
+  width: 3.4rem;
+  background: var(--panel-solid);
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.dp-cell {
+  cursor: pointer;
+}
+
+/* Traded picks: a heavy inner outline so they stand out from the
+   column's own color. */
+.dp-cell.is-traded {
+  font-weight: 700;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.75);
+}
+
+.dp-cell:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: -2px;
+}
+
+.dp-total {
+  background: var(--panel-solid);
+  font-weight: 700;
+}
+
+.dp-trade-list,
+.dp-problem-list {
+  max-width: 46rem;
+  margin: 0.5rem auto 1rem;
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.dp-trade-num {
+  font-weight: 700;
+  color: var(--rust);
+  margin-right: 0.3rem;
+}
+
+.dp-problem-list {
+  color: #B3262B;
+}
