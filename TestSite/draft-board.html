@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Draft Board — Fox Mill Fantasy Football Club</title>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<main class="dp-main">
+  <div class="panel">
+    <h2 id="dp-title">Draft Board</h2>
+    <p class="msi-meta">Who owns every pick. Traded picks are outlined; tap or hover one to see where it came from.</p>
+
+    <div class="parlay-filters dp-filters">
+      <div class="parlay-filter">
+        <label class="parlay-filter-label" for="dp-year">Draft</label>
+        <select id="dp-year" class="input-select parlay-filter-select"></select>
+      </div>
+    </div>
+
+    <p class="dp-note" id="dp-note"></p>
+    <div id="dp-wrap" class="dp-wrap">
+      <p class="load-state">Loading the draft board&hellip;</p>
+    </div>
+    <p class="dp-detail" id="dp-detail" aria-live="polite"></p>
+
+    <div id="dp-trades"></div>
+    <div id="dp-problems"></div>
+  </div>
+</main>
+
+<script src="draft-board.js"></script>
+
+</body>
+</html>
