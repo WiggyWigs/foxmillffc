@@ -2562,17 +2562,36 @@ body.pc-hide-badges .pc-badges { display: none; }
   justify-content: center;
 }
 
-.dp-note,
-.dp-detail {
+.dp-note {
   text-align: center;
   color: var(--ink-soft);
   font-size: 0.9rem;
   margin: 0.5rem 0;
 }
 
-.dp-detail {
-  min-height: 1.4em;
-  font-style: italic;
+/* Tap-a-pick pop-up: full player name and the pick's history. */
+.dp-popup {
+  position: absolute;
+  z-index: 50;
+  max-width: 260px;
+  padding: 0.5rem 0.7rem;
+  background: var(--panel-solid);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  color: var(--ink);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.dp-popup-player {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+.dp-popup-line {
+  color: var(--ink-soft);
 }
 
 .dp-wrap {

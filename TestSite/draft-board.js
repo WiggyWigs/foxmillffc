@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function render(year, loadProblems) {
   document.getElementById("dp-title").textContent = `${year} Draft Board`;
-  document.getElementById("dp-detail").textContent = "";
+  closePopup();
 
   const drafted = draftResults[year] || null;
   const order = draftOrders[year] || (drafted && drafted.pick_order) || (drafted && roundOneOrder(drafted)) || null;
@@ -184,23 +184,27 @@ function render(year, loadProblems) {
       const logged = holder[key] || original;
       const pk = draftedAt[key];
       const owner = (pk && pk.manager) || logged;
-      if (pk && pk.manager && pk.manager !== logged) {
+      // Only checked for years that have trades in the log: for a past
+      // draft nobody logged, ESPN is the record.
+      if (yearTrades.length && pk && pk.manager && pk.manager !== logged) {
         problems.push(`${year} Round ${round}, ${original}'s pick: ESPN shows ${pk.manager} made it, ` +
           `but the trade log has ${logged} holding it.`);
       }
       held[owner] = (held[owner] || 0) + 1;
       const traded = owner !== original;
-      const route = (path[key] || [original]).map((m) => shortNames[m] || m).join(" → ");
-      let info = traded
-        ? `${year} Round ${round}: ${shortNames[original] || original}'s pick, now ${shortNames[owner] || owner} (${route})`
-        : `${year} Round ${round}: ${shortNames[original] || original}'s own pick`;
+      const route = (path[key] && path[key][path[key].length - 1] === owner ? path[key] : traded ? [original, owner] : [original])
+        .map((m) => shortNames[m] || m).join(" → ");
+      const pickLine = traded
+        ? `Round ${round} · ${shortNames[original] || original}'s pick (${route})`
+        : `Round ${round} · ${shortNames[original] || original}'s pick`;
       let player = "";
       if (pk && pk.player) {
-        info += ` · ${pk.player}${pk.keeper ? " (keeper)" : ""}`;
-        player = `<span class="dp-player">${pk.keeper ? '<span class="dp-keeper">K</span>' : ""}${escapeHtml(pk.player)}</span>`;
+        player = `<span class="dp-player">${pk.keeper ? '<span class="dp-keeper">K</span>' : ""}${escapeHtml(lastName(pk.player))}</span>`;
       }
       cells += `<td class="dp-cell${traded ? " is-traded" : ""}${pk ? " is-drafted" : ""}" style="${colorStyle(owner)}"
-                  title="${escapeHtml(info)}" data-info="${escapeHtml(info)}" tabindex="0">${escapeHtml(shortNames[owner] || owner)}${player}</td>`;
+                  tabindex="0" role="button" data-pick="${escapeHtml(pickLine)}"
+                  data-player="${escapeHtml((pk && pk.player) || "")}" data-keeper="${pk && pk.keeper ? "1" : ""}"
+                  data-owner="${escapeHtml(shortNames[owner] || owner)}">${escapeHtml(shortNames[owner] || owner)}${player}</td>`;
     }
     rows += `<tr><th class="dp-round" scope="row">${round} ${arrow}</th>${cells}<th class="dp-round dp-round-end">${arrow} ${round}</th></tr>`;
   }
@@ -222,8 +226,12 @@ function render(year, loadProblems) {
       <tbody>${rows}</tbody>
     </table>`;
   wrap.querySelectorAll(".dp-cell").forEach((cell) => {
-    cell.addEventListener("click", () => {
-      document.getElementById("dp-detail").textContent = cell.dataset.info;
+    cell.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openPopup(cell);
+    });
+    cell.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPopup(cell); }
     });
   });
 
@@ -376,7 +384,60 @@ function parseCsvRows(text) {
     .map((r) => Object.fromEntries(headers.map((h, idx) => [h, (r[idx] ?? "").trim()])));
 }
 
+// --- Pick pop-up: full player name and the pick's history ---
+
+let popupFor = null;
+
+function openPopup(cell) {
+  if (popupFor === cell) { closePopup(); return; }
+  closePopup();
+  const pop = document.createElement("div");
+  pop.className = "dp-popup";
+  pop.id = "dp-popup";
+  pop.setAttribute("role", "dialog");
+  const player = cell.dataset.player;
+  pop.innerHTML =
+    (player ? `<div class="dp-popup-player">${escapeHtml(player)}${cell.dataset.keeper ? ' <span class="dp-keeper">K</span>' : ""}</div>` : "") +
+    `<div class="dp-popup-line">${escapeHtml(cell.dataset.pick)}${player ? "" : ` · held by ${escapeHtml(cell.dataset.owner)}`}</div>`;
+  document.body.appendChild(pop);
+
+  // Just below the cell, kept inside the screen.
+  const r = cell.getBoundingClientRect();
+  const w = pop.offsetWidth;
+  const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), document.documentElement.clientWidth - w - 8);
+  pop.style.left = `${left + window.scrollX}px`;
+  pop.style.top = `${r.bottom + window.scrollY + 6}px`;
+  popupFor = cell;
+}
+
+function closePopup() {
+  const pop = document.getElementById("dp-popup");
+  if (pop) pop.remove();
+  popupFor = null;
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#dp-popup")) closePopup();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePopup(); });
+window.addEventListener("resize", closePopup);
+
 // --- Helpers ---
+
+// "Ja'Marr Chase" -> "Chase", "Marvin Harrison Jr." -> "Harrison",
+// "Amon-Ra St. Brown" -> "St. Brown", "Commanders D/ST" -> "Commanders"
+// (defenses show the team name; the pop-up has the full "D/ST" name).
+const NAME_SUFFIXES = new Set(["jr", "jr.", "sr", "sr.", "ii", "iii", "iv", "v"]);
+const NAME_PARTICLES = new Set(["st.", "st", "van", "von", "de", "del", "da", "di", "le", "la"]);
+function lastName(full) {
+  if (/\s+D\/ST$/i.test(full)) return full.replace(/\s+D\/ST$/i, "");
+  const parts = full.split(/\s+/).filter(Boolean);
+  while (parts.length > 1 && NAME_SUFFIXES.has(parts[parts.length - 1].toLowerCase())) parts.pop();
+  if (parts.length < 2) return parts.join(" ");
+  let i = parts.length - 1;
+  while (i > 1 && NAME_PARTICLES.has(parts[i - 1].toLowerCase())) i--;
+  return parts.slice(i).join(" ");
+}
 
 // Draft order when neither the sheet nor ESPN gives one: who made each
 // Round 1 pick. Right unless a Round 1 pick was traded.
