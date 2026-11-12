@@ -7,12 +7,18 @@
 // the Parlay page — so a sheet edit shows up on reload, no site update.
 //
 //   Trade Log  (TRADE_LOG_CSV_URL): one row per pick changing hands.
-//     Order, Year, Round, Original Owner, From, To
+//     Order, Year, Round, Original Owner, From, To, Player
 //     Order groups the picks in one trade (same number = same trade) and
 //     orders trades (higher = later). A pick is identified by Year + Round
 //     + Original Owner; its holder is the To of its last row. Each row's
 //     From must be whoever held the pick before it, otherwise the row is
 //     listed under "Problems in the trade log" (and still applied).
+//     Players in a trade: a row with Player filled in (several players
+//     comma-separated, "Jonathan Taylor, Tee Higgins") and Round and
+//     Original Owner blank. It joins the trade with the same Year and
+//     Order and only shows in the trade list; it doesn't touch the board.
+//     A row with both a Round and players moves the pick and the players
+//     the same way.
 //
 //   Draft Order (DRAFT_ORDER_CSV_URL):
 //     Year, Slot, Manager — one row per slot. With an order, columns run
@@ -54,7 +60,8 @@ const SHORT_NAME_OVERRIDES = { "Daniel Bahamonde": "Dan" };
 
 let roster = new Set();
 let currentManagers = [];
-let trades = [];       // normalized Trade Log rows
+let trades = [];       // normalized Trade Log pick rows
+let playerMoves = [];  // normalized Trade Log player rows: {row, order, year, from, to, players}
 let draftOrders = {};  // year -> [manager, ...] in slot order
 let shortNames = {};
 
@@ -84,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentManagers = ((stats.current_standings || {}).standings || []).map((r) => r.manager);
   shortNames = buildShortNames([...roster]);
   const problems = [];
-  trades = normalizeTrades(parseCsvRows(logText), problems);
+  ({ picks: trades, players: playerMoves } = normalizeTrades(parseCsvRows(logText), problems));
   draftOrders = normalizeDraftOrder(parseCsvRows(orderText), problems);
 
   const years = [...new Set([...trades.map((t) => t.year), ...Object.keys(draftOrders).map(Number)])]
@@ -177,39 +184,48 @@ function render(year, loadProblems) {
     });
   });
 
-  renderTrades(year, yearTrades);
-  document.getElementById("dp-problems").innerHTML = problems.length
+  renderTrades(year, yearTrades, playerMoves.filter((p) => p.year === year));
+  const shown = groupRowProblems(problems);
+  document.getElementById("dp-problems").innerHTML = shown.length
     ? `<h3 class="season-subhead">Problems in the trade log</h3><ul class="dp-problem-list">${
-        problems.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>`
+        shown.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>`
     : "";
 }
 
-// "Trade 1: John gets Jay's 4th · Jay gets John's 6th"
-function renderTrades(year, yearTrades) {
+// "Trade 1: John gets Jay's 4th and Tee Higgins · Jay gets John's 6th"
+function renderTrades(year, yearTrades, yearPlayers) {
   const groups = new Map();
-  for (const t of yearTrades) {
-    if (!groups.has(t.order)) groups.set(t.order, []);
-    groups.get(t.order).push(t);
-  }
+  const add = (order) => {
+    if (!groups.has(order)) groups.set(order, { picks: [], players: [] });
+    return groups.get(order);
+  };
+  for (const t of yearTrades) add(t.order).picks.push(t);
+  for (const p of yearPlayers) add(p.order).players.push(p);
   const el = document.getElementById("dp-trades");
   if (!groups.size) { el.innerHTML = ""; return; }
   const name = (m) => escapeHtml(shortNames[m] || m);
-  // One clause per receiving manager: "John gets Greg's 7th and 14th".
-  const items = [...groups.values()].map((group, i) => {
+  // One clause per receiving manager, players first, then picks:
+  // "John gets Tee Higgins, Greg's 7th and 14th".
+  const items = [...[...groups.entries()].sort((a, b) => a[0] - b[0]).map(([, g]) => g)].map((group, i) => {
     const byTo = new Map();
-    for (const t of group) {
-      if (!byTo.has(t.to)) byTo.set(t.to, []);
-      byTo.get(t.to).push(t);
-    }
+    const slot = (to) => {
+      if (!byTo.has(to)) byTo.set(to, { picks: [], players: [] });
+      return byTo.get(to);
+    };
+    for (const t of group.picks) slot(t.to).picks.push(t);
+    for (const p of group.players) slot(p.to).players.push(...p.players);
     const parts = [...byTo.entries()].map(([to, got]) => {
+      // "Brian K's 5th and 6th", "John's 5th (via Brian K)"
       const bySource = new Map();
-      for (const t of got.sort((a, b) => a.round - b.round)) {
-        const src = t.original === t.from ? `${name(t.from)}'s` : `${name(t.original)}'s (from ${name(t.from)})`;
-        if (!bySource.has(src)) bySource.set(src, []);
-        bySource.get(src).push(ordinal(t.round));
+      for (const t of got.picks.sort((a, b) => a.round - b.round)) {
+        const key = `${t.original}|${t.original === t.from ? "" : t.from}`;
+        if (!bySource.has(key)) bySource.set(key, { t, rounds: [] });
+        bySource.get(key).rounds.push(ordinal(t.round));
       }
-      return `<b>${name(to)}</b> gets ` + [...bySource.entries()]
-        .map(([src, rounds]) => `${src} ${joinAnd(rounds)}`).join(" and ");
+      const pieces = got.players.map((pl) => escapeHtml(pl))
+        .concat([...bySource.values()].map(({ t, rounds }) =>
+          `${name(t.original)}'s ${joinAnd(rounds)}${t.original === t.from ? "" : ` (via ${name(t.from)})`}`));
+      return `<b>${name(to)}</b> gets ${joinAnd(pieces)}`;
     });
     return `<li><span class="dp-trade-num">Trade ${i + 1}</span> ${parts.join(" · ")}</li>`;
   });
@@ -219,23 +235,37 @@ function renderTrades(year, yearTrades) {
 // --- Sheet rows ---
 
 function normalizeTrades(rows, problems) {
-  const out = [];
+  const picks = [];
+  const players = [];
   rows.forEach((r, idx) => {
     const row = idx + 2;  // header is row 1
+    const playerList = (r["Player"] || r["Players"] || "").split(",").map((p) => p.trim()).filter(Boolean);
+    const hasRound = (r["Round"] || "") !== "";
+    if (!r["Order"] && !r["Year"] && !hasRound && !r["From"] && !r["To"] && !playerList.length) return;  // notes-only row
     const order = Number(r["Order"]), year = Number(r["Year"]), round = Number(r["Round"]);
     const original = r["Original Owner"] || "", from = r["From"] || "", to = r["To"] || "";
-    if (!r["Order"] || Number.isNaN(order) || !year || !Number.isInteger(round) || round < 1 || round > ROUNDS) {
-      problems.push({ year: year || undefined, text: `Row ${row}: Order, Year and Round (1-${ROUNDS}) must be numbers — skipped.` });
+    if (!r["Order"] || Number.isNaN(order) || !year) {
+      problems.push({ year: year || undefined, text: `Row ${row}: needs an Order and a Year — skipped.` });
       return;
     }
-    const unknown = [original, from, to].filter((m) => !roster.has(m));
+    if (hasRound && (!Number.isInteger(round) || round < 1 || round > ROUNDS)) {
+      problems.push({ year, text: `Row ${row}: Round must be 1-${ROUNDS} — skipped.` });
+      return;
+    }
+    if (!hasRound && !playerList.length) {
+      problems.push({ year, text: `Row ${row}: needs a Round (for a pick) or a Player — skipped.` });
+      return;
+    }
+    const names = hasRound ? [original, from, to] : [from, to];
+    const unknown = names.filter((m) => !roster.has(m));
     if (unknown.length) {
       problems.push({ year, text: `Row ${row}: ${unknown.map((m) => `'${m}'`).join(", ")} isn't a manager name on the site — skipped.` });
       return;
     }
-    out.push({ row, order, year, round, original, from, to });
+    if (hasRound) picks.push({ row, order, year, round, original, from, to });
+    if (playerList.length) players.push({ row, order, year, from, to, players: playerList });
   });
-  return out;
+  return { picks, players };
 }
 
 function normalizeDraftOrder(rows, problems) {
@@ -304,6 +334,31 @@ function parseCsvRows(text) {
 }
 
 // --- Helpers ---
+
+// "Row 14: needs a Year" ... "Row 49: needs a Year" -> "Rows 14-49: needs a
+// Year". Rows with the same message are merged into runs of consecutive
+// row numbers; other problems pass through unchanged.
+function groupRowProblems(problems) {
+  const byText = new Map();
+  const out = [];
+  for (const p of problems) {
+    const m = /^Row (\d+): (.*)$/.exec(p);
+    if (!m) { out.push(p); continue; }
+    if (!byText.has(m[2])) { byText.set(m[2], []); out.push(m[2]); }
+    byText.get(m[2]).push(Number(m[1]));
+  }
+  return out.map((p) => {
+    const rows = byText.get(p);
+    if (!rows) return p;
+    const runs = [];
+    for (const r of rows.sort((a, b) => a - b)) {
+      const last = runs[runs.length - 1];
+      if (last && r === last[1] + 1) last[1] = r; else runs.push([r, r]);
+    }
+    const label = runs.map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(", ");
+    return `${rows.length > 1 ? "Rows" : "Row"} ${label}: ${p}`;
+  });
+}
 
 // First names, with the last initial added where two managers share one
 // ("Brian H", "Brian K").
