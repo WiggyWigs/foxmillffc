@@ -2591,7 +2591,14 @@ body.pc-hide-badges .pc-badges { display: none; }
 }
 
 .dp-popup-line {
+  color: var(--ink);
+}
+
+.dp-popup-label {
   color: var(--ink-soft);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .dp-wrap {
@@ -2711,20 +2718,17 @@ body.pc-hide-badges .pc-badges { display: none; }
   color: #B3262B;
 }
 
-/* Finished drafts: the player taken under the manager's name. */
-.dp-cell.is-drafted {
-  line-height: 1.15;
-  padding: 0.25rem 0.2rem;
+/* Finished drafts show only the player's last name; keepers get a K. */
+.dp-cell.is-long {
+  font-size: 0.72rem;
+  letter-spacing: -0.01em;
 }
 
-.dp-player {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 400;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  opacity: 0.92;
+.dp-cell.is-xlong {
+  font-size: 0.66rem;
+  letter-spacing: -0.02em;
 }
+
 
 .dp-keeper {
   display: inline-block;

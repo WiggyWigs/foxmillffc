@@ -194,17 +194,21 @@ function render(year, loadProblems) {
       const traded = owner !== original;
       const route = (path[key] && path[key][path[key].length - 1] === owner ? path[key] : traded ? [original, owner] : [original])
         .map((m) => shortNames[m] || m).join(" → ");
-      const pickLine = traded
-        ? `Round ${round} · ${shortNames[original] || original}'s pick (${route})`
-        : `Round ${round} · ${shortNames[original] || original}'s pick`;
-      let player = "";
-      if (pk && pk.player) {
-        player = `<span class="dp-player">${pk.keeper ? '<span class="dp-keeper">K</span>' : ""}${escapeHtml(lastName(pk.player))}</span>`;
-      }
-      cells += `<td class="dp-cell${traded ? " is-traded" : ""}${pk ? " is-drafted" : ""}" style="${colorStyle(owner)}"
-                  tabindex="0" role="button" data-pick="${escapeHtml(pickLine)}"
+      const origin = traded ? `${shortNames[original] || original}'s pick (${route})`
+                            : `${shortNames[original] || original}'s own pick`;
+      // Finished draft: just the player's last name (the color says whose
+      // pick it is). Otherwise the manager who holds the pick.
+      const shown = pk && pk.player ? lastName(pk.player) : "";
+      const label = shown
+        ? `${pk.keeper ? '<span class="dp-keeper">K</span>' : ""}${escapeHtml(shown)}`
+        : escapeHtml(shortNames[owner] || owner);
+      // Long names ("Croskey-Merritt") get a smaller font so they fit.
+      const width = shown.length + (pk && pk.keeper ? 2 : 0);
+      const size = width > 13 ? " is-xlong" : width > 12 ? " is-long" : "";
+      cells += `<td class="dp-cell${traded ? " is-traded" : ""}${pk ? " is-drafted" : ""}${size}" style="${colorStyle(owner)}"
+                  tabindex="0" role="button" data-round="${round}" data-origin="${escapeHtml(origin)}"
                   data-player="${escapeHtml((pk && pk.player) || "")}" data-keeper="${pk && pk.keeper ? "1" : ""}"
-                  data-owner="${escapeHtml(shortNames[owner] || owner)}">${escapeHtml(shortNames[owner] || owner)}${player}</td>`;
+                  data-owner="${escapeHtml(owner)}">${label}</td>`;
     }
     rows += `<tr><th class="dp-round" scope="row">${round} ${arrow}</th>${cells}<th class="dp-round dp-round-end">${arrow} ${round}</th></tr>`;
   }
@@ -384,7 +388,7 @@ function parseCsvRows(text) {
     .map((r) => Object.fromEntries(headers.map((h, idx) => [h, (r[idx] ?? "").trim()])));
 }
 
-// --- Pick pop-up: full player name and the pick's history ---
+// --- Pick pop-up: player, manager, round and where the pick came from ---
 
 let popupFor = null;
 
@@ -395,10 +399,12 @@ function openPopup(cell) {
   pop.className = "dp-popup";
   pop.id = "dp-popup";
   pop.setAttribute("role", "dialog");
-  const player = cell.dataset.player;
+  const d = cell.dataset;
+  const row = (label, value) =>
+    `<div class="dp-popup-line"><span class="dp-popup-label">${label}</span> ${escapeHtml(value)}</div>`;
   pop.innerHTML =
-    (player ? `<div class="dp-popup-player">${escapeHtml(player)}${cell.dataset.keeper ? ' <span class="dp-keeper">K</span>' : ""}</div>` : "") +
-    `<div class="dp-popup-line">${escapeHtml(cell.dataset.pick)}${player ? "" : ` · held by ${escapeHtml(cell.dataset.owner)}`}</div>`;
+    (d.player ? `<div class="dp-popup-player">${escapeHtml(d.player)}${d.keeper ? ' <span class="dp-keeper">K</span>' : ""}</div>` : "") +
+    row("Manager", d.owner) + row("Round", d.round) + row("Pick", d.origin);
   document.body.appendChild(pop);
 
   // Just below the cell, kept inside the screen.
