@@ -26,6 +26,14 @@
 //     (e.g. 2027 before the order is set) columns are the current
 //     managers in alphabetical order.
 //
+//   Finished drafts (data/draft_results.json, written by the weekly
+//     update from ESPN, see capture_draft_results in espn_pull.py): who
+//     made each pick and the player taken. For those years each cell
+//     shows the player, ESPN's picker is the owner, and any pick where
+//     the trade log disagrees with ESPN is listed as a problem. Picks are
+//     placed snake-style: odd rounds left to right, even rounds right to
+//     left.
+//
 // Names must match the site's roster (data/manager_roster.json) exactly.
 // Colors are per manager in MANAGER_COLORS, matching the league's draft
 // sheet.
@@ -36,6 +44,7 @@ const DRAFT_ORDER_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vR26n_XrpN9Y9v4OQWNeqNEdQ-hdQhIQEx6nLUD8Iq447J4X4Luj_3BcPi5DYcJlArCYdcRYqW77tar/pub?gid=1566104049&single=true&output=csv";
 const ROSTER_URL = "data/manager_roster.json";
 const STATS_URL = "data/stats.json";
+const DRAFT_RESULTS_URL = "data/draft_results.json";
 const ROUNDS = 15;
 
 // Matched to the colors in the league's draft-order sheet.
@@ -64,16 +73,18 @@ let trades = [];       // normalized Trade Log pick rows
 let playerMoves = [];  // normalized Trade Log player rows: {row, order, year, from, to, players}
 let draftOrders = {};  // year -> [manager, ...] in slot order
 let shortNames = {};
+let draftResults = {}; // year -> {team_count, pick_order, picks: [...]}
 
 document.addEventListener("DOMContentLoaded", async () => {
   const wrap = document.getElementById("dp-wrap");
   let logText, orderText = "", stats;
   try {
-    const [logRes, orderRes, rosterRes, statsRes] = await Promise.all([
+    const [logRes, orderRes, rosterRes, statsRes, draftRes] = await Promise.all([
       fetch(TRADE_LOG_CSV_URL),
       DRAFT_ORDER_CSV_URL ? fetch(DRAFT_ORDER_CSV_URL) : Promise.resolve(null),
       fetch(ROSTER_URL),
       fetch(STATS_URL),
+      fetch(DRAFT_RESULTS_URL).catch(() => null),
     ]);
     if (!logRes.ok) throw new Error(`trade log HTTP ${logRes.status}`);
     if (orderRes && !orderRes.ok) throw new Error(`draft order HTTP ${orderRes.status}`);
@@ -82,6 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (orderRes) orderText = await orderRes.text();
     roster = new Set((await rosterRes.json()).managers || []);
     stats = statsRes.ok ? await statsRes.json() : {};
+    draftResults = draftRes && draftRes.ok ? ((await draftRes.json()).drafts || {}) : {};
   } catch (err) {
     wrap.innerHTML = `<p class="load-state">Couldn't load the draft board sheets (${escapeHtml(err.message)}). ` +
       `If this keeps happening, check they're still Published to the web as CSV.</p>`;
@@ -94,7 +106,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   ({ picks: trades, players: playerMoves } = normalizeTrades(parseCsvRows(logText), problems));
   draftOrders = normalizeDraftOrder(parseCsvRows(orderText), problems);
 
-  const years = [...new Set([...trades.map((t) => t.year), ...Object.keys(draftOrders).map(Number)])]
+  const years = [...new Set([...trades.map((t) => t.year), ...Object.keys(draftOrders).map(Number),
+    ...Object.keys(draftResults).map(Number)])]
     .sort((a, b) => b - a);
   if (!years.length) {
     wrap.innerHTML = `<p class="load-state">No draft picks recorded yet.</p>`;
@@ -120,12 +133,26 @@ function render(year, loadProblems) {
   document.getElementById("dp-title").textContent = `${year} Draft Board`;
   document.getElementById("dp-detail").textContent = "";
 
-  const order = draftOrders[year] || null;
+  const drafted = draftResults[year] || null;
+  const order = draftOrders[year] || (drafted && drafted.pick_order) || (drafted && roundOneOrder(drafted)) || null;
   const managers = order || [...new Set([...currentManagers,
     ...trades.filter((t) => t.year === year).map((t) => t.original)])].sort();
-  document.getElementById("dp-note").textContent = order
-    ? "Columns are in draft order; arrows show the snake."
-    : "No draft order yet, so managers are listed alphabetically.";
+  document.getElementById("dp-note").textContent = drafted
+    ? "Each pick shows who made it and the player taken (K = keeper). Arrows show the snake."
+    : order
+      ? "Columns are in draft order; arrows show the snake."
+      : "No draft order yet, so managers are listed alphabetically.";
+
+  // Finished draft: ESPN's pick at each round and column (snake order).
+  const draftedAt = {};
+  if (drafted && order) {
+    const n = order.length;
+    for (const pk of drafted.picks) {
+      const slot = pk.round % 2 === 1 ? pk.round_pick : n + 1 - pk.round_pick;
+      const original = order[slot - 1];
+      if (original) draftedAt[`${pk.round}|${original}`] = pk;
+    }
+  }
 
   // Walk the log in Order, tracking each pick's holder and path.
   const problems = loadProblems.filter((p) => p.year === undefined || p.year === year).map((p) => p.text);
@@ -154,15 +181,26 @@ function render(year, loadProblems) {
     let cells = "";
     for (const original of managers) {
       const key = `${round}|${original}`;
-      const owner = holder[key] || original;
+      const logged = holder[key] || original;
+      const pk = draftedAt[key];
+      const owner = (pk && pk.manager) || logged;
+      if (pk && pk.manager && pk.manager !== logged) {
+        problems.push(`${year} Round ${round}, ${original}'s pick: ESPN shows ${pk.manager} made it, ` +
+          `but the trade log has ${logged} holding it.`);
+      }
       held[owner] = (held[owner] || 0) + 1;
       const traded = owner !== original;
       const route = (path[key] || [original]).map((m) => shortNames[m] || m).join(" → ");
-      const info = traded
+      let info = traded
         ? `${year} Round ${round}: ${shortNames[original] || original}'s pick, now ${shortNames[owner] || owner} (${route})`
         : `${year} Round ${round}: ${shortNames[original] || original}'s own pick`;
-      cells += `<td class="dp-cell${traded ? " is-traded" : ""}" style="${colorStyle(owner)}"
-                  title="${escapeHtml(info)}" data-info="${escapeHtml(info)}" tabindex="0">${escapeHtml(shortNames[owner] || owner)}</td>`;
+      let player = "";
+      if (pk && pk.player) {
+        info += ` · ${pk.player}${pk.keeper ? " (keeper)" : ""}`;
+        player = `<span class="dp-player">${pk.keeper ? '<span class="dp-keeper">K</span>' : ""}${escapeHtml(pk.player)}</span>`;
+      }
+      cells += `<td class="dp-cell${traded ? " is-traded" : ""}${pk ? " is-drafted" : ""}" style="${colorStyle(owner)}"
+                  title="${escapeHtml(info)}" data-info="${escapeHtml(info)}" tabindex="0">${escapeHtml(shortNames[owner] || owner)}${player}</td>`;
     }
     rows += `<tr><th class="dp-round" scope="row">${round} ${arrow}</th>${cells}<th class="dp-round dp-round-end">${arrow} ${round}</th></tr>`;
   }
@@ -229,7 +267,7 @@ function renderTrades(year, yearTrades, yearPlayers) {
     });
     return `<li><span class="dp-trade-num">Trade ${i + 1}</span> ${parts.join(" · ")}</li>`;
   });
-  el.innerHTML = `<h3 class="season-subhead">Trades</h3><ul class="dp-trade-list">${items.join("")}</ul>`;
+  el.innerHTML = `<h3 class="season-subhead">${year} Trades</h3><ul class="dp-trade-list">${items.join("")}</ul>`;
 }
 
 // --- Sheet rows ---
@@ -334,6 +372,14 @@ function parseCsvRows(text) {
 }
 
 // --- Helpers ---
+
+// Draft order when neither the sheet nor ESPN gives one: who made each
+// Round 1 pick. Right unless a Round 1 pick was traded.
+function roundOneOrder(drafted) {
+  const first = drafted.picks.filter((p) => p.round === 1).sort((a, b) => a.round_pick - b.round_pick);
+  const order = first.map((p) => p.manager);
+  return order.length && order.every(Boolean) ? order : null;
+}
 
 // "Row 14: needs a Year" ... "Row 49: needs a Year" -> "Rows 14-49: needs a
 // Year". Rows with the same message are merged into runs of consecutive

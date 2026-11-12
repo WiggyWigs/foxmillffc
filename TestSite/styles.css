@@ -2654,3 +2654,29 @@ body.pc-hide-badges .pc-badges { display: none; }
 .dp-problem-list {
   color: #B3262B;
 }
+
+/* Finished drafts: the player taken under the manager's name. */
+.dp-cell.is-drafted {
+  line-height: 1.15;
+  padding: 0.25rem 0.2rem;
+}
+
+.dp-player {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.92;
+}
+
+.dp-keeper {
+  display: inline-block;
+  margin-right: 0.2rem;
+  padding: 0 0.2rem;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+}

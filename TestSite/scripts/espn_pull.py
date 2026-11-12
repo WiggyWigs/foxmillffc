@@ -451,6 +451,82 @@ def capture_team_moves(league_id, swid, espn_s2, resolved_mapping):
     print(f"Saved transaction counts for {len(managers)} managers to {TEAM_MOVES_PATH}")
 
 
+DRAFT_RESULTS_PATH = SCRIPT_DIR.parent / "data" / os.environ.get("DRAFT_RESULTS_FILENAME", "draft_results.json")
+
+
+def capture_draft_results(league_id, swid, espn_s2, resolved_mapping):
+    """Saves each finished draft (every pick: round, pick in round, overall
+    pick, the manager who made it, the player, keeper flag) to
+    draft_results.json, for the Draft Board page. A draft is saved once and
+    never pulled again, the same lock as past-season scores. Years after
+    the test cutoff are left out. pick_order is ESPN's draft slot order
+    (managers, slot 1 first) if ESPN's settings carry it, else None (the
+    page falls back to the league's Draft Order sheet)."""
+    existing = {"drafts": {}}
+    if DRAFT_RESULTS_PATH.exists():
+        with open(DRAFT_RESULTS_PATH) as f:
+            existing = json.load(f)
+    drafts = existing.setdefault("drafts", {})
+
+    added = []
+    for year in YEARS:
+        if TEST_CUTOFF_YEAR and year > TEST_CUTOFF_YEAR:
+            continue
+        year_str = str(year)
+        if drafts.get(year_str, {}).get("picks"):
+            continue  # locked: already saved
+        league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
+        if not league.draft:
+            print(f"Draft {year}: not drafted yet on ESPN, skipping.")
+            continue
+        team_count = len(league.teams)
+        picks, unmapped = [], set()
+        for pick in league.draft:
+            team_name = getattr(pick.team, "team_name", None)
+            manager = resolved_mapping.get((year_str, team_name))
+            if manager is None:
+                unmapped.add(team_name)
+            picks.append({
+                "round": pick.round_num,
+                "round_pick": pick.round_pick,
+                "overall": (pick.round_num - 1) * team_count + pick.round_pick,
+                "manager": manager,
+                "player": pick.playerName or None,
+                "keeper": bool(pick.keeper_status),
+            })
+        if unmapped:
+            print(f"WARNING: draft {year}: no manager for team name(s) {sorted(unmapped)} "
+                  f"in team_mapping.json — not saved, will retry next run.")
+            continue
+
+        pick_order = None
+        try:
+            settings = league.espn_request.get_league()["settings"]
+            order_ids = (settings.get("draftSettings") or {}).get("pickOrder") or []
+            names = {t.team_id: t.team_name for t in league.teams}
+            order = [resolved_mapping.get((year_str, names.get(tid))) for tid in order_ids]
+            if order and all(order) and len(order) == team_count:
+                pick_order = order
+        except Exception as e:
+            print(f"Draft {year}: couldn't read ESPN's draft order ({e}); the Draft Order sheet is used instead.")
+
+        drafts[year_str] = {"team_count": team_count, "pick_order": pick_order,
+                            "picks": sorted(picks, key=lambda p: p["overall"])}
+        added.append(year)
+        print(f"Draft {year}: saved {len(picks)} picks "
+              f"({sum(p['keeper'] for p in picks)} keepers; "
+              f"draft order {'from ESPN' if pick_order else 'not in ESPN settings'}).")
+
+    if added:
+        existing["_readme"] = ("Finished drafts from ESPN, written by espn_pull.py "
+                               "(capture_draft_results). Each draft is saved once and never "
+                               "re-pulled. Read by draft-board.js.")
+        with open(DRAFT_RESULTS_PATH, "w") as f:
+            json.dump(existing, f, indent=2)
+    else:
+        print("Draft results: nothing new to save.")
+
+
 def capture_upcoming_matchups(league_id, swid, espn_s2, resolved_mapping):
     """
     Finds the current (max) year's next unplayed week and saves just the
@@ -670,6 +746,13 @@ def main():
         capture_team_moves(league_id, swid, espn_s2, load_team_mapping())
     except Exception as e:
         print(f"WARNING: couldn't capture transaction counts: {e}")
+
+    # Finished drafts for the Draft Board page. Non-fatal: the page just
+    # shows the trade log without drafted players if this fails.
+    try:
+        capture_draft_results(league_id, swid, espn_s2, load_team_mapping())
+    except Exception as e:
+        print(f"WARNING: couldn't capture draft results: {e}")
     result = subprocess.run([sys.executable, str(HALFWAY_SCRIPT_PATH)], cwd=SCRIPT_DIR)
     if result.returncode != 0:
         print("WARNING: halfway.py failed — see output above.")
