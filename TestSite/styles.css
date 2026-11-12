@@ -2677,11 +2677,10 @@ body.pc-hide-badges .pc-badges { display: none; }
 }
 
 .dp-recv {
-  display: inline-block;
-  padding: 0.05rem 0.4rem;
-  border-radius: 3px;
+  display: block;
   font-weight: 700;
-  margin-bottom: 0.3rem;
+  color: var(--navy);
+  margin-bottom: 0.2rem;
 }
 
 .dp-recv-items {

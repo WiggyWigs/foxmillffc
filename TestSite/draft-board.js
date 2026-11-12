@@ -231,7 +231,7 @@ function render(year, loadProblems) {
 }
 
 // Trades as a table: one row per trade, one cell per manager on the
-// receiving end ("Eddie receives:" then each player and pick on its own
+// receiving end ("Eddie receives:" in bold, then each player and pick on its own
 // line, players first). Three-way trades get a third cell; shorter rows
 // are padded.
 function renderTrades(year, yearTrades, yearPlayers) {
@@ -258,7 +258,7 @@ function renderTrades(year, yearTrades, yearPlayers) {
       const picks = got.picks.sort((a, b) => a.round - b.round || a.original.localeCompare(b.original))
         .map((t) => `${name(t.original)}'s ${ordinal(t.round)}${t.original === t.from ? "" : ` (via ${name(t.from)})`}`);
       const lines = got.players.map((pl) => escapeHtml(pl)).concat(picks);
-      return `<td class="dp-trade-side"><span class="dp-recv" style="${colorStyle(to)}">${name(to)} receives:</span>` +
+      return `<td class="dp-trade-side"><span class="dp-recv">${name(to)} receives:</span>` +
         `<span class="dp-recv-items">${lines.join("<br>")}</span></td>`;
     });
   });
