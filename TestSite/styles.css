@@ -2632,11 +2632,6 @@ body.pc-hide-badges .pc-badges { display: none; }
   outline-offset: -2px;
 }
 
-.dp-total {
-  background: var(--panel-solid);
-  font-weight: 700;
-}
-
 .dp-problem-list {
   max-width: 46rem;
   margin: 0.5rem auto 1rem;

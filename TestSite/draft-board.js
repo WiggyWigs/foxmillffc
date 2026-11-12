@@ -207,14 +207,19 @@ function render(year, loadProblems) {
 
   const head = managers.map((m, i) =>
     `<th class="dp-head" style="${colorStyle(m)}" scope="col">${order ? `<span class="dp-slot">${i + 1}</span>` : ""}${escapeHtml(shortNames[m] || m)}</th>`).join("");
-  const totals = managers.map((m) => `<td class="dp-total">${held[m] || 0}</td>`).join("");
+  // Every manager should end up with exactly ROUNDS picks; anything else
+  // means a trade log row sent a pick to the wrong place.
+  for (const m of managers) {
+    if ((held[m] || 0) !== ROUNDS) {
+      problems.push(`${m} holds ${held[m] || 0} picks in ${year}, not ${ROUNDS}.`);
+    }
+  }
 
   const wrap = document.getElementById("dp-wrap");
   wrap.innerHTML = `
     <table class="dp-table">
       <thead><tr><th class="dp-round dp-corner">Rd</th>${head}<th class="dp-round dp-corner">Rd</th></tr></thead>
       <tbody>${rows}</tbody>
-      <tfoot><tr><th class="dp-round" scope="row">Picks</th>${totals}<th class="dp-round"></th></tr></tfoot>
     </table>`;
   wrap.querySelectorAll(".dp-cell").forEach((cell) => {
     cell.addEventListener("click", () => {
