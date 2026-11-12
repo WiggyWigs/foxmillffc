@@ -115,6 +115,7 @@ jobs:
           # owns that), so run-time edits to state files there are dropped.
           git add TestSite/data/stats.json TestSite/data/upcoming_matchups.json TestSite/data/player_lineups.json TestSite/data/manager_roster.json
           git add TestSite/data/remaining_schedule.json 2>/dev/null || true
+          git add TestSite/data/draft_results.json 2>/dev/null || true
           git add TestSite/data/fastest-to-25-wins-banner.png 2>/dev/null || true
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "TEST update: cutoff ${{ inputs.cutoff_year }} week ${{ inputs.cutoff_week }}"
