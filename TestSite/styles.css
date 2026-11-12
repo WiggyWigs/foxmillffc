@@ -2651,8 +2651,14 @@ body.pc-hide-badges .pc-badges { display: none; }
   margin: 0.5rem 0 1rem;
 }
 
+#dp-trades .season-subhead {
+  text-align: center;
+}
+
+/* Only as wide as its longest entry, centred. */
 .dp-trade-table {
-  width: 100%;
+  width: auto;
+  margin: 0 auto;
   border-collapse: collapse;
   font-size: 0.9rem;
 }
@@ -2666,14 +2672,13 @@ body.pc-hide-badges .pc-badges { display: none; }
 }
 
 .dp-trade-num {
-  width: 5.5rem;
   white-space: nowrap;
   font-weight: 700;
   color: var(--rust);
 }
 
 .dp-trade-side {
-  min-width: 11rem;
+  white-space: nowrap;
 }
 
 .dp-recv {
