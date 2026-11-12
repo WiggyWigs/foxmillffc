@@ -230,7 +230,10 @@ function render(year, loadProblems) {
     : "";
 }
 
-// "Trade 1: John gets Jay's 4th and Tee Higgins · Jay gets John's 6th"
+// Trades as a table: one row per trade, one cell per manager on the
+// receiving end ("Eddie receives:" in bold, then each player and pick on its own
+// line, players first). Three-way trades get a third cell; shorter rows
+// are padded.
 function renderTrades(year, yearTrades, yearPlayers) {
   const groups = new Map();
   const add = (order) => {
@@ -242,9 +245,8 @@ function renderTrades(year, yearTrades, yearPlayers) {
   const el = document.getElementById("dp-trades");
   if (!groups.size) { el.innerHTML = ""; return; }
   const name = (m) => escapeHtml(shortNames[m] || m);
-  // One clause per receiving manager, players first, then picks:
-  // "John gets Tee Higgins, Greg's 7th and 14th".
-  const items = [...[...groups.entries()].sort((a, b) => a[0] - b[0]).map(([, g]) => g)].map((group, i) => {
+
+  const trades = [...groups.entries()].sort((a, b) => a[0] - b[0]).map(([, group]) => {
     const byTo = new Map();
     const slot = (to) => {
       if (!byTo.has(to)) byTo.set(to, { picks: [], players: [] });
@@ -252,22 +254,20 @@ function renderTrades(year, yearTrades, yearPlayers) {
     };
     for (const t of group.picks) slot(t.to).picks.push(t);
     for (const p of group.players) slot(p.to).players.push(...p.players);
-    const parts = [...byTo.entries()].map(([to, got]) => {
-      // "Brian K's 5th and 6th", "John's 5th (via Brian K)"
-      const bySource = new Map();
-      for (const t of got.picks.sort((a, b) => a.round - b.round)) {
-        const key = `${t.original}|${t.original === t.from ? "" : t.from}`;
-        if (!bySource.has(key)) bySource.set(key, { t, rounds: [] });
-        bySource.get(key).rounds.push(ordinal(t.round));
-      }
-      const pieces = got.players.map((pl) => escapeHtml(pl))
-        .concat([...bySource.values()].map(({ t, rounds }) =>
-          `${name(t.original)}'s ${joinAnd(rounds)}${t.original === t.from ? "" : ` (via ${name(t.from)})`}`));
-      return `<b>${name(to)}</b> gets ${joinAnd(pieces)}`;
+    return [...byTo.entries()].map(([to, got]) => {
+      const picks = got.picks.sort((a, b) => a.round - b.round || a.original.localeCompare(b.original))
+        .map((t) => `${name(t.original)}'s ${ordinal(t.round)}${t.original === t.from ? "" : ` (via ${name(t.from)})`}`);
+      const lines = got.players.map((pl) => escapeHtml(pl)).concat(picks);
+      return `<td class="dp-trade-side"><span class="dp-recv">${name(to)} receives:</span>` +
+        `<span class="dp-recv-items">${lines.join("<br>")}</span></td>`;
     });
-    return `<li><span class="dp-trade-num">Trade ${i + 1}</span> ${parts.join(" · ")}</li>`;
   });
-  el.innerHTML = `<h3 class="season-subhead">${year} Trades</h3><ul class="dp-trade-list">${items.join("")}</ul>`;
+  const width = Math.max(...trades.map((sides) => sides.length));
+  const rows = trades.map((sides, i) =>
+    `<tr><th class="dp-trade-num" scope="row">Trade ${i + 1}</th>${sides.join("")}` +
+    `${"<td class=\"dp-trade-side\"></td>".repeat(width - sides.length)}</tr>`).join("");
+  el.innerHTML = `<h3 class="season-subhead">${year} Trades</h3>` +
+    `<div class="dp-trade-wrap"><table class="dp-trade-table"><tbody>${rows}</tbody></table></div>`;
 }
 
 // --- Sheet rows ---
@@ -425,10 +425,6 @@ function colorStyle(manager) {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(bg.slice(i, i + 2), 16));
   const light = (0.299 * r + 0.587 * g + 0.114 * b) > 150;
   return `background:${bg};color:${light ? "#111" : "#fff"}`;
-}
-
-function joinAnd(items) {
-  return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
 function ordinal(n) {
