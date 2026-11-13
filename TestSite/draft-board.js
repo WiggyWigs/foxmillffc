@@ -68,6 +68,16 @@ const MANAGER_COLORS = {
 };
 const FALLBACK_COLOR = "#BFBFBF";
 
+// A manager who took over someone else's team: in that draft, picks the
+// Trade Log gives to (or takes from) the old manager belong to the new
+// one. Only the board uses this; the trades table keeps the names of who
+// actually made each trade.
+//   Kevin Mallon took over Josh Davis's team for 2025 (Josh came back
+//   with a new team in 2026).
+const TEAM_TAKEOVERS = [
+  { draft: 2025, from: "Josh Davis", to: "Kevin Mallon" },
+];
+
 // Short names as the league writes them ("Dan", "Brian H").
 const SHORT_NAME_OVERRIDES = { "Daniel Bahamonde": "Dan" };
 
@@ -162,8 +172,13 @@ function render(year, loadProblems) {
   const problems = loadProblems.filter((p) => p.year === undefined || p.year === year).map((p) => p.text);
   const holder = {};   // "round|original" -> manager
   const path = {};     // "round|original" -> [manager, ...]
-  // The trades that shaped this draft: made the season before.
-  const yearTrades = trades.filter((t) => t.draft === year).sort((a, b) => a.order - b.order || a.row - b.row);
+  // The trades that shaped this draft: made the season before, with any
+  // team takeover for this draft applied (TEAM_TAKEOVERS).
+  const takeover = Object.fromEntries(TEAM_TAKEOVERS.filter((x) => x.draft === year).map((x) => [x.from, x.to]));
+  const team = (m) => takeover[m] || m;
+  const yearTrades = trades.filter((t) => t.draft === year)
+    .map((t) => ({ ...t, original: team(t.original), from: team(t.from), to: team(t.to) }))
+    .sort((a, b) => a.order - b.order || a.row - b.row);
   for (const t of yearTrades) {
     const key = `${t.round}|${t.original}`;
     const was = holder[key] || t.original;
