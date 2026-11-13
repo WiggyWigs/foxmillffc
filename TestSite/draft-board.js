@@ -8,6 +8,10 @@
 //
 //   Trade Log  (TRADE_LOG_CSV_URL): one row per pick changing hands.
 //     Order, Year, Round, Original Owner, From, To, Player
+//     Year is the SEASON the trade was made in; the picks traded are for
+//     the next draft (Year + 1). So the 2026 page shows the 2026 board,
+//     shaped by the trades of the 2025 season, and under it "2026 Trades",
+//     the trades made this season (which shape the 2027 board).
 //     Order groups the picks in one trade (same number = same trade) and
 //     orders trades (higher = later). A pick is identified by Year + Round
 //     + Original Owner; its holder is the To of its last row. Each row's
@@ -106,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   ({ picks: trades, players: playerMoves } = normalizeTrades(parseCsvRows(logText), problems));
   draftOrders = normalizeDraftOrder(parseCsvRows(orderText), problems);
 
-  const years = [...new Set([...trades.map((t) => t.year), ...Object.keys(draftOrders).map(Number),
+  const years = [...new Set([...trades.map((t) => t.draft), ...Object.keys(draftOrders).map(Number),
     ...Object.keys(draftResults).map(Number)])]
     .sort((a, b) => b - a);
   if (!years.length) {
@@ -136,7 +140,7 @@ function render(year, loadProblems) {
   const drafted = draftResults[year] || null;
   const order = draftOrders[year] || (drafted && drafted.pick_order) || (drafted && roundOneOrder(drafted)) || null;
   const managers = order || [...new Set([...currentManagers,
-    ...trades.filter((t) => t.year === year).map((t) => t.original)])].sort();
+    ...trades.filter((t) => t.draft === year).map((t) => t.original)])].sort();
   document.getElementById("dp-note").textContent = drafted
     ? "Each pick shows the player taken; the color shows who made it (K = keeper). Arrows show the snake."
     : order
@@ -158,7 +162,8 @@ function render(year, loadProblems) {
   const problems = loadProblems.filter((p) => p.year === undefined || p.year === year).map((p) => p.text);
   const holder = {};   // "round|original" -> manager
   const path = {};     // "round|original" -> [manager, ...]
-  const yearTrades = trades.filter((t) => t.year === year).sort((a, b) => a.order - b.order || a.row - b.row);
+  // The trades that shaped this draft: made the season before.
+  const yearTrades = trades.filter((t) => t.draft === year).sort((a, b) => a.order - b.order || a.row - b.row);
   for (const t of yearTrades) {
     const key = `${t.round}|${t.original}`;
     const was = holder[key] || t.original;
@@ -239,7 +244,9 @@ function render(year, loadProblems) {
     });
   });
 
-  renderTrades(year, yearTrades, playerMoves.filter((p) => p.year === year));
+  // "<year> Trades": the trades made during this season (next year's picks).
+  const seasonTrades = trades.filter((t) => t.year === year).sort((a, b) => a.order - b.order || a.row - b.row);
+  renderTrades(year, seasonTrades, playerMoves.filter((p) => p.year === year));
   const shown = groupRowProblems(problems);
   document.getElementById("dp-problems").innerHTML = shown.length
     ? `<h3 class="season-subhead">Problems in the trade log</h3><ul class="dp-problem-list">${
@@ -317,7 +324,8 @@ function normalizeTrades(rows, problems) {
       problems.push({ year, text: `Row ${row}: ${unknown.map((m) => `'${m}'`).join(", ")} isn't a manager name on the site — skipped.` });
       return;
     }
-    if (hasRound) picks.push({ row, order, year, round, original, from, to });
+    // year = the season of the trade; draft = the draft the pick is in.
+    if (hasRound) picks.push({ row, order, year, draft: year + 1, round, original, from, to });
     if (playerList.length) players.push({ row, order, year, from, to, players: playerList });
   });
   return { picks, players };
