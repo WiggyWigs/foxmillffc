@@ -2002,6 +2002,53 @@ def _final_five_stat(all_games, season_games, current_year):
     }
 
 
+OUTSIDE_TOP_WEEK = 10
+
+
+def _outside_top_stat(all_games, season_games, current_year, week, roster_names):
+    """Stat of the Week: playoff odds for a team outside the top
+    PLAYOFF_SPOTS of the standings after `week`, from every complete past
+    season (standings with the league's tiebreakers). Lists this year's
+    managers outside the line in standings order, and how many of them
+    history says will crash it (that rate times the group, rounded half
+    up). None if no complete past season or nobody is outside."""
+    outside = made = 0
+    first_year = None
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        if not any(g["year"] == year and g["game_type"] == "Championship" for g in all_games):
+            continue
+        reg = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+               and _week_sort_key(g["week"]) <= week]
+        playoff = {m for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+                   for m in (g["away_manager"], g["home_manager"])}
+        for row in rank_season_games(reg, roster_names)[PLAYOFF_SPOTS:]:
+            outside += 1
+            made += row["manager"] in playoff
+        first_year = first_year or year
+    now = [row["manager"] for row in rank_season_games(season_games, roster_names)[PLAYOFF_SPOTS:]]
+    if not outside or not now:
+        return None
+    pct = round(100 * made / outside, 1)
+    crash = int(made / outside * len(now) + 0.5)  # round half up
+    if crash == 0:
+        closing = f"Based on history, the top {PLAYOFF_SPOTS} is set. Can anyone crash it?"
+    else:
+        closing = (f"Based on history, {_number_word(crash)} of them will crash the "
+                   f"top {PLAYOFF_SPOTS}. Who will it be?")
+    return {
+        "reason": f"outside_top_{PLAYOFF_SPOTS}_week_{week}", "value": pct,
+        "sample_size": outside, "made_playoffs": made, "expected_crashers": crash,
+        "record_label": f"outside the top {PLAYOFF_SPOTS}",
+        "this_year_teams": now,
+        "teams_label": f"Managers outside the top {PLAYOFF_SPOTS} this year",
+        "narrative": (f"The historical chance of making the playoffs if you are outside the top "
+                      f"{PLAYOFF_SPOTS} of the standings after Week {week}. Since {first_year}, "
+                      f"{outside} teams were outside the top {PLAYOFF_SPOTS} after Week {week}, "
+                      f"and {made} {'has' if made == 1 else 'have'} made the playoffs."),
+        "closing": closing,
+    }
+
+
 TOP_POINTS_SPOTS = 6
 
 # #1 vs #2 Stat of the Week: considered from the publication after Week 5
@@ -2413,6 +2460,10 @@ def compute_stat_of_the_week(all_games, roster_names):
     Week 9 - _final_five_stat: past points champions' average score
     through Week 9 (and for the whole season), plus every team this year
     averaging within 10 points of that. #1 vs #2 still takes priority.
+
+    Week 10 - _outside_top_stat: playoff odds for a team outside the top 6
+    of the standings, this year's managers outside it, and how many of
+    them history says will crash it. #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2476,6 +2527,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == FINAL_FIVE_WEEK:
         return _final_five_stat(all_games, season_games, current_year)
+
+    if last_completed_week == OUTSIDE_TOP_WEEK:
+        return _outside_top_stat(all_games, season_games, current_year, OUTSIDE_TOP_WEEK, roster_names)
 
     return None  # other weeks: not defined yet
 
