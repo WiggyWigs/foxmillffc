@@ -2002,6 +2002,73 @@ def _final_five_stat(all_games, season_games, current_year):
     }
 
 
+OUTSIDE_TOP_WEEK = 10
+OUTSIDE_TOP_MAX_GAMES_BACK = 2  # teams further back than this are left out, then and now
+
+
+def _games_back(row, line):
+    """Games behind `line` (a standings row): (win gap + loss gap) / 2,
+    so a tie counts as half a game."""
+    return ((line["wins"] - row["wins"]) + (row["losses"] - line["losses"])) / 2
+
+
+def _outside_top_stat(all_games, season_games, current_year, week, roster_names):
+    """Stat of the Week: playoff odds for a team outside the top
+    PLAYOFF_SPOTS of the standings after `week` but within
+    OUTSIDE_TOP_MAX_GAMES_BACK games of the last playoff spot, from every
+    complete past season (standings with the league's tiebreakers). Lists
+    this year's managers in that group in standings order, and how many
+    of them history says will crash the top PLAYOFF_SPOTS (that rate
+    times the group, rounded half up). None if no complete past season
+    had such a team or nobody is in the group now."""
+    back = OUTSIDE_TOP_MAX_GAMES_BACK
+
+    def in_the_hunt(standings):
+        line = standings[PLAYOFF_SPOTS - 1]
+        return [row for row in standings[PLAYOFF_SPOTS:] if _games_back(row, line) <= back]
+
+    hunt = made = 0
+    first_year = None
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        if not any(g["year"] == year and g["game_type"] == "Championship" for g in all_games):
+            continue
+        reg = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+               and _week_sort_key(g["week"]) <= week]
+        playoff = {m for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+                   for m in (g["away_manager"], g["home_manager"])}
+        for row in in_the_hunt(rank_season_games(reg, roster_names)):
+            hunt += 1
+            made += row["manager"] in playoff
+        first_year = first_year or year
+    now = [row["manager"] for row in in_the_hunt(rank_season_games(season_games, roster_names))]
+    if not hunt or not now:
+        return None
+    pct = round(100 * made / hunt, 1)
+    crash = int(made / hunt * len(now) + 0.5)  # round half up
+    if crash == 0:
+        closing = f"Based on history, the top {PLAYOFF_SPOTS} is set. Can anyone crash it?"
+    else:
+        closing = (f"Based on history, {_number_word(crash)} of them will crash the "
+                   f"top {PLAYOFF_SPOTS}. Who will it be?")
+    within = f"within {_number_word(back)} games of {_ordinal_word(PLAYOFF_SPOTS)} place"
+    return {
+        "reason": f"outside_top_{PLAYOFF_SPOTS}_week_{week}", "value": pct,
+        "sample_size": hunt, "made_playoffs": made, "expected_crashers": crash,
+        "record_label": f"outside the top {PLAYOFF_SPOTS}",
+        "this_year_teams": now,
+        "teams_label": f"Managers outside the top {PLAYOFF_SPOTS} but {within} this year",
+        "narrative": (f"The historical chance of making the playoffs if you are outside the top "
+                      f"{PLAYOFF_SPOTS} of the standings after Week {week}, but {within}. "
+                      f"Since {first_year}, {hunt} teams were in that spot, and "
+                      f"{made} {'has' if made == 1 else 'have'} made the playoffs."),
+        "closing": closing,
+    }
+
+
+def _ordinal_word(n):
+    return {1: "1st", 2: "2nd", 3: "3rd"}.get(n, f"{n}th")
+
+
 TOP_POINTS_SPOTS = 6
 
 # #1 vs #2 Stat of the Week: considered from the publication after Week 5
@@ -2413,6 +2480,11 @@ def compute_stat_of_the_week(all_games, roster_names):
     Week 9 - _final_five_stat: past points champions' average score
     through Week 9 (and for the whole season), plus every team this year
     averaging within 10 points of that. #1 vs #2 still takes priority.
+
+    Week 10 - _outside_top_stat: playoff odds for a team outside the top 6
+    of the standings but within 2 games of 6th place, this year's managers
+    in that spot, and how many of them history says will crash the top 6.
+    #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2476,6 +2548,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == FINAL_FIVE_WEEK:
         return _final_five_stat(all_games, season_games, current_year)
+
+    if last_completed_week == OUTSIDE_TOP_WEEK:
+        return _outside_top_stat(all_games, season_games, current_year, OUTSIDE_TOP_WEEK, roster_names)
 
     return None  # other weeks: not defined yet
 
