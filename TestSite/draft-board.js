@@ -73,9 +73,13 @@ const FALLBACK_COLOR = "#BFBFBF";
 // the one before it, a curve fitted to the league's own 2023-2025 drafts
 // (season points over a last-starter replacement level; see
 // scripts/draft_values.py and the "Draft pick values" workflow). Only
-// the ranking is shown on the page, never the values.
+// the ranking and a relative score (100 = one pick per round) are shown
+// on the page, never the pick values.
 const PICK_VALUE_RATIO = 0.72;
 const pickValue = (round) => PICK_VALUE_RATIO ** (round - 1);
+// Value of one pick in every round, the yardstick for the Draft Capital score.
+const FULL_SET_VALUE = Array.from({ length: ROUNDS }, (_, i) => pickValue(i + 1))
+  .reduce((a, b) => a + b, 0);
 
 // A manager who took over someone else's team: in that draft, picks the
 // Trade Log gives to (or takes from) the old manager belong to the new
@@ -284,7 +288,9 @@ function render(year, loadProblems) {
 
 // Draft capital ranking, for a board that hasn't been drafted yet: managers
 // in order of the total value of the picks they hold (pickValue), with
-// ties sharing a place. Only the order is shown.
+// ties sharing a place. Each gets a score where 100 is a full set of one
+// pick per round (what an untraded manager holds): 108 means 8% more draft
+// capital than that, 90 means 10% less.
 function renderCapital(capital) {
   const el = document.getElementById("dp-capital");
   if (!capital) { el.innerHTML = ""; return; }
@@ -292,10 +298,14 @@ function renderCapital(capital) {
   let place = 0;
   const items = ranked.map(([m, v], i) => {
     if (i === 0 || Math.abs(v - ranked[i - 1][1]) > 1e-9) place = i + 1;
-    return `<li><span class="dp-capital-place">${place}</span>${escapeHtml(m)}</li>`;
+    const score = Math.round((100 * v) / FULL_SET_VALUE);
+    return `<li><span class="dp-capital-place">${place}</span>` +
+      `<span class="dp-capital-name">${escapeHtml(m)}</span>` +
+      `<span class="dp-capital-score">${score}</span></li>`;
   });
   el.innerHTML = `<h3 class="season-subhead">Draft Capital</h3>` +
-    `<p class="dp-note">Most draft power first, from the value of the picks each manager holds.</p>` +
+    `<p class="dp-note">Most draft power first. 100 = one pick in every round; ` +
+    `above 100 means more draft capital than that, below means less.</p>` +
     `<ol class="dp-capital-list">${items.join("")}</ol>`;
 }
 
