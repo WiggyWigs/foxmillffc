@@ -10,10 +10,14 @@ Method, for every finished season given (default 2023-2025):
      cheap round, so its points would make that round look better than
      a normal pick there.
   2. Value over replacement: points minus a replacement level for the
-     player's position, floored at 0. Replacement = the median season of
-     non-keeper players at that position drafted in REPLACEMENT_ROUNDS
-     (the kind of player that's still there late or on waivers); with
-     fewer than 3 of those, the position's 20th percentile instead.
+     player's position in that season, floored at 0. Replacement is the
+     "last starter" baseline: the league's lineup slots (from ESPN's
+     settings) times the number of teams says how many players start at
+     each position; flex slots go, one at a time, to the best remaining
+     eligible player. Replacement is the next player after the last
+     starter, ranked across the whole player pool (undrafted included),
+     i.e. the best player you could have had for free. If ESPN won't
+     serve the pool, drafted players only are used (logged).
   3. Per round: the median value over replacement (robust to a few
      breakout seasons).
   4. A smooth curve, value = e^(a - k*(round - 1)), fitted to the rounds
@@ -26,6 +30,7 @@ Run by the "Draft pick values" workflow:
 """
 
 import csv
+import json
 import math
 import os
 import statistics
@@ -35,8 +40,13 @@ from espn_api.football import League
 
 from espn_pull import load_credentials, load_team_mapping
 
-REPLACEMENT_ROUNDS = (13, 14, 15)
 CARD_BATCH = 50
+POOL_SIZE = 600  # top scorers fetched per season for the replacement baseline
+POSITIONS = ("QB", "RB", "WR", "TE", "K", "D/ST")
+SLOT_NAMES = {0: "QB", 1: "QB", 2: "RB", 3: "RB/WR", 4: "WR", 5: "WR/TE", 6: "TE",
+              7: "OP", 16: "D/ST", 17: "K", 23: "RB/WR/TE"}
+FLEX = {"RB/WR": {"RB", "WR"}, "WR/TE": {"WR", "TE"},
+        "RB/WR/TE": {"RB", "WR", "TE"}, "OP": {"QB", "RB", "WR", "TE"}}
 
 
 def season_points(league, ids):
@@ -52,12 +62,67 @@ def season_points(league, ids):
     return out
 
 
+def player_pool_ids(league, year):
+    """IDs of the season's top POOL_SIZE scorers, drafted or not (ESPN's
+    player list sorted by season points). [] if ESPN won't serve it."""
+    filters = {"players": {
+        "filterStatus": {"value": ["FREEAGENT", "WAIVERS", "ONTEAM"]},
+        "limit": POOL_SIZE,
+        "sortAppliedStatTotal": {"sortAsc": False, "sortPriority": 1, "value": f"00{year}"},
+    }}
+    try:
+        data = league.espn_request.league_get(
+            params={"view": "kona_player_info", "scoringPeriodId": 0},
+            headers={"x-fantasy-filter": json.dumps(filters)})
+        return [p["id"] for p in data.get("players") or [] if p.get("id")]
+    except Exception as e:
+        print(f"{year}: couldn't read the player pool ({e!r})")
+        return []
+
+
+def lineup_slots(league):
+    """{slot name: count per team} from ESPN's roster settings."""
+    counts = league.espn_request.get_league()["settings"]["rosterSettings"]["lineupSlotCounts"]
+    return {SLOT_NAMES[int(k)]: v for k, v in counts.items() if int(k) in SLOT_NAMES and v}
+
+
+def replacement_levels(points_by_pos, slots, teams):
+    """{position: points of the next player after the last starter} and
+    {position: number of starters}.
+    Direct slots first, then each flex slot to the best remaining eligible
+    player, one at a time (most restrictive flex first)."""
+    ranked = {pos: sorted(pts, reverse=True) for pos, pts in points_by_pos.items()}
+    taken = {pos: min(slots.get(pos, 0) * teams, len(ranked.get(pos, []))) for pos in POSITIONS}
+    for flex in sorted((f for f in slots if f in FLEX), key=lambda f: len(FLEX[f])):
+        for _ in range(slots[flex] * teams):
+            options = [pos for pos in FLEX[flex] if taken[pos] < len(ranked.get(pos, []))]
+            if not options:
+                break
+            best = max(options, key=lambda pos: ranked[pos][taken[pos]])
+            taken[best] += 1
+    # The next player after the last starter. If there's nobody left (drafted
+    # players only, where e.g. all 12 drafted kickers start), the median
+    # player at the position: kickers and defenses get streamed, so a
+    # typical one is the fair stand-in for what's free, not the worst.
+    levels = {}
+    for pos in POSITIONS:
+        pts = ranked.get(pos, [])
+        if taken[pos] < len(pts):
+            levels[pos] = pts[taken[pos]]
+        else:
+            levels[pos] = statistics.median(pts) if pts else 0.0
+    return levels, taken
+
+
 def drafted_players(year, league_id, swid, espn_s2, mapping):
     league = League(league_id=league_id, year=year, espn_s2=espn_s2, swid=swid)
     if not league.draft:
         print(f"{year}: no draft on ESPN, skipped.")
-        return []
-    points = season_points(league, {p.playerId for p in league.draft if p.playerId})
+        return [], None
+    drafted_ids = {p.playerId for p in league.draft if p.playerId}
+    pool_ids = set(player_pool_ids(league, year))
+    points = season_points(league, drafted_ids | pool_ids)
+
     rows = []
     for p in league.draft:
         pts, pos = points.get(p.playerId, (None, "?"))
@@ -67,27 +132,22 @@ def drafted_players(year, league_id, swid, espn_s2, mapping):
             "player": p.playerName, "position": pos, "points": pts,
             "keeper": bool(p.keeper_status),
         })
+
+    source = "whole player pool" if len(pool_ids - drafted_ids) >= 50 else "drafted players only"
+    by_pos = {}
+    for pid, (pts, pos) in points.items():
+        if pos in POSITIONS and (source == "whole player pool" or pid in drafted_ids):
+            by_pos.setdefault(pos, []).append(pts)
+    slots = lineup_slots(league)
+    levels, starters = replacement_levels(by_pos, slots, len(league.teams))
+    for r in rows:
+        r["over_replacement"] = (max(0.0, r["points"] - levels.get(r["position"], 0.0))
+                                 if r["points"] is not None else None)
     missing = sum(1 for r in rows if r["points"] is None)
     print(f"{year}: {len(rows)} picks, {sum(r['keeper'] for r in rows)} keepers"
-          + (f", {missing} without season points" if missing else ""))
-    return rows
-
-
-def replacement_levels(rows):
-    """{position: replacement points} from non-keepers drafted late."""
-    by_pos = {}
-    for r in rows:
-        if not r["keeper"] and r["points"] is not None:
-            by_pos.setdefault(r["position"], []).append(r)
-    levels = {}
-    for pos, group in by_pos.items():
-        late = [r["points"] for r in group if r["round"] in REPLACEMENT_ROUNDS]
-        if len(late) >= 3:
-            levels[pos] = statistics.median(late)
-        else:
-            pts = sorted(r["points"] for r in group)
-            levels[pos] = pts[int(0.2 * (len(pts) - 1))]
-    return levels
+          + (f", {missing} without season points" if missing else "")
+          + f"; lineup {slots}; replacement from the {source}")
+    return rows, {"levels": levels, "starters": starters, "source": source}
 
 
 def fit_curve(medians):
@@ -109,12 +169,12 @@ def main():
     years = [int(y) for y in (sys.argv[1] if len(sys.argv) > 1 else "2023,2024,2025").split(",") if y.strip()]
     league_id, swid, espn_s2 = load_credentials()
     mapping = load_team_mapping()
-    rows = [r for y in years for r in drafted_players(y, league_id, swid, espn_s2, mapping)]
-
-    levels = replacement_levels(rows)
-    for r in rows:
-        r["over_replacement"] = (max(0.0, r["points"] - levels.get(r["position"], 0.0))
-                                 if r["points"] is not None else None)
+    rows, baselines = [], {}
+    for y in years:
+        season_rows, base = drafted_players(y, league_id, swid, espn_s2, mapping)
+        rows += season_rows
+        if base:
+            baselines[y] = base
 
     rounds = sorted({r["round"] for r in rows})
     used = {rd: [r for r in rows if r["round"] == rd and not r["keeper"] and r["points"] is not None]
@@ -133,9 +193,16 @@ def main():
     lines = [
         f"## Draft pick values, {', '.join(map(str, years))}",
         "",
-        f"Keepers left out. Replacement level by position (median of picks in rounds "
-        f"{REPLACEMENT_ROUNDS[0]}-{REPLACEMENT_ROUNDS[-1]}): "
-        + ", ".join(f"{pos} {v:.1f}" for pos, v in sorted(levels.items())),
+        "Keepers left out. Replacement = the next player after the last starter at each "
+        "position (starters = lineup slots x teams, flex to the best remaining):",
+        "",
+        "| Season | Source | " + " | ".join(POSITIONS) + " |",
+        "|---|---|" + "---|" * len(POSITIONS),
+    ] + [
+        f"| {y} | {b['source']} | " + " | ".join(
+            f"{b['levels'][pos]:.1f} ({b['starters'][pos]} start)" for pos in POSITIONS) + " |"
+        for y, b in sorted(baselines.items())
+    ] + [
         "",
         (f"Fitted curve: each round is worth {100 * math.exp(-k):.0f}% of the one before it."
          if k is not None else "Not enough data to fit a curve."),
