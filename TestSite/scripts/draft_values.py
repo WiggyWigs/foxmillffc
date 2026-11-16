@@ -18,12 +18,17 @@ Method, for every finished season given (default 2023-2025):
      starter, ranked across the whole player pool (undrafted included),
      i.e. the best player you could have had for free. If ESPN won't
      serve the pool, drafted players only are used (logged).
-  3. Per round: the median value over replacement (robust to a few
-     breakout seasons).
-  4. A smooth curve, value = e^(a - k*(round - 1)), fitted to the rounds
-     with a median above 0 (least squares on the log, weighted by each
-     round's median so near-zero late rounds don't swing it), scaled so
-     Round 1 = 100. Shown next to the current 15-down-to-1 scale.
+  3. Per round: the median and the average value over replacement, and
+     the hit rate (share of picks that beat replacement). The average is
+     what a pick is worth in expectation: most late picks miss, but the
+     occasional hit counts, which the median ignores.
+  4. A smooth curve, value = e^(a - k*(round - 1)), fitted to the
+     per-round averages (least squares on the log, weighted by each
+     round's value so near-zero rounds don't swing it), scaled so
+     Round 1 = 100, next to the current 15-down-to-1 scale.
+  5. Trade value: only picks from FIRST_TRADEABLE_ROUND on can be traded,
+     so a second curve is fitted to those rounds alone, scaled so that
+     round = 100, with how many of each round equal one of it.
 
 Run by the "Draft pick values" workflow:
     python scripts/draft_values.py 2023,2024,2025
@@ -41,6 +46,7 @@ from espn_api.football import League
 from espn_pull import load_credentials, load_team_mapping
 
 CARD_BATCH = 50
+FIRST_TRADEABLE_ROUND = 4  # league rule: only picks in Round 4 and later can be traded
 POOL_SIZE = 600  # top scorers fetched per season for the replacement baseline
 POSITIONS = ("QB", "RB", "WR", "TE", "K", "D/ST")
 SLOT_NAMES = {0: "QB", 1: "QB", 2: "RB", 3: "RB/WR", 4: "WR", 5: "WR/TE", 6: "TE",
@@ -181,14 +187,26 @@ def main():
             for rd in rounds}
     med_pts = {rd: statistics.median([r["points"] for r in g]) if g else 0 for rd, g in used.items()}
     med_vor = {rd: statistics.median([r["over_replacement"] for r in g]) if g else 0 for rd, g in used.items()}
-    fit = fit_curve(med_vor)
-    if fit:
+    avg_vor = {rd: statistics.mean([r["over_replacement"] for r in g]) if g else 0 for rd, g in used.items()}
+    hit = {rd: (100 * sum(r["over_replacement"] > 0 for r in g) / len(g)) if g else 0 for rd, g in used.items()}
+
+    def scaled_curve(values, base_round):
+        """Curve fitted to `values`, scaled so base_round = 100; (scale, k)."""
+        fit = fit_curve(values)
+        if not fit:
+            return {rd: 0.0 for rd in rounds}, None
         a, k = fit
         curve = {rd: math.exp(a - k * (rd - 1)) for rd in rounds}
-        top = curve[rounds[0]]
-        scaled = {rd: 100 * v / top for rd, v in curve.items()}
-    else:
-        k, scaled = None, {rd: 0 for rd in rounds}
+        return {rd: 100 * v / curve[base_round] for rd, v in curve.items()}, k
+
+    overall, k_all = scaled_curve(avg_vor, rounds[0])
+    t0 = FIRST_TRADEABLE_ROUND
+    tradeable = [rd for rd in rounds if rd >= t0]
+    trade, k_trade = (scaled_curve({rd: avg_vor[rd] for rd in tradeable}, t0)
+                      if t0 in rounds else ({}, None))
+
+    def per_round(k):
+        return f"each round is worth {100 * math.exp(-k):.0f}% of the one before it" if k is not None else "not enough data"
 
     lines = [
         f"## Draft pick values, {', '.join(map(str, years))}",
@@ -204,15 +222,29 @@ def main():
         for y, b in sorted(baselines.items())
     ] + [
         "",
-        (f"Fitted curve: each round is worth {100 * math.exp(-k):.0f}% of the one before it."
-         if k is not None else "Not enough data to fit a curve."),
+        "### All rounds",
         "",
-        "| Round | Players | Median points | Median over replacement | Curve (Rd 1 = 100) | Curve (Rd 1 = 15) | Current scale |",
-        "|---|---|---|---|---|---|---|",
+        f"Curve fitted to the average over replacement: {per_round(k_all)}.",
+        "",
+        "| Round | Players | Median points | Median over repl. | Average over repl. | Hit rate | Curve (Rd 1 = 100) | Curve (Rd 1 = 15) | Current scale |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ] + [
+        f"| {rd} | {len(used[rd])} | {med_pts[rd]:.1f} | {med_vor[rd]:.1f} | {avg_vor[rd]:.1f} | "
+        f"{hit[rd]:.0f}% | {overall[rd]:.1f} | {overall[rd] * 0.15:.2f} | {max(0, 16 - rd)} |"
+        for rd in rounds
+    ] + [
+        "",
+        f"### Trade value, Rounds {t0}-{rounds[-1]} (the tradeable picks)",
+        "",
+        f"Curve fitted to Rounds {t0}-{rounds[-1]} only: {per_round(k_trade)}.",
+        "",
+        f"| Round | Average over repl. | Hit rate | Trade value (Rd {t0} = 100) | One Rd {t0} = this many |",
+        "|---|---|---|---|---|",
+    ] + [
+        f"| {rd} | {avg_vor[rd]:.1f} | {hit[rd]:.0f}% | {trade.get(rd, 0):.1f} | "
+        f"{(100 / trade[rd]) if trade.get(rd) else 0:.1f} |"
+        for rd in tradeable
     ]
-    for rd in rounds:
-        lines.append(f"| {rd} | {len(used[rd])} | {med_pts[rd]:.1f} | {med_vor[rd]:.1f} | "
-                     f"{scaled[rd]:.1f} | {scaled[rd] * 0.15:.2f} | {max(0, 16 - rd)} |")
     print("\n".join(lines))
 
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
