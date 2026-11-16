@@ -1,0 +1,50 @@
+name: Draft pick values
+
+# Manual trigger ONLY. Read-only analysis for the Draft Capital Score:
+# season fantasy points for every drafted player (keepers left out),
+# value over a position replacement level, the median per round, and a
+# smooth fitted curve shown next to the current 15-down-to-1 scale. The
+# table appears on the run's summary page; every player is in the CSV.
+# Commits nothing and touches no site files.
+
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: 'Finished seasons to use, comma-separated'
+        required: true
+        default: '2023,2024,2025'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  values:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install espn_api
+
+      - name: Work out draft pick values
+        working-directory: TestSite/scripts
+        env:
+          ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+          DRAFT_VALUES_CSV: ${{ runner.temp }}/draft-pick-values.csv
+        run: python draft_values.py "${{ inputs.seasons }}"
+
+      - name: Upload the CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: draft-pick-values
+          path: ${{ runner.temp }}/draft-pick-values.csv
