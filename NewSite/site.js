@@ -1,4 +1,4 @@
-// Manager Score Index rendering.
+// Manager Legacy Score rendering.
 //
 // NOTE: fetch() of a local file only works when this site is served over
 // http:// (a local dev server, or once hosted on GitHub Pages / any web
@@ -43,7 +43,7 @@ async function loadManagerScoreIndex() {
         <tr>
           <th class="col-rank">#</th>
           <th class="col-name">Manager</th>
-          <th class="col-msi">MSI</th>
+          <th class="col-msi">Legacy</th>
           <th class="num col-extra">Seasons</th>
           <th class="num col-extra">Reg. Win%</th>
           <th class="num col-extra">Playoff Win%</th>
