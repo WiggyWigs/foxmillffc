@@ -68,8 +68,8 @@ const MANAGER_COLORS = {
 };
 const FALLBACK_COLOR = "#BFBFBF";
 
-// Draft capital: what each pick is worth, for ranking managers on a board
-// that hasn't been drafted yet. Each round is worth PICK_VALUE_RATIO of
+// Draft capital: what each pick is worth, for ranking managers by the
+// picks they hold going into a draft. Each round is worth PICK_VALUE_RATIO of
 // the one before it, a curve fitted to the league's own 2023-2025 drafts
 // (season points over a last-starter replacement level; see
 // scripts/draft_values.py and the "Draft pick values" workflow). Only
@@ -274,9 +274,9 @@ function render(year, loadProblems) {
     });
   });
 
-  // "<year> Trades": the trades made during this season (next year's picks).
-  renderCapital(drafted ? null : capital);
+  renderCapital(capital);
 
+  // "<year> Trades": the trades made during this season (next year's picks).
   const seasonTrades = trades.filter((t) => t.year === year).sort((a, b) => a.order - b.order || a.row - b.row);
   renderTrades(year, seasonTrades, playerMoves.filter((p) => p.year === year));
   const shown = groupRowProblems(problems);
@@ -286,19 +286,20 @@ function render(year, loadProblems) {
     : "";
 }
 
-// Draft capital ranking, for a board that hasn't been drafted yet: managers
-// in order of the total value of the picks they hold (pickValue), with
+// Draft capital ranking for any board: managers in order of the total
+// value of the picks they held going into that draft (pickValue), with
 // ties sharing a place. Each gets a score where 100 is a full set of one
-// pick per round (what an untraded manager holds): 108 means 8% more draft
-// capital than that, 90 means 10% less.
+// pick per round (what an untraded manager holds): 107.7 means 7.7% more
+// draft capital than that, 90.0 means 10% less. Hidden when nobody traded.
 function renderCapital(capital) {
   const el = document.getElementById("dp-capital");
-  if (!capital) { el.innerHTML = ""; return; }
   const ranked = Object.entries(capital).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  // Nobody traded a pick (2023): everyone ties at 100, nothing to rank.
+  if (!ranked.length || ranked[0][1] - ranked[ranked.length - 1][1] < 1e-9) { el.innerHTML = ""; return; }
   let place = 0;
   const items = ranked.map(([m, v], i) => {
     if (i === 0 || Math.abs(v - ranked[i - 1][1]) > 1e-9) place = i + 1;
-    const score = Math.round((100 * v) / FULL_SET_VALUE);
+    const score = ((100 * v) / FULL_SET_VALUE).toFixed(1);
     return `<li><span class="dp-capital-place">${place}</span>` +
       `<span class="dp-capital-name">${escapeHtml(m)}</span>` +
       `<span class="dp-capital-score">${score}</span></li>`;
