@@ -68,6 +68,19 @@ const MANAGER_COLORS = {
 };
 const FALLBACK_COLOR = "#BFBFBF";
 
+// Draft capital: what each pick is worth, for ranking managers by the
+// picks they hold going into a draft. Each round is worth PICK_VALUE_RATIO of
+// the one before it, a curve fitted to the league's own 2023-2025 drafts
+// (season points over a last-starter replacement level; see
+// scripts/draft_values.py and the "Draft pick values" workflow). Only
+// the ranking and a relative score (100 = one pick per round) are shown
+// on the page, never the pick values.
+const PICK_VALUE_RATIO = 0.72;
+const pickValue = (round) => PICK_VALUE_RATIO ** (round - 1);
+// Value of one pick in every round, the yardstick for the Draft Capital score.
+const FULL_SET_VALUE = Array.from({ length: ROUNDS }, (_, i) => pickValue(i + 1))
+  .reduce((a, b) => a + b, 0);
+
 // A manager who took over someone else's team: in that draft, picks the
 // Trade Log gives to (or takes from) the old manager belong to the new
 // one. Only the board uses this; the trades table keeps the names of who
@@ -194,6 +207,7 @@ function render(year, loadProblems) {
   }
 
   const held = Object.fromEntries(managers.map((m) => [m, 0]));
+  const capital = Object.fromEntries(managers.map((m) => [m, 0]));
   let rows = "";
   for (let round = 1; round <= ROUNDS; round++) {
     const reverse = order && round % 2 === 0;
@@ -211,6 +225,7 @@ function render(year, loadProblems) {
           `but the trade log has ${logged} holding it.`);
       }
       held[owner] = (held[owner] || 0) + 1;
+      capital[owner] = (capital[owner] || 0) + pickValue(round);
       const traded = owner !== original;
       const route = (path[key] && path[key][path[key].length - 1] === owner ? path[key] : traded ? [original, owner] : [original])
         .map((m) => shortNames[m] || m).join(" → ");
@@ -259,6 +274,8 @@ function render(year, loadProblems) {
     });
   });
 
+  renderCapital(capital);
+
   // "<year> Trades": the trades made during this season (next year's picks).
   const seasonTrades = trades.filter((t) => t.year === year).sort((a, b) => a.order - b.order || a.row - b.row);
   renderTrades(year, seasonTrades, playerMoves.filter((p) => p.year === year));
@@ -267,6 +284,30 @@ function render(year, loadProblems) {
     ? `<h3 class="season-subhead">Problems in the trade log</h3><ul class="dp-problem-list">${
         shown.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>`
     : "";
+}
+
+// Draft capital ranking for any board: managers in order of the total
+// value of the picks they held going into that draft (pickValue), with
+// ties sharing a place. Each gets a score where 100 is a full set of one
+// pick per round (what an untraded manager holds): 107.7 means 7.7% more
+// draft capital than that, 90.0 means 10% less. Hidden when nobody traded.
+function renderCapital(capital) {
+  const el = document.getElementById("dp-capital");
+  const ranked = Object.entries(capital).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  // Nobody traded a pick (2023): everyone ties at 100, nothing to rank.
+  if (!ranked.length || ranked[0][1] - ranked[ranked.length - 1][1] < 1e-9) { el.innerHTML = ""; return; }
+  let place = 0;
+  const items = ranked.map(([m, v], i) => {
+    if (i === 0 || Math.abs(v - ranked[i - 1][1]) > 1e-9) place = i + 1;
+    const score = ((100 * v) / FULL_SET_VALUE).toFixed(1);
+    return `<li><span class="dp-capital-place">${place}</span>` +
+      `<span class="dp-capital-name">${escapeHtml(m)}</span>` +
+      `<span class="dp-capital-score">${score}</span></li>`;
+  });
+  el.innerHTML = `<h3 class="season-subhead">Draft Capital</h3>` +
+    `<p class="dp-note">Most draft power first. 100 = one pick in every round; ` +
+    `above 100 means more draft capital than that, below means less.</p>` +
+    `<ol class="dp-capital-list">${items.join("")}</ol>`;
 }
 
 // Trades as a table: one row per trade, one cell per manager on the

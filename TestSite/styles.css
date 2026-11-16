@@ -2678,8 +2678,42 @@ body.pc-hide-badges .pc-badges { display: none; }
   margin: 0.5rem 0 1rem;
 }
 
-#dp-trades .season-subhead {
+#dp-trades .season-subhead,
+#dp-capital .season-subhead {
   text-align: center;
+}
+
+/* Draft capital ranking (undrafted boards): place, manager, score. */
+.dp-capital-list {
+  list-style: none;
+  width: fit-content;
+  margin: 0.5rem auto 1.5rem;
+  padding: 0;
+  line-height: 1.8;
+}
+
+.dp-capital-list li {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dp-capital-name {
+  flex: 1;
+  padding-right: 1.5rem;
+}
+
+.dp-capital-score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+  min-width: 2rem;
+}
+
+.dp-capital-place {
+  display: inline-block;
+  min-width: 1.6rem;
+  font-weight: 700;
+  color: var(--rust);
 }
 
 /* Only as wide as its longest entry, centred. */
