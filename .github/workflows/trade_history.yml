@@ -1,0 +1,47 @@
+name: ESPN trade history
+
+# Manual trigger ONLY. Lists every player trade ESPN recorded for one
+# season (date, managers, players received) on the run's summary page and
+# as a downloadable CSV. Read-only: it commits nothing and touches no site
+# files. Draft-pick trades aren't on ESPN, so they won't appear.
+
+on:
+  workflow_dispatch:
+    inputs:
+      season:
+        description: 'Season to list trades for (e.g. 2024)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  trades:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install espn_api
+
+      - name: List the season's trades
+        working-directory: TestSite/scripts
+        env:
+          ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+          TRADE_HISTORY_CSV: ${{ runner.temp }}/espn-trades-${{ inputs.season }}.csv
+        run: python trade_history.py "${{ inputs.season }}"
+
+      - name: Upload the CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: espn-trades-${{ inputs.season }}
+          path: ${{ runner.temp }}/espn-trades-${{ inputs.season }}.csv
