@@ -8,8 +8,10 @@ Two sources, tried in order:
   1. The league activity feed (what the site already reads for the
      current season's trade counts).
   2. If the feed has no trades for the season, ESPN's weekly
-     transactions list, read directly: every scoring period is checked
-     for trade records (proposed, accepted, upheld). The log shows each
+     transactions list: every scoring period is checked for trade
+     records (proposed, accepted, upheld). ESPN only lists players for
+     the logged-in team's own trades, so the rest are rebuilt from player
+     card histories (espn_api's fill_trade_items). The log shows each
      week's record types, statuses and item counts.
 The log says how many activity items ESPN returned at all, so an empty
 result can be told apart from a season ESPN won't serve.
@@ -22,7 +24,6 @@ Run by the "ESPN trade history" workflow:
 """
 
 import csv
-import json
 import os
 import sys
 from collections import Counter
@@ -98,52 +99,76 @@ def player_names(league, ids):
 
 
 def from_weekly_transactions(league, manager_of):
-    """Trades from ESPN's weekly transactions list, read directly (the
-    library's Transaction class fails on 2024 records with no "status").
-    Every trade record type is requested; a trade counts when it was
-    accepted or upheld (or its status is EXECUTED). If the accepted record
-    has no player list, the proposal it points to supplies it."""
-    last_week = getattr(league, "finalScoringPeriod", None) or 18
-    headers = {"x-fantasy-filter": json.dumps(
-        {"transactions": {"filterType": {"value": TRADE_TYPES}}})}
-    records = {}
-    for week in range(0, last_week + 1):
-        try:
-            data = league.espn_request.league_get(
-                params={"view": "mTransactions2", "scoringPeriodId": week}, headers=headers)
-        except Exception as e:
-            print(f"Week {week}: couldn't read transactions ({e!r})")
-            continue
-        txns = [t for t in data.get("transactions") or [] if t.get("type") in TRADE_TYPES]
-        if txns:
-            kinds = Counter(f"{t.get('type')}/{t.get('status', 'no status')}/{len(t.get('items') or [])} items"
-                            for t in txns)
-            print(f"Week {week}: " + ", ".join(f"{n}x {k}" for k, n in sorted(kinds.items())))
-        for t in txns:
-            records[t.get("id")] = {**t, "_week": week}
+    """Trades from ESPN's weekly transactions list.
 
-    done = [t for t in records.values()
-            if t.get("type") in ("TRADE_ACCEPT", "TRADE_UPHOLD") or t.get("status") == "EXECUTED"]
+    ESPN only includes player lists for the logged-in team's own trades;
+    espn_api can rebuild the rest from each player's card history
+    (fill_trade_items). Its Transaction class needs fields that some 2024
+    records lack (status, ...), so ESPN's response is patched with
+    defaults before the library reads it. A trade counts when it was
+    accepted or upheld (or its status is EXECUTED); an accept and an
+    uphold of the same proposal count once. An accepted trade without
+    players takes them from the proposal it points to."""
+    last_week = getattr(league, "finalScoringPeriod", None) or 18
+    request = league.espn_request
+    original_get = request.league_get
+    state = {"week": 0}
+
+    def patched_get(*args, **kwargs):
+        data = original_get(*args, **kwargs)
+        for t in (data or {}).get("transactions") or []:
+            t.setdefault("status", "UNKNOWN")
+            t.setdefault("type", "UNKNOWN")
+            t.setdefault("teamId", None)
+            t.setdefault("scoringPeriodId", state["week"])
+        return data
+
+    request.league_get = patched_get
+    by_id = {}
+    try:
+        for week in range(0, last_week + 1):
+            state["week"] = week
+            try:
+                txns = league.transactions(scoring_period=week, types=set(TRADE_TYPES),
+                                           fill_trade_items=True)
+            except Exception as e:
+                if "No transactions" not in str(e):
+                    print(f"Week {week}: couldn't read transactions ({e!r})")
+                continue
+            txns = [t for t in txns if t.type in TRADE_TYPES]
+            if txns:
+                kinds = Counter(f"{t.type}/{t.status}/{len(t.items)} items" for t in txns)
+                print(f"Week {week}: " + ", ".join(f"{n}x {k}" for k, n in sorted(kinds.items())))
+            for t in txns:
+                t.week = week
+                by_id[t.id or f"w{week}-{len(by_id)}"] = t
+    finally:
+        request.league_get = original_get
+
+    def legs(t):
+        items = [i for i in t.items if getattr(i, "type", None) == "TRADE"] or list(t.items)
+        return [i for i in items if (i.playerId or 0) > 0]  # ESPN uses playerId 0 for non-player items
+
+    done = [t for t in by_id.values()
+            if t.type in ("TRADE_ACCEPT", "TRADE_UPHOLD") or t.status == "EXECUTED"]
     out, seen = [], set()
-    for t in sorted(done, key=lambda t: t.get("processDate") or t.get("acceptedDate") or t.get("proposedDate") or 0):
-        proposal = records.get(t.get("relatedTransactionId")) or {}
-        key = proposal.get("id") or t.get("relatedTransactionId") or t.get("id")
+    for t in sorted(done, key=lambda t: t.date or 0):
+        proposal = by_id.get(t.related_transaction_id)
+        key = (proposal.id if proposal else None) or t.related_transaction_id or t.id
         if key in seen:
-            continue  # an ACCEPT and an UPHOLD of the same proposal
+            continue
         seen.add(key)
-        items = t.get("items") or proposal.get("items") or []
-        names = player_names(league, {i.get("playerId") for i in items if i.get("playerId") is not None})
+        items = legs(t) or (legs(proposal) if proposal else [])
+        names = player_names(league, {i.playerId for i in items})
         received = {}
         for item in items:
-            getter = league.get_team_data(item.get("toTeamId")) if item.get("toTeamId") is not None else None
-            if getter and item.get("playerId") is not None:
-                received.setdefault(manager_of(getter), []).append(names[item["playerId"]])
+            getter = league.get_team_data(item.to_team_id) if item.to_team_id is not None else None
+            if getter:
+                received.setdefault(manager_of(getter), []).append(names[item.playerId])
         if not received:
-            team = league.get_team_data(t.get("teamId"))
-            received[manager_of(team) if team else f"Team {t.get('teamId')}"] = ["(players not listed by ESPN)"]
-        ms = t.get("processDate") or t.get("acceptedDate") or t.get("proposedDate")
-        out.append({"date": to_eastern(ms) if ms else None, "managers": received, "week": t["_week"]})
-    print(f"Weekly transactions: {len(records)} trade records, {len(out)} completed trades, weeks 0-{last_week}.")
+            received[manager_of(t.team) if t.team else f"Team {t.team_id}"] = ["(players not listed by ESPN)"]
+        out.append({"date": to_eastern(t.date) if t.date else None, "managers": received, "week": t.week})
+    print(f"Weekly transactions: {len(by_id)} trade records, {len(out)} completed trades, weeks 0-{last_week}.")
     return out
 
 
