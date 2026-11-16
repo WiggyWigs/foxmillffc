@@ -1902,19 +1902,114 @@ main {
   text-align: center;
 }
 
+/* Flex rather than grid so a part-filled last row sits in the middle.
+   --pc-cols cards per row (4, 3 on tablets, 2 on phones). */
 .pc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
+  --pc-cols: 4;
+  --pc-gap: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pc-gap);
+}
+
+.pc-grid > .pc-card-btn {
+  width: calc((100% - (var(--pc-cols) - 1) * var(--pc-gap)) / var(--pc-cols));
 }
 
 @media (max-width: 900px) {
-  .pc-grid { grid-template-columns: repeat(3, 1fr); }
+  .pc-grid { --pc-cols: 3; }
 }
 
 @media (max-width: 640px) {
-  .pc-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .pc-grid { --pc-cols: 2; --pc-gap: 0.75rem; }
   .pc-main .panel { padding: 1.25rem 0.75rem; }
+}
+
+/* Season menu above the grid. */
+.pc-year-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0 auto 0.75rem;
+  color: var(--ink-soft);
+}
+
+.pc-year-picker .input-select {
+  width: 8rem;
+}
+
+/* Section and season headings (Regular Season, End of Season
+   Recognition, Post Season Collection; one season heading each in "All"). */
+.pc-season + .pc-season {
+  margin-top: 2.5rem;
+}
+
+.pc-season-heading {
+  text-align: center;
+  font-size: 1.6rem;
+  margin: 0 0 0.25rem;
+  color: var(--navy);
+}
+
+.pc-section + .pc-section {
+  margin-top: 2rem;
+}
+
+.pc-section-heading {
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: var(--rust);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 0.4rem;
+  margin: 1rem 0 1rem;
+}
+
+.pc-toggle[hidden] { display: none; }
+
+/* Award / postseason card whose front image isn't in yet. */
+.pc-special-missing {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  padding: 8%;
+  background: var(--panel-solid);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--ink-soft);
+  font-family: 'EB Garamond', serif;
+  font-size: 7cqw;
+  text-align: center;
+}
+
+.pc-special-missing strong {
+  color: var(--navy);
+  font-size: 1.3em;
+}
+
+.pc-card.is-missing .pc-special-missing { display: flex; }
+
+/* Pop-up for award / postseason cards: the season and "Special Insert"
+   heading, then only the card and its flip. */
+#pcModal.is-simple .modal-year,
+#pcModal.is-simple .pc-modal-badges {
+  display: none;
+}
+
+#pcModal.is-simple .modal-card.pc-modal-card {
+  max-width: 440px;
+}
+
+#pcModal.is-simple .pc-modal-layout {
+  grid-template-columns: minmax(0, 1fr);
+  border-top: none;
+  padding-top: 0.5rem;
 }
 
 .pc-card-btn {
@@ -1960,6 +2055,14 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* 2025 cards use a different template: the year ribbon sits where the
+   stamp goes on 2026 cards, so the stamp moves to the bottom-right corner,
+   beside the team name (x 872-1026, y 1312-1438). */
+.pc-layout-2025 .pc-stamp {
+  left: 82.26%;
+  top: 88.41%;
 }
 
 .pc-stamp img {
@@ -2441,4 +2544,239 @@ body.pc-hide-badges .pc-badges { display: none; }
   .wb-list.wb-two .wb-row:nth-child(2) {
     border-top: 1px solid var(--hairline);
   }
+}
+
+/* --- Draft Board page ---
+   Grid of every pick: original owner across the top, rounds down the
+   side, each cell in its current owner's color. The table scrolls
+   sideways inside .dp-wrap on narrow screens; the page itself doesn't. */
+.dp-main {
+  max-width: 1240px;
+}
+
+.dp-main h2 {
+  text-align: center;
+}
+
+/* Draft picker sits above the title, its label centred over the menu. */
+.dp-filters {
+  justify-content: center;
+  margin: 0 0 0.75rem;
+}
+
+.dp-filters .parlay-filter {
+  align-items: center;
+}
+
+.dp-note {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+/* Tap-a-pick pop-up: full player name and the pick's history. */
+.dp-popup {
+  position: absolute;
+  z-index: 50;
+  max-width: 260px;
+  padding: 0.5rem 0.7rem;
+  background: var(--panel-solid);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  color: var(--ink);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.dp-popup-player {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+.dp-popup-line {
+  color: var(--ink);
+}
+
+.dp-popup-label {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dp-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dp-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.85rem;
+}
+
+.dp-table th,
+.dp-table td {
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  padding: 0.3rem 0.2rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dp-head {
+  font-weight: 700;
+}
+
+.dp-slot {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.dp-round {
+  width: 3.4rem;
+  background: var(--panel-solid);
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.dp-cell {
+  cursor: pointer;
+}
+
+/* Traded picks: a heavy inner outline so they stand out from the
+   column's own color. */
+.dp-cell.is-traded {
+  font-weight: 700;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.75);
+}
+
+.dp-cell:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: -2px;
+}
+
+.dp-problem-list {
+  max-width: 46rem;
+  margin: 0.5rem auto 1rem;
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+/* Trades table: one row per trade, one cell per receiving manager. */
+.dp-trade-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0.5rem 0 1rem;
+}
+
+#dp-trades .season-subhead,
+#dp-capital .season-subhead {
+  text-align: center;
+}
+
+/* Draft capital ranking (undrafted boards): place, manager, score. */
+.dp-capital-list {
+  list-style: none;
+  width: fit-content;
+  margin: 0.5rem auto 1.5rem;
+  padding: 0;
+  line-height: 1.8;
+}
+
+.dp-capital-list li {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dp-capital-name {
+  flex: 1;
+  padding-right: 1.5rem;
+}
+
+.dp-capital-score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+  min-width: 2rem;
+}
+
+.dp-capital-place {
+  display: inline-block;
+  min-width: 1.6rem;
+  font-weight: 700;
+  color: var(--rust);
+}
+
+/* Only as wide as its longest entry, centred. */
+.dp-trade-table {
+  width: auto;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.dp-trade-table th,
+.dp-trade-table td {
+  border: 1px solid var(--hairline);
+  padding: 0.5rem 0.6rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.dp-trade-num {
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--rust);
+}
+
+.dp-trade-side {
+  white-space: nowrap;
+}
+
+.dp-recv {
+  display: block;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.2rem;
+}
+
+.dp-recv-items {
+  display: block;
+  line-height: 1.5;
+}
+
+.dp-problem-list {
+  color: #B3262B;
+}
+
+/* Finished drafts show only the player's last name; keepers get a K. */
+.dp-cell.is-long {
+  font-size: 0.72rem;
+  letter-spacing: -0.01em;
+}
+
+.dp-cell.is-xlong {
+  font-size: 0.66rem;
+  letter-spacing: -0.02em;
+}
+
+
+.dp-keeper {
+  display: inline-block;
+  margin-right: 0.2rem;
+  padding: 0 0.2rem;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
 }
