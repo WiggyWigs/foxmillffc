@@ -2876,19 +2876,27 @@ def compute_playoff_probabilities(all_games, roster_names, model, schedule="load
 
     # Remaining strength of schedule: simulate the rest of the season on
     # the real schedule and blend it with the historical number.
+    # Any failure here falls back to the historical number: the season
+    # simulation must never stop the weekly update.
+    sim_info = {"sim_weight": 0}
     if schedule:
-        spread = _weekly_score_spread(all_games)
-        sim = simulate_playoff_odds(season_games, roster_names, schedule, spread,
-                                    seed=current_year * 100 + current_week)
-        w = sim_weight(current_week)
-        for e in entries:
-            hist = e["probability"]
-            e["historical_probability"] = hist
-            e["simulated_probability"] = round(sim.get(e["manager"], 0.0) * 100, 1)
-            e["probability"] = round(w * e["simulated_probability"] + (1 - w) * hist, 1)
-        sim_info = {"sim_weight": round(w, 2), "sim_runs": SIM_RUNS, "weekly_spread": round(spread, 1)}
-    else:
-        sim_info = {"sim_weight": 0}
+        try:
+            spread = _weekly_score_spread(all_games)
+            sim = simulate_playoff_odds(season_games, roster_names, schedule, spread,
+                                        seed=current_year * 100 + current_week)
+            w = sim_weight(current_week)
+            blended = {}
+            for e in entries:
+                simulated = round(sim.get(e["manager"], 0.0) * 100, 1)
+                blended[e["manager"]] = (simulated, round(w * simulated + (1 - w) * e["probability"], 1))
+            for e in entries:
+                e["historical_probability"] = e["probability"]
+                e["simulated_probability"], e["probability"] = blended[e["manager"]]
+            sim_info = {"sim_weight": round(w, 2), "sim_runs": SIM_RUNS, "weekly_spread": round(spread, 1)}
+            print(f"Playoff odds: {SIM_RUNS} simulated seasons, {w:.0%} simulation / "
+                  f"{1 - w:.0%} history, weekly spread {spread:.1f}.")
+        except Exception as e:
+            print(f"WARNING: playoff odds simulation failed ({e!r}); using the historical odds alone.")
 
     # Clinch override: a manager who can't be caught by enough rivals in the
     # games that remain is at 100% no matter what the base rate or the
