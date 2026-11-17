@@ -1,6 +1,6 @@
 // Head-to-head comparison between two managers, shared by the
-// Head-to-Head page (h2h.js) and the Current Season page's Prime Time
-// Matchup section (current-season.js).
+// Head-to-Head page (h2h.js) and the Current Season page's #1 vs #2
+// Breakdown section (current-season.js).
 //
 // "Overall Comparison" reads from stats.json's precomputed h2h_summary
 // (all-time per-manager stats, deliberately separate from the Legacy
@@ -16,10 +16,16 @@ function h2hWeekSortKey(week) {
 
 // HTML for nameA vs nameB from stats.json. Options let a page fit it
 // under its own heading: `heading` renders the two titles ("Overall
-// Comparison", "H2H"), `dividerClass` is the rule between them.
+// Comparison", "H2H"), `dividerClass` is the rule between them,
+// `overallRowsShown` keeps only those Overall Comparison rows (by label,
+// in the table's order), `overallTableClass` is added to that table, and
+// `showGames` adds the Game-by-Game list.
 function h2hComparisonHtml(stats, nameA, nameB, {
   heading = (t) => `<h3 class="season-subhead">${t}</h3>`,
   dividerClass = "section-divider",
+  overallRowsShown = null,
+  overallTableClass = "",
+  showGames = true,
 } = {}) {
   const a = stats.h2h_summary[nameA];
   const b = stats.h2h_summary[nameB];
@@ -39,7 +45,8 @@ function h2hComparisonHtml(stats, nameA, nameB, {
     ["Championships", a.championships, b.championships],
   ];
 
-  const overallRows = rows.map(([label, va, vb]) => `
+  const overallRows = rows.filter(([label]) => !overallRowsShown || overallRowsShown.includes(label))
+    .map(([label, va, vb]) => `
     <tr>
       <td>${va}</td>
       <td class="h2h-stat-label">${label}</td>
@@ -113,7 +120,7 @@ function h2hComparisonHtml(stats, nameA, nameB, {
   return `
     <div class="record-section">
       ${heading("Overall Comparison")}
-      <table class="record-table h2h-compare-table">
+      <table class="record-table h2h-compare-table ${overallTableClass}">
         <thead><tr><th>${nameA}</th><th></th><th>${nameB}</th></tr></thead>
         <tbody>${overallRows}</tbody>
       </table>
@@ -127,8 +134,7 @@ function h2hComparisonHtml(stats, nameA, nameB, {
         <thead><tr><th>${nameA}</th><th></th><th>${nameB}</th></tr></thead>
         <tbody>${h2hSummaryRows}</tbody>
       </table>
-      <h4 class="h2h-games-heading">Game-by-Game</h4>
-      ${gamesList}
+      ${showGames ? `<h4 class="h2h-games-heading">Game-by-Game</h4>${gamesList}` : ""}
     </div>
   `;
 }

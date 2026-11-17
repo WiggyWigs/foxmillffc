@@ -176,11 +176,13 @@ function renderStatOfTheWeek(stat) {
   if (divider) divider.style.display = "";
 }
 
-// "Prime Time Matchup" — only in a week where #1 plays #2 (from Week 6
-// on): the two managers' head-to-head table (h2hComparisonHtml in
-// h2h-table.js, the same one as the Head-to-Head page), then the #1 vs #2
-// numbers from ingest_csv.py (compute_prime_time_matchup). Its own
+// "#1 vs #2 Breakdown" — only in a week where #1 plays #2 (from Week 6
+// on): a short head-to-head comparison (h2hComparisonHtml in
+// h2h-table.js, the Head-to-Head page's tables, trimmed), then the #1 vs
+// #2 write-up from ingest_csv.py (compute_prime_time_matchup). Its own
 // section, so the Stat of the Week below still runs as normal.
+const PRIME_TIME_OVERALL_ROWS = ["Overall Record", "R/S Average Score", "Playoffs Made", "Championships"];
+
 function renderPrimeTimeMatchup(pt, data) {
   const divider = document.getElementById("prime-time-divider");
   const section = document.getElementById("prime-time-section");
@@ -194,16 +196,16 @@ function renderPrimeTimeMatchup(pt, data) {
     return;
   }
 
-  document.getElementById("prime-time-heading").textContent =
-    pt.week != null ? `Week ${pt.week} - Prime Time Matchup` : "Prime Time Matchup";
   document.getElementById("prime-time-subtitle").textContent = `#1 ${pt.first} vs #2 ${pt.second}`;
   document.getElementById("prime-time-h2h").innerHTML = h2hComparisonHtml(
     data, pt.first, pt.second, {
       heading: (t) => `<h4 class="h2h-games-heading">${escapeHtml(t)}</h4>`,
       dividerClass: "recap-thin-divider",
+      overallRowsShown: PRIME_TIME_OVERALL_ROWS,
+      overallTableClass: "pt-overall-table",
+      showGames: false,
     });
 
-  document.getElementById("prime-time-value").textContent = `${pt.value}`;
   const parts = [escapeHtml(pt.narrative || "")];
   if (pt.closing) parts.push(`\n${escapeHtml(pt.closing)}`);
   document.getElementById("prime-time-narrative").innerHTML = parts.join("\n");
