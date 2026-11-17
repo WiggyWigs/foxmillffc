@@ -75,6 +75,13 @@ Legacy Score = 2.0 × (playoff appearances / seasons)
 * For managers with identical records, bonus points are computed from total points (not per-game averages):
    * Points gap over 15 / 30 / 45 / 60 / 75 earns +1% / 2% / 3% / 4% / 5% (max 5%).
    * Schedule-difficulty gap over 4 / 7 / 10 / 13 / 16 points earns +1% / 2% / 3% / 4% / 5% (max 5%).
+* Remaining strength of schedule: when the full remaining ESPN schedule is available, the rest of the regular season is simulated 10,000 times on that schedule.
+   * Each week a team scores a random draw around its expected score: its scoring average this season, counted as if it had 4 more games at the league average. The size of the weekly swing is measured from every past regular-season game.
+   * Each simulated season is ranked with the real standings rules (win %, then the head-to-head tiebreak). A manager's simulated odds are the share of seasons in which they finish in the top 6.
+   * The final number blends the simulation with the historical number above. The simulation's share grows from 50% after Week 3 to 100% after Week 13 (85% after Week 10).
+   * A fixed random seed per season and week, so re-running a week gives the same numbers.
+   * Without a valid remaining schedule, the simulation is skipped and the historical number is used alone.
+   * Backtested on 2023-2025 (each season scored with a historical model built only from the other seasons): the blend beat the history-only odds in every season and every part of the season.
 * A manager who has mathematically clinched shows Clinched (bold, treated as 100%), even if a rival has more points or a harder schedule.
 * A manager who is mathematically eliminated shows Eliminated (treated as 0%).
 * Everyone else is capped at 99%. Never show 100% unless clinched.
@@ -106,6 +113,7 @@ Picked by code, never the same game as the Impact Game:
 * Every number states its scope in the sentence ("this season", "career", "all-time").
 * Point totals are written as "X points". Percentages are written as "X%". Win percentages become "a 68.2 winning percentage", never a raw decimal.
 * Playoff odds may only be mentioned by citing both last week's and this week's numbers. Otherwise don't mention them.
+* No week-over-week odds trend when one week used the season simulation and the other didn't: the change is the method, not the team.
 * Don't describe one manager as luckier or unluckier than another unless their Luck Factor values differ by at least 15 percentage points. It is always written as a percentage with its sign (e.g. +22.1%), never a decimal. Luck Factor never describes a schedule as hard or easy.
 * Don't mention a scoring average until a manager has played at least 2 games, or Luck Factor until at least 3 games.
 * Career playoff and championship counts are only used for roasting once a manager has at least 3 complete seasons.
