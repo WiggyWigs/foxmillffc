@@ -69,14 +69,18 @@ const MANAGER_COLORS = {
 const FALLBACK_COLOR = "#BFBFBF";
 
 // Draft capital: what each pick is worth, for ranking managers by the
-// picks they hold going into a draft. Each round is worth PICK_VALUE_RATIO of
-// the one before it, a curve fitted to the league's own 2023-2025 drafts
-// (season points over a last-starter replacement level; see
-// scripts/draft_values.py and the "Draft pick values" workflow). Only
-// the ranking and a relative score (100 = one pick per round) are shown
-// on the page, never the pick values.
-const PICK_VALUE_RATIO = 0.72;
-const pickValue = (round) => PICK_VALUE_RATIO ** (round - 1);
+// picks they hold going into a draft. Only Rounds 4-15 count: the league
+// doesn't allow trading Rounds 1-3, so every manager holds the same three
+// and they can't change anyone's place. From Round 4 on, each round is
+// worth PICK_VALUE_RATIO of the one before it: the "Trade value, Rounds
+// 4-15" curve from the league's 2023-2025 drafts (average season points
+// over a last-starter replacement level; see scripts/draft_values.py and
+// the "Draft pick values" workflow). Only the ranking and a relative score
+// (100 = one pick in each of Rounds 4-15) are shown, never pick values.
+const FIRST_TRADEABLE_ROUND = 4;
+const PICK_VALUE_RATIO = 0.87;
+const pickValue = (round) =>
+  round < FIRST_TRADEABLE_ROUND ? 0 : PICK_VALUE_RATIO ** (round - FIRST_TRADEABLE_ROUND);
 // Value of one pick in every round, the yardstick for the Draft Capital score.
 const FULL_SET_VALUE = Array.from({ length: ROUNDS }, (_, i) => pickValue(i + 1))
   .reduce((a, b) => a + b, 0);
@@ -288,9 +292,10 @@ function render(year, loadProblems) {
 
 // Draft capital ranking for any board: managers in order of the total
 // value of the picks they held going into that draft (pickValue), with
-// ties sharing a place. Each gets a score where 100 is a full set of one
-// pick per round (what an untraded manager holds): 107.7 means 7.7% more
-// draft capital than that, 90.0 means 10% less. Hidden when nobody traded.
+// ties sharing a place. Each gets a score where 100 is one pick in each of
+// Rounds 4-15 (what an untraded manager holds): 120.0 means 20% more
+// tradeable draft capital than that, 80.0 means 20% less. Hidden when
+// nobody traded.
 function renderCapital(capital) {
   const el = document.getElementById("dp-capital");
   const ranked = Object.entries(capital).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
@@ -305,8 +310,9 @@ function renderCapital(capital) {
       `<span class="dp-capital-score">${score}</span></li>`;
   });
   el.innerHTML = `<h3 class="season-subhead">Draft Capital</h3>` +
-    `<p class="dp-note">Most draft power first. 100 = one pick in every round; ` +
-    `above 100 means more draft capital than that, below means less.</p>` +
+    `<p class="dp-note">Most draft power first, from the picks that can be traded ` +
+    `(Rounds 4&ndash;15). 100 = one pick in each of those rounds; above 100 means ` +
+    `more draft capital than that, below means less.</p>` +
     `<ol class="dp-capital-list">${items.join("")}</ol>`;
 }
 

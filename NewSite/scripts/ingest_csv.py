@@ -25,6 +25,8 @@ against manager-name typos fragmenting career stats.
 import csv
 import os
 import json
+import random
+import statistics
 import sys
 from pathlib import Path
 from datetime import date
@@ -2002,11 +2004,79 @@ def _final_five_stat(all_games, season_games, current_year):
     }
 
 
+OUTSIDE_TOP_WEEK = 10
+OUTSIDE_TOP_MAX_GAMES_BACK = 2  # teams further back than this are left out, then and now
+
+
+def _games_back(row, line):
+    """Games behind `line` (a standings row): (win gap + loss gap) / 2,
+    so a tie counts as half a game."""
+    return ((line["wins"] - row["wins"]) + (row["losses"] - line["losses"])) / 2
+
+
+def _outside_top_stat(all_games, season_games, current_year, week, roster_names):
+    """Stat of the Week: playoff odds for a team outside the top
+    PLAYOFF_SPOTS of the standings after `week` but within
+    OUTSIDE_TOP_MAX_GAMES_BACK games of the last playoff spot, from every
+    complete past season (standings with the league's tiebreakers). Lists
+    this year's managers in that group in standings order, and how many
+    of them history says will crash the top PLAYOFF_SPOTS (that rate
+    times the group, rounded half up). None if no complete past season
+    had such a team or nobody is in the group now."""
+    back = OUTSIDE_TOP_MAX_GAMES_BACK
+
+    def in_the_hunt(standings):
+        line = standings[PLAYOFF_SPOTS - 1]
+        return [row for row in standings[PLAYOFF_SPOTS:] if _games_back(row, line) <= back]
+
+    hunt = made = 0
+    first_year = None
+    for year in sorted({g["year"] for g in all_games if g["year"] < current_year}):
+        if not any(g["year"] == year and g["game_type"] == "Championship" for g in all_games):
+            continue
+        reg = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"
+               and _week_sort_key(g["week"]) <= week]
+        playoff = {m for g in all_games if g["year"] == year and g["game_type"] != "Regular"
+                   for m in (g["away_manager"], g["home_manager"])}
+        for row in in_the_hunt(rank_season_games(reg, roster_names)):
+            hunt += 1
+            made += row["manager"] in playoff
+        first_year = first_year or year
+    now = [row["manager"] for row in in_the_hunt(rank_season_games(season_games, roster_names))]
+    if not hunt or not now:
+        return None
+    pct = round(100 * made / hunt, 1)
+    crash = int(made / hunt * len(now) + 0.5)  # round half up
+    if crash == 0:
+        closing = f"Based on history, the top {PLAYOFF_SPOTS} is set. Can anyone crash it?"
+    else:
+        closing = (f"Based on history, {_number_word(crash)} of them will crash the "
+                   f"top {PLAYOFF_SPOTS}. Who will it be?")
+    within = f"within {_number_word(back)} games of {_ordinal_word(PLAYOFF_SPOTS)} place"
+    return {
+        "reason": f"outside_top_{PLAYOFF_SPOTS}_week_{week}", "value": pct,
+        "sample_size": hunt, "made_playoffs": made, "expected_crashers": crash,
+        "record_label": f"outside the top {PLAYOFF_SPOTS}",
+        "this_year_teams": now,
+        "teams_label": f"Managers outside the top {PLAYOFF_SPOTS} but {within} this year",
+        "narrative": (f"The historical chance of making the playoffs if you are outside the top "
+                      f"{PLAYOFF_SPOTS} of the standings after Week {week}, but {within}. "
+                      f"Since {first_year}, {hunt} teams were in that spot, and "
+                      f"{made} {'has' if made == 1 else 'have'} made the playoffs."),
+        "closing": closing,
+    }
+
+
+def _ordinal_word(n):
+    return {1: "1st", 2: "2nd", 3: "3rd"}.get(n, f"{n}th")
+
+
 TOP_POINTS_SPOTS = 6
 
-# #1 vs #2 Stat of the Week: considered from the publication after Week 5
-# (previewing Week 6). Past meetings count from Week 5 on, when the
-# standings mean something.
+# #1 vs #2 Breakdown (#1 vs #2 in the week ahead): its own section on the
+# Current Season page, from the publication after Week 5 (previewing
+# Week 6). Past meetings count from Week 5 on, when the standings mean
+# something.
 TOP_TWO_FIRST_WEEK = 5
 
 
@@ -2044,21 +2114,6 @@ def _top_two_meetings(all_games, roster_names, first_week=TOP_TWO_FIRST_WEEK):
     return out
 
 
-def _top_two_shown_for(season_games, preview_week, roster_names):
-    """Would the #1 vs #2 stat have run in the publication previewing
-    `preview_week` (a week already played)? It needs a #1 vs #2 game that
-    week and must not have run the week before (never two weeks in a row),
-    so this walks back until it finds a week where it couldn't run."""
-    if preview_week - 1 < TOP_TWO_FIRST_WEEK:
-        return False
-    if preview_week - 1 == HALFWAY_WEEK:
-        return False  # the halfway stat takes that publication
-    top_two = _top_two_entering(season_games, preview_week, roster_names)
-    if not _top_two_game(season_games, preview_week, top_two):
-        return False
-    return not _top_two_shown_for(season_games, preview_week - 1, roster_names)
-
-
 def _upcoming_pairs(current_year, week):
     """[(away, home)] for `week` from remaining_schedule.json, which
     espn_pull.py writes before this script runs. [] if it's missing,
@@ -2074,14 +2129,27 @@ def _upcoming_pairs(current_year, week):
         return []
 
 
-def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_week, roster_names):
-    """Stat of the Week, top priority from the publication after Week 5
-    (except after Week 7, which belongs to the halfway stat):
-    the week ahead features #1 vs #2 in the current standings. The number
-    is how many #1 vs #2 regular-season games there have been (Week 5 or
-    later), with how often #1 won, every game listed, and who the all-time
-    head-to-head (playoffs included, like the rest of the site) favors.
-    Never runs two weeks in a row. None otherwise."""
+def compute_prime_time_matchup(all_games, roster_names):
+    """The #1 vs #2 Breakdown section: the week ahead features #1 vs #2 in
+    the current standings (publication after Week 5 on, regular season
+    only). Its own section above Stat of the Week, so it never replaces
+    the normal stat, and it shows every week there's such a game.
+
+    The write-up gives how many #1 vs #2 regular-season games there have
+    been (Week 5 or later), the share #1 won, every game listed, and who
+    the all-time head-to-head (playoffs included, like the rest of the
+    site) favors. first/second name the two managers so the page can show
+    their head-to-head table. None when there's no #1 vs #2 game."""
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    current_year = max(years)
+    season_games = [g for g in all_games if g["year"] == current_year and g["game_type"] == "Regular"]
+    if not season_games:
+        return None
+    last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
+    if last_completed_week < TOP_TWO_FIRST_WEEK:
+        return None
     preview_week = last_completed_week + 1
     if preview_week > REGULAR_SEASON_GAMES:
         return None
@@ -2090,8 +2158,6 @@ def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_
         return None
     if not any({a, h} == set(top_two) for a, h in _upcoming_pairs(current_year, preview_week)):
         return None
-    if _top_two_shown_for(season_games, last_completed_week, roster_names):
-        return None  # it ran last week
 
     first, second = top_two
     meetings = _top_two_meetings(all_games, roster_names)
@@ -2121,15 +2187,18 @@ def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_
                         else (second, second_h2h, first_h2h))
         edge = f"History says {lead} has the edge, {w_}-{l_} all-time."
 
-    intro = (f"The number of #1 vs #2 matchups in the regular season "
-             f"(Week {TOP_TWO_FIRST_WEEK} or later).")
     if n:
-        intro += (f" The #1 team has prevailed {first_won} "
-                  f"{'time' if first_won == 1 else 'times'}.\n\n" + "\n".join(lines))
+        pct = round(100 * first_won / n)
+        intro = (f"There {'has' if n == 1 else 'have'} been {n} "
+                 f"{'matchup' if n == 1 else 'matchups'} between the #1 and #2 teams "
+                 f"(Week {TOP_TWO_FIRST_WEEK} or after) in the history of the league. "
+                 f"The #1 team has prevailed {pct}% of the time:\n\n" + "\n".join(lines))
     else:
-        intro += " This is the first one."
+        intro = (f"There have been no matchups between the #1 and #2 teams "
+                 f"(Week {TOP_TWO_FIRST_WEEK} or after) in the history of the league. "
+                 f"This is the first one.")
     return {
-        "reason": f"top_two_matchup_week_{preview_week}",
+        "year": current_year, "week": preview_week, "first": first, "second": second,
         "value": n, "value_suffix": "", "sample_size": n, "first_won": first_won,
         "this_year_teams": [],
         "narrative": intro,
@@ -2391,11 +2460,8 @@ def compute_stat_of_the_week(all_games, roster_names):
       3. If there are none, number of past teams that started 1-4,
          plus each past last-place team's record after Week 5
 
-    From the publication after Week 5 on, a #1 vs #2 matchup in the week
-    ahead takes priority over everything above (never two weeks in a row)
-    - _top_two_matchup_stat. The one exception is Week 7: the halfway stat
-    wins, and a #1 vs #2 that week doesn't count as having run, so it can
-    still show after Week 8.
+    A #1 vs #2 matchup in the week ahead no longer replaces the stat: it
+    gets its own #1 vs #2 Breakdown section (compute_prime_time_matchup).
 
     Week 6, in priority order (counts only, plus a closing line with how
     many of this year's group history says will get in):
@@ -2408,11 +2474,15 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     Week 8 - _crowded_record_stat: playoff odds for the record held by the
     most managers (ties to the better record), Week 6 format, plus a
-    must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
+    must-win footnote for anyone at 3-5.
 
     Week 9 - _final_five_stat: past points champions' average score
     through Week 9 (and for the whole season), plus every team this year
-    averaging within 10 points of that. #1 vs #2 still takes priority.
+    averaging within 10 points of that.
+
+    Week 10 - _outside_top_stat: playoff odds for a team outside the top 6
+    of the standings but within 2 games of 6th place, this year's managers
+    in that spot, and how many of them history says will crash the top 6.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2423,18 +2493,11 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
-    # The halfway point outranks everything, #1 vs #2 included.
+    # The halfway point outranks everything.
     if last_completed_week == HALFWAY_WEEK:
         halfway = _halfway_top_six_stat(all_games, season_games, current_year, roster_names)
         if halfway:
             return halfway
-
-    # Top priority from Week 5 on (Week 7 aside): the week ahead features #1 vs #2.
-    if last_completed_week >= TOP_TWO_FIRST_WEEK:
-        top_two = _top_two_matchup_stat(all_games, season_games, current_year,
-                                        last_completed_week, roster_names)
-        if top_two:
-            return top_two
 
     # Records checked in order after that week; the first one that someone
     # holds now (and some past team held) wins.
@@ -2476,6 +2539,9 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == FINAL_FIVE_WEEK:
         return _final_five_stat(all_games, season_games, current_year)
+
+    if last_completed_week == OUTSIDE_TOP_WEEK:
+        return _outside_top_stat(all_games, season_games, current_year, OUTSIDE_TOP_WEEK, roster_names)
 
     return None  # other weeks: not defined yet
 
@@ -2523,6 +2589,85 @@ def compute_week_in_history(all_games, roster_names):
     if 11 <= target_week <= 14:
         return _select_week_in_history_weeks11_14(pool, all_games, target_week, roster_names)
     return None
+
+
+# Season simulation for playoff odds (see simulate_playoff_odds).
+SIM_RUNS = 10000
+# Each team's expected score is its scoring this season pulled toward the
+# league average as if it had SIM_PRIOR_GAMES more games at that average:
+# a handful of fantasy weeks is mostly noise.
+SIM_PRIOR_GAMES = 4
+# Share of the final odds that comes from the simulation (the rest is the
+# historical rate for the record), by weeks played: ramps linearly from
+# SIM_WEIGHT_START at Week 3 to SIM_WEIGHT_END at Week 13.
+SIM_WEIGHT_START = 0.5
+SIM_WEIGHT_END = 1.0
+
+
+def sim_weight(current_week):
+    """Share of the playoff odds taken from the simulation this week."""
+    t = min(1.0, max(0.0, (current_week - 3) / 10))
+    return SIM_WEIGHT_START + t * (SIM_WEIGHT_END - SIM_WEIGHT_START)
+
+
+def _weekly_score_spread(all_games):
+    """How much a team's weekly score swings around its own season average:
+    the pooled standard deviation of (score - that team's season average)
+    over every regular-season game on record. Pooled across seasons because
+    one team's handful of games is too few to measure its own spread."""
+    scores = defaultdict(list)
+    for g in all_games:
+        if g["game_type"] != "Regular":
+            continue
+        scores[(g["year"], g["away_manager"])].append(g["away_score"])
+        scores[(g["year"], g["home_manager"])].append(g["home_score"])
+    residuals = []
+    for vals in scores.values():
+        if len(vals) >= 2:
+            mean = sum(vals) / len(vals)
+            residuals.extend(v - mean for v in vals)
+    return statistics.pstdev(residuals) if len(residuals) >= 20 else 25.0
+
+
+def simulate_playoff_odds(season_games, roster_names, remaining, spread,
+                          runs=SIM_RUNS, prior_games=SIM_PRIOR_GAMES, seed=0):
+    """{manager: share of simulated seasons in which they finish in the top
+    PLAYOFF_SPOTS}. Plays out every remaining game (`remaining`: list of
+    weeks of (a, b) pairs, the real ESPN schedule) `runs` times. Each week a
+    team scores a random draw around its expected score (this season's
+    average, pulled toward the league average by prior_games) with the
+    league-wide weekly spread. Every simulated season is ranked by
+    rank_season_games, the same standings and head-to-head tiebreak as the
+    real table, so remaining strength of schedule, record and tiebreaks all
+    come out of the same calculation. A fixed seed keeps the numbers the
+    same when a week is re-run."""
+    pts = defaultdict(list)
+    for g in season_games:
+        pts[g["away_manager"]].append(g["away_score"])
+        pts[g["home_manager"]].append(g["home_score"])
+    all_pts = [v for vals in pts.values() for v in vals]
+    if not all_pts:
+        return {}
+    league_avg = sum(all_pts) / len(all_pts)
+    expected = {m: (sum(v) + prior_games * league_avg) / (len(v) + prior_games)
+                for m, v in pts.items()}
+
+    rng = random.Random(seed)
+    made = defaultdict(int)
+    for _ in range(runs):
+        games = list(season_games)
+        for week in remaining:
+            for a, b in week:
+                sa = rng.gauss(expected.get(a, league_avg), spread)
+                sb = rng.gauss(expected.get(b, league_avg), spread)
+                games.append({
+                    "away_manager": a, "home_manager": b, "away_score": sa, "home_score": sb,
+                    "away_team": "", "home_team": "", "tie": sa == sb,
+                    "winner": a if sa > sb else b, "loser": b if sa > sb else a,
+                })
+        for row in rank_season_games(games, roster_names)[:PLAYOFF_SPOTS]:
+            made[row["manager"]] += 1
+    return {m: made[m] / runs for m in expected}
 
 
 def compute_playoff_probability_model(all_games, roster_names):
@@ -2593,7 +2738,7 @@ def compute_playoff_probability_model(all_games, roster_names):
     }
 
 
-def compute_playoff_probabilities(all_games, roster_names, model):
+def compute_playoff_probabilities(all_games, roster_names, model, schedule="load"):
     """
     Current-season playoff probability per active manager, using the
     historical model above as a base rate, then nudged by two
@@ -2602,6 +2747,14 @@ def compute_playoff_probabilities(all_games, roster_names, model):
       - More points scored so far → higher probability (up to ±5 pts)
       - Harder schedule (lower schedule_difficulty) → higher probability,
         since their record undersells their true quality (up to ±5 pts)
+
+    Then remaining strength of schedule: when the full remaining ESPN
+    schedule is available, the rest of the season is simulated
+    (simulate_playoff_odds) and the odds become a blend of the simulation
+    and the number above, weighted toward the simulation as the season goes
+    on (sim_weight). Without a valid schedule the simulation is skipped.
+    `schedule` is normally loaded from remaining_schedule.json; the backtest
+    passes the real remaining games of a past season instead.
 
     After the tie-break nudges, any manager who has mathematically clinched
     a playoff spot is set to 100% and flagged "clinched": true; any manager
@@ -2715,13 +2868,39 @@ def compute_playoff_probabilities(all_games, roster_names, model):
             pct = e["base_rate"] * 100 + points_adj + sched_adj
             e["probability"] = round(min(100, max(0, pct)), 1)
 
+    records = {e["manager"]: (e["wins"], e["losses"]) for e in entries}
+    if schedule == "load":
+        schedule = load_remaining_schedule(
+            records.keys(), games_played, current_year, current_week
+        )
+
+    # Remaining strength of schedule: simulate the rest of the season on
+    # the real schedule and blend it with the historical number.
+    # Any failure here falls back to the historical number: the season
+    # simulation must never stop the weekly update.
+    sim_info = {"sim_weight": 0}
+    if schedule:
+        try:
+            spread = _weekly_score_spread(all_games)
+            sim = simulate_playoff_odds(season_games, roster_names, schedule, spread,
+                                        seed=current_year * 100 + current_week)
+            w = sim_weight(current_week)
+            blended = {}
+            for e in entries:
+                simulated = round(sim.get(e["manager"], 0.0) * 100, 1)
+                blended[e["manager"]] = (simulated, round(w * simulated + (1 - w) * e["probability"], 1))
+            for e in entries:
+                e["historical_probability"] = e["probability"]
+                e["simulated_probability"], e["probability"] = blended[e["manager"]]
+            sim_info = {"sim_weight": round(w, 2), "sim_runs": SIM_RUNS, "weekly_spread": round(spread, 1)}
+            print(f"Playoff odds: {SIM_RUNS} simulated seasons, {w:.0%} simulation / "
+                  f"{1 - w:.0%} history, weekly spread {spread:.1f}.")
+        except Exception as e:
+            print(f"WARNING: playoff odds simulation failed ({e!r}); using the historical odds alone.")
+
     # Clinch override: a manager who can't be caught by enough rivals in the
     # games that remain is at 100% no matter what the base rate or the
     # tie-break nudges say.
-    records = {e["manager"]: (e["wins"], e["losses"]) for e in entries}
-    schedule = load_remaining_schedule(
-        records.keys(), games_played, current_year, current_week
-    )
     clinched, eliminated, status_method = compute_playoff_status(
         records, games_played, schedule
     )
@@ -2739,7 +2918,7 @@ def compute_playoff_probabilities(all_games, roster_names, model):
 
     entries.sort(key=lambda e: -e["probability"])
     return {"season": current_year, "visible": True, "current_week": current_week,
-            "status_method": status_method, "managers": entries}
+            "status_method": status_method, **sim_info, "managers": entries}
 
 
 def compute_h2h_summary(all_games, roster_names):
@@ -2973,6 +3152,15 @@ def main():
               f"({detail}; this year: {sotw['this_year_teams']})")
     else:
         print("Stat of the Week: nothing defined/applicable for this week.")
+    # #1 vs #2 Breakdown: plain numbers, no AI write-up, so it's rebuilt every
+    # run (a "Skip narrative generation" re-run included).
+    stats["prime_time_matchup"] = compute_prime_time_matchup(stats["games"], roster_names)
+    if stats["prime_time_matchup"]:
+        pt = stats["prime_time_matchup"]
+        print(f"#1 vs #2 Breakdown: Week {pt['week']}, #1 {pt['first']} vs #2 {pt['second']} "
+              f"({pt['value']} past #1 vs #2 games, #1 won {pt['first_won']})")
+    else:
+        print("#1 vs #2 Breakdown: no #1 vs #2 game in the week ahead.")
     if stats["week_in_history"]:
         wih = stats["week_in_history"]
         print(f"This Week in Club History: picked {wih['year']} Week {wih['week']} — "

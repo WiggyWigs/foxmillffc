@@ -88,6 +88,7 @@ function renderRecap(data) {
 
   renderCallouts(recap.callouts || {}, data.current_highest_scoring_players, data.current_lowest_scoring_teams);
   renderAnalyticsDeepDive(data.week_in_history);
+  renderPrimeTimeMatchup(data.prime_time_matchup, data);
   renderStatOfTheWeek(data.stat_of_the_week);
   renderHalfwayPoint(data.halfway_point);
   renderBoxScores(recap.box_scores || []);
@@ -170,6 +171,44 @@ function renderStatOfTheWeek(stat) {
   if (stat.closing) parts.push(`\n${escapeHtml(stat.closing)}`);
   if (stat.footnote) parts.push(`<span class="stat-of-week-footnote">${escapeHtml(stat.footnote)}</span>`);
   textEl.innerHTML = parts.join("\n");
+
+  section.style.display = "";
+  if (divider) divider.style.display = "";
+}
+
+// "#1 vs #2 Breakdown" — only in a week where #1 plays #2 (from Week 6
+// on): a short head-to-head comparison (h2hComparisonHtml in
+// h2h-table.js, the Head-to-Head page's tables, trimmed), then the #1 vs
+// #2 write-up from ingest_csv.py (compute_prime_time_matchup). Its own
+// section, so the Stat of the Week below still runs as normal.
+const PRIME_TIME_OVERALL_ROWS = ["Overall Record", "R/S Average Score", "Playoffs Made", "Championships"];
+
+function renderPrimeTimeMatchup(pt, data) {
+  const divider = document.getElementById("prime-time-divider");
+  const section = document.getElementById("prime-time-section");
+  if (!section) return;
+  const ready = pt && pt.first && pt.second && data.h2h_summary
+    && data.h2h_summary[pt.first] && data.h2h_summary[pt.second]
+    && typeof h2hComparisonHtml === "function";
+  if (!ready) {
+    section.style.display = "none";
+    if (divider) divider.style.display = "none";
+    return;
+  }
+
+  document.getElementById("prime-time-subtitle").textContent = `#1 ${pt.first} vs #2 ${pt.second}`;
+  document.getElementById("prime-time-h2h").innerHTML = h2hComparisonHtml(
+    data, pt.first, pt.second, {
+      heading: (t) => `<h4 class="h2h-games-heading">${escapeHtml(t)}</h4>`,
+      dividerClass: "recap-thin-divider",
+      overallRowsShown: PRIME_TIME_OVERALL_ROWS,
+      overallTableClass: "pt-overall-table",
+      showGames: false,
+    });
+
+  const parts = [escapeHtml(pt.narrative || "")];
+  if (pt.closing) parts.push(`\n${escapeHtml(pt.closing)}`);
+  document.getElementById("prime-time-narrative").innerHTML = parts.join("\n");
 
   section.style.display = "";
   if (divider) divider.style.display = "";
@@ -1028,7 +1067,10 @@ function renderPlayoffProbability(data) {
   section.style.display = "";
   if (divider) divider.style.display = "";
   const seasonCount = data.playoff_probability_model?.seasons_used?.length || 0;
-  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and Luck Factor.`;
+  const hist = `${seasonCount} historical season${seasonCount === 1 ? "" : "s"}`;
+  meta.textContent = pp.sim_weight
+    ? `Through Week ${pp.current_week}: ${Number(pp.sim_runs || 0).toLocaleString()} simulations of the rest of the season on the real remaining schedule, blended with ${hist}.`
+    : `Based on ${hist} through Week ${pp.current_week}, adjusted for points scored and Luck Factor.`;
 
   const rows = pp.managers; // already sorted by probability descending
 
