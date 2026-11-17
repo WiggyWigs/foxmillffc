@@ -98,7 +98,7 @@ body.landing-page {
   display: flex;
   flex: 1;
   justify-content: center;
-  gap: clamp(1rem, 4vw, 3rem);
+  gap: clamp(1rem, 2.5vw, 3rem);
 }
 
 .site-nav a {
@@ -159,7 +159,9 @@ body.landing-page {
 .nav-toggle.open span:nth-child(2) { opacity: 0; }
 .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-@media (max-width: 600px) {
+/* Hamburger up to 1024px: below that the nine links don't fit on one
+   row (they ran off the right edge on tablets). */
+@media (max-width: 1024px) {
   .site-nav {
     justify-content: space-between;
   }
@@ -175,6 +177,9 @@ body.landing-page {
     right: 0;
     flex-direction: column;
     align-items: center;
+    /* Start from the top: centred, a list taller than the box lost its
+       first link (Current Season) off the top. */
+    justify-content: flex-start;
     gap: 1.1rem;
     padding: 1.25rem 1.5rem 1.5rem;
     background: rgba(0, 0, 0, 0.92);
@@ -188,7 +193,10 @@ body.landing-page {
   }
 
   .site-nav-links.open {
-    max-height: 400px;
+    /* Room for every link; scrolls on very short screens. */
+    max-height: calc(100vh - 3.5rem);
+    max-height: calc(100dvh - 3.5rem);
+    overflow-y: auto;
     opacity: 1;
     pointer-events: auto;
   }
