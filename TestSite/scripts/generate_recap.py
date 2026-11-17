@@ -2173,10 +2173,18 @@ def compute_weekly_lowest_scoring_teams(stats):
 # --- "Welcome to the Record Books" section ---------------------------------
 
 RECORD_BOOKS_LABELS = {
+    "top_avg": "Top 10 R/S Season Average",
+    "bottom_avg": "Bottom 10 R/S Season Average",
     "top_game_score": "Top 15 R/S Game Score",
     "bottom_game_score": "Bottom 15 R/S Game Score",
+    "top_playoff_score": "Top 5 Playoff Game Score",
+    "bottom_playoff_score": "Bottom 5 Playoff Game Score",
+    "above_125": "Top 5 Rate of 125+ Games",
+    "below_100": "Top 5 Rate of Sub-100 Games",
     "top_win_streak": "Top 5 R/S Winning Streak",
     "top_loss_streak": "Top 5 R/S Losing Streak",
+    "top_over100_streak": "Top 5 R/S Streak Over 100",
+    "top_under100_streak": "Top 5 R/S Streak Under 100",
     "25th_win": "25th Career Victory",
     "25th_loss": "25th Career Defeat",
 }
@@ -2184,12 +2192,16 @@ RECORD_BOOKS_LABELS = {
 
 def build_record_books_entries(week_games, week, year, stats):
     """
-    "Welcome to the Record Books": every league record a manager
+    "Welcome to the Record Books": every Record Books table a manager
     touched during the most recently completed regular-season week —
     landing anywhere in the Top 15 / Bottom 15 all-time R/S game
-    scores, breaking into or moving up the Top 5 all-time R/S win/loss
-    streaks (only when the streak's rank or tie changes), or
-    crossing the 25th-career-win/loss milestone. Returns a list of
+    scores; breaking into or moving on the Top 5 R/S win, loss,
+    over-100 and under-100 streaks (only when the streak's rank or tie
+    changes); this season's average entering or climbing the Top 10 /
+    Bottom 10 season averages; a manager who scored 125+ (or under 100)
+    this week entering or climbing the Top 5 by rate; a playoff score
+    in the Top 5 / Bottom 5 (playoff weeks); or crossing the
+    25th-career-win/loss milestone. Returns a list of
     entries (empty if nothing happened this week) — the frontend only
     shows this section at all when the list is non-empty.
 
@@ -2265,6 +2277,68 @@ def build_record_books_entries(week_games, week, year, stats):
 
     check_streak_list("top_winning_streaks", "top_win_streak")
     check_streak_list("top_losing_streaks", "top_loss_streak")
+    check_streak_list("top_over100_streaks", "top_over100_streak")
+    check_streak_list("top_under100_streaks", "top_under100_streak")
+
+    def climbed(rank, last):
+        # Season averages and game rates move every week for everyone,
+        # so these are only mentioned when the entry is new to the
+        # board or climbs to a better place (not when it slips back or
+        # only gains/loses a tie).
+        return last is None or rank < last["rank"]
+
+    def check_season_avg(list_key, kind, last_key):
+        rows = records.get(list_key) or []
+        ranks, tied_counts = tie_ranks(rows, "avg_score")
+        for i, e in enumerate(rows):
+            if e.get("year") == year and last_key in e and climbed(ranks[i], e[last_key]):
+                entries.append({
+                    "kind": kind, "manager": e["manager"], "team_name": None,
+                    "value": e["avg_score"], "rank": ranks[i], "tied_count": tied_counts[i],
+                    "year": year,
+                })
+
+    check_season_avg("top_avg_regular_season", "top_avg", "rank_last_week_top")
+    check_season_avg("bottom_avg_regular_season", "bottom_avg", "rank_last_week_bottom")
+
+    def check_rate_list(list_key, kind, spots=5):
+        # Only managers who did it this week (scored 125+ / under 100)
+        # and climbed into or up the Top 5 by rate.
+        rows = records.get(list_key) or []
+        ranks, tied_counts = tie_ranks(rows, "rate")
+        for i, e in enumerate(rows):
+            if (e.get("this_week") and ranks[i] <= spots and "rank_last_week" in e
+                    and climbed(ranks[i], e["rank_last_week"])):
+                entries.append({
+                    "kind": kind, "manager": e["manager"], "team_name": None,
+                    "value": e["rate"], "count": e["count"], "games_played": e["games_played"],
+                    "rank": ranks[i], "tied_count": tied_counts[i],
+                })
+
+    check_rate_list("games_above_125", "above_125")
+    check_rate_list("games_below_100", "below_100")
+
+    # Playoff game scores: the most recent playoff week, while the
+    # playoffs are the latest games on record.
+    games = stats.get("games", [])
+    season_all = [g for g in games if g["year"] == year]
+    if season_all:
+        def order(w):
+            w = str(w)
+            return 100 + int(w[1:]) if w.startswith("P") else int(w) if w.isdigit() else 0
+        latest = max(season_all, key=lambda g: order(g["week"]))
+        if latest["game_type"] != "Regular":
+            po_week = str(latest["week"])
+            for list_key, kind in (("top_playoff_games", "top_playoff_score"),
+                                   ("bottom_playoff_games", "bottom_playoff_score")):
+                rows = records.get(list_key) or []
+                ranks, tied_counts = tie_ranks(rows, "score")
+                for i, e in enumerate(rows):
+                    if e.get("year") == year and str(e.get("week")) == po_week:
+                        entries.append({
+                            "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
+                            "value": e["score"], "rank": ranks[i], "tied_count": tied_counts[i],
+                        })
 
     def check_milestone(list_key, kind):
         rows = records.get(list_key) or []

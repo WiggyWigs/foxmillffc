@@ -65,7 +65,14 @@ Legacy Score = 2.0 × (playoff appearances / seasons)
 
 * Ranks are competition-style: tied values share the rank of the first row with that value, and the next row skips ahead. The shared rank is shown on the first tied row only; the other tied rows are blank (1, blank, 3), matching `tieAwareRanks()` in `records.js`.
 * The "Welcome to the Record Books" write-ups must use the same ranks as the Record Books page. When a mark ties one from an earlier season, the sentence says "tied for".
-* An active win/loss streak is mentioned in "Welcome to the Record Books" only when its place on the Top 5 changes: it enters the list, moves to a new rank, or gains or loses a tie (tied 3rd → 3rd, 3rd → tied 2nd). A streak that grows but keeps the same place is not mentioned again.
+* "Welcome to the Record Books" covers every table on the Record Books page, for the most recent regular-season week:
+   * Highest / Lowest R/S Game Scores (Top 15 / Bottom 15): any game from this week on the list.
+   * Highest / Lowest Playoff Game Scores (Top 5 / Bottom 5): any game from the most recent playoff week on the list, while the playoffs are the latest games.
+   * Highest / Lowest Average R/S Score (Top 10 / Bottom 10): this season's average when it enters the list or climbs to a better place. Not when it slips back or only gains or loses a tie, since averages move every week.
+   * Games Scored Above 125 / Below 100 (by rate): a manager who scored over 125 (or under 100) this week and entered or climbed within the Top 5.
+   * Longest R/S Winning / Losing Streaks and Longest R/S Streak Over / Under 100 Points (Top 5): see the next rule.
+   * 25th career win / loss.
+* An active streak (win, loss, over 100, under 100) is mentioned only when its place on the Top 5 changes: it enters the list, moves to a new rank, or gains or loses a tie (tied 3rd → 3rd, 3rd → tied 2nd). A streak that grows but keeps the same place is not mentioned again.
 
 ## 9. Playoff Probability
 
