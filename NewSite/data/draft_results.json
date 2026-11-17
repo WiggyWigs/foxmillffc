@@ -1,0 +1,5841 @@
+{
+  "drafts": {
+    "2023": {
+      "team_count": 12,
+      "pick_order": [
+        "Daniel Bahamonde",
+        "Brian Harris",
+        "Jay Nelson",
+        "John Schauder",
+        "Eddie McCumiskey",
+        "Greg Wigton",
+        "Blake Pratt",
+        "Erik Servinsky",
+        "Carl Bruce",
+        "Josh Davis",
+        "Brian Kleinhenz",
+        "Andrew Williams"
+      ],
+      "picks": [
+        {
+          "round": 1,
+          "round_pick": 1,
+          "overall": 1,
+          "manager": "Daniel Bahamonde",
+          "player": "Justin Jefferson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 2,
+          "overall": 2,
+          "manager": "Brian Harris",
+          "player": "Ja'Marr Chase",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 3,
+          "overall": 3,
+          "manager": "Jay Nelson",
+          "player": "Christian McCaffrey",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 4,
+          "overall": 4,
+          "manager": "John Schauder",
+          "player": "Travis Kelce",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 5,
+          "overall": 5,
+          "manager": "Eddie McCumiskey",
+          "player": "Austin Ekeler",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 6,
+          "overall": 6,
+          "manager": "Greg Wigton",
+          "player": "Tyreek Hill",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 7,
+          "overall": 7,
+          "manager": "Blake Pratt",
+          "player": "Nick Chubb",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 8,
+          "overall": 8,
+          "manager": "Erik Servinsky",
+          "player": "Bijan Robinson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 9,
+          "overall": 9,
+          "manager": "Carl Bruce",
+          "player": "Saquon Barkley",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 10,
+          "overall": 10,
+          "manager": "Josh Davis",
+          "player": "Derrick Henry",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 11,
+          "overall": 11,
+          "manager": "Brian Kleinhenz",
+          "player": "Tony Pollard",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 12,
+          "overall": 12,
+          "manager": "Andrew Williams",
+          "player": "Davante Adams",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 1,
+          "overall": 13,
+          "manager": "Andrew Williams",
+          "player": "Cooper Kupp",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 2,
+          "overall": 14,
+          "manager": "Brian Kleinhenz",
+          "player": "Garrett Wilson",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 3,
+          "overall": 15,
+          "manager": "Josh Davis",
+          "player": "Josh Jacobs",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 4,
+          "overall": 16,
+          "manager": "Carl Bruce",
+          "player": "Stefon Diggs",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 5,
+          "overall": 17,
+          "manager": "Erik Servinsky",
+          "player": "CeeDee Lamb",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 6,
+          "overall": 18,
+          "manager": "Blake Pratt",
+          "player": "A.J. Brown",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 7,
+          "overall": 19,
+          "manager": "Greg Wigton",
+          "player": "Joe Mixon",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 8,
+          "overall": 20,
+          "manager": "Eddie McCumiskey",
+          "player": "Travis Etienne Jr.",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 9,
+          "overall": 21,
+          "manager": "John Schauder",
+          "player": "Amon-Ra St. Brown",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 10,
+          "overall": 22,
+          "manager": "Jay Nelson",
+          "player": "Jaylen Waddle",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 11,
+          "overall": 23,
+          "manager": "Brian Harris",
+          "player": "Patrick Mahomes",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 12,
+          "overall": 24,
+          "manager": "Daniel Bahamonde",
+          "player": "DeVonta Smith",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 1,
+          "overall": 25,
+          "manager": "Daniel Bahamonde",
+          "player": "Mark Andrews",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 2,
+          "overall": 26,
+          "manager": "Brian Harris",
+          "player": "Chris Olave",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 3,
+          "overall": 27,
+          "manager": "Jay Nelson",
+          "player": "Jahmyr Gibbs",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 4,
+          "overall": 28,
+          "manager": "John Schauder",
+          "player": "Deebo Samuel",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 5,
+          "overall": 29,
+          "manager": "Eddie McCumiskey",
+          "player": "Jalen Hurts",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 6,
+          "overall": 30,
+          "manager": "Greg Wigton",
+          "player": "Rhamondre Stevenson",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 7,
+          "overall": 31,
+          "manager": "Blake Pratt",
+          "player": "Tee Higgins",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 8,
+          "overall": 32,
+          "manager": "Erik Servinsky",
+          "player": "Najee Harris",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 9,
+          "overall": 33,
+          "manager": "Carl Bruce",
+          "player": "DK Metcalf",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 10,
+          "overall": 34,
+          "manager": "Josh Davis",
+          "player": "Keenan Allen",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 11,
+          "overall": 35,
+          "manager": "Brian Kleinhenz",
+          "player": "Christian Watson",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 12,
+          "overall": 36,
+          "manager": "Andrew Williams",
+          "player": "Aaron Jones",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 1,
+          "overall": 37,
+          "manager": "Andrew Williams",
+          "player": "Dameon Pierce",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 2,
+          "overall": 38,
+          "manager": "Brian Kleinhenz",
+          "player": "George Pickens",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 3,
+          "overall": 39,
+          "manager": "Josh Davis",
+          "player": "Amari Cooper",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 4,
+          "overall": 40,
+          "manager": "Carl Bruce",
+          "player": "Josh Allen",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 5,
+          "overall": 41,
+          "manager": "Erik Servinsky",
+          "player": "Calvin Ridley",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 6,
+          "overall": 42,
+          "manager": "Blake Pratt",
+          "player": "Diontae Johnson",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 7,
+          "overall": 43,
+          "manager": "Greg Wigton",
+          "player": "Lamar Jackson",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 8,
+          "overall": 44,
+          "manager": "Eddie McCumiskey",
+          "player": "DeAndre Hopkins",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 9,
+          "overall": 45,
+          "manager": "John Schauder",
+          "player": "Kenneth Walker III",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 10,
+          "overall": 46,
+          "manager": "Jay Nelson",
+          "player": "Joe Burrow",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 11,
+          "overall": 47,
+          "manager": "Brian Harris",
+          "player": "Alexander Mattison",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 12,
+          "overall": 48,
+          "manager": "Daniel Bahamonde",
+          "player": "Jonathan Taylor",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 1,
+          "overall": 49,
+          "manager": "Daniel Bahamonde",
+          "player": "Dalvin Cook",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 2,
+          "overall": 50,
+          "manager": "Brian Harris",
+          "player": "Miles Sanders",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 3,
+          "overall": 51,
+          "manager": "Jay Nelson",
+          "player": "Terry McLaurin",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 4,
+          "overall": 52,
+          "manager": "John Schauder",
+          "player": "Justin Fields",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 5,
+          "overall": 53,
+          "manager": "Eddie McCumiskey",
+          "player": "Chris Godwin",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 6,
+          "overall": 54,
+          "manager": "Greg Wigton",
+          "player": "T.J. Hockenson",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 7,
+          "overall": 55,
+          "manager": "Blake Pratt",
+          "player": "James Conner",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 8,
+          "overall": 56,
+          "manager": "Erik Servinsky",
+          "player": "Breece Hall",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 9,
+          "overall": 57,
+          "manager": "Carl Bruce",
+          "player": "Rachaad White",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 10,
+          "overall": 58,
+          "manager": "Josh Davis",
+          "player": "Justin Herbert",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 11,
+          "overall": 59,
+          "manager": "Brian Kleinhenz",
+          "player": "George Kittle",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 12,
+          "overall": 60,
+          "manager": "Andrew Williams",
+          "player": "Darren Waller",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 1,
+          "overall": 61,
+          "manager": "Andrew Williams",
+          "player": "Deshaun Watson",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 2,
+          "overall": 62,
+          "manager": "Brian Kleinhenz",
+          "player": "DJ Moore",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 3,
+          "overall": 63,
+          "manager": "Josh Davis",
+          "player": "Kyle Pitts",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 4,
+          "overall": 64,
+          "manager": "Carl Bruce",
+          "player": "Cam Akers",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 5,
+          "overall": 65,
+          "manager": "Erik Servinsky",
+          "player": "Drake London",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 6,
+          "overall": 66,
+          "manager": "Blake Pratt",
+          "player": "Mike Williams",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 7,
+          "overall": 67,
+          "manager": "Greg Wigton",
+          "player": "Tyler Lockett",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 8,
+          "overall": 68,
+          "manager": "Eddie McCumiskey",
+          "player": "James Cook",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 9,
+          "overall": 69,
+          "manager": "John Schauder",
+          "player": "Jerry Jeudy",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 10,
+          "overall": 70,
+          "manager": "Jay Nelson",
+          "player": "Christian Kirk",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 11,
+          "overall": 71,
+          "manager": "Brian Harris",
+          "player": "Brandon Aiyuk",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 12,
+          "overall": 72,
+          "manager": "Daniel Bahamonde",
+          "player": "Mike Evans",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 1,
+          "overall": 73,
+          "manager": "Daniel Bahamonde",
+          "player": "Trevor Lawrence",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 2,
+          "overall": 74,
+          "manager": "Brian Harris",
+          "player": "Alvin Kamara",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 3,
+          "overall": 75,
+          "manager": "Jay Nelson",
+          "player": "Jahan Dotson",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 4,
+          "overall": 76,
+          "manager": "John Schauder",
+          "player": "J.K. Dobbins",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 5,
+          "overall": 77,
+          "manager": "Eddie McCumiskey",
+          "player": "Dallas Goedert",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 6,
+          "overall": 78,
+          "manager": "Greg Wigton",
+          "player": "David Montgomery",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 7,
+          "overall": 79,
+          "manager": "Blake Pratt",
+          "player": "Brian Robinson Jr.",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 8,
+          "overall": 80,
+          "manager": "Erik Servinsky",
+          "player": "Javonte Williams",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 9,
+          "overall": 81,
+          "manager": "Carl Bruce",
+          "player": "Gabe Davis",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 10,
+          "overall": 82,
+          "manager": "Josh Davis",
+          "player": "Marquise Brown",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 11,
+          "overall": 83,
+          "manager": "Brian Kleinhenz",
+          "player": "Isiah Pacheco",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 12,
+          "overall": 84,
+          "manager": "Andrew Williams",
+          "player": "Michael Pittman Jr.",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 1,
+          "overall": 85,
+          "manager": "Andrew Williams",
+          "player": "Khalil Herbert",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 2,
+          "overall": 86,
+          "manager": "Brian Kleinhenz",
+          "player": "Jaxon Smith-Njigba",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 3,
+          "overall": 87,
+          "manager": "Josh Davis",
+          "player": "Brandin Cooks",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 4,
+          "overall": 88,
+          "manager": "Carl Bruce",
+          "player": "Zay Flowers",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 5,
+          "overall": 89,
+          "manager": "Erik Servinsky",
+          "player": "Pat Freiermuth",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 6,
+          "overall": 90,
+          "manager": "Blake Pratt",
+          "player": "Dak Prescott",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 7,
+          "overall": 91,
+          "manager": "Greg Wigton",
+          "player": "D'Andre Swift",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 8,
+          "overall": 92,
+          "manager": "Eddie McCumiskey",
+          "player": "Daniel Jones",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 9,
+          "overall": 93,
+          "manager": "John Schauder",
+          "player": "Michael Thomas",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 10,
+          "overall": 94,
+          "manager": "Jay Nelson",
+          "player": "Jordan Addison",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 11,
+          "overall": 95,
+          "manager": "Brian Harris",
+          "player": "Courtland Sutton",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 12,
+          "overall": 96,
+          "manager": "Daniel Bahamonde",
+          "player": "Skyy Moore",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 1,
+          "overall": 97,
+          "manager": "Daniel Bahamonde",
+          "player": "JuJu Smith-Schuster",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 2,
+          "overall": 98,
+          "manager": "Brian Harris",
+          "player": "Jamaal Williams",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 3,
+          "overall": 99,
+          "manager": "Jay Nelson",
+          "player": "Jeff Wilson Jr.",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 4,
+          "overall": 100,
+          "manager": "John Schauder",
+          "player": "AJ Dillon",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 5,
+          "overall": 101,
+          "manager": "Eddie McCumiskey",
+          "player": "Jakobi Meyers",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 6,
+          "overall": 102,
+          "manager": "Greg Wigton",
+          "player": "Anthony Richardson",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 7,
+          "overall": 103,
+          "manager": "Blake Pratt",
+          "player": "Adam Thielen",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 8,
+          "overall": 104,
+          "manager": "Erik Servinsky",
+          "player": "Tua Tagovailoa",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 9,
+          "overall": 105,
+          "manager": "Carl Bruce",
+          "player": "Antonio Gibson",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 10,
+          "overall": 106,
+          "manager": "Josh Davis",
+          "player": "Samaje Perine",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 11,
+          "overall": 107,
+          "manager": "Brian Kleinhenz",
+          "player": "Aaron Rodgers",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 12,
+          "overall": 108,
+          "manager": "Andrew Williams",
+          "player": "Evan Engram",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 1,
+          "overall": 109,
+          "manager": "Andrew Williams",
+          "player": "David Njoku",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 2,
+          "overall": 110,
+          "manager": "Brian Kleinhenz",
+          "player": "49ers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 3,
+          "overall": 111,
+          "manager": "Josh Davis",
+          "player": "Tyler Higbee",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 4,
+          "overall": 112,
+          "manager": "Carl Bruce",
+          "player": "Zach Charbonnet",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 5,
+          "overall": 113,
+          "manager": "Erik Servinsky",
+          "player": "Treylon Burks",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 6,
+          "overall": 114,
+          "manager": "Blake Pratt",
+          "player": "Quentin Johnston",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 7,
+          "overall": 115,
+          "manager": "Greg Wigton",
+          "player": "Allen Lazard",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 8,
+          "overall": 116,
+          "manager": "Eddie McCumiskey",
+          "player": "Cole Kmet",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 9,
+          "overall": 117,
+          "manager": "John Schauder",
+          "player": "Odell Beckham Jr.",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 10,
+          "overall": 118,
+          "manager": "Jay Nelson",
+          "player": "De'Von Achane",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 11,
+          "overall": 119,
+          "manager": "Brian Harris",
+          "player": "Dalton Schultz",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 12,
+          "overall": 120,
+          "manager": "Daniel Bahamonde",
+          "player": "Rashaad Penny",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 1,
+          "overall": 121,
+          "manager": "Daniel Bahamonde",
+          "player": "Jerick McKinnon",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 2,
+          "overall": 122,
+          "manager": "Brian Harris",
+          "player": "Tyler Boyd",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 3,
+          "overall": 123,
+          "manager": "Jay Nelson",
+          "player": "Rashod Bateman",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 4,
+          "overall": 124,
+          "manager": "John Schauder",
+          "player": "Kadarius Toney",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 5,
+          "overall": 125,
+          "manager": "Eddie McCumiskey",
+          "player": "Ezekiel Elliott",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 6,
+          "overall": 126,
+          "manager": "Greg Wigton",
+          "player": "Jaylen Warren",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 7,
+          "overall": 127,
+          "manager": "Blake Pratt",
+          "player": "Jameson Williams",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 8,
+          "overall": 128,
+          "manager": "Erik Servinsky",
+          "player": "Elijah Moore",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 9,
+          "overall": 129,
+          "manager": "Carl Bruce",
+          "player": "Nico Collins",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 10,
+          "overall": 130,
+          "manager": "Josh Davis",
+          "player": "Saints D/ST",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 11,
+          "overall": 131,
+          "manager": "Brian Kleinhenz",
+          "player": "Evan McPherson",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 12,
+          "overall": 132,
+          "manager": "Andrew Williams",
+          "player": "Rondale Moore",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 1,
+          "overall": 133,
+          "manager": "Andrew Williams",
+          "player": "Elijah Mitchell",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 2,
+          "overall": 134,
+          "manager": "Brian Kleinhenz",
+          "player": "Curtis Samuel",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 3,
+          "overall": 135,
+          "manager": "Josh Davis",
+          "player": "Justin Tucker",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 4,
+          "overall": 136,
+          "manager": "Carl Bruce",
+          "player": "Tank Bigsby",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 5,
+          "overall": 137,
+          "manager": "Erik Servinsky",
+          "player": "Dalton Kincaid",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 6,
+          "overall": 138,
+          "manager": "Blake Pratt",
+          "player": "Romeo Doubs",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 7,
+          "overall": 139,
+          "manager": "Greg Wigton",
+          "player": "Chigoziem Okonkwo",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 8,
+          "overall": 140,
+          "manager": "Eddie McCumiskey",
+          "player": "Devin Singletary",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 9,
+          "overall": 141,
+          "manager": "John Schauder",
+          "player": "Darnell Mooney",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 10,
+          "overall": 142,
+          "manager": "Jay Nelson",
+          "player": "Zach Ertz",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 11,
+          "overall": 143,
+          "manager": "Brian Harris",
+          "player": "Tyler Allgeier",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 12,
+          "overall": 144,
+          "manager": "Daniel Bahamonde",
+          "player": "Kirk Cousins",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 1,
+          "overall": 145,
+          "manager": "Daniel Bahamonde",
+          "player": "Steelers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 2,
+          "overall": 146,
+          "manager": "Brian Harris",
+          "player": "DJ Chark Jr.",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 3,
+          "overall": 147,
+          "manager": "Jay Nelson",
+          "player": "Rashee Rice",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 4,
+          "overall": 148,
+          "manager": "John Schauder",
+          "player": "Bills D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 5,
+          "overall": 149,
+          "manager": "Eddie McCumiskey",
+          "player": "Cowboys D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 6,
+          "overall": 150,
+          "manager": "Greg Wigton",
+          "player": "Zay Jones",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 7,
+          "overall": 151,
+          "manager": "Blake Pratt",
+          "player": "Patriots D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 8,
+          "overall": 152,
+          "manager": "Erik Servinsky",
+          "player": "Eagles D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 9,
+          "overall": 153,
+          "manager": "Carl Bruce",
+          "player": "Greg Dulcich",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 10,
+          "overall": 154,
+          "manager": "Josh Davis",
+          "player": "Russell Wilson",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 11,
+          "overall": 155,
+          "manager": "Brian Kleinhenz",
+          "player": "Kenneth Gainwell",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 12,
+          "overall": 156,
+          "manager": "Andrew Williams",
+          "player": "Michael Gallup",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 1,
+          "overall": 157,
+          "manager": "Andrew Williams",
+          "player": "Dolphins D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 2,
+          "overall": 158,
+          "manager": "Brian Kleinhenz",
+          "player": "Chase Claypool",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 3,
+          "overall": 159,
+          "manager": "Josh Davis",
+          "player": "Geno Smith",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 4,
+          "overall": 160,
+          "manager": "Carl Bruce",
+          "player": "Jets D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 5,
+          "overall": 161,
+          "manager": "Erik Servinsky",
+          "player": "Kenny Pickett",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 6,
+          "overall": 162,
+          "manager": "Blake Pratt",
+          "player": "Gerald Everett",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 7,
+          "overall": 163,
+          "manager": "Greg Wigton",
+          "player": "Ravens D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 8,
+          "overall": 164,
+          "manager": "Eddie McCumiskey",
+          "player": "K.J. Osborn",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 9,
+          "overall": 165,
+          "manager": "John Schauder",
+          "player": "Harrison Butker",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 10,
+          "overall": 166,
+          "manager": "Jay Nelson",
+          "player": "Daniel Carlson",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 11,
+          "overall": 167,
+          "manager": "Brian Harris",
+          "player": "Commanders D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 12,
+          "overall": 168,
+          "manager": "Daniel Bahamonde",
+          "player": "Graham Gano",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 1,
+          "overall": 169,
+          "manager": "Daniel Bahamonde",
+          "player": "Hunter Renfrow",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 2,
+          "overall": 170,
+          "manager": "Brian Harris",
+          "player": "Jake Elliott",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 3,
+          "overall": 171,
+          "manager": "Jay Nelson",
+          "player": "Jaguars D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 4,
+          "overall": 172,
+          "manager": "John Schauder",
+          "player": "Roschon Johnson",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 5,
+          "overall": 173,
+          "manager": "Eddie McCumiskey",
+          "player": "Jason Myers",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 6,
+          "overall": 174,
+          "manager": "Greg Wigton",
+          "player": "Matt Gay",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 7,
+          "overall": 175,
+          "manager": "Blake Pratt",
+          "player": "Tyler Bass",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 8,
+          "overall": 176,
+          "manager": "Erik Servinsky",
+          "player": "Brandon McManus",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 9,
+          "overall": 177,
+          "manager": "Carl Bruce",
+          "player": "Younghoe Koo",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 10,
+          "overall": 178,
+          "manager": "Josh Davis",
+          "player": "Parris Campbell",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 11,
+          "overall": 179,
+          "manager": "Brian Kleinhenz",
+          "player": "Donovan Peoples-Jones",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 12,
+          "overall": 180,
+          "manager": "Andrew Williams",
+          "player": "Eddy Pineiro",
+          "keeper": false
+        }
+      ]
+    },
+    "2024": {
+      "team_count": 12,
+      "pick_order": [
+        "Josh Davis",
+        "Daniel Bahamonde",
+        "Erik Servinsky",
+        "Carl Bruce",
+        "Brian Harris",
+        "Eddie McCumiskey",
+        "Jay Nelson",
+        "Jason Carlton",
+        "Greg Wigton",
+        "John Schauder",
+        "Blake Pratt",
+        "Brian Kleinhenz"
+      ],
+      "picks": [
+        {
+          "round": 1,
+          "round_pick": 1,
+          "overall": 1,
+          "manager": "Josh Davis",
+          "player": "Christian McCaffrey",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 2,
+          "overall": 2,
+          "manager": "Daniel Bahamonde",
+          "player": "Tyreek Hill",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 3,
+          "overall": 3,
+          "manager": "Erik Servinsky",
+          "player": "CeeDee Lamb",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 4,
+          "overall": 4,
+          "manager": "Carl Bruce",
+          "player": "Bijan Robinson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 5,
+          "overall": 5,
+          "manager": "Brian Harris",
+          "player": "Amon-Ra St. Brown",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 6,
+          "overall": 6,
+          "manager": "Eddie McCumiskey",
+          "player": "Justin Jefferson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 7,
+          "overall": 7,
+          "manager": "Jay Nelson",
+          "player": "Ja'Marr Chase",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 8,
+          "overall": 8,
+          "manager": "Jason Carlton",
+          "player": "Jonathan Taylor",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 9,
+          "overall": 9,
+          "manager": "Greg Wigton",
+          "player": "Garrett Wilson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 10,
+          "overall": 10,
+          "manager": "John Schauder",
+          "player": "Saquon Barkley",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 11,
+          "overall": 11,
+          "manager": "Blake Pratt",
+          "player": "A.J. Brown",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 12,
+          "overall": 12,
+          "manager": "Brian Kleinhenz",
+          "player": "Jahmyr Gibbs",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 1,
+          "overall": 13,
+          "manager": "Brian Kleinhenz",
+          "player": "Marvin Harrison Jr.",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 2,
+          "overall": 14,
+          "manager": "Blake Pratt",
+          "player": "Derrick Henry",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 3,
+          "overall": 15,
+          "manager": "John Schauder",
+          "player": "Travis Etienne Jr.",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 4,
+          "overall": 16,
+          "manager": "Greg Wigton",
+          "player": "Travis Kelce",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 5,
+          "overall": 17,
+          "manager": "Jason Carlton",
+          "player": "Patrick Mahomes",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 6,
+          "overall": 18,
+          "manager": "Jay Nelson",
+          "player": "Davante Adams",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 7,
+          "overall": 19,
+          "manager": "Eddie McCumiskey",
+          "player": "James Cook",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 8,
+          "overall": 20,
+          "manager": "Brian Harris",
+          "player": "Rachaad White",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 9,
+          "overall": 21,
+          "manager": "Carl Bruce",
+          "player": "DK Metcalf",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 10,
+          "overall": 22,
+          "manager": "Erik Servinsky",
+          "player": "Drake London",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 11,
+          "overall": 23,
+          "manager": "Daniel Bahamonde",
+          "player": "Deebo Samuel Sr.",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 12,
+          "overall": 24,
+          "manager": "Josh Davis",
+          "player": "Chris Olave",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 1,
+          "overall": 25,
+          "manager": "Josh Davis",
+          "player": "Mike Evans",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 2,
+          "overall": 26,
+          "manager": "Daniel Bahamonde",
+          "player": "Josh Jacobs",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 3,
+          "overall": 27,
+          "manager": "Erik Servinsky",
+          "player": "Jaylen Waddle",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 4,
+          "overall": 28,
+          "manager": "Carl Bruce",
+          "player": "Josh Allen",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 5,
+          "overall": 29,
+          "manager": "Brian Harris",
+          "player": "Jalen Hurts",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 6,
+          "overall": 30,
+          "manager": "Eddie McCumiskey",
+          "player": "Kenneth Walker III",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 7,
+          "overall": 31,
+          "manager": "Jay Nelson",
+          "player": "Cooper Kupp",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 8,
+          "overall": 32,
+          "manager": "Jason Carlton",
+          "player": "Alvin Kamara",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 9,
+          "overall": 33,
+          "manager": "Greg Wigton",
+          "player": "Lamar Jackson",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 10,
+          "overall": 34,
+          "manager": "John Schauder",
+          "player": "Brandon Aiyuk",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 11,
+          "overall": 35,
+          "manager": "Blake Pratt",
+          "player": "Joe Mixon",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 12,
+          "overall": 36,
+          "manager": "Brian Kleinhenz",
+          "player": "DJ Moore",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 1,
+          "overall": 37,
+          "manager": "Brian Kleinhenz",
+          "player": "Tank Dell",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 2,
+          "overall": 38,
+          "manager": "Blake Pratt",
+          "player": "Rhamondre Stevenson",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 3,
+          "overall": 39,
+          "manager": "John Schauder",
+          "player": "Trey McBride",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 4,
+          "overall": 40,
+          "manager": "Greg Wigton",
+          "player": "David Montgomery",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 5,
+          "overall": 41,
+          "manager": "Jason Carlton",
+          "player": "DeVonta Smith",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 6,
+          "overall": 42,
+          "manager": "Jay Nelson",
+          "player": "James Conner",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 7,
+          "overall": 43,
+          "manager": "Eddie McCumiskey",
+          "player": "Anthony Richardson",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 8,
+          "overall": 44,
+          "manager": "Brian Harris",
+          "player": "Stefon Diggs",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 9,
+          "overall": 45,
+          "manager": "Carl Bruce",
+          "player": "Malik Nabers",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 10,
+          "overall": 46,
+          "manager": "Erik Servinsky",
+          "player": "Zamir White",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 11,
+          "overall": 47,
+          "manager": "Daniel Bahamonde",
+          "player": "Mark Andrews",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 12,
+          "overall": 48,
+          "manager": "Josh Davis",
+          "player": "Joe Burrow",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 1,
+          "overall": 49,
+          "manager": "Josh Davis",
+          "player": "Aaron Jones",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 2,
+          "overall": 50,
+          "manager": "Daniel Bahamonde",
+          "player": "D'Andre Swift",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 3,
+          "overall": 51,
+          "manager": "Erik Servinsky",
+          "player": "Breece Hall",
+          "keeper": true
+        },
+        {
+          "round": 5,
+          "round_pick": 4,
+          "overall": 52,
+          "manager": "Carl Bruce",
+          "player": "Najee Harris",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 5,
+          "overall": 53,
+          "manager": "Brian Harris",
+          "player": "Tony Pollard",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 6,
+          "overall": 54,
+          "manager": "Eddie McCumiskey",
+          "player": "Zay Flowers",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 7,
+          "overall": 55,
+          "manager": "Daniel Bahamonde",
+          "player": "Tee Higgins",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 8,
+          "overall": 56,
+          "manager": "Jason Carlton",
+          "player": "George Kittle",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 9,
+          "overall": 57,
+          "manager": "John Schauder",
+          "player": "Kyle Pitts",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 10,
+          "overall": 58,
+          "manager": "John Schauder",
+          "player": "Terry McLaurin",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 11,
+          "overall": 59,
+          "manager": "Blake Pratt",
+          "player": "George Pickens",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 12,
+          "overall": 60,
+          "manager": "Brian Kleinhenz",
+          "player": "Chris Godwin",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 1,
+          "overall": 61,
+          "manager": "Brian Kleinhenz",
+          "player": "Jayden Daniels",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 2,
+          "overall": 62,
+          "manager": "Blake Pratt",
+          "player": "Jonathon Brooks",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 3,
+          "overall": 63,
+          "manager": "John Schauder",
+          "player": "Jordan Love",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 4,
+          "overall": 64,
+          "manager": "Greg Wigton",
+          "player": "Amari Cooper",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 5,
+          "overall": 65,
+          "manager": "Jason Carlton",
+          "player": "Calvin Ridley",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 6,
+          "overall": 66,
+          "manager": "Jay Nelson",
+          "player": "Evan Engram",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 7,
+          "overall": 67,
+          "manager": "Eddie McCumiskey",
+          "player": "Christian Watson",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 8,
+          "overall": 68,
+          "manager": "Brian Harris",
+          "player": "Raheem Mostert",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 9,
+          "overall": 69,
+          "manager": "Carl Bruce",
+          "player": "Javonte Williams",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 10,
+          "overall": 70,
+          "manager": "Blake Pratt",
+          "player": "Brian Robinson Jr.",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 11,
+          "overall": 71,
+          "manager": "Daniel Bahamonde",
+          "player": "Zack Moss",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 12,
+          "overall": 72,
+          "manager": "Josh Davis",
+          "player": "Jake Ferguson",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 1,
+          "overall": 73,
+          "manager": "Josh Davis",
+          "player": "Dak Prescott",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 2,
+          "overall": 74,
+          "manager": "Daniel Bahamonde",
+          "player": "Christian Kirk",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 3,
+          "overall": 75,
+          "manager": "Erik Servinsky",
+          "player": "Diontae Johnson",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 4,
+          "overall": 76,
+          "manager": "Carl Bruce",
+          "player": "Rome Odunze",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 5,
+          "overall": 77,
+          "manager": "Brian Harris",
+          "player": "Keenan Allen",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 6,
+          "overall": 78,
+          "manager": "Eddie McCumiskey",
+          "player": "Brock Bowers",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 7,
+          "overall": 79,
+          "manager": "Jay Nelson",
+          "player": "Ladd McConkey",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 8,
+          "overall": 80,
+          "manager": "Jason Carlton",
+          "player": "Michael Pittman Jr.",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 9,
+          "overall": 81,
+          "manager": "Greg Wigton",
+          "player": "Jayden Reed",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 10,
+          "overall": 82,
+          "manager": "John Schauder",
+          "player": "Tyjae Spears",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 11,
+          "overall": 83,
+          "manager": "Blake Pratt",
+          "player": "DeAndre Hopkins",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 12,
+          "overall": 84,
+          "manager": "Brian Kleinhenz",
+          "player": "Isiah Pacheco",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 1,
+          "overall": 85,
+          "manager": "Brian Kleinhenz",
+          "player": "Blake Corum",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 2,
+          "overall": 86,
+          "manager": "Blake Pratt",
+          "player": "Jaxon Smith-Njigba",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 3,
+          "overall": 87,
+          "manager": "John Schauder",
+          "player": "Jordan Addison",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 4,
+          "overall": 88,
+          "manager": "Greg Wigton",
+          "player": "Austin Ekeler",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 5,
+          "overall": 89,
+          "manager": "Jason Carlton",
+          "player": "Ezekiel Elliott",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 6,
+          "overall": 90,
+          "manager": "Jay Nelson",
+          "player": "Nick Chubb",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 7,
+          "overall": 91,
+          "manager": "Eddie McCumiskey",
+          "player": "Devin Singletary",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 8,
+          "overall": 92,
+          "manager": "Blake Pratt",
+          "player": "Courtland Sutton",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 9,
+          "overall": 93,
+          "manager": "Carl Bruce",
+          "player": "Chase Brown",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 10,
+          "overall": 94,
+          "manager": "Erik Servinsky",
+          "player": "Trey Benson",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 11,
+          "overall": 95,
+          "manager": "Daniel Bahamonde",
+          "player": "Jerome Ford",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 12,
+          "overall": 96,
+          "manager": "Josh Davis",
+          "player": "Xavier Worthy",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 1,
+          "overall": 97,
+          "manager": "Josh Davis",
+          "player": "Keon Coleman",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 2,
+          "overall": 98,
+          "manager": "Daniel Bahamonde",
+          "player": "Mike Williams",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 3,
+          "overall": 99,
+          "manager": "Erik Servinsky",
+          "player": "Brian Thomas Jr.",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 4,
+          "overall": 100,
+          "manager": "Carl Bruce",
+          "player": "Caleb Williams",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 5,
+          "overall": 101,
+          "manager": "Brian Harris",
+          "player": "Jameson Williams",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 6,
+          "overall": 102,
+          "manager": "Eddie McCumiskey",
+          "player": "Gus Edwards",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 7,
+          "overall": 103,
+          "manager": "Jay Nelson",
+          "player": "Aaron Rodgers",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 8,
+          "overall": 104,
+          "manager": "Jason Carlton",
+          "player": "Jerry Jeudy",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 9,
+          "overall": 105,
+          "manager": "Greg Wigton",
+          "player": "Hollywood Brown",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 10,
+          "overall": 106,
+          "manager": "John Schauder",
+          "player": "J.K. Dobbins",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 11,
+          "overall": 107,
+          "manager": "Blake Pratt",
+          "player": "Rashid Shaheed",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 12,
+          "overall": 108,
+          "manager": "Brian Kleinhenz",
+          "player": "Dalton Schultz",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 1,
+          "overall": 109,
+          "manager": "Brian Kleinhenz",
+          "player": "Browns D/ST",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 2,
+          "overall": 110,
+          "manager": "Blake Pratt",
+          "player": "Kyler Murray",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 3,
+          "overall": 111,
+          "manager": "John Schauder",
+          "player": "MarShawn Lloyd",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 4,
+          "overall": 112,
+          "manager": "Greg Wigton",
+          "player": "Kyren Williams",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 5,
+          "overall": 113,
+          "manager": "Jason Carlton",
+          "player": "Chuba Hubbard",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 6,
+          "overall": 114,
+          "manager": "Jay Nelson",
+          "player": "De'Von Achane",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 7,
+          "overall": 115,
+          "manager": "Eddie McCumiskey",
+          "player": "Darnell Mooney",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 8,
+          "overall": 116,
+          "manager": "Brian Harris",
+          "player": "Puka Nacua",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 9,
+          "overall": 117,
+          "manager": "Carl Bruce",
+          "player": "Sam LaPorta",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 10,
+          "overall": 118,
+          "manager": "Erik Servinsky",
+          "player": "T.J. Hockenson",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 11,
+          "overall": 119,
+          "manager": "Daniel Bahamonde",
+          "player": "C.J. Stroud",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 12,
+          "overall": 120,
+          "manager": "Josh Davis",
+          "player": "David Njoku",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 1,
+          "overall": 121,
+          "manager": "Josh Davis",
+          "player": "Ty Chandler",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 2,
+          "overall": 122,
+          "manager": "John Schauder",
+          "player": "Adonai Mitchell",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 3,
+          "overall": 123,
+          "manager": "Erik Servinsky",
+          "player": "Brock Purdy",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 4,
+          "overall": 124,
+          "manager": "Carl Bruce",
+          "player": "Nico Collins",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 5,
+          "overall": 125,
+          "manager": "Brian Harris",
+          "player": "Jakobi Meyers",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 6,
+          "overall": 126,
+          "manager": "Eddie McCumiskey",
+          "player": "Trevor Lawrence",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 7,
+          "overall": 127,
+          "manager": "Jay Nelson",
+          "player": "Rico Dowdle",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 8,
+          "overall": 128,
+          "manager": "Jason Carlton",
+          "player": "Gabe Davis",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 9,
+          "overall": 129,
+          "manager": "Greg Wigton",
+          "player": "Jaylen Warren",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 10,
+          "overall": 130,
+          "manager": "Greg Wigton",
+          "player": "Brandin Cooks",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 11,
+          "overall": 131,
+          "manager": "Blake Pratt",
+          "player": "Dallas Goedert",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 12,
+          "overall": 132,
+          "manager": "Brian Kleinhenz",
+          "player": "Joshua Palmer",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 1,
+          "overall": 133,
+          "manager": "Brian Kleinhenz",
+          "player": "Curtis Samuel",
+          "keeper": true
+        },
+        {
+          "round": 12,
+          "round_pick": 2,
+          "overall": 134,
+          "manager": "Blake Pratt",
+          "player": "Justin Tucker",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 3,
+          "overall": 135,
+          "manager": "John Schauder",
+          "player": "Jets D/ST",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 4,
+          "overall": 136,
+          "manager": "Greg Wigton",
+          "player": "49ers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 5,
+          "overall": 137,
+          "manager": "Jason Carlton",
+          "player": "Harrison Butker",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 6,
+          "overall": 138,
+          "manager": "Jay Nelson",
+          "player": "Jaylen Wright",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 7,
+          "overall": 139,
+          "manager": "Eddie McCumiskey",
+          "player": "DeMario Douglas",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 8,
+          "overall": 140,
+          "manager": "Brian Harris",
+          "player": "Tyler Allgeier",
+          "keeper": true
+        },
+        {
+          "round": 12,
+          "round_pick": 9,
+          "overall": 141,
+          "manager": "Carl Bruce",
+          "player": "Pat Freiermuth",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 10,
+          "overall": 142,
+          "manager": "Erik Servinsky",
+          "player": "Dalton Kincaid",
+          "keeper": true
+        },
+        {
+          "round": 12,
+          "round_pick": 11,
+          "overall": 143,
+          "manager": "Daniel Bahamonde",
+          "player": "Ravens D/ST",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 12,
+          "overall": 144,
+          "manager": "Josh Davis",
+          "player": "Jake Elliott",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 1,
+          "overall": 145,
+          "manager": "Josh Davis",
+          "player": "Rashee Rice",
+          "keeper": true
+        },
+        {
+          "round": 13,
+          "round_pick": 2,
+          "overall": 146,
+          "manager": "Daniel Bahamonde",
+          "player": "Kirk Cousins",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 3,
+          "overall": 147,
+          "manager": "Erik Servinsky",
+          "player": "Deshaun Watson",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 4,
+          "overall": 148,
+          "manager": "Carl Bruce",
+          "player": "Xavier Legette",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 5,
+          "overall": 149,
+          "manager": "Brian Harris",
+          "player": "Zach Charbonnet",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 6,
+          "overall": 150,
+          "manager": "Eddie McCumiskey",
+          "player": "Taysom Hill",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 7,
+          "overall": 151,
+          "manager": "Jay Nelson",
+          "player": "Tua Tagovailoa",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 8,
+          "overall": 152,
+          "manager": "Jason Carlton",
+          "player": "Antonio Gibson",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 9,
+          "overall": 153,
+          "manager": "Greg Wigton",
+          "player": "Cole Kmet",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 10,
+          "overall": 154,
+          "manager": "John Schauder",
+          "player": "Romeo Doubs",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 11,
+          "overall": 155,
+          "manager": "Blake Pratt",
+          "player": "Cowboys D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 12,
+          "overall": 156,
+          "manager": "Brian Kleinhenz",
+          "player": "Brandon Aubrey",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 1,
+          "overall": 157,
+          "manager": "Brian Kleinhenz",
+          "player": "Kendre Miller",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 2,
+          "overall": 158,
+          "manager": "Brian Harris",
+          "player": "Saints D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 3,
+          "overall": 159,
+          "manager": "John Schauder",
+          "player": "Ka'imi Fairbairn",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 4,
+          "overall": 160,
+          "manager": "Greg Wigton",
+          "player": "Khalil Shakir",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 5,
+          "overall": 161,
+          "manager": "Jason Carlton",
+          "player": "Steelers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 6,
+          "overall": 162,
+          "manager": "Jay Nelson",
+          "player": "Chiefs D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 7,
+          "overall": 163,
+          "manager": "Eddie McCumiskey",
+          "player": "Dolphins D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 8,
+          "overall": 164,
+          "manager": "Brian Harris",
+          "player": "Ben Sinnott",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 9,
+          "overall": 165,
+          "manager": "Carl Bruce",
+          "player": "Bills D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 10,
+          "overall": 166,
+          "manager": "Erik Servinsky",
+          "player": "Jaleel McLaughlin",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 11,
+          "overall": 167,
+          "manager": "Daniel Bahamonde",
+          "player": "Greg Zuerlein",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 12,
+          "overall": 168,
+          "manager": "Josh Davis",
+          "player": "Bengals D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 1,
+          "overall": 169,
+          "manager": "Josh Davis",
+          "player": "Jaguars D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 2,
+          "overall": 170,
+          "manager": "Daniel Bahamonde",
+          "player": "Braelon Allen",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 3,
+          "overall": 171,
+          "manager": "Erik Servinsky",
+          "player": "Bears D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 4,
+          "overall": 172,
+          "manager": "Carl Bruce",
+          "player": "Jason Sanders",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 5,
+          "overall": 173,
+          "manager": "Brian Harris",
+          "player": "Evan McPherson",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 6,
+          "overall": 174,
+          "manager": "Eddie McCumiskey",
+          "player": "Younghoe Koo",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 7,
+          "overall": 175,
+          "manager": "Jay Nelson",
+          "player": "Jake Moody",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 8,
+          "overall": 176,
+          "manager": "Jason Carlton",
+          "player": "Drake Maye",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 9,
+          "overall": 177,
+          "manager": "Greg Wigton",
+          "player": "Cameron Dicker",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 10,
+          "overall": 178,
+          "manager": "Jay Nelson",
+          "player": "Ricky Pearsall",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 11,
+          "overall": 179,
+          "manager": "Erik Servinsky",
+          "player": "Cairo Santos",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 12,
+          "overall": 180,
+          "manager": "Brian Kleinhenz",
+          "player": "Justin Herbert",
+          "keeper": false
+        }
+      ]
+    },
+    "2025": {
+      "team_count": 12,
+      "pick_order": [
+        "Daniel Bahamonde",
+        "Carl Bruce",
+        "Brian Harris",
+        "Brian Kleinhenz",
+        "John Schauder",
+        "Greg Wigton",
+        "Eddie McCumiskey",
+        "Jason Carlton",
+        "Blake Pratt",
+        "Jay Nelson",
+        "Kevin Mallon",
+        "Erik Servinsky"
+      ],
+      "picks": [
+        {
+          "round": 1,
+          "round_pick": 1,
+          "overall": 1,
+          "manager": "Daniel Bahamonde",
+          "player": "Bijan Robinson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 2,
+          "overall": 2,
+          "manager": "Carl Bruce",
+          "player": "Ja'Marr Chase",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 3,
+          "overall": 3,
+          "manager": "Brian Harris",
+          "player": "Saquon Barkley",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 4,
+          "overall": 4,
+          "manager": "Brian Kleinhenz",
+          "player": "Jahmyr Gibbs",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 5,
+          "overall": 5,
+          "manager": "John Schauder",
+          "player": "Justin Jefferson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 6,
+          "overall": 6,
+          "manager": "Greg Wigton",
+          "player": "Christian McCaffrey",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 7,
+          "overall": 7,
+          "manager": "Eddie McCumiskey",
+          "player": "CeeDee Lamb",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 8,
+          "overall": 8,
+          "manager": "Jason Carlton",
+          "player": "Ashton Jeanty",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 9,
+          "overall": 9,
+          "manager": "Blake Pratt",
+          "player": "Derrick Henry",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 10,
+          "overall": 10,
+          "manager": "Jay Nelson",
+          "player": "Josh Jacobs",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 11,
+          "overall": 11,
+          "manager": "Kevin Mallon",
+          "player": "Jonathan Taylor",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 12,
+          "overall": 12,
+          "manager": "Erik Servinsky",
+          "player": "Malik Nabers",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 1,
+          "overall": 13,
+          "manager": "Erik Servinsky",
+          "player": "Trey McBride",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 2,
+          "overall": 14,
+          "manager": "Kevin Mallon",
+          "player": "Josh Allen",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 3,
+          "overall": 15,
+          "manager": "Jay Nelson",
+          "player": "Amon-Ra St. Brown",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 4,
+          "overall": 16,
+          "manager": "Blake Pratt",
+          "player": "A.J. Brown",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 5,
+          "overall": 17,
+          "manager": "Jason Carlton",
+          "player": "Tee Higgins",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 6,
+          "overall": 18,
+          "manager": "Eddie McCumiskey",
+          "player": "James Cook III",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 7,
+          "overall": 19,
+          "manager": "Greg Wigton",
+          "player": "Lamar Jackson",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 8,
+          "overall": 20,
+          "manager": "John Schauder",
+          "player": "Jalen Hurts",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 9,
+          "overall": 21,
+          "manager": "Brian Kleinhenz",
+          "player": "Drake London",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 10,
+          "overall": 22,
+          "manager": "Brian Harris",
+          "player": "Omarion Hampton",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 11,
+          "overall": 23,
+          "manager": "Carl Bruce",
+          "player": "TreVeyon Henderson",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 12,
+          "overall": 24,
+          "manager": "Daniel Bahamonde",
+          "player": "Terry McLaurin",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 1,
+          "overall": 25,
+          "manager": "Daniel Bahamonde",
+          "player": "James Conner",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 2,
+          "overall": 26,
+          "manager": "Carl Bruce",
+          "player": "Kenneth Walker III",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 3,
+          "overall": 27,
+          "manager": "Brian Harris",
+          "player": "Tyreek Hill",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 4,
+          "overall": 28,
+          "manager": "Brian Kleinhenz",
+          "player": "Alvin Kamara",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 5,
+          "overall": 29,
+          "manager": "John Schauder",
+          "player": "Marvin Harrison Jr.",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 6,
+          "overall": 30,
+          "manager": "Greg Wigton",
+          "player": "Davante Adams",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 7,
+          "overall": 31,
+          "manager": "Eddie McCumiskey",
+          "player": "Joe Burrow",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 8,
+          "overall": 32,
+          "manager": "Jason Carlton",
+          "player": "Calvin Ridley",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 9,
+          "overall": 33,
+          "manager": "Blake Pratt",
+          "player": "D'Andre Swift",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 10,
+          "overall": 34,
+          "manager": "Jay Nelson",
+          "player": "Mike Evans",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 11,
+          "overall": 35,
+          "manager": "Kevin Mallon",
+          "player": "Breece Hall",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 12,
+          "overall": 36,
+          "manager": "Erik Servinsky",
+          "player": "Tetairoa McMillan",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 1,
+          "overall": 37,
+          "manager": "Erik Servinsky",
+          "player": "Tony Pollard",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 2,
+          "overall": 38,
+          "manager": "Kevin Mallon",
+          "player": "Sam LaPorta",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 3,
+          "overall": 39,
+          "manager": "Jay Nelson",
+          "player": "RJ Harvey",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 4,
+          "overall": 40,
+          "manager": "Blake Pratt",
+          "player": "Garrett Wilson",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 5,
+          "overall": 41,
+          "manager": "Jason Carlton",
+          "player": "Zay Flowers",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 6,
+          "overall": 42,
+          "manager": "Eddie McCumiskey",
+          "player": "DK Metcalf",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 7,
+          "overall": 43,
+          "manager": "Greg Wigton",
+          "player": "Jaylen Waddle",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 8,
+          "overall": 44,
+          "manager": "John Schauder",
+          "player": "David Montgomery",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 9,
+          "overall": 45,
+          "manager": "Brian Kleinhenz",
+          "player": "Jerry Jeudy",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 10,
+          "overall": 46,
+          "manager": "Brian Harris",
+          "player": "Aaron Jones Sr.",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 11,
+          "overall": 47,
+          "manager": "Carl Bruce",
+          "player": "DJ Moore",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 12,
+          "overall": 48,
+          "manager": "Daniel Bahamonde",
+          "player": "DeVonta Smith",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 1,
+          "overall": 49,
+          "manager": "Kevin Mallon",
+          "player": "Matthew Golden",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 2,
+          "overall": 50,
+          "manager": "Blake Pratt",
+          "player": "Patrick Mahomes",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 3,
+          "overall": 51,
+          "manager": "Brian Harris",
+          "player": "Emeka Egbuka",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 4,
+          "overall": 52,
+          "manager": "John Schauder",
+          "player": "Ricky Pearsall",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 5,
+          "overall": 53,
+          "manager": "John Schauder",
+          "player": "T.J. Hockenson",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 6,
+          "overall": 54,
+          "manager": "John Schauder",
+          "player": "George Pickens",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 7,
+          "overall": 55,
+          "manager": "Jay Nelson",
+          "player": "Mark Andrews",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 8,
+          "overall": 56,
+          "manager": "Jason Carlton",
+          "player": "George Kittle",
+          "keeper": true
+        },
+        {
+          "round": 5,
+          "round_pick": 9,
+          "overall": 57,
+          "manager": "Brian Harris",
+          "player": "Tyrone Tracy Jr.",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 10,
+          "overall": 58,
+          "manager": "Jay Nelson",
+          "player": "Stefon Diggs",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 11,
+          "overall": 59,
+          "manager": "Kevin Mallon",
+          "player": "Jacory Croskey-Merritt",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 12,
+          "overall": 60,
+          "manager": "Erik Servinsky",
+          "player": "Dak Prescott",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 1,
+          "overall": 61,
+          "manager": "Erik Servinsky",
+          "player": "Jakobi Meyers",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 2,
+          "overall": 62,
+          "manager": "Kevin Mallon",
+          "player": "Travis Hunter",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 3,
+          "overall": 63,
+          "manager": "Jay Nelson",
+          "player": "Baker Mayfield",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 4,
+          "overall": 64,
+          "manager": "Erik Servinsky",
+          "player": "Bucky Irving",
+          "keeper": true
+        },
+        {
+          "round": 6,
+          "round_pick": 5,
+          "overall": 65,
+          "manager": "Jay Nelson",
+          "player": "Tyler Warren",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 6,
+          "overall": 66,
+          "manager": "Eddie McCumiskey",
+          "player": "Austin Ekeler",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 7,
+          "overall": 67,
+          "manager": "Greg Wigton",
+          "player": "David Njoku",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 8,
+          "overall": 68,
+          "manager": "John Schauder",
+          "player": "Isiah Pacheco",
+          "keeper": true
+        },
+        {
+          "round": 6,
+          "round_pick": 9,
+          "overall": 69,
+          "manager": "Brian Kleinhenz",
+          "player": "Kaleb Johnson",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 10,
+          "overall": 70,
+          "manager": "Brian Harris",
+          "player": "Jayden Daniels",
+          "keeper": true
+        },
+        {
+          "round": 6,
+          "round_pick": 11,
+          "overall": 71,
+          "manager": "Carl Bruce",
+          "player": "Jordan Mason",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 12,
+          "overall": 72,
+          "manager": "Daniel Bahamonde",
+          "player": "Kyler Murray",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 1,
+          "overall": 73,
+          "manager": "Daniel Bahamonde",
+          "player": "Rome Odunze",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 2,
+          "overall": 74,
+          "manager": "Carl Bruce",
+          "player": "Brock Purdy",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 3,
+          "overall": 75,
+          "manager": "Blake Pratt",
+          "player": "Travis Kelce",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 4,
+          "overall": 76,
+          "manager": "Kevin Mallon",
+          "player": "Chris Olave",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 5,
+          "overall": 77,
+          "manager": "John Schauder",
+          "player": "Deebo Samuel",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 6,
+          "overall": 78,
+          "manager": "Erik Servinsky",
+          "player": "Jordan Addison",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 7,
+          "overall": 79,
+          "manager": "Eddie McCumiskey",
+          "player": "Brock Bowers",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 8,
+          "overall": 80,
+          "manager": "John Schauder",
+          "player": "Javonte Williams",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 9,
+          "overall": 81,
+          "manager": "John Schauder",
+          "player": "Cam Skattebo",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 10,
+          "overall": 82,
+          "manager": "Jay Nelson",
+          "player": "Ladd McConkey",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 11,
+          "overall": 83,
+          "manager": "Kevin Mallon",
+          "player": "Nick Chubb",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 12,
+          "overall": 84,
+          "manager": "Erik Servinsky",
+          "player": "J.K. Dobbins",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 1,
+          "overall": 85,
+          "manager": "Erik Servinsky",
+          "player": "Zach Charbonnet",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 2,
+          "overall": 86,
+          "manager": "Daniel Bahamonde",
+          "player": "Keon Coleman",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 3,
+          "overall": 87,
+          "manager": "Jay Nelson",
+          "player": "Jauan Jennings",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 4,
+          "overall": 88,
+          "manager": "Eddie McCumiskey",
+          "player": "Michael Pittman Jr.",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 5,
+          "overall": 89,
+          "manager": "Jason Carlton",
+          "player": "Cooper Kupp",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 6,
+          "overall": 90,
+          "manager": "Eddie McCumiskey",
+          "player": "Khalil Shakir",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 7,
+          "overall": 91,
+          "manager": "Kevin Mallon",
+          "player": "Tank Bigsby",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 8,
+          "overall": 92,
+          "manager": "John Schauder",
+          "player": "Drake Maye",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 9,
+          "overall": 93,
+          "manager": "Kevin Mallon",
+          "player": "Xavier Worthy",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 10,
+          "overall": 94,
+          "manager": "Blake Pratt",
+          "player": "Courtland Sutton",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 11,
+          "overall": 95,
+          "manager": "Carl Bruce",
+          "player": "Chase Brown",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 12,
+          "overall": 96,
+          "manager": "Blake Pratt",
+          "player": "Jaxon Smith-Njigba",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 1,
+          "overall": 97,
+          "manager": "Kevin Mallon",
+          "player": "Steelers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 2,
+          "overall": 98,
+          "manager": "Carl Bruce",
+          "player": "Caleb Williams",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 3,
+          "overall": 99,
+          "manager": "Jay Nelson",
+          "player": "Justin Fields",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 4,
+          "overall": 100,
+          "manager": "Brian Harris",
+          "player": "Puka Nacua",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 5,
+          "overall": 101,
+          "manager": "John Schauder",
+          "player": "Jaylen Warren",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 6,
+          "overall": 102,
+          "manager": "Greg Wigton",
+          "player": "Kyren Williams",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 7,
+          "overall": 103,
+          "manager": "Greg Wigton",
+          "player": "Jameson Williams",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 8,
+          "overall": 104,
+          "manager": "Jason Carlton",
+          "player": "J.J. McCarthy",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 9,
+          "overall": 105,
+          "manager": "Blake Pratt",
+          "player": "Rhamondre Stevenson",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 10,
+          "overall": 106,
+          "manager": "Jay Nelson",
+          "player": "De'Von Achane",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 11,
+          "overall": 107,
+          "manager": "Kevin Mallon",
+          "player": "Evan Engram",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 12,
+          "overall": 108,
+          "manager": "Erik Servinsky",
+          "player": "Brian Thomas Jr.",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 1,
+          "overall": 109,
+          "manager": "Erik Servinsky",
+          "player": "Tucker Kraft",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 2,
+          "overall": 110,
+          "manager": "Brian Kleinhenz",
+          "player": "Keenan Allen",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 3,
+          "overall": 111,
+          "manager": "Jason Carlton",
+          "player": "Rashid Shaheed",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 4,
+          "overall": 112,
+          "manager": "Blake Pratt",
+          "player": "Justin Herbert",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 5,
+          "overall": 113,
+          "manager": "Jason Carlton",
+          "player": "Chuba Hubbard",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 6,
+          "overall": 114,
+          "manager": "Greg Wigton",
+          "player": "Quinshon Judkins",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 7,
+          "overall": 115,
+          "manager": "Greg Wigton",
+          "player": "Jayden Reed",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 8,
+          "overall": 116,
+          "manager": "Brian Kleinhenz",
+          "player": "Darnell Mooney",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 9,
+          "overall": 117,
+          "manager": "Brian Kleinhenz",
+          "player": "Jerome Ford",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 10,
+          "overall": 118,
+          "manager": "Carl Bruce",
+          "player": "Josh Downs",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 11,
+          "overall": 119,
+          "manager": "Carl Bruce",
+          "player": "Nico Collins",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 12,
+          "overall": 120,
+          "manager": "Daniel Bahamonde",
+          "player": "Xavier Legette",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 1,
+          "overall": 121,
+          "manager": "Daniel Bahamonde",
+          "player": "Dallas Goedert",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 2,
+          "overall": 122,
+          "manager": "Carl Bruce",
+          "player": "Colston Loveland",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 3,
+          "overall": 123,
+          "manager": "Brian Harris",
+          "player": "Joe Mixon",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 4,
+          "overall": 124,
+          "manager": "Brian Harris",
+          "player": "Trevor Lawrence",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 5,
+          "overall": 125,
+          "manager": "Jason Carlton",
+          "player": "Tua Tagovailoa",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 6,
+          "overall": 126,
+          "manager": "Greg Wigton",
+          "player": "Travis Etienne Jr.",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 7,
+          "overall": 127,
+          "manager": "Eddie McCumiskey",
+          "player": "Bhayshul Tuten",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 8,
+          "overall": 128,
+          "manager": "Jason Carlton",
+          "player": "Jayden Higgins",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 9,
+          "overall": 129,
+          "manager": "Eddie McCumiskey",
+          "player": "Trey Benson",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 10,
+          "overall": 130,
+          "manager": "Jay Nelson",
+          "player": "Broncos D/ST",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 11,
+          "overall": 131,
+          "manager": "Brian Kleinhenz",
+          "player": "Bo Nix",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 12,
+          "overall": 132,
+          "manager": "Blake Pratt",
+          "player": "Dalton Kincaid",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 1,
+          "overall": 133,
+          "manager": "Erik Servinsky",
+          "player": "Braelon Allen",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 2,
+          "overall": 134,
+          "manager": "Kevin Mallon",
+          "player": "Rashee Rice",
+          "keeper": true
+        },
+        {
+          "round": 12,
+          "round_pick": 3,
+          "overall": 135,
+          "manager": "Jay Nelson",
+          "player": "Brandon Aiyuk",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 4,
+          "overall": 136,
+          "manager": "Blake Pratt",
+          "player": "Cedric Tillman",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 5,
+          "overall": 137,
+          "manager": "Jason Carlton",
+          "player": "Brian Robinson Jr.",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 6,
+          "overall": 138,
+          "manager": "Eddie McCumiskey",
+          "player": "Jordan Love",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 7,
+          "overall": 139,
+          "manager": "Greg Wigton",
+          "player": "Chris Godwin Jr.",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 8,
+          "overall": 140,
+          "manager": "John Schauder",
+          "player": "Texans D/ST",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 9,
+          "overall": 141,
+          "manager": "Brian Kleinhenz",
+          "player": "Hunter Henry",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 10,
+          "overall": 142,
+          "manager": "Brian Harris",
+          "player": "Jaydon Blue",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 11,
+          "overall": 143,
+          "manager": "Carl Bruce",
+          "player": "Joshua Palmer",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 12,
+          "overall": 144,
+          "manager": "Daniel Bahamonde",
+          "player": "Najee Harris",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 1,
+          "overall": 145,
+          "manager": "Daniel Bahamonde",
+          "player": "C.J. Stroud",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 2,
+          "overall": 146,
+          "manager": "Carl Bruce",
+          "player": "Ravens D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 3,
+          "overall": 147,
+          "manager": "Brian Harris",
+          "player": "Hollywood Brown",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 4,
+          "overall": 148,
+          "manager": "Brian Kleinhenz",
+          "player": "Vikings D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 5,
+          "overall": 149,
+          "manager": "Greg Wigton",
+          "player": "Kyle Pitts Sr.",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 6,
+          "overall": 150,
+          "manager": "Blake Pratt",
+          "player": "Patriots D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 7,
+          "overall": 151,
+          "manager": "Eddie McCumiskey",
+          "player": "Seahawks D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 8,
+          "overall": 152,
+          "manager": "Jason Carlton",
+          "player": "Marvin Mims Jr.",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 9,
+          "overall": 153,
+          "manager": "Erik Servinsky",
+          "player": "Cardinals D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 10,
+          "overall": 154,
+          "manager": "Brian Harris",
+          "player": "Eagles D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 11,
+          "overall": 155,
+          "manager": "Greg Wigton",
+          "player": "Lions D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 12,
+          "overall": 156,
+          "manager": "Erik Servinsky",
+          "player": "Brandon Aubrey",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 1,
+          "overall": 157,
+          "manager": "Daniel Bahamonde",
+          "player": "Bills D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 2,
+          "overall": 158,
+          "manager": "Kevin Mallon",
+          "player": "Chase McLaughlin",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 3,
+          "overall": 159,
+          "manager": "Jay Nelson",
+          "player": "Jake Bates",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 4,
+          "overall": 160,
+          "manager": "Blake Pratt",
+          "player": "Cameron Dicker",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 5,
+          "overall": 161,
+          "manager": "Jason Carlton",
+          "player": "Jake Elliott",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 6,
+          "overall": 162,
+          "manager": "Eddie McCumiskey",
+          "player": "Jake Ferguson",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 7,
+          "overall": 163,
+          "manager": "Greg Wigton",
+          "player": "Woody Marks",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 8,
+          "overall": 164,
+          "manager": "John Schauder",
+          "player": "Matt Gay",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 9,
+          "overall": 165,
+          "manager": "Brian Kleinhenz",
+          "player": "Ray Davis",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 10,
+          "overall": 166,
+          "manager": "Brian Harris",
+          "player": "Zach Ertz",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 11,
+          "overall": 167,
+          "manager": "Carl Bruce",
+          "player": "Ollie Gordon II",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 12,
+          "overall": 168,
+          "manager": "Daniel Bahamonde",
+          "player": "Wil Lutz",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 1,
+          "overall": 169,
+          "manager": "Daniel Bahamonde",
+          "player": "Tyler Allgeier",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 2,
+          "overall": 170,
+          "manager": "Carl Bruce",
+          "player": "Harrison Butker",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 3,
+          "overall": 171,
+          "manager": "Brian Harris",
+          "player": "Chris Boswell",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 4,
+          "overall": 172,
+          "manager": "Brian Kleinhenz",
+          "player": "Tyler Bass",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 5,
+          "overall": 173,
+          "manager": "Brian Kleinhenz",
+          "player": "Tyjae Spears",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 6,
+          "overall": 174,
+          "manager": "Blake Pratt",
+          "player": "Jonathon Brooks",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 7,
+          "overall": 175,
+          "manager": "Eddie McCumiskey",
+          "player": "Wan'Dale Robinson",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 8,
+          "overall": 176,
+          "manager": "Jason Carlton",
+          "player": "Commanders D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 9,
+          "overall": 177,
+          "manager": "Brian Kleinhenz",
+          "player": "Dylan Sampson",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 10,
+          "overall": 178,
+          "manager": "Eddie McCumiskey",
+          "player": "Cairo Santos",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 11,
+          "overall": 179,
+          "manager": "Daniel Bahamonde",
+          "player": "Michael Penix Jr.",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 12,
+          "overall": 180,
+          "manager": "Greg Wigton",
+          "player": "Ka'imi Fairbairn",
+          "keeper": false
+        }
+      ]
+    },
+    "2026": {
+      "team_count": 12,
+      "pick_order": [
+        "Josh Davis",
+        "Daniel Bahamonde",
+        "Carl Bruce",
+        "John Schauder",
+        "Brian Harris",
+        "Jay Nelson",
+        "Eddie McCumiskey",
+        "Jason Carlton",
+        "Brian Kleinhenz",
+        "Kevin Mallon",
+        "Greg Wigton",
+        "Blake Pratt"
+      ],
+      "picks": [
+        {
+          "round": 1,
+          "round_pick": 1,
+          "overall": 1,
+          "manager": "Josh Davis",
+          "player": "Jahmyr Gibbs",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 2,
+          "overall": 2,
+          "manager": "Daniel Bahamonde",
+          "player": "Bijan Robinson",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 3,
+          "overall": 3,
+          "manager": "Carl Bruce",
+          "player": "Amon-Ra St. Brown",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 4,
+          "overall": 4,
+          "manager": "John Schauder",
+          "player": "Ja'Marr Chase",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 5,
+          "overall": 5,
+          "manager": "Brian Harris",
+          "player": "Jonathan Taylor",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 6,
+          "overall": 6,
+          "manager": "Jay Nelson",
+          "player": "Christian McCaffrey",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 7,
+          "overall": 7,
+          "manager": "Eddie McCumiskey",
+          "player": "James Cook III",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 8,
+          "overall": 8,
+          "manager": "Jason Carlton",
+          "player": "Derrick Henry",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 9,
+          "overall": 9,
+          "manager": "Brian Kleinhenz",
+          "player": "Josh Allen",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 10,
+          "overall": 10,
+          "manager": "Kevin Mallon",
+          "player": "Saquon Barkley",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 11,
+          "overall": 11,
+          "manager": "Greg Wigton",
+          "player": "CeeDee Lamb",
+          "keeper": false
+        },
+        {
+          "round": 1,
+          "round_pick": 12,
+          "overall": 12,
+          "manager": "Blake Pratt",
+          "player": "Omarion Hampton",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 1,
+          "overall": 13,
+          "manager": "Blake Pratt",
+          "player": "Ashton Jeanty",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 2,
+          "overall": 14,
+          "manager": "Greg Wigton",
+          "player": "Kenneth Walker III",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 3,
+          "overall": 15,
+          "manager": "Kevin Mallon",
+          "player": "Jeremiyah Love",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 4,
+          "overall": 16,
+          "manager": "Brian Kleinhenz",
+          "player": "A.J. Brown",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 5,
+          "overall": 17,
+          "manager": "Jason Carlton",
+          "player": "Justin Jefferson",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 6,
+          "overall": 18,
+          "manager": "Eddie McCumiskey",
+          "player": "Drake London",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 7,
+          "overall": 19,
+          "manager": "Jay Nelson",
+          "player": "DeVonta Smith",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 8,
+          "overall": 20,
+          "manager": "Brian Harris",
+          "player": "Breece Hall",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 9,
+          "overall": 21,
+          "manager": "John Schauder",
+          "player": "Trey McBride",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 10,
+          "overall": 22,
+          "manager": "Carl Bruce",
+          "player": "D'Andre Swift",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 11,
+          "overall": 23,
+          "manager": "Daniel Bahamonde",
+          "player": "Chris Olave",
+          "keeper": false
+        },
+        {
+          "round": 2,
+          "round_pick": 12,
+          "overall": 24,
+          "manager": "Josh Davis",
+          "player": "Malik Nabers",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 1,
+          "overall": 25,
+          "manager": "Josh Davis",
+          "player": "Garrett Wilson",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 2,
+          "overall": 26,
+          "manager": "Daniel Bahamonde",
+          "player": "Tetairoa McMillan",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 3,
+          "overall": 27,
+          "manager": "Carl Bruce",
+          "player": "Jaylen Waddle",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 4,
+          "overall": 28,
+          "manager": "John Schauder",
+          "player": "Emeka Egbuka",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 5,
+          "overall": 29,
+          "manager": "Brian Harris",
+          "player": "Ladd McConkey",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 6,
+          "overall": 30,
+          "manager": "Jay Nelson",
+          "player": "Tee Higgins",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 7,
+          "overall": 31,
+          "manager": "Eddie McCumiskey",
+          "player": "Bhayshul Tuten",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 8,
+          "overall": 32,
+          "manager": "Jason Carlton",
+          "player": "Jadarian Price",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 9,
+          "overall": 33,
+          "manager": "Brian Kleinhenz",
+          "player": "Jameson Williams",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 10,
+          "overall": 34,
+          "manager": "Kevin Mallon",
+          "player": "Zay Flowers",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 11,
+          "overall": 35,
+          "manager": "Greg Wigton",
+          "player": "Lamar Jackson",
+          "keeper": false
+        },
+        {
+          "round": 3,
+          "round_pick": 12,
+          "overall": 36,
+          "manager": "Blake Pratt",
+          "player": "Davante Adams",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 1,
+          "overall": 37,
+          "manager": "Blake Pratt",
+          "player": "Luther Burden III",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 2,
+          "overall": 38,
+          "manager": "Greg Wigton",
+          "player": "David Montgomery",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 3,
+          "overall": 39,
+          "manager": "Kevin Mallon",
+          "player": "Terry McLaurin",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 4,
+          "overall": 40,
+          "manager": "Brian Kleinhenz",
+          "player": "Mike Evans",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 5,
+          "overall": 41,
+          "manager": "Jason Carlton",
+          "player": "DJ Moore",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 6,
+          "overall": 42,
+          "manager": "Eddie McCumiskey",
+          "player": "Rhamondre Stevenson",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 7,
+          "overall": 43,
+          "manager": "Jay Nelson",
+          "player": "Joe Burrow",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 8,
+          "overall": 44,
+          "manager": "Brian Harris",
+          "player": "Jaylen Warren",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 9,
+          "overall": 45,
+          "manager": "John Schauder",
+          "player": "Jalen Hurts",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 10,
+          "overall": 46,
+          "manager": "Carl Bruce",
+          "player": "Blake Corum",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 11,
+          "overall": 47,
+          "manager": "Daniel Bahamonde",
+          "player": "Jayden Daniels",
+          "keeper": false
+        },
+        {
+          "round": 4,
+          "round_pick": 12,
+          "overall": 48,
+          "manager": "Josh Davis",
+          "player": "Jaxson Dart",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 1,
+          "overall": 49,
+          "manager": "Josh Davis",
+          "player": "Bucky Irving",
+          "keeper": true
+        },
+        {
+          "round": 5,
+          "round_pick": 2,
+          "overall": 50,
+          "manager": "Daniel Bahamonde",
+          "player": "Tony Pollard",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 3,
+          "overall": 51,
+          "manager": "Carl Bruce",
+          "player": "Christian Watson",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 4,
+          "overall": 52,
+          "manager": "Carl Bruce",
+          "player": "Caleb Williams",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 5,
+          "overall": 53,
+          "manager": "Brian Harris",
+          "player": "Carnell Tate",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 6,
+          "overall": 54,
+          "manager": "John Schauder",
+          "player": "TreVeyon Henderson",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 7,
+          "overall": 55,
+          "manager": "Eddie McCumiskey",
+          "player": "Justin Herbert",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 8,
+          "overall": 56,
+          "manager": "Jason Carlton",
+          "player": "George Pickens",
+          "keeper": true
+        },
+        {
+          "round": 5,
+          "round_pick": 9,
+          "overall": 57,
+          "manager": "Eddie McCumiskey",
+          "player": "Marvin Harrison Jr.",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 10,
+          "overall": 58,
+          "manager": "Daniel Bahamonde",
+          "player": "Kyle Pitts Sr.",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 11,
+          "overall": 59,
+          "manager": "John Schauder",
+          "player": "Parker Washington",
+          "keeper": false
+        },
+        {
+          "round": 5,
+          "round_pick": 12,
+          "overall": 60,
+          "manager": "Blake Pratt",
+          "player": "Dak Prescott",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 1,
+          "overall": 61,
+          "manager": "Blake Pratt",
+          "player": "George Kittle",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 2,
+          "overall": 62,
+          "manager": "Eddie McCumiskey",
+          "player": "Courtland Sutton",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 3,
+          "overall": 63,
+          "manager": "Kevin Mallon",
+          "player": "Bo Nix",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 4,
+          "overall": 64,
+          "manager": "Eddie McCumiskey",
+          "player": "Kenny Gainwell",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 5,
+          "overall": 65,
+          "manager": "John Schauder",
+          "player": "Alec Pierce",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 6,
+          "overall": 66,
+          "manager": "Eddie McCumiskey",
+          "player": "Brock Bowers",
+          "keeper": true
+        },
+        {
+          "round": 6,
+          "round_pick": 7,
+          "overall": 67,
+          "manager": "Jay Nelson",
+          "player": "Tyler Warren",
+          "keeper": true
+        },
+        {
+          "round": 6,
+          "round_pick": 8,
+          "overall": 68,
+          "manager": "Brian Harris",
+          "player": "Rico Dowdle",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 9,
+          "overall": 69,
+          "manager": "Brian Kleinhenz",
+          "player": "J.K. Dobbins",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 10,
+          "overall": 70,
+          "manager": "Carl Bruce",
+          "player": "Tucker Kraft",
+          "keeper": false
+        },
+        {
+          "round": 6,
+          "round_pick": 11,
+          "overall": 71,
+          "manager": "Daniel Bahamonde",
+          "player": "Rome Odunze",
+          "keeper": true
+        },
+        {
+          "round": 6,
+          "round_pick": 12,
+          "overall": 72,
+          "manager": "Josh Davis",
+          "player": "Sam LaPorta",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 1,
+          "overall": 73,
+          "manager": "Josh Davis",
+          "player": "Dallas Goedert",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 2,
+          "overall": 74,
+          "manager": "Daniel Bahamonde",
+          "player": "Chuba Hubbard",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 3,
+          "overall": 75,
+          "manager": "Carl Bruce",
+          "player": "DK Metcalf",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 4,
+          "overall": 76,
+          "manager": "John Schauder",
+          "player": "Cam Skattebo",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 5,
+          "overall": 77,
+          "manager": "Brian Harris",
+          "player": "MarShawn Lloyd",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 6,
+          "overall": 78,
+          "manager": "Eddie McCumiskey",
+          "player": "Matthew Golden",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 7,
+          "overall": 79,
+          "manager": "Brian Kleinhenz",
+          "player": "Javonte Williams",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 8,
+          "overall": 80,
+          "manager": "Jason Carlton",
+          "player": "Drake Maye",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 9,
+          "overall": 81,
+          "manager": "Carl Bruce",
+          "player": "Chase Brown",
+          "keeper": true
+        },
+        {
+          "round": 7,
+          "round_pick": 10,
+          "overall": 82,
+          "manager": "Kevin Mallon",
+          "player": "Kyle Monangai",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 11,
+          "overall": 83,
+          "manager": "Greg Wigton",
+          "player": "Michael Pittman Jr.",
+          "keeper": false
+        },
+        {
+          "round": 7,
+          "round_pick": 12,
+          "overall": 84,
+          "manager": "Blake Pratt",
+          "player": "Jaxon Smith-Njigba",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 1,
+          "overall": 85,
+          "manager": "Blake Pratt",
+          "player": "Michael Wilson",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 2,
+          "overall": 86,
+          "manager": "Greg Wigton",
+          "player": "Kyren Williams",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 3,
+          "overall": 87,
+          "manager": "Daniel Bahamonde",
+          "player": "Jakobi Meyers",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 4,
+          "overall": 88,
+          "manager": "John Schauder",
+          "player": "Josh Jacobs",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 5,
+          "overall": 89,
+          "manager": "John Schauder",
+          "player": "Wan'Dale Robinson",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 6,
+          "overall": 90,
+          "manager": "Brian Kleinhenz",
+          "player": "Stefon Diggs",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 7,
+          "overall": 91,
+          "manager": "Jay Nelson",
+          "player": "De'Von Achane",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 8,
+          "overall": 92,
+          "manager": "Brian Harris",
+          "player": "Puka Nacua",
+          "keeper": true
+        },
+        {
+          "round": 8,
+          "round_pick": 9,
+          "overall": 93,
+          "manager": "John Schauder",
+          "player": "RJ Harvey",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 10,
+          "overall": 94,
+          "manager": "Carl Bruce",
+          "player": "Trevor Lawrence",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 11,
+          "overall": 95,
+          "manager": "Daniel Bahamonde",
+          "player": "Aaron Jones Sr.",
+          "keeper": false
+        },
+        {
+          "round": 8,
+          "round_pick": 12,
+          "overall": 96,
+          "manager": "Josh Davis",
+          "player": "Brian Thomas Jr.",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 1,
+          "overall": 97,
+          "manager": "Josh Davis",
+          "player": "Matthew Stafford",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 2,
+          "overall": 98,
+          "manager": "Daniel Bahamonde",
+          "player": "Chris Godwin Jr.",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 3,
+          "overall": 99,
+          "manager": "Carl Bruce",
+          "player": "Nico Collins",
+          "keeper": true
+        },
+        {
+          "round": 9,
+          "round_pick": 4,
+          "overall": 100,
+          "manager": "Greg Wigton",
+          "player": "Isaiah Likely",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 5,
+          "overall": 101,
+          "manager": "Brian Harris",
+          "player": "Patrick Mahomes",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 6,
+          "overall": 102,
+          "manager": "Jay Nelson",
+          "player": "Quentin Johnston",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 7,
+          "overall": 103,
+          "manager": "Eddie McCumiskey",
+          "player": "Brock Purdy",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 8,
+          "overall": 104,
+          "manager": "Jason Carlton",
+          "player": "Mark Andrews",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 9,
+          "overall": 105,
+          "manager": "Brian Kleinhenz",
+          "player": "Jayden Reed",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 10,
+          "overall": 106,
+          "manager": "Kevin Mallon",
+          "player": "Makai Lemon",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 11,
+          "overall": 107,
+          "manager": "Greg Wigton",
+          "player": "Jordan Mason",
+          "keeper": false
+        },
+        {
+          "round": 9,
+          "round_pick": 12,
+          "overall": 108,
+          "manager": "Brian Kleinhenz",
+          "player": "Chris Rodriguez Jr.",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 1,
+          "overall": 109,
+          "manager": "Blake Pratt",
+          "player": "Josh Downs",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 2,
+          "overall": 110,
+          "manager": "Greg Wigton",
+          "player": "KC Concepcion",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 3,
+          "overall": 111,
+          "manager": "Kevin Mallon",
+          "player": "Jacory Croskey-Merritt",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 4,
+          "overall": 112,
+          "manager": "John Schauder",
+          "player": "Texans D/ST",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 5,
+          "overall": 113,
+          "manager": "Jason Carlton",
+          "player": "Rachaad White",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 6,
+          "overall": 114,
+          "manager": "Eddie McCumiskey",
+          "player": "Jordan Addison",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 7,
+          "overall": 115,
+          "manager": "Jay Nelson",
+          "player": "De'Zhaun Stribling",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 8,
+          "overall": 116,
+          "manager": "Brian Harris",
+          "player": "Woody Marks",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 9,
+          "overall": 117,
+          "manager": "John Schauder",
+          "player": "Quinshon Judkins",
+          "keeper": true
+        },
+        {
+          "round": 10,
+          "round_pick": 10,
+          "overall": 118,
+          "manager": "Carl Bruce",
+          "player": "Jonah Coleman",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 11,
+          "overall": 119,
+          "manager": "Daniel Bahamonde",
+          "player": "Khalil Shakir",
+          "keeper": false
+        },
+        {
+          "round": 10,
+          "round_pick": 12,
+          "overall": 120,
+          "manager": "Josh Davis",
+          "player": "Tyjae Spears",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 1,
+          "overall": 121,
+          "manager": "Josh Davis",
+          "player": "Xavier Worthy",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 2,
+          "overall": 122,
+          "manager": "Kevin Mallon",
+          "player": "Harold Fannin Jr.",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 3,
+          "overall": 123,
+          "manager": "Daniel Bahamonde",
+          "player": "Brian Robinson Jr.",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 4,
+          "overall": 124,
+          "manager": "Jason Carlton",
+          "player": "Jalen Coker",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 5,
+          "overall": 125,
+          "manager": "Brian Harris",
+          "player": "Colston Loveland",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 6,
+          "overall": 126,
+          "manager": "Jay Nelson",
+          "player": "Zach Charbonnet",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 7,
+          "overall": 127,
+          "manager": "Jay Nelson",
+          "player": "Tyler Allgeier",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 8,
+          "overall": 128,
+          "manager": "Jason Carlton",
+          "player": "Deebo Samuel Sr.",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 9,
+          "overall": 129,
+          "manager": "John Schauder",
+          "player": "Keaton Mitchell",
+          "keeper": false
+        },
+        {
+          "round": 11,
+          "round_pick": 10,
+          "overall": 130,
+          "manager": "Kevin Mallon",
+          "player": "Rashee Rice",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 11,
+          "overall": 131,
+          "manager": "Brian Kleinhenz",
+          "player": "Travis Etienne Jr.",
+          "keeper": true
+        },
+        {
+          "round": 11,
+          "round_pick": 12,
+          "overall": 132,
+          "manager": "Blake Pratt",
+          "player": "Jared Goff",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 1,
+          "overall": 133,
+          "manager": "Blake Pratt",
+          "player": "Romeo Doubs",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 2,
+          "overall": 134,
+          "manager": "Greg Wigton",
+          "player": "Mike Washington Jr.",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 3,
+          "overall": 135,
+          "manager": "Kevin Mallon",
+          "player": "Travis Kelce",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 4,
+          "overall": 136,
+          "manager": "Greg Wigton",
+          "player": "Caleb Douglas",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 5,
+          "overall": 137,
+          "manager": "Jason Carlton",
+          "player": "Kaelon Black",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 6,
+          "overall": 138,
+          "manager": "Eddie McCumiskey",
+          "player": "Juwan Johnson",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 7,
+          "overall": 139,
+          "manager": "Jay Nelson",
+          "player": "Jordyn Tyson",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 8,
+          "overall": 140,
+          "manager": "Brian Harris",
+          "player": "Tyler Shough",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 9,
+          "overall": 141,
+          "manager": "John Schauder",
+          "player": "Brandon Aubrey",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 10,
+          "overall": 142,
+          "manager": "Greg Wigton",
+          "player": "Seahawks D/ST",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 11,
+          "overall": 143,
+          "manager": "Kevin Mallon",
+          "player": "Rams D/ST",
+          "keeper": false
+        },
+        {
+          "round": 12,
+          "round_pick": 12,
+          "overall": 144,
+          "manager": "Josh Davis",
+          "player": "Harrison Mevis",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 1,
+          "overall": 145,
+          "manager": "Josh Davis",
+          "player": "Broncos D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 2,
+          "overall": 146,
+          "manager": "Daniel Bahamonde",
+          "player": "Steelers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 3,
+          "overall": 147,
+          "manager": "Carl Bruce",
+          "player": "Tank Bigsby",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 4,
+          "overall": 148,
+          "manager": "Jason Carlton",
+          "player": "Kyler Murray",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 5,
+          "overall": 149,
+          "manager": "Brian Harris",
+          "player": "Ravens D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 6,
+          "overall": 150,
+          "manager": "Jay Nelson",
+          "player": "Isiah Pacheco",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 7,
+          "overall": 151,
+          "manager": "Eddie McCumiskey",
+          "player": "Patriots D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 8,
+          "overall": 152,
+          "manager": "Jason Carlton",
+          "player": "Chargers D/ST",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 9,
+          "overall": 153,
+          "manager": "Brian Kleinhenz",
+          "player": "Pat Bryant",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 10,
+          "overall": 154,
+          "manager": "Kevin Mallon",
+          "player": "Jordan Love",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 11,
+          "overall": 155,
+          "manager": "Greg Wigton",
+          "player": "Jason Myers",
+          "keeper": false
+        },
+        {
+          "round": 13,
+          "round_pick": 12,
+          "overall": 156,
+          "manager": "Blake Pratt",
+          "player": "Lions D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 1,
+          "overall": 157,
+          "manager": "Blake Pratt",
+          "player": "Cameron Dicker",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 2,
+          "overall": 158,
+          "manager": "Greg Wigton",
+          "player": "Jake Ferguson",
+          "keeper": true
+        },
+        {
+          "round": 14,
+          "round_pick": 3,
+          "overall": 159,
+          "manager": "Kevin Mallon",
+          "player": "Tre Tucker",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 4,
+          "overall": 160,
+          "manager": "Brian Kleinhenz",
+          "player": "Dalton Kincaid",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 5,
+          "overall": 161,
+          "manager": "Jason Carlton",
+          "player": "Chig Okonkwo",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 6,
+          "overall": 162,
+          "manager": "Brian Kleinhenz",
+          "player": "Baker Mayfield",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 7,
+          "overall": 163,
+          "manager": "Jay Nelson",
+          "player": "Kenyon Sadiq",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 8,
+          "overall": 164,
+          "manager": "Brian Harris",
+          "player": "George Holani",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 9,
+          "overall": 165,
+          "manager": "Jay Nelson",
+          "player": "Cam Little",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 10,
+          "overall": 166,
+          "manager": "Carl Bruce",
+          "player": "Eagles D/ST",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 11,
+          "overall": 167,
+          "manager": "Daniel Bahamonde",
+          "player": "Ka'imi Fairbairn",
+          "keeper": false
+        },
+        {
+          "round": 14,
+          "round_pick": 12,
+          "overall": 168,
+          "manager": "Josh Davis",
+          "player": "Eddy Pineiro",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 1,
+          "overall": 169,
+          "manager": "Josh Davis",
+          "player": "Browns D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 2,
+          "overall": 170,
+          "manager": "Brian Kleinhenz",
+          "player": "Will Reichard",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 3,
+          "overall": 171,
+          "manager": "Carl Bruce",
+          "player": "Tyler Loop",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 4,
+          "overall": 172,
+          "manager": "Brian Kleinhenz",
+          "player": "Jaguars D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 5,
+          "overall": 173,
+          "manager": "Brian Harris",
+          "player": "Chase McLaughlin",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 6,
+          "overall": 174,
+          "manager": "Jay Nelson",
+          "player": "Vikings D/ST",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 7,
+          "overall": 175,
+          "manager": "Eddie McCumiskey",
+          "player": "Jake Bates",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 8,
+          "overall": 176,
+          "manager": "Jason Carlton",
+          "player": "Harrison Butker",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 9,
+          "overall": 177,
+          "manager": "Blake Pratt",
+          "player": "Tank Dell",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 10,
+          "overall": 178,
+          "manager": "Kevin Mallon",
+          "player": "Trey Smack",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 11,
+          "overall": 179,
+          "manager": "Greg Wigton",
+          "player": "Nicholas Singleton",
+          "keeper": false
+        },
+        {
+          "round": 15,
+          "round_pick": 12,
+          "overall": 180,
+          "manager": "Blake Pratt",
+          "player": "Jonathon Brooks",
+          "keeper": true
+        }
+      ]
+    }
+  },
+  "_readme": "Finished drafts from ESPN, written by espn_pull.py (capture_draft_results). Each draft is saved once and never re-pulled. Read by draft-board.js."
+}
