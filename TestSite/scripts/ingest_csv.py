@@ -2071,9 +2071,10 @@ def _ordinal_word(n):
 
 TOP_POINTS_SPOTS = 6
 
-# #1 vs #2 Stat of the Week: considered from the publication after Week 5
-# (previewing Week 6). Past meetings count from Week 5 on, when the
-# standings mean something.
+# Prime Time Matchup (#1 vs #2 in the week ahead): its own section on the
+# Current Season page, from the publication after Week 5 (previewing
+# Week 6). Past meetings count from Week 5 on, when the standings mean
+# something.
 TOP_TWO_FIRST_WEEK = 5
 
 
@@ -2111,21 +2112,6 @@ def _top_two_meetings(all_games, roster_names, first_week=TOP_TWO_FIRST_WEEK):
     return out
 
 
-def _top_two_shown_for(season_games, preview_week, roster_names):
-    """Would the #1 vs #2 stat have run in the publication previewing
-    `preview_week` (a week already played)? It needs a #1 vs #2 game that
-    week and must not have run the week before (never two weeks in a row),
-    so this walks back until it finds a week where it couldn't run."""
-    if preview_week - 1 < TOP_TWO_FIRST_WEEK:
-        return False
-    if preview_week - 1 == HALFWAY_WEEK:
-        return False  # the halfway stat takes that publication
-    top_two = _top_two_entering(season_games, preview_week, roster_names)
-    if not _top_two_game(season_games, preview_week, top_two):
-        return False
-    return not _top_two_shown_for(season_games, preview_week - 1, roster_names)
-
-
 def _upcoming_pairs(current_year, week):
     """[(away, home)] for `week` from remaining_schedule.json, which
     espn_pull.py writes before this script runs. [] if it's missing,
@@ -2141,14 +2127,27 @@ def _upcoming_pairs(current_year, week):
         return []
 
 
-def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_week, roster_names):
-    """Stat of the Week, top priority from the publication after Week 5
-    (except after Week 7, which belongs to the halfway stat):
-    the week ahead features #1 vs #2 in the current standings. The number
-    is how many #1 vs #2 regular-season games there have been (Week 5 or
-    later), with how often #1 won, every game listed, and who the all-time
-    head-to-head (playoffs included, like the rest of the site) favors.
-    Never runs two weeks in a row. None otherwise."""
+def compute_prime_time_matchup(all_games, roster_names):
+    """The Prime Time Matchup section: the week ahead features #1 vs #2 in
+    the current standings (publication after Week 5 on, regular season
+    only). Its own section above Stat of the Week, so it never replaces
+    the normal stat, and it shows every week there's such a game.
+
+    The number is how many #1 vs #2 regular-season games there have been
+    (Week 5 or later), with how often #1 won, every game listed, and who
+    the all-time head-to-head (playoffs included, like the rest of the
+    site) favors. first/second name the two managers so the page can show
+    their head-to-head table. None when there's no #1 vs #2 game."""
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    current_year = max(years)
+    season_games = [g for g in all_games if g["year"] == current_year and g["game_type"] == "Regular"]
+    if not season_games:
+        return None
+    last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
+    if last_completed_week < TOP_TWO_FIRST_WEEK:
+        return None
     preview_week = last_completed_week + 1
     if preview_week > REGULAR_SEASON_GAMES:
         return None
@@ -2157,8 +2156,6 @@ def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_
         return None
     if not any({a, h} == set(top_two) for a, h in _upcoming_pairs(current_year, preview_week)):
         return None
-    if _top_two_shown_for(season_games, last_completed_week, roster_names):
-        return None  # it ran last week
 
     first, second = top_two
     meetings = _top_two_meetings(all_games, roster_names)
@@ -2196,7 +2193,7 @@ def _top_two_matchup_stat(all_games, season_games, current_year, last_completed_
     else:
         intro += " This is the first one."
     return {
-        "reason": f"top_two_matchup_week_{preview_week}",
+        "year": current_year, "week": preview_week, "first": first, "second": second,
         "value": n, "value_suffix": "", "sample_size": n, "first_won": first_won,
         "this_year_teams": [],
         "narrative": intro,
@@ -2458,11 +2455,8 @@ def compute_stat_of_the_week(all_games, roster_names):
       3. If there are none, number of past teams that started 1-4,
          plus each past last-place team's record after Week 5
 
-    From the publication after Week 5 on, a #1 vs #2 matchup in the week
-    ahead takes priority over everything above (never two weeks in a row)
-    - _top_two_matchup_stat. The one exception is Week 7: the halfway stat
-    wins, and a #1 vs #2 that week doesn't count as having run, so it can
-    still show after Week 8.
+    A #1 vs #2 matchup in the week ahead no longer replaces the stat: it
+    gets its own Prime Time Matchup section (compute_prime_time_matchup).
 
     Week 6, in priority order (counts only, plus a closing line with how
     many of this year's group history says will get in):
@@ -2475,16 +2469,15 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     Week 8 - _crowded_record_stat: playoff odds for the record held by the
     most managers (ties to the better record), Week 6 format, plus a
-    must-win footnote for anyone at 3-5. #1 vs #2 still takes priority.
+    must-win footnote for anyone at 3-5.
 
     Week 9 - _final_five_stat: past points champions' average score
     through Week 9 (and for the whole season), plus every team this year
-    averaging within 10 points of that. #1 vs #2 still takes priority.
+    averaging within 10 points of that.
 
     Week 10 - _outside_top_stat: playoff odds for a team outside the top 6
     of the standings but within 2 games of 6th place, this year's managers
     in that spot, and how many of them history says will crash the top 6.
-    #1 vs #2 still takes priority.
     """
     years = {g["year"] for g in all_games}
     if not years:
@@ -2495,18 +2488,11 @@ def compute_stat_of_the_week(all_games, roster_names):
         return None
     last_completed_week = max(_week_sort_key(g["week"]) for g in season_games)
 
-    # The halfway point outranks everything, #1 vs #2 included.
+    # The halfway point outranks everything.
     if last_completed_week == HALFWAY_WEEK:
         halfway = _halfway_top_six_stat(all_games, season_games, current_year, roster_names)
         if halfway:
             return halfway
-
-    # Top priority from Week 5 on (Week 7 aside): the week ahead features #1 vs #2.
-    if last_completed_week >= TOP_TWO_FIRST_WEEK:
-        top_two = _top_two_matchup_stat(all_games, season_games, current_year,
-                                        last_completed_week, roster_names)
-        if top_two:
-            return top_two
 
     # Records checked in order after that week; the first one that someone
     # holds now (and some past team held) wins.
@@ -3048,6 +3034,15 @@ def main():
               f"({detail}; this year: {sotw['this_year_teams']})")
     else:
         print("Stat of the Week: nothing defined/applicable for this week.")
+    # Prime Time Matchup: plain numbers, no write-up, so it's rebuilt every
+    # run (a "Skip narrative generation" re-run included).
+    stats["prime_time_matchup"] = compute_prime_time_matchup(stats["games"], roster_names)
+    if stats["prime_time_matchup"]:
+        pt = stats["prime_time_matchup"]
+        print(f"Prime Time Matchup: Week {pt['week']}, #1 {pt['first']} vs #2 {pt['second']} "
+              f"({pt['value']} past #1 vs #2 games, #1 won {pt['first_won']})")
+    else:
+        print("Prime Time Matchup: no #1 vs #2 game in the week ahead.")
     if stats["week_in_history"]:
         wih = stats["week_in_history"]
         print(f"This Week in Club History: picked {wih['year']} Week {wih['week']} — "
