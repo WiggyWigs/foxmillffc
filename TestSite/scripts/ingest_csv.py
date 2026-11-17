@@ -2071,7 +2071,7 @@ def _ordinal_word(n):
 
 TOP_POINTS_SPOTS = 6
 
-# Prime Time Matchup (#1 vs #2 in the week ahead): its own section on the
+# #1 vs #2 Breakdown (#1 vs #2 in the week ahead): its own section on the
 # Current Season page, from the publication after Week 5 (previewing
 # Week 6). Past meetings count from Week 5 on, when the standings mean
 # something.
@@ -2128,13 +2128,13 @@ def _upcoming_pairs(current_year, week):
 
 
 def compute_prime_time_matchup(all_games, roster_names):
-    """The Prime Time Matchup section: the week ahead features #1 vs #2 in
+    """The #1 vs #2 Breakdown section: the week ahead features #1 vs #2 in
     the current standings (publication after Week 5 on, regular season
     only). Its own section above Stat of the Week, so it never replaces
     the normal stat, and it shows every week there's such a game.
 
-    The number is how many #1 vs #2 regular-season games there have been
-    (Week 5 or later), with how often #1 won, every game listed, and who
+    The write-up gives how many #1 vs #2 regular-season games there have
+    been (Week 5 or later), the share #1 won, every game listed, and who
     the all-time head-to-head (playoffs included, like the rest of the
     site) favors. first/second name the two managers so the page can show
     their head-to-head table. None when there's no #1 vs #2 game."""
@@ -2185,13 +2185,16 @@ def compute_prime_time_matchup(all_games, roster_names):
                         else (second, second_h2h, first_h2h))
         edge = f"History says {lead} has the edge, {w_}-{l_} all-time."
 
-    intro = (f"The number of #1 vs #2 matchups in the regular season "
-             f"(Week {TOP_TWO_FIRST_WEEK} or later).")
     if n:
-        intro += (f" The #1 team has prevailed {first_won} "
-                  f"{'time' if first_won == 1 else 'times'}.\n\n" + "\n".join(lines))
+        pct = round(100 * first_won / n)
+        intro = (f"There {'has' if n == 1 else 'have'} been {n} "
+                 f"{'matchup' if n == 1 else 'matchups'} between the #1 and #2 teams "
+                 f"(Week {TOP_TWO_FIRST_WEEK} or after) in the history of the league. "
+                 f"The #1 team has prevailed {pct}% of the time:\n\n" + "\n".join(lines))
     else:
-        intro += " This is the first one."
+        intro = (f"There have been no matchups between the #1 and #2 teams "
+                 f"(Week {TOP_TWO_FIRST_WEEK} or after) in the history of the league. "
+                 f"This is the first one.")
     return {
         "year": current_year, "week": preview_week, "first": first, "second": second,
         "value": n, "value_suffix": "", "sample_size": n, "first_won": first_won,
@@ -2456,7 +2459,7 @@ def compute_stat_of_the_week(all_games, roster_names):
          plus each past last-place team's record after Week 5
 
     A #1 vs #2 matchup in the week ahead no longer replaces the stat: it
-    gets its own Prime Time Matchup section (compute_prime_time_matchup).
+    gets its own #1 vs #2 Breakdown section (compute_prime_time_matchup).
 
     Week 6, in priority order (counts only, plus a closing line with how
     many of this year's group history says will get in):
@@ -3034,15 +3037,15 @@ def main():
               f"({detail}; this year: {sotw['this_year_teams']})")
     else:
         print("Stat of the Week: nothing defined/applicable for this week.")
-    # Prime Time Matchup: plain numbers, no write-up, so it's rebuilt every
+    # #1 vs #2 Breakdown: plain numbers, no AI write-up, so it's rebuilt every
     # run (a "Skip narrative generation" re-run included).
     stats["prime_time_matchup"] = compute_prime_time_matchup(stats["games"], roster_names)
     if stats["prime_time_matchup"]:
         pt = stats["prime_time_matchup"]
-        print(f"Prime Time Matchup: Week {pt['week']}, #1 {pt['first']} vs #2 {pt['second']} "
+        print(f"#1 vs #2 Breakdown: Week {pt['week']}, #1 {pt['first']} vs #2 {pt['second']} "
               f"({pt['value']} past #1 vs #2 games, #1 won {pt['first_won']})")
     else:
-        print("Prime Time Matchup: no #1 vs #2 game in the week ahead.")
+        print("#1 vs #2 Breakdown: no #1 vs #2 game in the week ahead.")
     if stats["week_in_history"]:
         wih = stats["week_in_history"]
         print(f"This Week in Club History: picked {wih['year']} Week {wih['week']} — "

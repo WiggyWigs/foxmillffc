@@ -1083,6 +1083,12 @@ main {
   color: var(--ink-soft);
 }
 
+/* #1 vs #2 Breakdown (Current Season): its Overall Comparison table a
+   step smaller than the standard tables. */
+.record-table.pt-overall-table {
+  font-size: 0.8rem;
+}
+
 .h2h-games-table {
   max-width: 500px;
   margin: 0 auto;
