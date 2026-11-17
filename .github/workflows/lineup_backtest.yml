@@ -1,0 +1,43 @@
+name: Lineup projection backtest
+
+# Manual trigger ONLY. Read-only research for the playoff odds: pulls past
+# seasons' box scores (full rosters with each player's points) from ESPN,
+# keeps them in memory, and tests whether projecting each team from its
+# current roster (trades, pickups) or weighting recent weeks more beats
+# the season scoring average the odds simulation uses now. Results appear
+# on the run's summary page. Commits nothing and touches no site files.
+
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: 'Seasons to test, comma-separated (finished seasons score the odds too)'
+        required: true
+        default: '2023,2024,2025'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install espn_api
+
+      - name: Run the backtest
+        working-directory: TestSite/scripts
+        env:
+          ESPN_LEAGUE_ID: ${{ secrets.ESPN_LEAGUE_ID }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+        run: python lineup_backtest.py "${{ inputs.seasons }}"
