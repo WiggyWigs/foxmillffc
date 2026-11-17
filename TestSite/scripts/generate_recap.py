@@ -269,6 +269,11 @@ def get_playoff_probability_trend(manager, old_stats, new_stats):
         # Not genuinely the previous week — same week, later, or a
         # skipped week. Reporting a trend here would be misleading.
         return None
+    if bool(old_pp.get("sim_weight")) != bool(new_pp.get("sim_weight")):
+        # One week used the season simulation and the other didn't (the
+        # week it was introduced, or a week the remaining schedule
+        # couldn't be read): the change is the method, not the team.
+        return None
 
     def lookup(pp):
         for row in pp.get("managers", []):

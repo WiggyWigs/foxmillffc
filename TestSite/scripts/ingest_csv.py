@@ -25,6 +25,8 @@ against manager-name typos fragmenting career stats.
 import csv
 import os
 import json
+import random
+import statistics
 import sys
 from pathlib import Path
 from datetime import date
@@ -2589,6 +2591,85 @@ def compute_week_in_history(all_games, roster_names):
     return None
 
 
+# Season simulation for playoff odds (see simulate_playoff_odds).
+SIM_RUNS = 10000
+# Each team's expected score is its scoring this season pulled toward the
+# league average as if it had SIM_PRIOR_GAMES more games at that average:
+# a handful of fantasy weeks is mostly noise.
+SIM_PRIOR_GAMES = 4
+# Share of the final odds that comes from the simulation (the rest is the
+# historical rate for the record), by weeks played: ramps linearly from
+# SIM_WEIGHT_START at Week 3 to SIM_WEIGHT_END at Week 13.
+SIM_WEIGHT_START = 0.5
+SIM_WEIGHT_END = 1.0
+
+
+def sim_weight(current_week):
+    """Share of the playoff odds taken from the simulation this week."""
+    t = min(1.0, max(0.0, (current_week - 3) / 10))
+    return SIM_WEIGHT_START + t * (SIM_WEIGHT_END - SIM_WEIGHT_START)
+
+
+def _weekly_score_spread(all_games):
+    """How much a team's weekly score swings around its own season average:
+    the pooled standard deviation of (score - that team's season average)
+    over every regular-season game on record. Pooled across seasons because
+    one team's handful of games is too few to measure its own spread."""
+    scores = defaultdict(list)
+    for g in all_games:
+        if g["game_type"] != "Regular":
+            continue
+        scores[(g["year"], g["away_manager"])].append(g["away_score"])
+        scores[(g["year"], g["home_manager"])].append(g["home_score"])
+    residuals = []
+    for vals in scores.values():
+        if len(vals) >= 2:
+            mean = sum(vals) / len(vals)
+            residuals.extend(v - mean for v in vals)
+    return statistics.pstdev(residuals) if len(residuals) >= 20 else 25.0
+
+
+def simulate_playoff_odds(season_games, roster_names, remaining, spread,
+                          runs=SIM_RUNS, prior_games=SIM_PRIOR_GAMES, seed=0):
+    """{manager: share of simulated seasons in which they finish in the top
+    PLAYOFF_SPOTS}. Plays out every remaining game (`remaining`: list of
+    weeks of (a, b) pairs, the real ESPN schedule) `runs` times. Each week a
+    team scores a random draw around its expected score (this season's
+    average, pulled toward the league average by prior_games) with the
+    league-wide weekly spread. Every simulated season is ranked by
+    rank_season_games, the same standings and head-to-head tiebreak as the
+    real table, so remaining strength of schedule, record and tiebreaks all
+    come out of the same calculation. A fixed seed keeps the numbers the
+    same when a week is re-run."""
+    pts = defaultdict(list)
+    for g in season_games:
+        pts[g["away_manager"]].append(g["away_score"])
+        pts[g["home_manager"]].append(g["home_score"])
+    all_pts = [v for vals in pts.values() for v in vals]
+    if not all_pts:
+        return {}
+    league_avg = sum(all_pts) / len(all_pts)
+    expected = {m: (sum(v) + prior_games * league_avg) / (len(v) + prior_games)
+                for m, v in pts.items()}
+
+    rng = random.Random(seed)
+    made = defaultdict(int)
+    for _ in range(runs):
+        games = list(season_games)
+        for week in remaining:
+            for a, b in week:
+                sa = rng.gauss(expected.get(a, league_avg), spread)
+                sb = rng.gauss(expected.get(b, league_avg), spread)
+                games.append({
+                    "away_manager": a, "home_manager": b, "away_score": sa, "home_score": sb,
+                    "away_team": "", "home_team": "", "tie": sa == sb,
+                    "winner": a if sa > sb else b, "loser": b if sa > sb else a,
+                })
+        for row in rank_season_games(games, roster_names)[:PLAYOFF_SPOTS]:
+            made[row["manager"]] += 1
+    return {m: made[m] / runs for m in expected}
+
+
 def compute_playoff_probability_model(all_games, roster_names):
     """
     Historical baseline: for every completed past season (one that has
@@ -2657,7 +2738,7 @@ def compute_playoff_probability_model(all_games, roster_names):
     }
 
 
-def compute_playoff_probabilities(all_games, roster_names, model):
+def compute_playoff_probabilities(all_games, roster_names, model, schedule="load"):
     """
     Current-season playoff probability per active manager, using the
     historical model above as a base rate, then nudged by two
@@ -2666,6 +2747,14 @@ def compute_playoff_probabilities(all_games, roster_names, model):
       - More points scored so far → higher probability (up to ±5 pts)
       - Harder schedule (lower schedule_difficulty) → higher probability,
         since their record undersells their true quality (up to ±5 pts)
+
+    Then remaining strength of schedule: when the full remaining ESPN
+    schedule is available, the rest of the season is simulated
+    (simulate_playoff_odds) and the odds become a blend of the simulation
+    and the number above, weighted toward the simulation as the season goes
+    on (sim_weight). Without a valid schedule the simulation is skipped.
+    `schedule` is normally loaded from remaining_schedule.json; the backtest
+    passes the real remaining games of a past season instead.
 
     After the tie-break nudges, any manager who has mathematically clinched
     a playoff spot is set to 100% and flagged "clinched": true; any manager
@@ -2779,13 +2868,31 @@ def compute_playoff_probabilities(all_games, roster_names, model):
             pct = e["base_rate"] * 100 + points_adj + sched_adj
             e["probability"] = round(min(100, max(0, pct)), 1)
 
+    records = {e["manager"]: (e["wins"], e["losses"]) for e in entries}
+    if schedule == "load":
+        schedule = load_remaining_schedule(
+            records.keys(), games_played, current_year, current_week
+        )
+
+    # Remaining strength of schedule: simulate the rest of the season on
+    # the real schedule and blend it with the historical number.
+    if schedule:
+        spread = _weekly_score_spread(all_games)
+        sim = simulate_playoff_odds(season_games, roster_names, schedule, spread,
+                                    seed=current_year * 100 + current_week)
+        w = sim_weight(current_week)
+        for e in entries:
+            hist = e["probability"]
+            e["historical_probability"] = hist
+            e["simulated_probability"] = round(sim.get(e["manager"], 0.0) * 100, 1)
+            e["probability"] = round(w * e["simulated_probability"] + (1 - w) * hist, 1)
+        sim_info = {"sim_weight": round(w, 2), "sim_runs": SIM_RUNS, "weekly_spread": round(spread, 1)}
+    else:
+        sim_info = {"sim_weight": 0}
+
     # Clinch override: a manager who can't be caught by enough rivals in the
     # games that remain is at 100% no matter what the base rate or the
     # tie-break nudges say.
-    records = {e["manager"]: (e["wins"], e["losses"]) for e in entries}
-    schedule = load_remaining_schedule(
-        records.keys(), games_played, current_year, current_week
-    )
     clinched, eliminated, status_method = compute_playoff_status(
         records, games_played, schedule
     )
@@ -2803,7 +2910,7 @@ def compute_playoff_probabilities(all_games, roster_names, model):
 
     entries.sort(key=lambda e: -e["probability"])
     return {"season": current_year, "visible": True, "current_week": current_week,
-            "status_method": status_method, "managers": entries}
+            "status_method": status_method, **sim_info, "managers": entries}
 
 
 def compute_h2h_summary(all_games, roster_names):

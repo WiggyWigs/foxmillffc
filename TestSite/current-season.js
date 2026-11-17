@@ -1067,7 +1067,10 @@ function renderPlayoffProbability(data) {
   section.style.display = "";
   if (divider) divider.style.display = "";
   const seasonCount = data.playoff_probability_model?.seasons_used?.length || 0;
-  meta.textContent = `Based on ${seasonCount} historical season${seasonCount === 1 ? "" : "s"} through Week ${pp.current_week}, adjusted for points scored and Luck Factor.`;
+  const hist = `${seasonCount} historical season${seasonCount === 1 ? "" : "s"}`;
+  meta.textContent = pp.sim_weight
+    ? `Through Week ${pp.current_week}: ${Number(pp.sim_runs || 0).toLocaleString()} simulations of the rest of the season on the real remaining schedule, blended with ${hist}.`
+    : `Based on ${hist} through Week ${pp.current_week}, adjusted for points scored and Luck Factor.`;
 
   const rows = pp.managers; // already sorted by probability descending
 
