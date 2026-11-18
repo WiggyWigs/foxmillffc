@@ -300,19 +300,6 @@ def _week_sort_key(week):
     return int(w)
 
 
-def _competition_place(rows, row, key, highest_first, spots):
-    """{"rank", "tied"} of `row` among `rows` ranked by `key`
-    (competition style: tied values share the rank of the first), or
-    None if it isn't in the top `spots` places or isn't there at all.
-    The same ranking as the Record Books page (tieAwareRanks)."""
-    if row is None:
-        return None
-    v = row[key]
-    better = sum((r[key] > v) if highest_first else (r[key] < v) for r in rows if r is not row)
-    same = sum(r[key] == v for r in rows if r is not row)
-    return {"rank": better + 1, "tied": same > 0} if better + 1 <= spots else None
-
-
 def compute_records(all_games, roster_names):
     """
     Builds the Record Books data. Each record type is computed fresh from
@@ -643,40 +630,6 @@ def compute_records(all_games, roster_names):
     add_rank_last_week(loss_streaks)
     add_rank_last_week(over100_streaks)
     add_rank_last_week(under100_streaks)
-
-    # The 125+/under-100 game rates change for every manager every week,
-    # so "Welcome to the Record Books" needs each entry's place on the
-    # board last week too (_competition_place: the same ranking as the
-    # Record Books page). Season averages need no history: they're only
-    # mentioned once the regular season is over.
-    if latest_reg and latest_reg[0] == in_progress_year:
-        this_week = [g for g in all_games if g["game_type"] == "Regular"
-                     and (g["year"], _week_sort_key(g["week"])) == latest_reg]
-
-        def week_score(mgr):
-            for g in this_week:
-                if g["away_manager"] == mgr:
-                    return g["away_score"]
-                if g["home_manager"] == mgr:
-                    return g["home_score"]
-            return None
-
-        # 125+ / under-100 rates: who did it this week, and last week's place.
-        for lst, hit in ((games_above_125_list, lambda sc: sc > 125),
-                         (games_below_100_list, lambda sc: sc < 100)):
-            last_rates = []
-            for e in lst:
-                sc = week_score(e["manager"])
-                did = sc is not None and hit(sc)
-                played = e["games_played"] - (sc is not None)
-                count = e["count"] - did
-                e["this_week"] = did
-                if played > 0 and count > 0:
-                    last_rates.append({"manager": e["manager"], "rate": round(count / played, 4)})
-            for e in lst:
-                if e["this_week"]:
-                    mine = next((x for x in last_rates if x["manager"] == e["manager"]), None)
-                    e["rank_last_week"] = _competition_place(last_rates, mine, "rate", True, 5)
 
     win_streaks.sort(key=lambda e: -e["streak"])
     loss_streaks.sort(key=lambda e: -e["streak"])

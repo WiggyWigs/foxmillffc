@@ -2179,8 +2179,6 @@ RECORD_BOOKS_LABELS = {
     "bottom_game_score": "Bottom 15 R/S Game Score",
     "top_playoff_score": "Top 5 Playoff Game Score",
     "bottom_playoff_score": "Bottom 5 Playoff Game Score",
-    "above_125": "Top 5 Rate of 125+ Games",
-    "below_100": "Top 5 Rate of Sub-100 Games",
     "top_win_streak": "Top 5 R/S Winning Streak",
     "top_loss_streak": "Top 5 R/S Losing Streak",
     "top_over100_streak": "Top 5 R/S Streak Over 100",
@@ -2198,8 +2196,7 @@ def build_record_books_entries(week_games, week, year, stats):
     scores; breaking into or moving on the Top 5 R/S win, loss,
     over-100 and under-100 streaks (only when the streak's rank or tie
     changes); after Week 14 only, this season's final averages on the
-    Top 10 / Bottom 10 season averages; a manager who scored 125+ (or under 100)
-    this week entering or climbing the Top 5 by rate; a playoff score
+    Top 10 / Bottom 10 season averages; a playoff score
     in the Top 5 / Bottom 5 (playoff weeks); or crossing the
     25th-career-win/loss milestone. Returns a list of
     entries (empty if nothing happened this week) — the frontend only
@@ -2280,12 +2277,6 @@ def build_record_books_entries(week_games, week, year, stats):
     check_streak_list("top_over100_streaks", "top_over100_streak")
     check_streak_list("top_under100_streaks", "top_under100_streak")
 
-    def climbed(rank, last):
-        # Game rates move every week for everyone, so these are only
-        # mentioned when the entry is new to the board or climbs to a
-        # better place (not when it slips back or only gains/loses a tie).
-        return last is None or rank < last["rank"]
-
     def check_season_avg(list_key, kind):
         # A season average changes every week, so it's only mentioned
         # once it's final: the week the Week 14 results are in. Every
@@ -2304,23 +2295,6 @@ def build_record_books_entries(week_games, week, year, stats):
 
     check_season_avg("top_avg_regular_season", "top_avg")
     check_season_avg("bottom_avg_regular_season", "bottom_avg")
-
-    def check_rate_list(list_key, kind, spots=5):
-        # Only managers who did it this week (scored 125+ / under 100)
-        # and climbed into or up the Top 5 by rate.
-        rows = records.get(list_key) or []
-        ranks, tied_counts = tie_ranks(rows, "rate")
-        for i, e in enumerate(rows):
-            if (e.get("this_week") and ranks[i] <= spots and "rank_last_week" in e
-                    and climbed(ranks[i], e["rank_last_week"])):
-                entries.append({
-                    "kind": kind, "manager": e["manager"], "team_name": None,
-                    "value": e["rate"], "count": e["count"], "games_played": e["games_played"],
-                    "rank": ranks[i], "tied_count": tied_counts[i],
-                })
-
-    check_rate_list("games_above_125", "above_125")
-    check_rate_list("games_below_100", "below_100")
 
     # Playoff game scores: the most recent playoff week, while the
     # playoffs are the latest games on record.

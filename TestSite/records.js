@@ -195,7 +195,7 @@ async function loadRecords() {
     { group: [s1a, s1b] },
     { group: [s2a, s2b] },
     { group: [s3a, s3b] },
-    { group: [s4a, s4b], footnote: "*Current in-progress season not included in Games Above 125 / Below 100 counts." },
+    { group: [s4a, s4b], footnote: "*has not completed minimum 3 seasons. Counts and rates include the current season." },
     { group: [s5streak_a, s5streak_b] },
     { group: [s5over_a, s5under_a] },
   ];

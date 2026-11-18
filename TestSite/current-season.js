@@ -712,8 +712,6 @@ const RECORD_BOOKS_LABELS = {
   bottom_game_score: "Bottom 15 R/S Game Score",
   top_playoff_score: "Top 5 Playoff Game Score",
   bottom_playoff_score: "Bottom 5 Playoff Game Score",
-  above_125: "Top 5 Rate of 125+ Games",
-  below_100: "Top 5 Rate of Sub-100 Games",
   top_win_streak: "Top 5 R/S Winning Streak",
   top_loss_streak: "Top 5 R/S Losing Streak",
   top_over100_streak: "Top 5 R/S Streak Over 100",
@@ -722,12 +720,12 @@ const RECORD_BOOKS_LABELS = {
   "25th_loss": "25th Career Defeat",
 };
 
-// Display order, top to bottom: the Record Books page's order.
+// Display order, top to bottom: the Record Books page's order (the
+// 125+ / sub-100 rate tables are never mentioned here).
 const RECORD_BOOKS_ORDER = [
   "top_avg", "bottom_avg",
   "top_game_score", "bottom_game_score",
   "top_playoff_score", "bottom_playoff_score",
-  "above_125", "below_100",
   "top_win_streak", "top_loss_streak",
   "top_over100_streak", "top_under100_streak",
   "25th_win", "25th_loss",
@@ -805,15 +803,6 @@ function recordBooksSentence(kind, group) {
       return tied
         ? `${joinNames(names)} share the ${rank}-lowest playoff score in league history — ${fmtRecordNumber(value)} points.`
         : `${names[0]}'s ${fmtRecordNumber(value)} points is ${the} ${rank}-lowest playoff score in league history.`;
-
-    case "above_125":
-    case "below_100": {
-      const what = kind === "above_125" ? "more than 125" : "under 100";
-      const pct = (value * 100).toFixed(1);
-      return group.map((e) =>
-        `<b>${e.manager}</b> has now scored ${what} in ${e.count} of ${e.games_played} games (${pct}%) — ${the} ${rank}-highest rate in league history.`
-      ).join(" ");
-    }
 
     case "top_over100_streak":
       return tied
