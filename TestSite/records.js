@@ -83,13 +83,8 @@ async function loadRecords() {
   // Renders one record section: heading + table. `cols` is an array of
   // [label, fieldNameOrFn] pairs; a function receives (row, index).
   // `rankValueFn`, if given, drives tie-aware ranking AND first-place
-  // bolding. `flagIncomplete`, only true for the three average-based
-  // tables (where a small sample genuinely skews the number), marks
-  // under-3-season managers as "*Name" in italics — individual-game
-  // and fastest-to-N tables don't get this, since a single game score
-  // or a milestone reached isn't distorted by career length the way
-  // an average is.
-  function section(title, rows, cols, rankValueFn, flagIncomplete) {
+  // bolding.
+  function section(title, rows, cols, rankValueFn) {
     if (!rows || rows.length === 0) {
       return `<div class="record-section"><h3>${title}</h3><p class="load-state">No qualifying games yet.</p></div>`;
     }
@@ -101,14 +96,11 @@ async function loadRecords() {
     ).join("");
 
     const body = rows.map((row, i) => {
-      const seasons = data.managers[row.manager]?.career?.seasons_played ?? null;
-      const incomplete = flagIncomplete && seasons !== null && seasons < 3;
       const isCurrent = isCurrentSeasonRow(row);
 
       const cells = cols.map(([label, get], colIdx) => {
         if (colIdx === 0) return `<td>${ranks[i]}</td>`; // rank column
         const nowrapClass = label === "Manager" ? ' class="col-name"' : "";
-        if (colIdx === 1 && incomplete) return `<td${nowrapClass}><em>*${row.manager}</em></td>`; // manager column
         return `<td${nowrapClass}>${typeof get === "function" ? get(row, i) : row[get]}</td>`;
       }).join("");
 
@@ -174,38 +166,34 @@ async function loadRecords() {
   // requested a/b pairing. Titles: "Top N"/"Bottom N" counts dropped
   // (the table itself shows how many rows there are) and "Regular
   // Season" shortened to "R/S" throughout.
-  const s1a = section("Highest Average R/S Score", r.top_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
-  const s1b = section("Lowest Average R/S Score", r.bottom_avg_regular_season, managerYearAvgCols, (row) => row.avg_score, false);
-  const s2a = section("Highest R/S Game Scores", r.top_regular_season_games, managerYearScoreCols, (row) => row.score, false);
-  const s2b = section("Lowest R/S Game Scores", r.bottom_regular_season_games, managerYearScoreCols, (row) => row.score, false);
-  const s3a = section("Highest Playoff Game Scores", r.top_playoff_games, managerYearScoreCols, (row) => row.score, false);
-  const s3b = section("Lowest Playoff Game Scores", r.bottom_playoff_games, managerYearScoreCols, (row) => row.score, false);
-  const s4a = section("Games Scored Above 125 Points", games125WithAvg, gamesThresholdCols, (row) => row.rate, true);
-  const s4b = section("Games Scored Below 100 Points", games100WithAvg, gamesThresholdCols, (row) => row.rate, true);
+  const s1a = section("Highest Average R/S Score", r.top_avg_regular_season, managerYearAvgCols, (row) => row.avg_score);
+  const s1b = section("Lowest Average R/S Score", r.bottom_avg_regular_season, managerYearAvgCols, (row) => row.avg_score);
+  const s2a = section("Highest R/S Game Scores", r.top_regular_season_games, managerYearScoreCols, (row) => row.score);
+  const s2b = section("Lowest R/S Game Scores", r.bottom_regular_season_games, managerYearScoreCols, (row) => row.score);
+  const s3a = section("Highest Playoff Game Scores", r.top_playoff_games, managerYearScoreCols, (row) => row.score);
+  const s3b = section("Lowest Playoff Game Scores", r.bottom_playoff_games, managerYearScoreCols, (row) => row.score);
+  const s4a = section("Games Scored Above 125 Points", games125WithAvg, gamesThresholdCols, (row) => row.rate);
+  const s4b = section("Games Scored Below 100 Points", games100WithAvg, gamesThresholdCols, (row) => row.rate);
 
   // Streaks — inserted between the games-threshold pair and the
   // fastest-to-N pairs, per the requested ordering.
-  const s5streak_a = section("Longest R/S Winning Streaks", r.top_winning_streaks, streakCols, (row) => row.streak, false);
-  const s5streak_b = section("Longest R/S Losing Streaks", r.top_losing_streaks, streakCols, (row) => row.streak, false);
+  const s5streak_a = section("Longest R/S Winning Streaks", r.top_winning_streaks, streakCols, (row) => row.streak);
+  const s5streak_b = section("Longest R/S Losing Streaks", r.top_losing_streaks, streakCols, (row) => row.streak);
 
-  const s5over_a = section("Longest R/S Streak Over 100 Points", r.top_over100_streaks, streakCols, (row) => row.streak, false);
-  const s5under_a = section("Longest R/S Streak Under 100 Points", r.top_under100_streaks, streakCols, (row) => row.streak, false);
+  const s5over_a = section("Longest R/S Streak Over 100 Points", r.top_over100_streaks, streakCols, (row) => row.streak);
+  const s5under_a = section("Longest R/S Streak Under 100 Points", r.top_under100_streaks, streakCols, (row) => row.streak);
 
   const rowGroups = [
     { group: [s1a, s1b] },
     { group: [s2a, s2b] },
     { group: [s3a, s3b] },
-    { group: [s4a, s4b], footnote: "*has not completed minimum 3 seasons. Counts and rates include the current season." },
+    { group: [s4a, s4b] },
     { group: [s5streak_a, s5streak_b] },
     { group: [s5over_a, s5under_a] },
   ];
 
   wrap.innerHTML = rowGroups
-    .map(({ group, footnote }) => {
-      const rowHtml = `<div class="record-row${group.length === 1 ? " single" : ""}">${group.join("")}</div>`;
-      const footnoteHtml = footnote ? `<p class="record-footnote">${footnote}</p>` : "";
-      return rowHtml + footnoteHtml;
-    })
+    .map(({ group }) => `<div class="record-row${group.length === 1 ? " single" : ""}">${group.join("")}</div>`)
     .join("");
 }
 
