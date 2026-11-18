@@ -2173,10 +2173,16 @@ def compute_weekly_lowest_scoring_teams(stats):
 # --- "Welcome to the Record Books" section ---------------------------------
 
 RECORD_BOOKS_LABELS = {
+    "top_avg": "Top 10 R/S Season Average",
+    "bottom_avg": "Bottom 10 R/S Season Average",
     "top_game_score": "Top 15 R/S Game Score",
     "bottom_game_score": "Bottom 15 R/S Game Score",
+    "top_playoff_score": "Top 5 Playoff Game Score",
+    "bottom_playoff_score": "Bottom 5 Playoff Game Score",
     "top_win_streak": "Top 5 R/S Winning Streak",
     "top_loss_streak": "Top 5 R/S Losing Streak",
+    "top_over100_streak": "Top 5 R/S Streak Over 100",
+    "top_under100_streak": "Top 5 R/S Streak Under 100",
     "25th_win": "25th Career Victory",
     "25th_loss": "25th Career Defeat",
 }
@@ -2184,12 +2190,15 @@ RECORD_BOOKS_LABELS = {
 
 def build_record_books_entries(week_games, week, year, stats):
     """
-    "Welcome to the Record Books": every league record a manager
+    "Welcome to the Record Books": every Record Books table a manager
     touched during the most recently completed regular-season week —
     landing anywhere in the Top 15 / Bottom 15 all-time R/S game
-    scores, breaking into or moving up the Top 5 all-time R/S win/loss
-    streaks (only when the streak's rank or tie changes), or
-    crossing the 25th-career-win/loss milestone. Returns a list of
+    scores; breaking into or moving on the Top 5 R/S win, loss,
+    over-100 and under-100 streaks (only when the streak's rank or tie
+    changes); after Week 14 only, this season's final averages on the
+    Top 10 / Bottom 10 season averages; a playoff score
+    in the Top 5 / Bottom 5 (playoff weeks); or crossing the
+    25th-career-win/loss milestone. Returns a list of
     entries (empty if nothing happened this week) — the frontend only
     shows this section at all when the list is non-empty.
 
@@ -2265,6 +2274,49 @@ def build_record_books_entries(week_games, week, year, stats):
 
     check_streak_list("top_winning_streaks", "top_win_streak")
     check_streak_list("top_losing_streaks", "top_loss_streak")
+    check_streak_list("top_over100_streaks", "top_over100_streak")
+    check_streak_list("top_under100_streaks", "top_under100_streak")
+
+    def check_season_avg(list_key, kind):
+        # A season average changes every week, so it's only mentioned
+        # once it's final: the week the Week 14 results are in. Every
+        # entry from this season on the list is mentioned then.
+        if week_num(week) != REGULAR_SEASON_WEEKS:
+            return
+        rows = records.get(list_key) or []
+        ranks, tied_counts = tie_ranks(rows, "avg_score")
+        for i, e in enumerate(rows):
+            if e.get("year") == year:
+                entries.append({
+                    "kind": kind, "manager": e["manager"], "team_name": None,
+                    "value": e["avg_score"], "rank": ranks[i], "tied_count": tied_counts[i],
+                    "year": year,
+                })
+
+    check_season_avg("top_avg_regular_season", "top_avg")
+    check_season_avg("bottom_avg_regular_season", "bottom_avg")
+
+    # Playoff game scores: the most recent playoff week, while the
+    # playoffs are the latest games on record.
+    games = stats.get("games", [])
+    season_all = [g for g in games if g["year"] == year]
+    if season_all:
+        def order(w):
+            w = str(w)
+            return 100 + int(w[1:]) if w.startswith("P") else int(w) if w.isdigit() else 0
+        latest = max(season_all, key=lambda g: order(g["week"]))
+        if latest["game_type"] != "Regular":
+            po_week = str(latest["week"])
+            for list_key, kind in (("top_playoff_games", "top_playoff_score"),
+                                   ("bottom_playoff_games", "bottom_playoff_score")):
+                rows = records.get(list_key) or []
+                ranks, tied_counts = tie_ranks(rows, "score")
+                for i, e in enumerate(rows):
+                    if e.get("year") == year and str(e.get("week")) == po_week:
+                        entries.append({
+                            "kind": kind, "manager": e["manager"], "team_name": e.get("team_name"),
+                            "value": e["score"], "rank": ranks[i], "tied_count": tied_counts[i],
+                        })
 
     def check_milestone(list_key, kind):
         rows = records.get(list_key) or []

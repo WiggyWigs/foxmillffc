@@ -568,11 +568,13 @@ def compute_records(all_games, roster_names):
             "manager": mgr, "streak": best_over,
             "span": fmt_span(best_over_span) if best_over > 0 else "—",
             "end_year": best_over_span[1][0] if best_over > 0 else None,
+            "end_week": best_over_span[1][1] if best_over > 0 else None,
         })
         under100_streaks.append({
             "manager": mgr, "streak": best_under,
             "span": fmt_span(best_under_span) if best_under > 0 else "—",
             "end_year": best_under_span[1][0] if best_under > 0 else None,
+            "end_week": best_under_span[1][1] if best_under > 0 else None,
         })
 
     def top_n_with_ties(items, n):
@@ -612,8 +614,8 @@ def compute_records(all_games, roster_names):
                       if g["game_type"] == "Regular"), default=None)
 
     def add_rank_last_week(streaks, spots=5):
-        grew = [e for e in streaks
-                if (e["end_year"], _week_sort_key(e["end_week"])) == latest_reg]
+        grew = [e for e in streaks if e.get("end_week") is not None
+                and (e["end_year"], _week_sort_key(e["end_week"])) == latest_reg]
         grew_ids = {id(e) for e in grew}
         last_week = {id(e): e["streak"] - (id(e) in grew_ids) for e in streaks}
         for e in grew:
@@ -626,6 +628,8 @@ def compute_records(all_games, roster_names):
 
     add_rank_last_week(win_streaks)
     add_rank_last_week(loss_streaks)
+    add_rank_last_week(over100_streaks)
+    add_rank_last_week(under100_streaks)
 
     win_streaks.sort(key=lambda e: -e["streak"])
     loss_streaks.sort(key=lambda e: -e["streak"])

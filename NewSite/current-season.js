@@ -706,18 +706,28 @@ window.addEventListener("resize", equalizeCalloutHeights);
 // sentence together; two managers in the same category at different
 // values still get their own separate sentences.
 const RECORD_BOOKS_LABELS = {
+  top_avg: "Top 10 R/S Season Average",
+  bottom_avg: "Bottom 10 R/S Season Average",
   top_game_score: "Top 15 R/S Game Score",
   bottom_game_score: "Bottom 15 R/S Game Score",
+  top_playoff_score: "Top 5 Playoff Game Score",
+  bottom_playoff_score: "Bottom 5 Playoff Game Score",
   top_win_streak: "Top 5 R/S Winning Streak",
   top_loss_streak: "Top 5 R/S Losing Streak",
+  top_over100_streak: "Top 5 R/S Streak Over 100",
+  top_under100_streak: "Top 5 R/S Streak Under 100",
   "25th_win": "25th Career Victory",
   "25th_loss": "25th Career Defeat",
 };
 
-// Display order, top to bottom.
+// Display order, top to bottom: the Record Books page's order (the
+// 125+ / sub-100 rate tables are never mentioned here).
 const RECORD_BOOKS_ORDER = [
+  "top_avg", "bottom_avg",
   "top_game_score", "bottom_game_score",
+  "top_playoff_score", "bottom_playoff_score",
   "top_win_streak", "top_loss_streak",
+  "top_over100_streak", "top_under100_streak",
   "25th_win", "25th_loss",
 ];
 
@@ -773,6 +783,36 @@ function recordBooksSentence(kind, group) {
       return tied
         ? `${joinNames(names)} are tied for the ${rank}-longest R/S losing streak in league history, each at ${value} games.`
         : `${names[0]}'s losing streak has reached ${value} games — ${the} ${rank}-longest in league history.`;
+
+    case "top_avg":
+      return tied
+        ? `${joinNames(names)} both finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — tied for the ${rank}-highest R/S season average in league history.`
+        : `${names[0]} finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — ${the} ${rank}-highest R/S season average in league history.`;
+
+    case "bottom_avg":
+      return tied
+        ? `${joinNames(names)} both finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — tied for the ${rank}-lowest R/S season average in league history.`
+        : `${names[0]} finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — ${the} ${rank}-lowest R/S season average in league history.`;
+
+    case "top_playoff_score":
+      return tied
+        ? `${joinNames(names)} share the ${rank}-highest playoff score in league history — ${fmtRecordNumber(value)} points.`
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is ${the} ${rank}-highest playoff score in league history.`;
+
+    case "bottom_playoff_score":
+      return tied
+        ? `${joinNames(names)} share the ${rank}-lowest playoff score in league history — ${fmtRecordNumber(value)} points.`
+        : `${names[0]}'s ${fmtRecordNumber(value)} points is ${the} ${rank}-lowest playoff score in league history.`;
+
+    case "top_over100_streak":
+      return tied
+        ? `${joinNames(names)} are tied for the ${rank}-longest streak of 100-point games in league history, each at ${value} games.`
+        : `${names[0]}'s active streak of 100-point games has reached ${value} — ${the} ${rank}-longest in league history.`;
+
+    case "top_under100_streak":
+      return tied
+        ? `${joinNames(names)} are tied for the ${rank}-longest streak of sub-100 games in league history, each at ${value} games.`
+        : `${names[0]}'s streak of sub-100 games has reached ${value} — ${the} ${rank}-longest in league history.`;
 
     case "25th_win":
       return tied
