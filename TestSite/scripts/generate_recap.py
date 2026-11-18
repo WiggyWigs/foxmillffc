@@ -2197,8 +2197,8 @@ def build_record_books_entries(week_games, week, year, stats):
     landing anywhere in the Top 15 / Bottom 15 all-time R/S game
     scores; breaking into or moving on the Top 5 R/S win, loss,
     over-100 and under-100 streaks (only when the streak's rank or tie
-    changes); this season's average entering or climbing the Top 10 /
-    Bottom 10 season averages; a manager who scored 125+ (or under 100)
+    changes); after Week 14 only, this season's final averages on the
+    Top 10 / Bottom 10 season averages; a manager who scored 125+ (or under 100)
     this week entering or climbing the Top 5 by rate; a playoff score
     in the Top 5 / Bottom 5 (playoff weeks); or crossing the
     25th-career-win/loss milestone. Returns a list of
@@ -2281,25 +2281,29 @@ def build_record_books_entries(week_games, week, year, stats):
     check_streak_list("top_under100_streaks", "top_under100_streak")
 
     def climbed(rank, last):
-        # Season averages and game rates move every week for everyone,
-        # so these are only mentioned when the entry is new to the
-        # board or climbs to a better place (not when it slips back or
-        # only gains/loses a tie).
+        # Game rates move every week for everyone, so these are only
+        # mentioned when the entry is new to the board or climbs to a
+        # better place (not when it slips back or only gains/loses a tie).
         return last is None or rank < last["rank"]
 
-    def check_season_avg(list_key, kind, last_key):
+    def check_season_avg(list_key, kind):
+        # A season average changes every week, so it's only mentioned
+        # once it's final: the week the Week 14 results are in. Every
+        # entry from this season on the list is mentioned then.
+        if week_num(week) != REGULAR_SEASON_WEEKS:
+            return
         rows = records.get(list_key) or []
         ranks, tied_counts = tie_ranks(rows, "avg_score")
         for i, e in enumerate(rows):
-            if e.get("year") == year and last_key in e and climbed(ranks[i], e[last_key]):
+            if e.get("year") == year:
                 entries.append({
                     "kind": kind, "manager": e["manager"], "team_name": None,
                     "value": e["avg_score"], "rank": ranks[i], "tied_count": tied_counts[i],
                     "year": year,
                 })
 
-    check_season_avg("top_avg_regular_season", "top_avg", "rank_last_week_top")
-    check_season_avg("bottom_avg_regular_season", "bottom_avg", "rank_last_week_bottom")
+    check_season_avg("top_avg_regular_season", "top_avg")
+    check_season_avg("bottom_avg_regular_season", "bottom_avg")
 
     def check_rate_list(list_key, kind, spots=5):
         # Only managers who did it this week (scored 125+ / under 100)

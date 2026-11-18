@@ -788,13 +788,13 @@ function recordBooksSentence(kind, group) {
 
     case "top_avg":
       return tied
-        ? `${joinNames(names)}'s ${group[0].year} averages (${fmtRecordNumber(value)} points) share the ${rank}-highest R/S season average in league history.`
-        : `${names[0]}'s ${group[0].year} average of ${fmtRecordNumber(value)} points is now ${the} ${rank}-highest R/S season average in league history.`;
+        ? `${joinNames(names)} both finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — tied for the ${rank}-highest R/S season average in league history.`
+        : `${names[0]} finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — ${the} ${rank}-highest R/S season average in league history.`;
 
     case "bottom_avg":
       return tied
-        ? `${joinNames(names)}'s ${group[0].year} averages (${fmtRecordNumber(value)} points) share the ${rank}-lowest R/S season average in league history.`
-        : `${names[0]}'s ${group[0].year} average of ${fmtRecordNumber(value)} points is now ${the} ${rank}-lowest R/S season average in league history.`;
+        ? `${joinNames(names)} both finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — tied for the ${rank}-lowest R/S season average in league history.`
+        : `${names[0]} finished ${group[0].year} averaging ${fmtRecordNumber(value)} points — ${the} ${rank}-lowest R/S season average in league history.`;
 
     case "top_playoff_score":
       return tied

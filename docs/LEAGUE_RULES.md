@@ -68,7 +68,7 @@ Legacy Score = 2.0 × (playoff appearances / seasons)
 * "Welcome to the Record Books" covers every table on the Record Books page, for the most recent regular-season week:
    * Highest / Lowest R/S Game Scores (Top 15 / Bottom 15): any game from this week on the list.
    * Highest / Lowest Playoff Game Scores (Top 5 / Bottom 5): any game from the most recent playoff week on the list, while the playoffs are the latest games.
-   * Highest / Lowest Average R/S Score (Top 10 / Bottom 10): this season's average when it enters the list or climbs to a better place. Not when it slips back or only gains or loses a tie, since averages move every week.
+   * Highest / Lowest Average R/S Score (Top 10 / Bottom 10): only once the Week 14 results are in, when the averages are final. Every one of this season's averages on the list is mentioned then. Never during the season, since averages change every week.
    * Games Scored Above 125 / Below 100 (by rate): a manager who scored over 125 (or under 100) this week and entered or climbed within the Top 5.
    * Longest R/S Winning / Losing Streaks and Longest R/S Streak Over / Under 100 Points (Top 5): see the next rule.
    * 25th career win / loss.

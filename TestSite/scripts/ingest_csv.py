@@ -644,10 +644,11 @@ def compute_records(all_games, roster_names):
     add_rank_last_week(over100_streaks)
     add_rank_last_week(under100_streaks)
 
-    # Season averages and the 125+/under-100 game rates change for every
-    # manager every week, so "Welcome to the Record Books" needs each
-    # current entry's place on the board last week too (see
-    # _competition_place below for the ranking used).
+    # The 125+/under-100 game rates change for every manager every week,
+    # so "Welcome to the Record Books" needs each entry's place on the
+    # board last week too (_competition_place: the same ranking as the
+    # Record Books page). Season averages need no history: they're only
+    # mentioned once the regular season is over.
     if latest_reg and latest_reg[0] == in_progress_year:
         this_week = [g for g in all_games if g["game_type"] == "Regular"
                      and (g["year"], _week_sort_key(g["week"])) == latest_reg]
@@ -659,23 +660,6 @@ def compute_records(all_games, roster_names):
                 if g["home_manager"] == mgr:
                     return g["home_score"]
             return None
-
-        # Averages: this season's entries as they stood a week ago.
-        last_avgs = [e for e in season_avgs if e["year"] != in_progress_year]
-        current = {e["manager"]: e for e in season_avgs if e["year"] == in_progress_year}
-        for mgr, years in season_totals.items():
-            d = years.get(in_progress_year)
-            sc = week_score(mgr)
-            if not d or sc is None:
-                continue
-            games = d["games"] - 1
-            if games >= MIN_GAMES_FOR_CURRENT_SEASON_AVG:
-                last_avgs.append({"manager": mgr, "year": in_progress_year, "_mine": True,
-                                  "avg_score": round((d["total"] - sc) / games, 2)})
-        for mgr, e in current.items():
-            mine = next((x for x in last_avgs if x.get("_mine") and x["manager"] == mgr), None)
-            e["rank_last_week_top"] = _competition_place(last_avgs, mine, "avg_score", True, 10)
-            e["rank_last_week_bottom"] = _competition_place(last_avgs, mine, "avg_score", False, 10)
 
         # 125+ / under-100 rates: who did it this week, and last week's place.
         for lst, hit in ((games_above_125_list, lambda sc: sc > 125),
