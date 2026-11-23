@@ -2058,7 +2058,7 @@ def _parlay_worst_stat(current_year, roster_names, rows=None):
     """Week 11: whoever has the worst parlay win % this season (at least
     PARLAY_MIN_PICKS decided picks; ties all named), with their record,
     where it ranks among every season on record, their hits this year,
-    their record in past seasons, and the league's record this year."""
+    their record in past seasons, and the next three coldest."""
     rows = _parlay_rows() if rows is None else rows
     roster = set(roster_names)
     rows = [r for r in rows if r["name"] in roster]
@@ -2107,15 +2107,8 @@ def _parlay_worst_stat(current_year, roster_names, rows=None):
         rank_text = (f"That's the {_ordinal_word(below + 1)}-worst single season in Fox Mill "
                      f"parlay history (min. {PARLAY_MIN_PICKS_ALL_TIME} picks).")
 
-    league = [0, 0]
-    for (y, m), wl in season.items():
-        if y == current_year:
-            league[0] += wl[0]
-            league[1] += wl[1]
     also = sorted((pct(wl), m) for m, wl in now.items() if m not in losers)[:3]
-    closing = f"League-wide this season: {fmt(league)}."
-    if also:
-        closing += "\nAlso cold: " + ", ".join(f"{m} {fmt(now[m])}" for _, m in also) + "."
+    closing = ("Also cold: " + ", ".join(f"{m} {fmt(now[m])}" for _, m in also) + ".") if also else None
 
     return {
         "reason": f"parlay_worst_week_{PARLAY_WEEK}",
@@ -2597,8 +2590,8 @@ def compute_stat_of_the_week(all_games, roster_names):
     Week 11 - _parlay_worst_stat: the worst parlay win % this season (5+
     decided picks) from the Parlay Google Sheet, with that manager's
     record, only hits, past seasons, where it ranks all-time (seasons
-    with 7+ decided picks) and the league's record this season. Skipped
-    if the sheet can't be read.
+    with 7+ decided picks) and the next three coldest. Skipped if the
+    sheet can't be read.
 
     Week 10 - _outside_top_stat: playoff odds for a team outside the top 6
     of the standings but within 2 games of 6th place, this year's managers
