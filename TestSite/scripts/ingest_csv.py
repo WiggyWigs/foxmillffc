@@ -2018,6 +2018,116 @@ def _games_back(row, line):
     return ((line["wins"] - row["wins"]) + (row["losses"] - line["losses"])) / 2
 
 
+# Week 11 Stat of the Week: the worst parlay win % this season, from the
+# league's Parlay Google Sheet (the same published CSV parlay.js reads).
+PARLAY_WEEK = 11
+PARLAY_SHEET_CSV_URL = (
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9gbWRe2LfduGjbKHt5cWdq8p2LT_vTXgDkCJetDh3v"
+    "-5cDD2LA5NBI4Du-7n7VGnZolw-DbcsyeRG/pub?gid=0&single=true&output=csv")
+PARLAY_MIN_PICKS = 5  # decided picks needed this season to count as "worst"
+PARLAY_MIN_PICKS_ALL_TIME = 7  # ... and for a past season to count in "worst ever"
+
+
+def _parlay_rows():
+    """Decided parlay picks from the sheet: [{year, week, name, bet, win}].
+    Same rule as the Parlay page: a row counts only with an Odds value
+    and a Win/Loss outcome. [] if the sheet can't be read."""
+    from urllib.request import urlopen
+    try:
+        with urlopen(PARLAY_SHEET_CSV_URL, timeout=20) as r:
+            text = r.read().decode("utf-8-sig")
+    except Exception as e:
+        print(f"WARNING: couldn't read the Parlay sheet ({e!r}); no parlay Stat of the Week.")
+        return []
+    out = []
+    for row in csv.DictReader(text.splitlines()):
+        outcome = (row.get("Outcome") or "").strip().lower()
+        if not (row.get("Odds") or "").strip() or outcome not in ("win", "w", "loss", "lose", "l"):
+            continue
+        try:
+            year = int((row.get("Year") or "").strip())
+        except ValueError:
+            continue
+        out.append({"year": year, "week": (row.get("Week") or "").strip(),
+                    "name": (row.get("Name") or "").strip(), "bet": (row.get("Bet") or "").strip(),
+                    "win": outcome in ("win", "w")})
+    return out
+
+
+def _parlay_worst_stat(current_year, roster_names, rows=None):
+    """Week 11: whoever has the worst parlay win % this season (at least
+    PARLAY_MIN_PICKS decided picks; ties all named), with their record,
+    where it ranks among every season on record, their hits this year,
+    their record in past seasons, and the league's record this year."""
+    rows = _parlay_rows() if rows is None else rows
+    roster = set(roster_names)
+    rows = [r for r in rows if r["name"] in roster]
+    season = defaultdict(lambda: [0, 0])
+    for r in rows:
+        season[(r["year"], r["name"])][0 if r["win"] else 1] += 1
+    now = {m: wl for (y, m), wl in season.items() if y == current_year and sum(wl) >= PARLAY_MIN_PICKS}
+    if not now:
+        return None
+
+    pct = lambda wl: wl[0] / sum(wl)
+    # Non-breaking hyphen, so "2-6" never splits across lines on the page.
+    fmt = lambda wl: f"{wl[0]}\u2011{wl[1]} ({pct(wl) * 100:.1f}%)"
+    worst = min(pct(wl) for wl in now.values())
+    losers = sorted(m for m, wl in now.items() if pct(wl) == worst)
+
+    lines = []
+    for m in losers:
+        wl = now[m]
+        hits = [r for r in rows if r["year"] == current_year and r["name"] == m and r["win"]]
+        hit_text = ("No hits yet." if not hits else
+                    (f"Only hit: Week {hits[0]['week']} ({hits[0]['bet']})." if len(hits) == 1 else
+                     "Hits: " + ", ".join(f"Week {h['week']} ({h['bet']})" for h in hits) + "."))
+        past = [0, 0]
+        for (y, mm), pwl in season.items():
+            if mm == m and y < current_year:
+                past[0] += pwl[0]
+                past[1] += pwl[1]
+        past_text = (f" Before this season: {fmt(past)}." if sum(past) else "")
+        lines.append(f"{m} is {fmt(wl)}. {hit_text}{past_text}")
+
+    # Where it ranks among every season on record (enough picks to count).
+    eligible = [(pct(wl), y, m) for (y, m), wl in season.items()
+                if sum(wl) >= PARLAY_MIN_PICKS_ALL_TIME or (y == current_year and m in losers)]
+    below = sum(1 for p, y, m in eligible if p < worst)
+    if below == 0:
+        others = [(y, m) for p, y, m in eligible if p == worst and not (y == current_year and m in losers)]
+        rank_text = ("That's the worst single season in Fox Mill parlay history" if not others
+                     else "That's tied for the worst single season in Fox Mill parlay history")
+        rank_text += f" (min. {PARLAY_MIN_PICKS_ALL_TIME} picks)."
+        nxt = sorted((p, y, m) for p, y, m in eligible if p > worst)
+        if nxt and not others:
+            p, y, m = nxt[0]
+            rank_text += f" Next worst: {m}, {y}, {fmt(season[(y, m)])}."
+    else:
+        rank_text = (f"That's the {_ordinal_word(below + 1)}-worst single season in Fox Mill "
+                     f"parlay history (min. {PARLAY_MIN_PICKS_ALL_TIME} picks).")
+
+    league = [0, 0]
+    for (y, m), wl in season.items():
+        if y == current_year:
+            league[0] += wl[0]
+            league[1] += wl[1]
+    also = sorted((pct(wl), m) for m, wl in now.items() if m not in losers)[:3]
+    closing = f"League-wide this season: {fmt(league)}."
+    if also:
+        closing += "\nAlso cold: " + ", ".join(f"{m} {fmt(now[m])}" for _, m in also) + "."
+
+    return {
+        "reason": f"parlay_worst_week_{PARLAY_WEEK}",
+        "value": round(worst * 100, 1), "value_suffix": "%",
+        "sample_size": sum(now[losers[0]]),
+        "this_year_teams": [],
+        "narrative": "\n\n".join([f"The worst parlay win rate in the league this season "
+                                   f"(min. {PARLAY_MIN_PICKS} picks)."] + lines + [rank_text]),
+        "closing": closing,
+    }
+
+
 def _outside_top_stat(all_games, season_games, current_year, week, roster_names):
     """Stat of the Week: playoff odds for a team outside the top
     PLAYOFF_SPOTS of the standings after `week` but within
@@ -2484,6 +2594,12 @@ def compute_stat_of_the_week(all_games, roster_names):
     through Week 9 (and for the whole season), plus every team this year
     averaging within 10 points of that.
 
+    Week 11 - _parlay_worst_stat: the worst parlay win % this season (5+
+    decided picks) from the Parlay Google Sheet, with that manager's
+    record, only hits, past seasons, where it ranks all-time (seasons
+    with 7+ decided picks) and the league's record this season. Skipped
+    if the sheet can't be read.
+
     Week 10 - _outside_top_stat: playoff odds for a team outside the top 6
     of the standings but within 2 games of 6th place, this year's managers
     in that spot, and how many of them history says will crash the top 6.
@@ -2546,6 +2662,15 @@ def compute_stat_of_the_week(all_games, roster_names):
 
     if last_completed_week == OUTSIDE_TOP_WEEK:
         return _outside_top_stat(all_games, season_games, current_year, OUTSIDE_TOP_WEEK, roster_names)
+
+    if last_completed_week == PARLAY_WEEK:
+        # Reads an outside Google Sheet: any failure skips the stat, never
+        # the weekly update.
+        try:
+            return _parlay_worst_stat(current_year, roster_names)
+        except Exception as e:
+            print(f"WARNING: parlay Stat of the Week failed ({e!r}); none this week.")
+            return None
 
     return None  # other weeks: not defined yet
 
