@@ -40,7 +40,7 @@ const BADGES = {
     // The king piece is too narrow for a digit: count in the pop-up title only.
     iconNumber: false,
     initials: "CNC",
-    rule: "Beat the same team twice in one season (playoff games count). The number is how many different teams.",
+    rule: "Beat the same team twice in one season by 20+ points each time (playoff games count). The number is how many different teams.",
   },
   high_point_club: {
     name: "High Point Club", file: "high-point-club.png", numbered: false,
