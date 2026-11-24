@@ -34,7 +34,8 @@ Badge rules (regular season only, Weeks 1-14, unless noted):
                        week: the loser was ranked 1st-5th and the
                        winner was ranked at least 5 spots below them.
   Chess, Not Checkers - count of different teams this manager beat at
-                       least twice in the season, playoff games included.
+                       least twice in the season by 20+ points each time,
+                       playoff games included.
   High Point Club    - count of games scoring 150 or more.
   The Punisher       - won by more than 50 points.
   Ice Cold           - lost 5+ games in a row (a tie ends the run). The
@@ -100,6 +101,7 @@ GIANT_KILLER_MAX_LOSER_RANK = 5
 GIANT_KILLER_RANK_GAP = 5
 HIGH_POINT_CLUB_SCORE = 150
 PUNISHER_MARGIN = 50
+CHESS_MIN_MARGIN = 20  # Chess, Not Checkers: each of the two wins by at least this much
 ICE_COLD_LOSSES = 5
 HEARTBREAKER_MARGIN = 3
 NOT_GREAT_BOB_SCORE = 75
@@ -403,11 +405,13 @@ def _eliminator_hits(season_games, year, roster_names):
 def _chess_not_checkers(games):
     """[(manager, event)] for every (winner, opponent) pair where the winner
     beat that opponent at least twice in `games` (one season, regular season
-    and playoffs). event["week"] is the week of the second win (playoff
-    weeks sort after Week 14), so Week N Badges can show when it was earned."""
+    and playoffs) by at least CHESS_MIN_MARGIN points each time. Only those
+    wins count and are listed. event["week"] is the week of the second such
+    win (playoff weeks sort after Week 14), so Week N Badges can show when
+    it was earned."""
     wins = {}
     for g in sorted(games, key=lambda g: _week_sort_key(g["week"])):
-        if g["tie"]:
+        if g["tie"] or abs(g["away_score"] - g["home_score"]) < CHESS_MIN_MARGIN:
             continue
         wins.setdefault((g["winner"], g["loser"]), []).append(g)
     out = []
