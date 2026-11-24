@@ -96,6 +96,10 @@ Legacy Score = 2.0 × (playoff appearances / seasons)
 
 ## 10. Weekly recap content
 
+### Thanksgiving week
+
+* When the update runs during Thanksgiving week (Monday through Sunday of the week with the fourth Thursday of November, Eastern time), every narrative also gets the notes in `scripts/narrative_tone_thanksgiving.txt`: Thanksgiving humor (pilgrims, stuffing, tryptophan, family dinner drama, ...), tied to real facts, a line or two, with every other rule still applying.
+
 ### Impact Game (Previous Weekend Recap)
 
 * Always the smallest-margin game of the most recently completed regular-season week.
