@@ -57,6 +57,10 @@ PLAYER_LINEUPS_PATH = DATA_DIR / os.environ.get("PLAYER_LINEUPS_FILENAME", "play
 RECAP_CRITERIA_PATH = SCRIPT_DIR / "recap_criteria.json"
 MANAGER_LORE_PATH = SCRIPT_DIR / "manager_lore.json"
 NARRATIVE_TONE_PATH = SCRIPT_DIR / "narrative_tone.txt"
+# Added to the tone around Thanksgiving (see thanksgiving_phase): looking
+# ahead to it before the holiday, looking back on it after.
+THANKSGIVING_TONE_PATH = SCRIPT_DIR / "narrative_tone_thanksgiving.txt"
+AFTER_THANKSGIVING_TONE_PATH = SCRIPT_DIR / "narrative_tone_after_thanksgiving.txt"
 
 MODEL = "claude-sonnet-5"
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -178,14 +182,40 @@ def pick_lore_facts(manager, facts, rotation_state, count=FACTS_PER_RUN):
     return picks
 
 
+def thanksgiving_phase(today=None):
+    """"ahead" from the Monday of Thanksgiving week through Thanksgiving
+    Day (the fourth Thursday of November), "after" from the day after
+    through the Sunday of the following week, otherwise None. By the date
+    in Eastern time when the update runs: the Tuesday update before
+    Thanksgiving looks ahead to it, the one after looks back on it."""
+    from datetime import date, timedelta
+    today = today or datetime.now(ZoneInfo("America/New_York")).date()
+    nov1 = date(today.year, 11, 1)
+    thanksgiving = nov1 + timedelta(days=(3 - nov1.weekday()) % 7 + 21)
+    if thanksgiving - timedelta(days=3) <= today <= thanksgiving:
+        return "ahead"
+    if thanksgiving < today <= thanksgiving + timedelta(days=10):
+        return "after"
+    return None
+
+
 def load_narrative_tone():
     """Edit narrative_tone.txt directly to change the voice/tone both
     narratives are written in — no code changes needed. Falls back to
     a plain, safe default if the file is ever missing, rather than
-    failing the whole run over a style file."""
+    failing the whole run over a style file. Around Thanksgiving,
+    narrative_tone_thanksgiving.txt (before it) or
+    narrative_tone_after_thanksgiving.txt (after it) is added to the end."""
     if not NARRATIVE_TONE_PATH.exists():
-        return "Write in a clear, engaging tone appropriate for a fantasy football league website."
-    return NARRATIVE_TONE_PATH.read_text().strip()
+        tone = "Write in a clear, engaging tone appropriate for a fantasy football league website."
+    else:
+        tone = NARRATIVE_TONE_PATH.read_text().strip()
+    phase = thanksgiving_phase()
+    extra = {"ahead": THANKSGIVING_TONE_PATH, "after": AFTER_THANKSGIVING_TONE_PATH}.get(phase)
+    if extra and extra.exists():
+        print(f"Thanksgiving ({phase}): adding {extra.name} to the narrative tone.")
+        tone += "\n\n" + extra.read_text().strip()
+    return tone
 
 
 def get_manager_flavor(manager, stats, lore, rotation_state):
