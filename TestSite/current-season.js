@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Each section renders independently — one section's bug should
   // never take down the rest of the page.
-  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPowerRankings, renderRecordBooks, renderWeekBadges];
+  const sections = [renderRecap, renderStandings, renderPlayoffProbability, renderPlayoffPaths, renderPowerRankings, renderRecordBooks, renderWeekBadges];
   for (const renderFn of sections) {
     try {
       renderFn(data);
@@ -1078,6 +1078,66 @@ function renderStreaks(data) {
   const loseTable = streakTable("Losing Streak Leaders", cs.top_current_losing_streaks, "loss_streak");
 
   wrap.innerHTML = `<div class="record-row">${winTable}${loseTable}</div>`;
+}
+
+// "Playoff Paths" and "Path to a Bye" (from ingest_csv.py
+// compute_playoff_paths / playoff_paths.py): one row per team still alive,
+// tap to see what it needs. Shown after Weeks 11-13 (bye after 12-13).
+function renderPlayoffPaths(data) {
+  const pp = data.playoff_paths;
+  const show = (prefix, teams, goal) => {
+    const divider = document.getElementById(`${prefix}-divider`);
+    const section = document.getElementById(`${prefix}-section`);
+    const wrap = document.getElementById(`${prefix}-wrap`);
+    const meta = document.getElementById(`${prefix}-meta`);
+    if (!section || !wrap) return;
+    if (!pp || !Array.isArray(teams) || !teams.length) {
+      section.style.display = "none";
+      if (divider) divider.style.display = "none";
+      return;
+    }
+    const left = 14 - pp.week;
+    meta.textContent = `After Week ${pp.week}: what every team still in the running needs to ${goal}, `
+      + `from every possible result of the last ${left} week${left === 1 ? "" : "s"}. `
+      + "Ties go to head-to-head among the tied teams, then total points. Tap a team.";
+    const pct = (x) => (x > 0 && x < 0.01 ? "under 1%" : `${Math.round(x * 100)}%`);
+    const pill = {
+      clinched: ["pp-pill pp-clinched", "Clinched"],
+      alive: ["pp-pill", "Alive"],
+      points_only: ["pp-pill pp-points", "Points tiebreaker only"],
+    };
+    wrap.innerHTML = teams.map((t) => {
+      const [cls, label] = pill[t.status] || pill.alive;
+      const kg = t.key_game;
+      const keyHtml = kg && t.status !== "clinched"
+        ? `<div class="pp-key"><span>Key game</span>Wk ${kg.week} vs ${escapeHtml(kg.opponent)}`
+          + (kg.also && kg.also.length ? ` (${escapeHtml(kg.also.join(", "))} just as big)` : "")
+          + `. Win it: in without a tiebreaker in ${pct(kg.win_in)} of scenarios. Lose it: ${pct(kg.lose_in)}.</div>`
+        : "";
+      const word = (txt) => escapeHtml(txt)
+        .replace("CLINCHED.", '<span class="pp-yes">CLINCHED.</span>')
+        .replace("ELIMINATED.", '<span class="pp-no">ELIMINATED.</span>');
+      const lines = t.lines.map((l) => `<li><b>${escapeHtml(l.when)}:</b> ${word(l.text)}</li>`).join("");
+      return `
+        <details class="pp-team">
+          <summary>
+            <span class="pp-rank">${t.rank}</span>
+            <span class="pp-name">${escapeHtml(t.manager)}</span>
+            <span class="pp-rec">${escapeHtml(t.record)}</span>
+            <span class="${cls}">${label}</span>
+          </summary>
+          <div class="pp-body">
+            <div class="pp-left">Left: ${t.remaining.map((r) => `Wk ${r.week} ${escapeHtml(r.opponent)}`).join(" · ")}</div>
+            ${keyHtml}
+            <ul class="pp-lines">${lines}</ul>
+          </div>
+        </details>`;
+    }).join("");
+    section.style.display = "";
+    if (divider) divider.style.display = "";
+  };
+  show("playoff-paths", pp && pp.playoffs, `make the top ${pp ? pp.playoff_spots : 6}`);
+  show("bye-paths", pp && pp.bye, "finish 1st or 2nd");
 }
 
 function renderPlayoffProbability(data) {

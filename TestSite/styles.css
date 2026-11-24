@@ -2794,3 +2794,64 @@ body.pc-hide-badges .pc-badges { display: none; }
   font-size: 0.62rem;
   font-weight: 700;
 }
+
+/* Playoff Paths / Path to a Bye (Current Season): one tap-to-open row per team. */
+.pp-team {
+  border-bottom: 1px solid var(--hairline);
+}
+.pp-team summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.2rem;
+  cursor: pointer;
+  list-style: none;
+}
+.pp-team summary::-webkit-details-marker { display: none; }
+.pp-team summary::after {
+  content: "+";
+  margin-left: 0.2rem;
+  color: var(--rust);
+  font-weight: 700;
+}
+.pp-team[open] summary::after { content: "–"; }
+.pp-rank { color: var(--rust); font-weight: 700; min-width: 1.4rem; }
+.pp-name { flex: 1; font-weight: 600; color: var(--navy); }
+.pp-rec { font-variant-numeric: tabular-nums; color: var(--navy); }
+.pp-pill {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.pp-pill.pp-clinched { border-color: #2f7d3a; color: #2f7d3a; font-weight: 700; }
+.pp-pill.pp-points { border-color: var(--rust); color: var(--rust); }
+.pp-body { padding: 0 0.2rem 0.8rem 2rem; }
+.pp-left { font-style: italic; color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 0.4rem; }
+.pp-key {
+  border-left: 3px solid var(--rust);
+  background: rgba(194, 87, 26, 0.07);
+  padding: 0.4rem 0.6rem;
+  margin: 0.3rem 0 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.pp-key span {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust);
+  font-weight: 700;
+}
+.pp-lines { list-style: none; margin: 0; padding: 0; }
+.pp-lines li { font-size: 0.92rem; line-height: 1.45; padding: 0.3rem 0; border-bottom: 1px dotted var(--hairline); }
+.pp-lines li:last-child { border-bottom: none; }
+.pp-lines b { color: var(--navy); }
+.pp-yes { color: #2f7d3a; font-weight: 700; }
+.pp-no { color: #a8322a; font-weight: 700; }
+@media (max-width: 600px) {
+  .pp-body { padding-left: 0.4rem; }
+}
