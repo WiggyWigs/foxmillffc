@@ -94,6 +94,13 @@ Legacy Score = 2.0 × (playoff appearances / seasons)
 * Everyone else is capped at 99%. Never show 100% unless clinched.
 * Clinching and elimination are determined from the full remaining ESPN schedule, not just current records.
 
+### Playoff Paths and Path to a Bye
+
+* Current Season page, after Weeks 11, 12 and 13 (Path to a Bye after Weeks 12 and 13 only): one row per team that can still make the top 6 (or the top 2), including teams only alive through a points tiebreaker.
+* Exact, not simulated: every win/loss combination of the remaining regular-season games on the ESPN schedule, ranked with the standings rules above (win %, head-to-head among the tied teams, then total points). A combination where a team's place depends on total points counts as a tiebreaker, neither in nor out.
+* Each line covers a set of the team's own results and says CLINCHED, ELIMINATED, "only alive through a total-points tiebreaker", or "needs N of [teams] to finish below W wins": in without a tiebreaker if so; the list is every team that can still reach W wins.
+* Key game: of the team's remaining games, the one where a win instead of a loss adds the most combinations where they're in without a tiebreaker (every other game a coin flip).
+
 ## 10. Weekly recap content
 
 ### Thanksgiving

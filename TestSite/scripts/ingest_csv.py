@@ -3039,6 +3039,40 @@ def compute_playoff_probabilities(all_games, roster_names, model, schedule="load
             "status_method": status_method, **sim_info, "managers": entries}
 
 
+def compute_playoff_paths(all_games, roster_names):
+    """Playoff Paths for the Current Season page (see playoff_paths.py):
+    from the publication after Week 11 through the one after Week 13,
+    what every team still alive needs to make the top PLAYOFF_SPOTS, and
+    from the one after Week 12 what it needs to finish 1st or 2nd (a bye).
+    Exact over every win/loss combination of the remaining games, using
+    the validated remaining ESPN schedule. None outside those weeks, or if
+    the schedule can't be read."""
+    import playoff_paths
+    years = {g["year"] for g in all_games}
+    if not years:
+        return None
+    year = max(years)
+    season_games = [g for g in all_games if g["year"] == year and g["game_type"] == "Regular"]
+    if not season_games or any(g["year"] == year and g["game_type"] != "Regular" for g in all_games):
+        return None
+    week = max(_week_sort_key(g["week"]) for g in season_games)
+    if week < playoff_paths.FIRST_PATHS_WEEK or week >= REGULAR_SEASON_GAMES:
+        return None
+    standings = rank_season_games(season_games, roster_names)
+    played = {r["manager"]: r["wins"] + r["losses"] + r["ties"] for r in standings}
+    schedule = load_remaining_schedule(played.keys(), played, year, week)
+    if not schedule:
+        return None
+    weeks = list(range(week + 1, REGULAR_SEASON_GAMES + 1))
+    playoffs = playoff_paths.build(season_games, standings, schedule, weeks, PLAYOFF_SPOTS)
+    if playoffs is None:
+        return None
+    bye = (playoff_paths.build(season_games, standings, schedule, weeks, playoff_paths.BYE_SPOTS)
+           if week >= playoff_paths.FIRST_BYE_WEEK else None)
+    return {"season": year, "week": week, "playoff_spots": PLAYOFF_SPOTS,
+            "bye_spots": playoff_paths.BYE_SPOTS, "playoffs": playoffs, "bye": bye}
+
+
 def compute_h2h_summary(all_games, roster_names):
     """
     Per-manager all-time stats for the Head-to-Head comparison page.
@@ -3296,6 +3330,16 @@ def main():
     stats["playoff_probabilities"] = compute_playoff_probabilities(
         stats["games"], roster_names, stats["playoff_probability_model"]
     )
+    # Playoff Paths (after Weeks 11-13). Never allowed to stop the update.
+    try:
+        stats["playoff_paths"] = compute_playoff_paths(stats["games"], roster_names)
+        pp_ = stats["playoff_paths"]
+        print("Playoff Paths: " + (f"after Week {pp_['week']}, {len(pp_['playoffs'])} teams alive"
+                                   + (f", {len(pp_['bye'])} alive for a bye" if pp_["bye"] else "")
+                                   if pp_ else "not shown this week."))
+    except Exception as e:
+        print(f"WARNING: Playoff Paths failed ({e!r}); section hidden this week.")
+        stats["playoff_paths"] = None
     new_pp = stats["playoff_probabilities"] or {}
     new_key = (new_pp.get("season"), new_pp.get("current_week"))
     old_key = (old_pp.get("season"), old_pp.get("current_week"))
